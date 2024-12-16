@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login or Sign Up</title>
+    <style>
+        /* Basic styling for layout */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        
+        .container {
+            width: 300px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        h2 {
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        
+        input[type="text"], input[type="password"], input[type="email"] {
+            width: 100%;
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #0a0a0a;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Link styling */
+        .toggle-link {
+            display: block;
+            margin-top: 15px;
+            color: #007BFF;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Login Form -->
+    <div id="loginForm">
+        <h2>Logg Inn</h2>
+        <div class="form-group">
+            <form action="/login" method="POST">
+                <label for="loginUsername">Brukernavn:</label>
+                <input type="text" id="loginUsername" name="brukernavn" required>
+            </div>
+            <div class="form-group">
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" name="passord" required>
+            </div>
+            <button type="submit">Logg Inn</button>
+            <span class="toggle-link" onclick="toggleForms()">Lag en konto</span>
+            <span id="username-display" style="display:none;"></span>
+    </form>
+    </div>
+
+    <!-- Sign Up Form -->
+    <div id="signupForm" style="display: none;">
+        <h2>Lag konto</h2>
+        <div class="form-group">
+            <form action="/signup" method="POST">
+                <label for="signupUsername">Brukernavn:</label>
+                <input type="text" id="signupUsername" name="brukernavn" required>
+            </div>
+            <div class="form-group">
+                <label for="signupEmail">Email:</label>
+                <input type="email" id="signupEmail" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="signupPassword">Password:</label>
+                <input type="password" id="signupPassword" name="passord" required>
+            </div>
+            <button type="submit">Lag konto</button>
+            <span class="toggle-link" onclick="toggleForms()">Har allerede en konto? Logg Inn</span>
+    </form>
+    </div>
+</div>
+
+<script>
+    // Toggle between login and signup forms
+    function toggleForms() {
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        
+        if (loginForm.style.display === 'none') {
+            loginForm.style.display = 'block';
+            signupForm.style.display = 'none';
+        } else {
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+        }
+    }
+</script>
+
+</body>
+</html>

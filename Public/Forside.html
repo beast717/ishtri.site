@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Søk</title>
+    <style>
+
+            .body {
+                font-family: Arial, Helvetica, sans-serif;
+                margin: 0; 
+                padding: 0; 
+            }
+
+            .navBar {
+                font-family: Arial, Helvetica, sans-serif;
+                width: 100%;
+                height: 60px;
+                background-color: white;    
+                display: flex; 
+                align-items: center; 
+                justify-content:space-evenly;
+                border-bottom: 1px solid black;
+                
+            }
+
+            .navBarButtons {
+                display: flex; 
+                align-items: center;
+                gap: 20px;
+            }
+
+            .navBarButtons a {
+                color: rgb(0, 0, 0); 
+                text-decoration: none; 
+            }
+
+            .navBarButtons i {
+                font-size:x-large;
+                color: #a7a7a7;
+            }
+
+           
+            #profileContainer {
+                display: flex;
+                align-items: center;
+                margin-left: 20px;
+                gap: 10px; 
+                position: relative;
+                
+            }
+
+            #dropdownMenu {
+                display: none; /* Hidden by default */
+                position: absolute; /* Position relative to #profileContainer */
+                margin-top: 90px; /* Place the menu directly below the container */
+                left: 0; /* Align it to the left edge of the container */
+                background-color: white;
+                border: 1px solid #ccc;
+                box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+                z-index: 1;
+                padding: 10px;
+                min-width: 100px; /* Ensure a consistent width for the dropdown */
+            }
+            
+            #profileContainer:hover #dropdownMenu {
+                display: block;
+            }
+
+
+            .logoOgTittel img {
+                height: 300px;
+                width: 300px;
+                margin-top: 10px;
+            }
+
+
+            .søkeBarContainer{
+                margin-top: 20px;
+                text-align: center;
+            }
+
+            .search-bar {
+                display: inline-flex;
+            }
+
+            .søkeBarContainer input[type="text"] {
+                color: rgb(0, 0, 0);
+                padding: 10px;
+                width: 820px;
+                height: 30px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                border-right: none;
+            }
+                
+            .search-bar button {
+                padding: 10px 15px;
+                border: 1px solid #ccc;
+                border-left: none; /* Removes the left border to blend with input */
+                border-radius: 0 4px 4px 0; /* Rounded right corners */
+                background-color: white;
+                color: white;
+                cursor: pointer;
+            }
+
+            .kategorierContainer {
+                font-family: Arial, Helvetica, sans-serif;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-top: 35px;
+
+                
+            }
+            
+            .kategori {
+                display: flex;
+                flex-direction: column; /* Stack icon above the text */
+                align-items: center; /* Center items horizontally */
+                margin-right: 70px; /* Space between buttons */
+                transition: transform 0.2s ease-in-out; /* Smooth hover effect */
+            }
+
+        
+
+            .kategorierContainer i {
+                color: #525252;
+                font-size: 30px;
+                margin-bottom: 8px; /* Space between icon and text */
+            }
+
+            .kategori a {
+                text-decoration: none;
+                color: black;
+            }
+
+            .kategorContainer2 {
+                font-family: Arial, Helvetica, sans-serif;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-top: 60px;
+            }
+
+            .kategori2:hover{
+                transform:scale(1.05);
+            }
+
+            .kategori:hover{
+                transform:scale(1.05);
+            }
+
+            .kategori2 {
+                display: flex;
+                flex-direction: column; /* Stack icon above the text */
+                align-items: center; /* Center items horizontally */
+                margin-right: 50px; /* Space between buttons */
+                transition: transform 0.2s ease-in-out; /* Smooth hover effect */
+            }
+
+            .kategorContainer2 i {
+                color: #525252;
+                font-size: 30px;
+                margin-bottom: 8px; /* Space between icon and text */
+
+            }
+
+            .kategori2 a {
+                text-decoration: none;
+                color: black;
+            }
+
+            .badge {
+                position: absolute; /* Position the badge relative to its parent */
+                top: 25px;          /* Adjust vertically to sit above the icon */
+                right: 395px;        /* Adjust horizontally to sit to the right of the icon */
+                color: white;       /* White text (if any text inside the badge) */
+                background-color: red; /* Red background */
+                border-radius: 50%; /* Make it circular */
+                width: 12px;        /* Fixed width for the dot */
+                height: 12px;       /* Fixed height for the dot */
+                font-size: 10px;    /* Optional: Adjust font size for text inside */
+                text-align: center; /* Center text inside */
+                line-height: 12px;  /* Match height for centering */
+                display: none;      /* Initially hidden, as set by JavaScript */
+            }
+
+            #randomProducts div {
+                margin-top: 30px;
+                margin-left: 20px;
+                display: flex;
+                flex-direction: column; /* Stack image, name, and price */
+                align-items: center; /* Center-align the content */
+                border: 1px solid #ccc;
+                border-radius: 8px;
+                padding: 15px;
+                text-align: center;
+                min-width: 150px; /* Set a consistent width for products */
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+                background-color: #f9f9f9;
+                cursor: pointer;
+                transition: transform 0.2s ease-in-out; /* Smooth hover effect */
+            }
+
+            #randomProducts div img {
+                width: 120px;
+                height: 120px;
+                object-fit: cover;
+                border-radius: 4px;
+                margin-bottom: 10px;
+            }
+
+            #randomProducts div:hover {
+                transform: scale(1.05); /* Slightly enlarge on hover */
+            }
+
+
+
+
+    </style>
+</head>
+<body>
+
+
+    <div class="navBar">
+        <div class="logoOgTittel">
+            <a href="Forside.html"><img src="Butikken.png" alt=""></a>
+        </div>
+        <div class="navBarButtons">
+            <a id="notificationsButton" href="/notifications"><i class="fas fa-bell"></i> Varslinger</a>
+            <a id="newAdButton" href="/ny-annonse"><i class="fas fa-plus-circle"></i> Ny annonse</a>
+            <a id="messagesButton" href="/messages">
+                <i class="fas fa-envelope"></i> Meldinger
+                <span id="unreadBadge" class="badge">●</span> <!-- Unread badge -->
+            </a>            
+            <a id="loginButton" href="/login"><i class="fas fa-sign-in-alt"></i> Logg inn</a>
+            
+            <div id="profileContainer" style="display: none;">
+                <img id="profileIcon" src="default-profile.png" alt="Profile Icon" style="width: 30px; height: 25px; cursor: pointer;">
+                <span id="profileUsername" style="cursor: pointer;">Username</span>
+                <div id="dropdownMenu">
+                    <button id="logoutButton" style="width: 100%; padding: 10px; background-color: rgb(252, 251, 251); color: rgb(0, 0, 0); border: none; cursor: pointer;">Logg ut</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="søkeBarContainer">
+        <form action="/search" method="GET">
+            <div class="search-bar">
+                <input type="text" placeholder="søk..." name="query" required>
+                <button>
+                    <img src="https://www.svgrepo.com/show/7109/search.svg" alt="Button Image" style="width: 20px; height: 20px;">
+                  </button>
+            </div>
+        </form>
+    </div>
+    <div class="kategorierContainer">
+        <div class="kategori">
+            <a href="/torgetkat?category=Torget" class="kategori">
+                <i class="fas fa-chair"></i>
+                <span>Torget</span>
+            </a>
+            </div>
+        <div class="kategori">
+            <a href="/torgetkat?category=Bil" class="kategori">
+                <i class="fas fa-car"></i>
+                <span>Bil</span>
+            </a>
+        </div>
+        <div class="kategori">
+            <a href="Torget.html" class="kategori">
+                <i class="fas fa-plane"></i>
+                <span>Reise</span>
+            </a>
+        </div>
+        <div class="kategori">
+            <a href="/torgetkat?category=Båt" class="kategori">
+                <i class="fas fa-ship"></i>
+                <span>Båt</span>
+            </a>
+        </div>
+        <div class="kategori">
+            <a href="/torgetkat?category=Mc" class="kategori">
+                <i class="fas fa-motorcycle"></i>
+                <span>Mc</span>
+            </a>
+        </div>
+    </div>
+    <div class="kategorContainer2">
+        <div class="kategori2">
+            <a href="Torget.html" class="kategori2">
+                <i class="fas fa-suitcase-rolling"></i>
+                <span>Pakkereise</span>
+            </a>
+        </div>
+        <div class="kategori2">
+            <a href="/torgetkat?category=Jobb" class="kategori2">
+                <i class="fas fa-briefcase"></i>
+                <span>Jobb</span>
+            </a>
+        </div>
+        <div class="kategori2">
+            <a href="/torgetkat?category=Eiendom" class="kategori2">
+                <i class="fas fa-home"></i>
+                <span>Eiendom</span>
+            </a>
+        </div>
+        <div class="kategori2">
+            <a href="Torget.html" class="kategori2">
+                <i class="fas fa-home"></i>
+                <span>Feriehjem og hytter</span>
+            </a>
+        </div>
+        <div class="kategori2">
+            <a href="Torget.html" class="kategori2">
+                <i class="fas fa-laptop"></i>
+                <span>Ny-brukt elektronikk</span>
+            </a>
+        </div>
+    </div>
+       <div id="randomProducts" style="display: flex; gap: 20px; padding: 10px; min-height: 100px; overflow-x: auto; justify-content: center;">
+        <div>
+            <img src="path_to_image.jpg" alt="Product Name">
+            <h4>Product Name</h4>
+            <p>Price NOK</p>
+        </div>
+    </div>
+    
+
+
+        <script>
+
+            function loadRandomProducts() {
+                fetch('/api/random-products')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Failed to fetch products");
+                        }
+                        return response.json();
+                    })
+                    .then(products => {
+                        const randomProductsContainer = document.getElementById('randomProducts');
+                        randomProductsContainer.innerHTML = ''; // Clear previous content
+                        if (products.length === 0) {
+                            randomProductsContainer.innerHTML = '<p>No products available.</p>';
+                            return;
+                        }
+                        products.forEach(product => {
+
+                           // Check if Images field is defined and not empty
+                        const images = product.Images ? product.Images.split(',') : [];
+                        const firstImage = images.length > 0 ? images[0].trim() : null;
+
+                        if (!firstImage) {
+                            console.log("No image available for product:", product.ProductName);
+                        }
+
+                        const imageUrl = firstImage ? `/uploads/${firstImage}` : '/uploads/default-placeholder.png'; // Use placeholder if no image
+
+                        console.log("Image URL:", imageUrl); // Log the image URL for debugging
+
+
+                            const productDiv = document.createElement('div');
+                            productDiv.style.border = '1px solid #ccc';
+                            productDiv.style.borderRadius = '8px';
+                            productDiv.style.padding = '15px';
+                            productDiv.style.textAlign = 'center';
+                            productDiv.style.minWidth = '150px';
+                            productDiv.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+                            productDiv.style.backgroundColor = '#f9f9f9';
+                            productDiv.style.flexShrink = '0'; // Prevent resizing in flex container 
+
+                            // Add image to the product card
+                            productDiv.innerHTML = `
+                               <img src="${imageUrl}" alt="${product.ProductName}" >
+                                <h4>${product.ProductName}</h4>
+                                <p>${product.Price} NOK</p>
+                            `;
+                  
+                            
+                            productDiv.onclick = () => {
+                                window.location.href = `/productDetails.html?productdID=${product.ProductdID}`;
+                            };
+                            randomProductsContainer.appendChild(productDiv);
+                        });
+                    })
+                    .catch(err => console.error("Error loading products:", err));
+            }
+            window.addEventListener('load', loadRandomProducts);
+        </script>        
+
+
+
+        <script>
+            // Fetch username to toggle login/profile
+            fetch('/api/brukernavn')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.brukernavn) {
+                        document.getElementById('loginButton').style.display = 'none';
+                        const profileContainer = document.getElementById('profileContainer');
+                        profileContainer.style.display = 'flex';
+                        document.getElementById('profileUsername').textContent = data.brukernavn;
+                        document.getElementById('profileIcon').src = data.profileIconUrl || 'default-profile.png';
+                    }
+                });
+    
+            // Fetch unread messages count
+            function checkUnreadMessages() {
+                fetch('/api/unread-messages-count')
+                    .then(response => response.json())
+                    .then(data => {
+                        const badge = document.getElementById('unreadBadge');
+                        badge.style.display = data.unreadCount > 0 ? 'inline-block' : 'none';
+                    });
+            }
+    
+            // Logout functionality
+            document.getElementById('logoutButton').addEventListener('click', () => {
+                fetch('/logout', { method: 'POST' })
+                    .then(response => {
+                        if (response.ok) window.location.href = '/';
+                    });
+            });
+    
+            window.onload = checkUnreadMessages;
+        </script>
+        
+        
+</body>
+</html>

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ny annonse</title>
+    <style>
+            .body {
+                    font-family: Arial, Helvetica, sans-serif;
+                    margin: 0; /* Remove default body margin */
+                    padding: 0; /* Remove default body padding */
+                }
+
+            .navBar {
+                font-family: Arial, Helvetica, sans-serif;
+                width: 100vw;
+                height: 60px;
+                background-color: white;    
+                display: flex; /* Use flexbox for layout */
+                align-items: center; /* Center items vertically */
+                justify-content:space-evenly;
+                border-bottom: 1px solid black;
+                
+            }
+
+            .navBarButtons {
+                display: flex; /* Use flexbox for buttons */
+            }
+
+            .navBarButtons a {
+                margin-left: 20px; /* Space between buttons */
+                color: rgb(0, 0, 0); /* Button text color */
+                text-decoration: none; /* Remove underline */
+            }
+
+            .navBarButtons i {
+                font-size: larger;
+                color: #a7a7a7;
+            }
+
+             /* Profile container styles */
+            #profileContainer {
+                display: flex;
+                align-items: center;
+                margin-left: 20px;
+                gap: 10px; /* Space between icon and username */
+                position: relative;
+                
+            }
+            
+            #dropdownMenu {
+                display: none; /* Hidden by default */
+                position: absolute; /* Position relative to #profileContainer */
+                margin-top: 90px; /* Place the menu directly below the container */
+                left: 0; /* Align it to the left edge of the container */
+                background-color: white;
+                border: 1px solid #ccc;
+                box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+                z-index: 1;
+                padding: 10px;
+                min-width: 100px; /* Ensure a consistent width for the dropdown */
+            }
+            
+            #profileContainer:hover #dropdownMenu {
+                display: block;
+            }
+
+            .logoOgTittel img {
+                height: 300px;
+                width: 300px;
+                margin-top: 10px;
+            }
+
+             /* Category Buttons Styling */
+        .overskrift {
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+            margin-top: 40px;
+            color: black;
+        }
+
+        .kategorierContainer {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 30px;
+        }
+
+        .kategori {
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .kategori i {
+            font-size: 40px;
+            color: #646464;
+            margin-bottom: 10px;
+        }
+
+        .kategori:hover {
+            transform: scale(1.1);
+        }
+
+        .kategori span {
+            font-size: 16px;
+            color: #333;
+        }
+
+        /* Form Container Styling */
+        .formContainer {
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            display: none;
+            transition: opacity 0.5s ease;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .formContainer h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .formContainer label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .formContainer input,
+        .formContainer textarea,
+        .formContainer select {
+            margin-bottom: 15px;
+            padding: 10px;
+            width: 100%;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .formContainer button {
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: rgb(255, 255, 255);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .formContainer button:hover {
+            background-color: #0056b3;
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <div class="navBar">
+        <div class="logoOgTittel">
+            <a href="Forside.html"><img src="Butikken.png" alt=""></a>
+        </div>
+        <div class="navBarButtons">
+            <a id="notificationsButton" href="/notifications"><i class="fas fa-bell"></i> Varslinger</a>
+            <a id="newAdButton" href="/ny-annonse"><i class="fas fa-plus-circle"></i> Ny annonse</a>
+            <a id="messagesButton" href="/messages"><i class="fas fa-envelope"></i> Meldinger</a>
+            <a id="loginButton" href="/login"><i class="fas fa-sign-in-alt"></i> Logg inn</a>
+            
+            <div id="profileContainer" style="display: none;">
+                <img id="profileIcon" src="default-profile.png" alt="Profile Icon" style="width: 30px; height: 25px; cursor: pointer;">
+                <span id="profileUsername" style="cursor: pointer;">Username</span>
+                <div id="dropdownMenu">
+                    <button id="logoutButton" style="width: 100%; padding: 10px; background-color: rgb(252, 251, 251); color: rgb(0, 0, 0); border: none; cursor: pointer;">Logg ut</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     <!-- Heading -->
+     <div class="overskrift">
+        <h1>Lag ny annonse</h1>
+        <h2>Velg kategori</h2>
+    </div>
+
+    <!-- Category Selection -->
+    <div class="kategorierContainer">
+        <div class="kategori" onclick="setCategory('Torget')">
+            <i class="fas fa-home"></i>
+            <span>Torget</span>
+        </div>
+        <div class="kategori" onclick="setCategory('Bil')">
+            <i class="fas fa-car"></i>
+            <span>Bil</span>
+        </div>
+        <div class="kategori" onclick="setCategory('Eiendom')">
+            <i class="fas fa-home"></i>
+            <span>Eiendom</span>
+        </div>
+        <div class="kategori" onclick="setCategory('Båt')">
+            <i class="fas fa-ship"></i>
+            <span>Båt</span>
+        </div>
+        <div class="kategori" onclick="setCategory('MC')">
+            <i class="fas fa-motorcycle"></i>
+            <span>MC</span>
+        </div>
+    </div>
+
+    <!-- Form Container -->
+    <div class="formContainer" id="productFormContainer">
+        <h3>Detaljer for produktet</h3>
+        <form id="productForm" action="/submit-product" method="POST" enctype="multipart/form-data">
+            <label for="ProductName">Produkt navn:</label>
+            <input type="text" id="ProductName" name="ProductName" required>
+
+            <label for="Price">Pris:</label>
+            <input type="number" id="Price" name="Price" required>
+
+            <label for="Location">Sted:</label>
+            <input type="text" id="Location" name="Location" required>
+
+            <label for="Description">Beskrivelse:</label>
+            <textarea id="Description" name="Description" required></textarea>
+
+            <label for="Images">Last opp bilder:</label>
+            <input type="file" id="Images" name="Images" multiple>
+
+            <!-- Hidden Category Field -->
+            <input type="hidden" id="Category" name="Category" required>
+
+            <button type="submit">Send inn</button>
+        </form>
+    </div>
+        
+        
+        <script>
+            let selectedCategory = '';
+    
+            // Function to set the selected category
+            function setCategory(category) {
+                selectedCategory = category;
+                document.getElementById('Category').value = selectedCategory;
+    
+                // Show the form container with a fade-in effect
+                const formContainer = document.getElementById('productFormContainer');
+                formContainer.style.display = 'block';
+                formContainer.style.opacity = 0;
+                setTimeout(() => {
+                    formContainer.style.transition = 'opacity 0.5s ease';
+                    formContainer.style.opacity = 1;
+                }, 50);
+    
+                alert('Selected category: ' + selectedCategory);
+            }
+    
+            // Form validation before submission
+            document.getElementById('productForm').onsubmit = function(event) {
+                if (!selectedCategory) {
+                    event.preventDefault();
+                    alert('Please select a category!');
+                }
+            };
+        </script>
+        
+        <script>
+            // Fetch username to toggle login/profile
+            fetch('/api/brukernavn')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.brukernavn) {
+                        document.getElementById('loginButton').style.display = 'none';
+                        const profileContainer = document.getElementById('profileContainer');
+                        profileContainer.style.display = 'flex';
+                        document.getElementById('profileUsername').textContent = data.brukernavn;
+                        document.getElementById('profileIcon').src = data.profileIconUrl || 'default-profile.png';
+                    }
+                });
+    
+            // Fetch unread messages count
+            function checkUnreadMessages() {
+                fetch('/api/unread-messages-count')
+                    .then(response => response.json())
+                    .then(data => {
+                        const badge = document.getElementById('unreadBadge');
+                        badge.style.display = data.unreadCount > 0 ? 'inline-block' : 'none';
+                    });
+            }
+    
+            // Logout functionality
+            document.getElementById('logoutButton').addEventListener('click', () => {
+                fetch('/logout', { method: 'POST' })
+                    .then(response => {
+                        if (response.ok) window.location.href = '/';
+                    });
+            });
+    
+            window.onload = checkUnreadMessages;
+        </script>
+        
+        
+</body>
+</html>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details</title>
+    <style>
+
+.body {
+                font-family: Arial, Helvetica, sans-serif;
+                margin: 0; 
+                padding: 0; 
+            }
+
+            .navBar {
+                font-family: Arial, Helvetica, sans-serif;
+                width: 100%;
+                height: 60px;
+                background-color: white;    
+                display: flex; 
+                align-items: center; 
+                justify-content:space-evenly;
+                border-bottom: 1px solid black;
+                
+            }
+
+            .navBarButtons {
+                display: flex; 
+                align-items: center;
+                gap: 20px;
+            }
+
+            .navBarButtons a {
+                color: rgb(0, 0, 0); 
+                text-decoration: none; 
+            }
+
+            .navBarButtons i {
+                font-size:x-large;
+                color: #a7a7a7;
+            }
+
+           
+            #profileContainer {
+                display: flex;
+                align-items: center;
+                margin-left: 20px;
+                gap: 10px; 
+                position: relative;
+                
+            }
+
+            #dropdownMenu {
+                display: none; /* Hidden by default */
+                position: absolute; /* Position relative to #profileContainer */
+                margin-top: 90px; /* Place the menu directly below the container */
+                left: 0; /* Align it to the left edge of the container */
+                background-color: white;
+                border: 1px solid #ccc;
+                box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+                z-index: 1;
+                padding: 10px;
+                min-width: 100px; /* Ensure a consistent width for the dropdown */
+            }
+            
+            #profileContainer:hover #dropdownMenu {
+                display: block;
+            }
+
+
+            .logoOgTittel img {
+                height: 300px;
+                width: 300px;
+                margin-top: 10px;
+            }
+
+            .badge {
+                position: absolute; /* Position the badge relative to its parent */
+                top: 25px;          /* Adjust vertically to sit above the icon */
+                right: 395px;        /* Adjust horizontally to sit to the right of the icon */
+                color: white;       /* White text (if any text inside the badge) */
+                background-color: red; /* Red background */
+                border-radius: 50%; /* Make it circular */
+                width: 12px;        /* Fixed width for the dot */
+                height: 12px;       /* Fixed height for the dot */
+                font-size: 10px;    /* Optional: Adjust font size for text inside */
+                text-align: center; /* Center text inside */
+                line-height: 12px;  /* Match height for centering */
+                display: none;      /* Initially hidden, as set by JavaScript */
+            }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+
+        .productDetailsContainer {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .carousel {
+            position: relative;
+            max-width: 100%;
+            height: 300px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel img {
+            width: 100%;
+            height: auto;
+            display: none;
+        }
+
+        .carousel img.active {
+            display: block;
+        }
+
+        .carousel .prev, .carousel .next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(0, 0, 0, 0.5);
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+        }
+
+        .carousel .prev {
+            left: 10px;
+        }
+
+        .carousel .next {
+            right: 10px;
+        }
+
+        .sendMessage {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .sendMessage:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navBar">
+        <div class="logoOgTittel">
+            <a href="Forside.html"><img src="Butikken.png" alt=""></a>
+        </div>
+        <div class="navBarButtons">
+            <a id="notificationsButton" href="/notifications"><i class="fas fa-bell"></i> Varslinger</a>
+            <a id="newAdButton" href="/ny-annonse"><i class="fas fa-plus-circle"></i> Ny annonse</a>
+            <a id="messagesButton" href="/messages">
+                <i class="fas fa-envelope"></i> Meldinger
+                <span id="unreadBadge" class="badge">●</span> <!-- Unread badge -->
+            </a>            
+            <a id="loginButton" href="/login"><i class="fas fa-sign-in-alt"></i> Logg inn</a>
+            
+            <div id="profileContainer" style="display: none;">
+                <img id="profileIcon" src="default-profile.png" alt="Profile Icon" style="width: 30px; height: 25px; cursor: pointer;">
+                <span id="profileUsername" style="cursor: pointer;">Username</span>
+                <div id="dropdownMenu">
+                    <button id="logoutButton" style="width: 100%; padding: 10px; background-color: rgb(252, 251, 251); color: rgb(0, 0, 0); border: none; cursor: pointer;">Logg ut</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="productDetailsContainer">
+        <div class="carousel" id="imageCarousel">
+            <!-- Images will be dynamically loaded -->
+            <button class="prev" onclick="prevImage()">❮</button>
+            <button class="next" onclick="nextImage()">❯</button>
+        </div>
+
+        <h1 id="productTitle">Product Title</h1>
+        <p><strong>Pris:</strong> <span id="productPrice"></span></p>
+        <p><strong>Sted:</strong> <span id="productLocation"></span></p>
+        <p id="productDescription">Product Description</p>
+
+        <button class="sendMessage" id="contactOwner">Kontakt eier</button>
+    </div>
+
+    <script>
+        // Fetch username to toggle login/profile
+        fetch('/api/brukernavn')
+            .then(response => response.json())
+            .then(data => {
+                if (data.brukernavn) {
+                    document.getElementById('loginButton').style.display = 'none';
+                    const profileContainer = document.getElementById('profileContainer');
+                    profileContainer.style.display = 'flex';
+                    document.getElementById('profileUsername').textContent = data.brukernavn;
+                    document.getElementById('profileIcon').src = data.profileIconUrl || 'default-profile.png';
+                }
+            });
+
+        // Fetch unread messages count
+        function checkUnreadMessages() {
+            fetch('/api/unread-messages-count')
+                .then(response => response.json())
+                .then(data => {
+                    const badge = document.getElementById('unreadBadge');
+                    badge.style.display = data.unreadCount > 0 ? 'inline-block' : 'none';
+                });
+        }
+
+        // Logout functionality
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            fetch('/logout', { method: 'POST' })
+                .then(response => {
+                    if (response.ok) window.location.href = '/';
+                });
+        });
+
+        window.onload = checkUnreadMessages;
+    </script>
+    
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const productdID = urlParams.get('productdID');
+
+        // Fetch product details
+        fetch(`/api/product/${productdID}`)
+    .then(async response => {
+        if (!response.ok) {
+            const errorText = await response.text(); // Fallback to plain text
+            throw new Error(errorText || 'Unknown error occurred');
+        }
+        return response.json(); // Parse JSON if the response is OK
+    })  
+            .then(product => {
+                document.getElementById('productTitle').textContent = product.ProductName;
+                document.getElementById('productPrice').textContent = product.Price;
+                document.getElementById('productLocation').textContent = product.Location;
+                document.getElementById('productDescription').textContent = product.Description;
+
+                const images = product.Images.split(',');
+                const carousel = document.getElementById('imageCarousel');
+                images.forEach((image, index) => {
+                    const img = document.createElement('img');
+                    img.src = `/uploads/${image}`;
+                    if (index === 0) img.classList.add('active');
+                    carousel.appendChild(img);
+                });
+
+                document.getElementById('contactOwner').addEventListener('click', () => {
+                    const message = prompt('Enter your message:');
+                    if (message) {
+                        sendMessage(productdID, message);
+                    }
+                });
+            });
+
+        let currentImageIndex = 0;
+        function prevImage() {
+            const images = document.querySelectorAll('.carousel img');
+            images[currentImageIndex].classList.remove('active');
+            currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
+            images[currentImageIndex].classList.add('active');
+        }
+
+        function nextImage() {
+            const images = document.querySelectorAll('.carousel img');
+            images[currentImageIndex].classList.remove('active');
+            currentImageIndex = (currentImageIndex + 1) % images.length;
+            images[currentImageIndex].classList.add('active');
+        }
+
+        function sendMessage(productdID, messageContent) {
+            fetch('/send-message', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ productdID, messageContent }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Message sent successfully!');
+                } else {
+                    alert('Failed to send the message.');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

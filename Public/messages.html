@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages</title>
+    <style>
+        
+        .body {
+                font-family: Arial, Helvetica, sans-serif;
+                margin: 0; 
+                padding: 0; 
+            }
+
+            .navBar {
+                font-family: Arial, Helvetica, sans-serif;
+                width: 100%;
+                height: 60px;
+                background-color: white;    
+                display: flex; 
+                align-items: center; 
+                justify-content:space-evenly;
+                border-bottom: 1px solid black;
+                
+            }
+
+            .navBarButtons {
+                display: flex; 
+                align-items: center;
+                gap: 20px;
+            }
+
+            .navBarButtons a {
+                color: rgb(0, 0, 0); 
+                text-decoration: none; 
+            }
+
+            .navBarButtons i {
+                font-size:x-large;
+                color: #a7a7a7;
+            }
+
+           
+            #profileContainer {
+                display: flex;
+                align-items: center;
+                margin-left: 20px;
+                gap: 10px; 
+                position: relative;
+                
+            }
+
+            #dropdownMenu {
+                display: none; /* Hidden by default */
+                position: absolute; /* Position relative to #profileContainer */
+                margin-top: 90px; /* Place the menu directly below the container */
+                left: 0; /* Align it to the left edge of the container */
+                background-color: white;
+                border: 1px solid #ccc;
+                box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+                z-index: 1;
+                padding: 10px;
+                min-width: 100px; /* Ensure a consistent width for the dropdown */
+            }
+            
+            #profileContainer:hover #dropdownMenu {
+                display: block;
+            }
+
+
+            .logoOgTittel img {
+                height: 300px;
+                width: 300px;
+                margin-top: 10px;
+            }
+
+            .badge {
+                position: absolute; /* Position the badge relative to its parent */
+                top: 25px;          /* Adjust vertically to sit above the icon */
+                right: 395px;        /* Adjust horizontally to sit to the right of the icon */
+                color: white;       /* White text (if any text inside the badge) */
+                background-color: red; /* Red background */
+                border-radius: 50%; /* Make it circular */
+                width: 12px;        /* Fixed width for the dot */
+                height: 12px;       /* Fixed height for the dot */
+                font-size: 10px;    /* Optional: Adjust font size for text inside */
+                text-align: center; /* Center text inside */
+                line-height: 12px;  /* Match height for centering */
+                display: none;      /* Initially hidden, as set by JavaScript */
+            }
+        
+         /* Main Content */
+         #messagesContainer {
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            color: #333;
+        }
+
+        /* Message List */
+        #messageList {
+            margin-top: 20px;
+        }
+
+        .message-group {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 15px;
+        }
+
+        .message-group h3 {
+            font-size: 20px;
+            margin: 0;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .message-group .message {
+            background-color: #e9f0ff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        .message-group .message button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .message-group .message button:hover {
+            background-color: #0056b3;
+        }
+
+        .reply-form {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .reply-form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+
+        .reply-form button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .reply-form button:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navBar">
+        <div class="logoOgTittel">
+            <a href="Forside.html"><img src="Butikken.png" alt=""></a>
+        </div>
+        <div class="navBarButtons">
+            <a id="notificationsButton" href="/notifications"><i class="fas fa-bell"></i> Varslinger</a>
+            <a id="newAdButton" href="/ny-annonse"><i class="fas fa-plus-circle"></i> Ny annonse</a>
+            <a id="messagesButton" href="/messages">
+                <i class="fas fa-envelope"></i> Meldinger
+                <span id="unreadBadge" class="badge">●</span> <!-- Unread badge -->
+            </a>            
+            <a id="loginButton" href="/login"><i class="fas fa-sign-in-alt"></i> Logg inn</a>
+            
+            <div id="profileContainer" style="display: none;">
+                <img id="profileIcon" src="default-profile.png" alt="Profile Icon" style="width: 30px; height: 25px; cursor: pointer;">
+                <span id="profileUsername" style="cursor: pointer;">Username</span>
+                <div id="dropdownMenu">
+                    <button id="logoutButton" style="width: 100%; padding: 10px; background-color: rgb(252, 251, 251); color: rgb(0, 0, 0); border: none; cursor: pointer;">Logg ut</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <div id="messagesContainer">
+        <h1>Dine meldinger</h1>
+        <div id="messageList"></div>
+    </div>
+
+    <script>
+        // Fetch brukernavn from the API
+        fetch('/api/brukernavn')
+            .then(response => response.json())
+            .then(data => {
+                if (data.brukernavn) {
+                    // Hide the "Logg inn" button
+                    document.getElementById('loginButton').style.display = 'none';
+    
+                    // Show the profile container and set the username
+                    const profileContainer = document.getElementById('profileContainer');
+                    profileContainer.style.display = 'flex';
+                    document.getElementById('profileUsername').textContent = data.brukernavn;
+    
+                    // Set profile icon (use a dynamic URL if stored per user)
+                    document.getElementById('profileIcon').src = data.profileIconUrl || 'default-profile.png';
+                }
+            })
+            .catch(error => console.error('Error fetching brukernavn:', error));
+    
+        // Toggle dropdown visibility
+        const profileContainer = document.getElementById('profileContainer');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+    
+        profileContainer.addEventListener('click', (event) => {
+            // Toggle dropdown menu visibility
+            const isVisible = dropdownMenu.style.display === 'block';
+            dropdownMenu.style.display = isVisible ? 'none' : 'block';
+    
+            // Prevent click event from propagating (optional)
+            event.stopPropagation();
+        });
+    
+        // Hide dropdown if clicking outside
+        document.addEventListener('click', () => {
+            dropdownMenu.style.display = 'none';
+        });
+    
+        // Handle logout
+        document.getElementById('logoutButton').addEventListener('click', () => {
+            fetch('/logout', { method: 'POST' })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/'; // Redirect to home page
+                    } else {
+                        alert('Failed to log out.');
+                    }
+                })
+                .catch(error => console.error('Error during logout:', error));
+        });
+    </script>
+
+    <script>
+        // Fetch brukernavn from the API to check if the user is logged in
+        fetch('/api/brukernavn')
+            .then(response => response.json())
+            .then(data => {
+                if (data.brukernavn) {
+                    // User is logged in, keep buttons enabled
+                    document.getElementById('loginButton').style.display = 'none'; // Hide login button
+                } else {
+                    // User is not logged in, redirect on button click
+                    document.getElementById('notificationsButton').addEventListener('click', (e) => {
+                        e.preventDefault(); // Prevent default navigation
+                        window.location.href = '/login'; // Redirect to login
+                    });
+    
+                    document.getElementById('newAdButton').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        window.location.href = '/login';
+                    });
+    
+                    document.getElementById('messagesButton').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        window.location.href = '/login';
+                    });
+                }
+            })
+            .catch(error => console.error('Error checking login status:', error));
+        </script>
+        
+
+    <script>
+        // Mark all messages as read
+        async function markMessagesAsRead() {
+            try {
+                const response = await fetch('/api/mark-messages-read', {
+                    method: 'POST'
+                });
+                if (!response.ok) throw new Error('Failed to mark messages as read.');
+                console.log('Messages marked as read.');
+            } catch (error) {
+                console.error('Error marking messages as read:', error);
+                alert('Could not mark messages as read. Please try again.');
+            }
+        }
+
+        // Load messages from the server and display them
+        async function loadMessages() {
+            try {
+                const response = await fetch('/api/messages');
+                if (!response.ok) throw new Error('Failed to load messages');
+                const messages = await response.json();
+                const messageList = document.getElementById('messageList');
+                messageList.innerHTML = '';
+
+                if (messages.length === 0) {
+                    messageList.innerHTML = '<p>Ingen meldinger funnet.</p>';
+                    return;
+                }
+
+                // Group messages by productdID
+                const groupedMessages = groupMessagesByProduct(messages);
+
+                // Display each group of messages
+                Object.keys(groupedMessages).forEach(productId => {
+                    const productMessages = groupedMessages[productId];
+                    const productGroup = document.createElement('div');
+                    productGroup.className = 'message-group';
+
+                    const productName = productMessages[0].ProductName; // Assuming all messages in the group have the same product name
+                    productGroup.innerHTML = `
+                        <h3 onclick="toggleMessageGroup('${productId}')">${productName} (Klikk for å se meldinger)</h3>
+                        <div id="messages-${productId}" style="display: none;"></div>
+                    `;
+                    
+                    // Add messages to the group
+                    const messagesContainer = productGroup.querySelector(`#messages-${productId}`);
+                    productMessages.forEach(msg => {
+                        const messageElement = document.createElement('div');
+                        messageElement.className = 'message';
+                        messageElement.innerHTML = `
+                            <p><strong>${msg.senderName}:</strong> ${msg.messageContent}</p>
+                            <small>${new Date(msg.timestamp).toLocaleString()}</small>
+                            <button onclick="toggleReplyForm(${msg.senderId}, ${msg.productdID})">Svar</button>
+                            <div id="replyForm-${msg.senderId}-${msg.productdID}" class="reply-form">
+                                <textarea placeholder="Enter your reply"></textarea>
+                                <button onclick="sendReply(${msg.senderId}, ${msg.productdID})">Send svar</button>
+                            </div>
+                        `;
+                        messagesContainer.appendChild(messageElement);
+                    });
+
+                    messageList.appendChild(productGroup);
+                });
+            } catch (error) {
+                console.error('Error loading messages:', error);
+                document.getElementById('messageList').innerHTML = '<p>Error loading messages.</p>';
+            }
+        }
+
+        // Group messages by productdID
+        function groupMessagesByProduct(messages) {
+            return messages.reduce((acc, message) => {
+                if (!acc[message.productdID]) {
+                    acc[message.productdID] = [];
+                }
+                acc[message.productdID].push(message);
+                return acc;
+            }, {});
+        }
+
+        // Toggle the visibility of the message group
+        function toggleMessageGroup(productId) {
+            const group = document.getElementById(`messages-${productId}`);
+            group.style.display = group.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Toggle the visibility of the reply form
+        function toggleReplyForm(senderId, productdID) {
+            const replyForm = document.getElementById(`replyForm-${senderId}-${productdID}`);
+            replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Send a reply to the sender
+        async function sendReply(senderId, productdID) {
+            const replyContent = document.querySelector(`#replyForm-${senderId}-${productdID} textarea`).value.trim();
+
+            if (!replyContent) {
+                alert("Reply content cannot be empty.");
+                return;
+            }
+
+            try {
+                const response = await fetch('/reply-message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ originalSenderId: senderId, messageContent: replyContent, productdID })
+                });
+
+                if (!response.ok) throw new Error('Failed to send reply.');
+
+                alert("Reply sent successfully!");
+                document.getElementById(`replyForm-${senderId}-${productdID}`).style.display = 'none';
+                loadMessages(); // Reload messages after sending a reply
+            } catch (error) {
+                console.error('Error sending reply:', error);
+                alert('Failed to send reply. Please try again.');
+            }
+        }
+    
+
+        // Check and update the unread message count
+        async function checkUnreadMessages() {
+            try {
+                const response = await fetch('/api/unread-messages-count');
+                if (!response.ok) throw new Error('Failed to fetch unread messages count.');
+
+                const { unreadCount } = await response.json();
+                console.log("Unread messages count:", unreadCount);
+
+                const badge = document.getElementById('unreadBadge');
+
+                // Show or hide the unread badge
+                if (unreadCount > 0) {
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error fetching unread messages count:', error);
+            }
+        }
+
+        // Initialize the page
+        async function initializeMessagesPage() {
+            await markMessagesAsRead(); // Mark messages as read
+            checkUnreadMessages();     // Update the unread badge
+            loadMessages();            // Load messages into the page
+        }
+
+        // Call initialize function on page load
+        window.onload = initializeMessagesPage;
+    </script>
+
+</body>
+</html>
