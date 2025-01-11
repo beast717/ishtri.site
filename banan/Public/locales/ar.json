@@ -1,0 +1,98 @@
+{
+    "navbar": {
+     "notifications": "الإشعارات",
+        "new_ad": "إعلان جديد",
+        "messages": "الرسائل",
+       "log_in": "تسجيل الدخول",
+        "log_out": "تسجيل الخروج",
+       "mine_annonser": "إعلاناتي"
+	
+    },
+    "search": {
+        "placeholder": "بحث..."
+    },
+    "categories": {
+     "torget": "السوق",
+        "bil": "سيارة",
+        "reise": "السفر",
+        "båt": "قارب",	
+        "mc": "دراجة نارية",
+     "pakkereise": "جولة شاملة",
+     "jobb" : "العمل",
+     "eiendom": "الملكية",
+     "ny-brukt elektronikk": "الالكترونيات المستعملة الجديدة"
+
+   },
+    "form": {
+     "product_name": "اسم المنتج",
+        "price": "السعر",
+        "location": "الموقع",
+        "description": "الوصف",
+        "category": "الفئة",
+        "country": "الدولة",
+        "upload_images": "تحميل الصور",
+        "submit": "إرسال",
+        "lag_nyannonse": "إنشاء إعلان جديد",
+        "velg_kat": "حدد الفئة",
+	"detaljer": "تفاصيل للمنتج",
+	"ingen" : "لا شيء",
+	"velg_fil": "لم يتم تحديد أي ملف"
+    },
+    "product_details": {
+     "price": "السعر",
+        "location": "الموقع",
+        "contact_owner": "اتصل بالمالك",
+       "dato": "تاريخ",
+       "slett": "احذف",
+       "mark_sold": "وضع علامة على أنها بيعت",
+       "mark_unsold": "وضع علامة على أنها غير مباعة"
+	
+	
+
+ },
+  "kategori": {
+  "torget": "السوق",
+    "bil": "سيارة",
+    "eiendom": "عقار",
+    "båt": "قارب",
+    "mc": "دراجة نارية"
+},
+  "subkategori": {
+  "klær": "ملابس",
+    "alle": "الجميع",
+    "elektronikk": "إلكترونيات",
+    "hvitvarer": "السلع البيضاء",
+    "møbler": "أثاث",
+    "annet": "آخر"
+},
+  "filter": {
+  "lavest_pris": "أدنى سعر",
+    "høyest_pris": "أعلى سعر",
+    "alle": "الجميع",
+    "nylige": "مؤخرًا",
+    "eldre": "قديم",
+    "filter_land": "بلد التصفية",
+    "sorter_etter": "فرز حسب",
+    "utgitt": "نشرت"
+
+},
+  
+    "logg_inn": {
+     "logg_inn": "تسجيل الدخول",
+        "brukernavn": "اسم المستخدم",
+        "passord": "كلمة المرور",
+        "lag_konto": "إنشاء حساب",
+        "email": "البريد الإلكتروني",
+        "har_allerede_konto_logg_inn": "هل لديك حساب بالفعل؟ تسجيل الدخول"
+
+},
+
+  "meldinger": {
+  "klikk": "اضغط لعرض الرسائل",
+    "mark_asread": "وضع علامة للقراءة",
+    "svar": "إجابة",
+    "dine_meldinger": "رسائلك"
+	
+    }
+}
+

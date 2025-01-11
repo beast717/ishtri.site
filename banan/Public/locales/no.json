@@ -1,0 +1,91 @@
+{
+    "navbar": {
+        "notifications": "Varsler",
+        "new_ad": "Ny Annonse",
+        "messages": "Meldinger",
+        "log_in": "Logg Inn",
+        "log_out": "Logg Ut",
+        "mine_annonser": "Mine annonser"
+    },
+    "search": {
+        "placeholder": "Søk..."
+    },
+    "categories": {
+        "torget": "Marked",
+        "bil": "Bil",
+        "reise": "Reise",
+        "båt": "Båt",
+        "mc": "Motorsykkel",
+        "pakkereise": "Pakkereise",
+        "jobb": "Jobb",
+        "eiendom": "Eiendom",
+        "ny-brukt elektronikk": "Ny-brukt Elektronikk"
+
+},
+    
+    "logg_inn": {
+        "logg_inn": "Logg Inn",
+        "brukernavn": "Brukernavn",
+        "passord": "Passord",
+        "lag_konto": "Lag Konto",
+        "email": "E-post",
+        "har_allerede_konto_logg_inn": "Har allerede en konto? Logg Inn"
+
+    },
+
+    "form": {
+        "product_name": "Produktnavn",
+        "price": "Pris",
+        "location": "Sted",
+        "description": "Beskrivelse",
+        "category": "Kategori",
+        "country": "Land",
+        "upload_images": "Last Opp Bilder",
+        "submit": "Send Inn",
+        "lag_nyannonse": "Lag Ny Annonse",
+        "velg_kat": "Velg Kategori",
+        "detaljer": "Produktdetaljer",
+        "ingen": "Ingen",
+        "velg_fil": "Ingen Fil Valgt"
+    },
+    "product_details": {
+        "price": "Pris",
+        "location": "Sted",
+        "contact_owner": "Kontakt Eier",
+       "dato": "Dato",
+       "slett": "Slett",
+       "mark_sold": "Marker som solgt",
+       "mark_unsold": "Marker som usolgt"
+    },
+    "kategori": {
+        "torget": "Marked",
+        "bil": "Bil",
+        "eiendom": "Eiendom",
+        "båt": "Båt",
+        "mc": "Motorsykkel"
+    },
+    "subkategori": {
+        "klær": "Klær",
+        "alle": "Alle",
+        "elektronikk": "Elektronikk",
+        "hvitvarer": "Hvitevarer",
+        "møbler": "Møbler",
+        "annet": "Annet"
+    },
+    "filter": {
+        "lavest_pris": "Laveste Pris",
+        "høyest_pris": "Høyeste Pris",
+        "alle": "Alle",
+        "nylige": "Nylige",
+        "eldre": "Eldre",
+        "filter_land": "Filtrer Land",
+        "sorter_etter": "Sorter Etter",
+        "utgitt": "Publisert"
+    },
+    "meldinger": {
+        "klikk": "Klikk for å Se Meldinger",
+        "mark_asread": "Merk som Lest",
+        "svar": "Svar",
+        "dine_meldinger": "Dine Meldinger"
+    }
+}

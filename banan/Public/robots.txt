@@ -1,0 +1,3 @@
+User-agent: *
+Disallow:
+Sitemap: https://ishtri.mooo.com/sitemap.xml

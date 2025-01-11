@@ -1,0 +1,91 @@
+{
+    "navbar": {
+        "notifications": "Notifications",
+        "new_ad": "New Ad",
+        "messages": "Messages",
+        "log_in": "Log In",
+        "log_out": "Log Out",
+        "mine_annonser": "My ads"
+    },
+    "search": {
+        "placeholder": "Search..."
+    },
+    "categories": {
+        "torget": "Market",
+        "bil": "Car",
+        "reise": "Travel",
+        "båt": "Boat",
+        "mc": "Motorcycle",
+        "pakkereise": "Package Deal",
+        "jobb": "Work",
+        "eiendom": "Property",
+        "ny-brukt elektronikk": "New-used Electronics"
+
+ },
+
+    "logg_inn": {
+        "logg_inn": "Log In",
+        "brukernavn": "Username",
+        "passord": "Password",
+        "lag_konto": "Create Account",
+        "email": "Email",
+        "har_allerede_konto_logg_inn": "Already have an account? Log In"
+
+    },
+
+    "form": {
+        "product_name": "Product Name",
+        "price": "Price",
+        "location": "Location",
+        "description": "Description",
+        "category": "Category",
+        "country": "Country",
+        "upload_images": "Upload Images",
+        "submit": "Submit",
+        "lag_nyannonse": "Create New Ad",
+        "velg_kat": "Select Category",
+        "detaljer": "Product Details",
+        "ingen": "None",
+        "velg_fil": "No File Selected"
+    },
+    "product_details": {
+        "price": "Price",
+        "location": "Location",
+        "contact_owner": "Contact Owner",
+        "dato": "Date",
+       "slett": "Delete",
+       "mark_sold": "Mark as sold",
+       "mark_unsold": "Mark as unsold"
+    },
+    "kategori": {
+        "torget": "Market",
+        "bil": "Car",
+        "eiendom": "Property",
+        "båt": "Boat",
+        "mc": "Motorcycle"
+    },
+    "subkategori": {
+        "klær": "Clothes",
+        "alle": "All",
+        "elektronikk": "Electronics",
+        "hvitvarer": "White Goods",
+        "møbler": "Furniture",
+        "annet": "Other"
+    },
+    "filter": {
+        "lavest_pris": "Lowest Price",
+        "høyest_pris": "Highest Price",
+        "alle": "All",
+        "nylige": "Recent",
+        "eldre": "Old",
+        "filter_land": "Filter Country",
+        "sorter_etter": "Sort By",
+        "utgitt": "Published"
+    },
+    "meldinger": {
+        "klikk": "Click to View Messages",
+        "mark_asread": "Mark as Read",
+        "svar": "Reply",
+        "dine_meldinger": "Your Messages"
+    }
+}

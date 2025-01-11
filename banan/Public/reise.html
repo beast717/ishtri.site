@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://unpkg.com/i18next/dist/umd/i18next.min.js"></script>
+    <script src="https://unpkg.com/i18next-http-backend/i18nextHttpBackend.min.js"></script>
+    <script src="https://unpkg.com/i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Search</title>
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: rgba(255, 255, 255,);
+            margin: 0;
+            padding: 0;
+        }
+
+        .flight-search-form {
+            max-width: 500px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select, .form-group button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .form-group button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+
+        .suggestions-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            position: absolute;
+            width: 100%;
+            z-index: 10;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .suggestions-list li {
+            padding: 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .suggestions-list li:hover {
+            background-color: #e9ecef;
+        }
+
+        
+            .navBar {
+                font-family: Arial, Helvetica, sans-serif;
+                width: 100%;
+                height: 60px;
+                background-color: white;    
+                display: flex; 
+                align-items: center; 
+                justify-content:space-evenly;
+                border-bottom: 1px solid black;
+                
+            }
+
+            .navBarButtons {
+                display: flex; 
+                align-items: center;
+                gap: 20px;
+            }
+
+            .navBarButtons a {
+                color: rgb(0, 0, 0); 
+                text-decoration: none; 
+            }
+
+            .navBarButtons i {
+                font-size:x-large;
+                color: #a7a7a7;
+            }
+
+           
+            #profileContainer {
+                display: flex;
+                align-items: center;
+                gap: 1px; 
+                position: relative;
+                
+            }
+
+            #profileUsername {
+                margin-top: 8px;
+            }
+
+            #dropdownMenu {
+                display: none; /* Hidden by default */
+                position: absolute; /* Position relative to #profileContainer */
+                margin-top: 174px; /* Place the menu directly below the container */
+                left: 0; /* Align it to the left edge of the container */
+                background-color: white;
+                border: 1px solid #ccc;
+                box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+                z-index: 1;
+                padding: 10px;
+                min-width: 100px; /* Ensure a consistent width for the dropdown */
+            }
+            
+
+            .logoOgTittel img {
+                height: 350px;
+                width: 350px;
+                margin-top: 10px;
+            }
+
+            .badge {
+                position: absolute; /* Position the badge relative to its parent */
+                top: 25px;          /* Adjust vertically to sit above the icon */
+                right: 438px;        /* Adjust horizontally to sit to the right of the icon */
+                color: white;       /* White text (if any text inside the badge) */
+                background-color: red; /* Red background */
+                border-radius: 50%; /* Make it circular */
+                width: 12px;        /* Fixed width for the dot */
+                height: 12px;       /* Fixed height for the dot */
+                font-size: 10px;    /* Optional: Adjust font size for text inside */
+                text-align: center; /* Center text inside */
+                line-height: 12px;  /* Match height for centering */
+                display: none;      /* Initially hidden, as set by JavaScript */
+            }
+
+    </style>
+</head>
+
+ <div class="navBar">
+        <div class="logoOgTittel">
+            <a href="/forside"><img src="ishtri.svg" alt=""></a>
+        </div>
+        <div class="navBarButtons">
+            <a id="notificationsButton" href="/varslinger"><i class="fas fa-bell"></i> <span data-i18n="navbar.notifications">Varslinger</span>
+</a>
+            <a id="newAdButton" href="/ny-annonse"><i class="fas fa-plus-circle"></i> <span data-i18n="navbar.new_ad">
+            Ny annonse</span>
+</a>
+        <a id="messagesButton" href="/messages" style="position: relative;">
+            <i class="fas fa-envelope"></i> <span data-i18n="navbar.messages">Meldinger</span>
+            <span id="unreadBadge" class="badge">●</span> <!-- Unread badge -->
+        </a>
+                        
+            <a id="loginButton" href="/login"><i class="fas fa-sign-in-alt"></i> <span data-i18n="navbar.log_in">Logg inn</span>
+</a>
+            
+            <div id="profileContainer" style="display: none;">
+                <img id="profileIcon" src="prrofilepic.svg" alt="..." style="width: 30px; height: 25px; cursor: pointer;">
+                <span id="profileUsername" style="cursor: pointer;">Username</span>
+                <div id="dropdownMenu">
+                    <button id="logoutButton" style="width: 100%; padding: 10px; background-color: rgb(252, 251, 251); color: rgb(0, 0, 0); border: none; cursor: pointer;">Logg ut</button>
+                    <a href="/mine-annonser" style="display: block; padding: 10px; background-color: rgb(252, 251, 251); color: rgb(0, 0, 0); text-decoration: none; text-align: center; border-top: 1px solid #ccc; cursor: pointer;">Mine Annonser</a>
+                </div>
+            </div>
+            </div>
+             </div>
+    
+
+<body>
+    <div class="flight-search-form">
+        <h2 style="text-align: center;">Søk etter flygninger</h2>
+        <form id="flightSearchForm">
+
+            <!-- Trip Type -->
+            <div class="form-group">
+                <label for="tripType">Reise type:</label>
+                <select id="tripType">
+                    <option value="oneway" selected>En-vei</option>
+                    <option value="roundtrip">Tur-retur</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="departure">Fra</label>
+                <input type="text" id="departure" placeholder="Skriv byer/flyplasser..." autocomplete="off" required>
+                <ul id="departure-suggestions" class="suggestions-list"></ul>
+            </div>
+            <div class="form-group">
+                <label for="arrival">Til</label>
+                <input type="text" id="arrival" placeholder="Skriv byer/flyplasser..." autocomplete="off" required>
+                <ul id="arrival-suggestions" class="suggestions-list"></ul>
+            </div>
+            <div class="form-group">
+                <label for="departureDate">Utreise dato</label>
+                <input type="date" id="departureDate" required>
+            </div>
+            <div class="form-group" id="returnDateGroup" style="display: none;">
+                <label for="returnDate">Hjemmreise dato</label>
+                <input type="date" id="returnDate">
+            </div>
+            <div class="form-group">
+                <label for="passengers">Passasjer</label>
+                <select id="passengers">
+                    <option value="1">1 Passasjer</option>
+                    <option value="2">2 Passasjer</option>
+                    <option value="3">3 Passasjer</option>
+                    <option value="4">4 Passasjer</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit">Søk fly</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let airports = [];
+        let departureIataCode = '';
+        let arrivalIataCode = '';
+
+        // Load airports data from JSON file
+        function loadAirports() {
+            fetch('/data/airports.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    airports = data;
+                    console.log('Loaded Airports Data:', airports);
+                })
+                .catch(error => {
+                    console.error('Error loading airports:', error);
+                });
+        }
+
+        // Filter airports based on user input
+        function filterAirports(input, isDeparture) {
+            const searchTerm = input.toLowerCase();
+            console.log('Search Term:', searchTerm);
+
+            const filteredAirports = airports.filter(airport => {
+                const name = airport.name.toLowerCase();
+                const city = airport.city.toLowerCase();
+                return name.includes(searchTerm) || city.includes(searchTerm);
+            });
+
+            console.log('Filtered Airports:', filteredAirports);
+            displaySuggestions(filteredAirports, isDeparture);
+        }
+
+        // Display filtered suggestions in the dropdown
+        function displaySuggestions(filteredAirports, isDeparture) {
+            const suggestionsList = isDeparture
+                ? document.getElementById('departure-suggestions')
+                : document.getElementById('arrival-suggestions');
+            suggestionsList.innerHTML = '';
+
+            if (filteredAirports.length > 0) {
+                filteredAirports.forEach(airport => {
+                    const suggestionItem = document.createElement('li');
+                    suggestionItem.textContent = `${airport.name} (${airport.iata}) - ${airport.city}`;
+                    suggestionItem.onclick = () => {
+                        selectAirport(airport, isDeparture);
+                    };
+                    suggestionsList.appendChild(suggestionItem);
+                });
+                suggestionsList.style.display = 'block';
+            } else {
+                suggestionsList.style.display = 'none';
+            }
+        }
+
+        // Select an airport from the suggestions
+        function selectAirport(airport, isDeparture) {
+            const input = isDeparture ? document.getElementById('departure') : document.getElementById('arrival');
+            const iataCode = airport.iata;
+
+            input.value = `${airport.name} (${iataCode}) - ${airport.city}`;
+            const suggestionsList = isDeparture
+                ? document.getElementById('departure-suggestions')
+                : document.getElementById('arrival-suggestions');
+            suggestionsList.innerHTML = '';
+            suggestionsList.style.display = 'none';
+
+            if (isDeparture) {
+                departureIataCode = iataCode;
+            } else {
+                arrivalIataCode = iataCode;
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('flightSearchForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const tripType = document.getElementById('tripType').value;
+            const departureDate = document.getElementById('departureDate').value.replace(/-/g, '');
+            const returnDate = tripType === 'roundtrip' ? document.getElementById('returnDate').value.replace(/-/g, '') : '';
+            const passengers = document.getElementById('passengers').value;
+
+            let skyscannerUrl = `https://www.skyscanner.com/transport/flights/${departureIataCode}/${arrivalIataCode}/${departureDate}/`;
+
+            if (tripType === 'roundtrip' && returnDate) {
+                skyscannerUrl += `${returnDate}/`;
+            }
+
+            skyscannerUrl += `?adults=${passengers}`;
+            console.log('Redirecting to:', skyscannerUrl);
+            window.open(skyscannerUrl, '_blank');
+        });
+
+        // Handle trip type toggle
+       document.getElementById('tripType').addEventListener('change', (e) => {
+        const returnDateGroup = document.getElementById('returnDateGroup');
+        returnDateGroup.style.display = e.target.value === 'roundtrip' ? 'block' : 'none';
+    });
+
+
+        // Attach input event listeners
+        document.getElementById('departure').addEventListener('input', (e) => {
+            filterAirports(e.target.value, true);
+        });
+
+        document.getElementById('arrival').addEventListener('input', (e) => {
+            filterAirports(e.target.value, false);
+        });        
+
+         // Fetch username to toggle login/profile
+            fetch('/api/brukernavn')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.brukernavn) {
+                        document.getElementById('loginButton').style.display = 'none';
+                        const profileContainer = document.getElementById('profileContainer');
+                        profileContainer.style.display = 'flex';
+                        document.getElementById('profileUsername').textContent = data.brukernavn;
+                        document.getElementById('profileIcon').src = data.profileIconUrl || 'prrofilepic.svg';
+                    }
+                });
+
+                document.getElementById('profileContainer').addEventListener('click', function (event) {
+                const dropdownMenu = document.getElementById('dropdownMenu');
+                const isVisible = dropdownMenu.style.display === 'block';
+                dropdownMenu.style.display = isVisible ? 'none' : 'block';
+
+                // Optional: Prevent event from bubbling up if needed
+                event.stopPropagation();
+            });
+
+            // Close dropdown if clicked outside
+            document.addEventListener('click', function () {
+                const dropdownMenu = document.getElementById('dropdownMenu');
+                dropdownMenu.style.display = 'none';
+            });
+    
+            // Fetch unread messages count
+            function checkUnreadMessages() {
+                fetch('/api/unread-messages-count')
+                    .then(response => response.json())
+                    .then(data => {
+                        const badge = document.getElementById('unreadBadge');
+                        badge.style.display = data.unreadCount > 0 ? 'inline-block' : 'none';
+                    });
+            }
+    
+            // Logout functionality
+            document.getElementById('logoutButton').addEventListener('click', () => {
+                fetch('/logout', { method: 'POST' })
+                    .then(response => {
+                        if (response.ok) window.location.href = '/';
+                    });
+            });
+    
+          // Search page logic (e.g., airport loading or other functions)
+            window.addEventListener('load', () => {
+                loadAirports(); // Example: Load airports for autocomplete
+                console.log("Search page logic executed.");
+            });
+
+            // User profile and message count logic
+            window.addEventListener('load', () => {
+                fetchUsername();
+                checkUnreadMessages();
+                setupLogoutButton();
+                console.log("User profile and message count logic executed.");
+            });
+
+            // Language Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'no'; // Default to 'no'
+
+            i18next
+                .use(i18nextHttpBackend)
+                .use(i18nextBrowserLanguageDetector)
+                .init({
+                    debug: true,
+                    fallbackLng: savedLanguage,
+                    backend: {
+                        loadPath: '/locales/{{lng}}.json', // Path to your translation JSON files
+                    }
+                }, (err, t) => {
+                    if (err) console.error(err);
+                    updateContent(); // Update page content with translations
+                });
+        });
+
+        // Update Translatable Content
+        function updateContent() {
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                const translation = i18next.t(key);
+                if (element.tagName === 'INPUT' && element.type === 'text') {
+                    element.placeholder = translation; // Update input placeholders
+                } else {
+                    element.innerHTML = translation; // Update other elements
+                }
+            });
+        }
+
+
+
+    </script>
+
+</body>
+</html>
