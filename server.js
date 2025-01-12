@@ -181,29 +181,8 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'Public', 'Forside.html'));
 });
 
-// HTTPS options (replace paths with your actual certificate files)
-const httpsOptions = {
-    key: fs.readFileSync('/home/ahmedalshaikh2002/website-folder/Personligarbeid/ishtri.site/private.key'),
-    cert: fs.readFileSync('/home/ahmedalshaikh2002/website-folder/Personligarbeid/ishtri.site/certificate.crt'),
-    ca: fs.readFileSync('/home/ahmedalshaikh2002/website-folder/Personligarbeid/ishtri.site/ca_bundle.crt'),
-};
-
-// Serve HTTPS
-https.createServer(httpsOptions, app).listen(443, () => {
-   console.log('Secure server running at https://ishtri.site');
-});
-
-// Optional: Redirect HTTP to HTTPS
-//http.createServer(app).listen(80, "0.0.0.0",() => {     
-   // console.log('server running on http://34.46.239.20');
-//});
-
-// Optional: Redirect HTTP to HTTPS
-http.createServer((req, res) => {
-    res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
-    res.end();
-}).listen(80, () => {
-    console.log('HTTP server running, redirecting to HTTPS');
+app.listen(3000, () => {
+   console.log('Server running at http://localhost:3000');
 });
 
 // Set up Multer for file storage
