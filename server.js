@@ -189,7 +189,7 @@ const httpsOptions = {
 };
 
 // Serve HTTPS
-https.createServer(httpsOptions, app).listen(443,'0.0.0.0', () => {
+https.createServer(httpsOptions, app).listen(443, () => {
    console.log('Secure server running at https://ishtri.site');
 });
 
@@ -202,7 +202,7 @@ https.createServer(httpsOptions, app).listen(443,'0.0.0.0', () => {
 http.createServer((req, res) => {
     res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
     res.end();
-}).listen(80, '0.0.0.0', () => {
+}).listen(80, () => {
     console.log('HTTP server running, redirecting to HTTPS');
 });
 
