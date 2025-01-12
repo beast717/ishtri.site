@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+     <link rel="icon" href="logo.png" type="image/png">
+
+    <script src="https://unpkg.com/i18next/dist/umd/i18next.min.js"></script>
+    <script src="https://unpkg.com/i18next-http-backend/i18nextHttpBackend.min.js"></script>
+    <script src="https://unpkg.com/i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -45,16 +51,19 @@
             #profileContainer {
                 display: flex;
                 align-items: center;
-                margin-left: 20px;
-                gap: 10px; 
+                gap: 1px; 
                 position: relative;
                 
+            }
+
+            #profileUsername {
+                margin-top: 8px;
             }
 
             #dropdownMenu {
                 display: none; /* Hidden by default */
                 position: absolute; /* Position relative to #profileContainer */
-                margin-top: 90px; /* Place the menu directly below the container */
+                margin-top: 174px; /* Place the menu directly below the container */
                 left: 0; /* Align it to the left edge of the container */
                 background-color: white;
                 border: 1px solid #ccc;
@@ -64,14 +73,10 @@
                 min-width: 100px; /* Ensure a consistent width for the dropdown */
             }
             
-            #profileContainer:hover #dropdownMenu {
-                display: block;
-            }
-
 
             .logoOgTittel img {
-                height: 300px;
-                width: 300px;
+                height: 350px;
+                width: 350px;
                 margin-top: 10px;
             }
 
@@ -174,8 +179,9 @@
 
             .badge {
                 position: absolute; /* Position the badge relative to its parent */
-                top: 25px;          /* Adjust vertically to sit above the icon */
-                right: 395px;        /* Adjust horizontally to sit to the right of the icon */
+                top: 0px;          /* Adjust vertically to sit above the icon */
+                right: 0px;        /* Adjust horizontally to sit to the right of the icon */
+                transform: translate(-580%, -30%); /* Fine-tune position to sit on the corner */
                 color: white;       /* White text (if any text inside the badge) */
                 background-color: red; /* Red background */
                 border-radius: 50%; /* Make it circular */
@@ -188,6 +194,7 @@
             }
 
             #randomProducts div {
+                font-family: Arial, Helvetica, sans-serif;
                 margin-top: 30px;
                 margin-left: 20px;
                 display: flex;
@@ -216,6 +223,52 @@
                 transform: scale(1.05); /* Slightly enlarge on hover */
             }
 
+            #languageSelect {
+            padding: 3px;
+            font-size: 15px;
+            margin-left: -15px;   
+        }
+
+        /* Highlight Sold Label */
+.sold-label {
+    color: #ffffff;
+    background-color: #ff5722; /* Highlight color (e.g., orange) */
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    margin-left: 5px;
+    display: inline-block;
+}
+
+@media (max-width: 768px) {
+
+    .søkeBarContainer input[type="text"] {
+        width: 100%; /* Full width on smaller screens */
+    }
+    .navBar {
+        flex-wrap: wrap; /* Allow items to wrap */
+        height: auto; /* Adjust height */
+        justify-content: center; /* Center items */
+    }
+    .navBarButtons {
+        gap: 10px; /* Reduce spacing for mobile */
+        font-size: xx-small; /* Stack buttons */
+    }
+    .logoOgTittel img {
+        height: 200px; /* Resize for smaller screens */
+        width: 200px;
+    }
+    .kategori, .kategori2 {
+        margin-right: 20px; /* Reduce spacing */
+        flex: 1 1 auto; /* Allow flex resizing */
+    }
+    #randomProducts {
+        flex-wrap: wrap; /* Allow wrapping for better mobile display */
+        gap: 10px;
+    }
+}
+
 
 
 
@@ -226,31 +279,45 @@
 
     <div class="navBar">
         <div class="logoOgTittel">
-            <a href="Forside.html"><img src="Butikken.png" alt=""></a>
+            <a href="/forside"><img src="ishtri.svg" alt=""></a>
         </div>
         <div class="navBarButtons">
-            <a id="notificationsButton" href="/notifications"><i class="fas fa-bell"></i> Varslinger</a>
-            <a id="newAdButton" href="/ny-annonse"><i class="fas fa-plus-circle"></i> Ny annonse</a>
-            <a id="messagesButton" href="/messages">
-                <i class="fas fa-envelope"></i> Meldinger
-                <span id="unreadBadge" class="badge">●</span> <!-- Unread badge -->
-            </a>            
-            <a id="loginButton" href="/login"><i class="fas fa-sign-in-alt"></i> Logg inn</a>
+            <a id="notificationsButton" href="/varslinger"><i class="fas fa-bell"></i> <span data-i18n="navbar.notifications">Varslinger</span>
+</a>
+            <a id="newAdButton" href="/ny-annonse"><i class="fas fa-plus-circle"></i> <span data-i18n="navbar.new_ad">
+            Ny annonse</span>
+</a>
+        <a id="messagesButton" href="/messages" style="position: relative;">
+            <i class="fas fa-envelope"></i> <span data-i18n="navbar.messages">Meldinger</span>
+            <span id="unreadBadge" class="badge">●</span> <!-- Unread badge -->
+        </a>
+                        
+            <a id="loginButton" href="/login"><i class="fas fa-sign-in-alt"></i> <span data-i18n="navbar.log_in">Logg inn</span>
+</a>
             
             <div id="profileContainer" style="display: none;">
-                <img id="profileIcon" src="default-profile.png" alt="Profile Icon" style="width: 30px; height: 25px; cursor: pointer;">
+                <img id="profileIcon" src="prrofilepic.svg" alt="..." style="width: 30px; height: 25px; cursor: pointer;">
                 <span id="profileUsername" style="cursor: pointer;">Username</span>
                 <div id="dropdownMenu">
-                    <button id="logoutButton" style="width: 100%; padding: 10px; background-color: rgb(252, 251, 251); color: rgb(0, 0, 0); border: none; cursor: pointer;">Logg ut</button>
+                    <button id="logoutButton" style="width: 100%; padding: 10px; background-color: rgb(252, 251, 251); color: rgb(0, 0, 0); border: none; cursor: pointer;" data-i18n="navbar.log_out">Logg ut</button>
+                    <a href="/mine-annonser" style="display: block; padding: 10px; background-color: rgb(252, 251, 251); color: rgb(0, 0, 0); text-decoration: none; text-align: center; border-top: 1px solid #ccc; cursor: pointer;" data-i18n="navbar.mine_annonser">Mine Annonser</a>
                 </div>
             </div>
+            
+            
+                    <img src="translate.svg" style="width: 30px; height: 25px;">
+                    <select id="languageSelect" style="cursor: pointer;"  onchange="changeLanguage() ">
+                        <option value="en">English</option>  
+                        <option value="ar">العربية</option>
+                        <option value="no">Norsk</option>
+                    </select>
+                </div>
         </div>
-    </div>
     
     <div class="søkeBarContainer">
         <form action="/search" method="GET">
             <div class="search-bar">
-                <input type="text" placeholder="søk..." name="query" required>
+                <input type="text" data-i18n="search.placeholder" placeholder="søk..." name="query" required>
                 <button>
                     <img src="https://www.svgrepo.com/show/7109/search.svg" alt="Button Image" style="width: 20px; height: 20px;">
                   </button>
@@ -261,31 +328,31 @@
         <div class="kategori">
             <a href="/torgetkat?category=Torget" class="kategori">
                 <i class="fas fa-chair"></i>
-                <span>Torget</span>
+                <span  data-i18n="categories.torget">Torget</span>
             </a>
             </div>
         <div class="kategori">
             <a href="/torgetkat?category=Bil" class="kategori">
                 <i class="fas fa-car"></i>
-                <span>Bil</span>
+                <span data-i18n="categories.bil">Bil</span>
             </a>
         </div>
         <div class="kategori">
-            <a href="Torget.html" class="kategori">
+            <a href="reise.html" class="kategori">
                 <i class="fas fa-plane"></i>
-                <span>Reise</span>
+                <span data-i18n="categories.reise">Reise</span>
             </a>
         </div>
         <div class="kategori">
             <a href="/torgetkat?category=Båt" class="kategori">
                 <i class="fas fa-ship"></i>
-                <span>Båt</span>
+                <span data-i18n="categories.båt">Båt</span>
             </a>
         </div>
         <div class="kategori">
             <a href="/torgetkat?category=Mc" class="kategori">
                 <i class="fas fa-motorcycle"></i>
-                <span>Mc</span>
+                <span data-i18n="categories.mc">Mc</span>
             </a>
         </div>
     </div>
@@ -293,31 +360,25 @@
         <div class="kategori2">
             <a href="Torget.html" class="kategori2">
                 <i class="fas fa-suitcase-rolling"></i>
-                <span>Pakkereise</span>
+                <span data-i18n="categories.pakkereise">Pakkereise</span>
             </a>
         </div>
         <div class="kategori2">
             <a href="/torgetkat?category=Jobb" class="kategori2">
                 <i class="fas fa-briefcase"></i>
-                <span>Jobb</span>
+                <span data-i18n="categories.jobb">Jobb</span>
             </a>
         </div>
         <div class="kategori2">
             <a href="/torgetkat?category=Eiendom" class="kategori2">
                 <i class="fas fa-home"></i>
-                <span>Eiendom</span>
-            </a>
-        </div>
-        <div class="kategori2">
-            <a href="Torget.html" class="kategori2">
-                <i class="fas fa-home"></i>
-                <span>Feriehjem og hytter</span>
+                <span data-i18n="categories.eiendom">Eiendom</span>
             </a>
         </div>
         <div class="kategori2">
             <a href="Torget.html" class="kategori2">
                 <i class="fas fa-laptop"></i>
-                <span>Ny-brukt elektronikk</span>
+                <span data-i18n="categories.ny-brukt elektronikk">Ny-brukt elektronikk</span>
             </a>
         </div>
     </div>
@@ -376,8 +437,11 @@
                             // Add image to the product card
                             productDiv.innerHTML = `
                                <img src="${imageUrl}" alt="${product.ProductName}" >
-                                <h4>${product.ProductName}</h4>
-                                <p>${product.Price} NOK</p>
+                                <h4>
+                                ${product.ProductName} 
+                                ${product.Sold ? `<span class="sold-label">(Sold)</span>` : ''}
+                            </h4>
+                                <p>${product.Price} $</p>
                             `;
                   
                             
@@ -404,9 +468,24 @@
                         const profileContainer = document.getElementById('profileContainer');
                         profileContainer.style.display = 'flex';
                         document.getElementById('profileUsername').textContent = data.brukernavn;
-                        document.getElementById('profileIcon').src = data.profileIconUrl || 'default-profile.png';
+                        document.getElementById('profileIcon').src = data.profileIconUrl || 'prrofilepic.svg';
                     }
                 });
+
+                document.getElementById('profileContainer').addEventListener('click', function (event) {
+                const dropdownMenu = document.getElementById('dropdownMenu');
+                const isVisible = dropdownMenu.style.display === 'block';
+                dropdownMenu.style.display = isVisible ? 'none' : 'block';
+
+                // Optional: Prevent event from bubbling up if needed
+                event.stopPropagation();
+            });
+
+            // Close dropdown if clicked outside
+            document.addEventListener('click', function () {
+                const dropdownMenu = document.getElementById('dropdownMenu');
+                dropdownMenu.style.display = 'none';
+            });
     
             // Fetch unread messages count
             function checkUnreadMessages() {
@@ -427,6 +506,64 @@
             });
     
             window.onload = checkUnreadMessages;
+
+            document.addEventListener('DOMContentLoaded', () => {
+                i18next
+                    .use(i18nextHttpBackend)
+                    .use(i18nextBrowserLanguageDetector)
+                    .init({
+                        debug: true,
+                        fallbackLng: 'en', // Default language
+                        backend: {
+                            loadPath: '/locales/{{lng}}.json', // Path to translation files
+                        }
+                    }, (err, t) => {
+                        if (err) console.error(err);
+                        updateContent(); // Initial content update
+                    });
+
+                // Event listener for language change
+                document.getElementById('languageSelect').addEventListener('change', (e) => {
+                    const selectedLanguage = e.target.value;
+                    i18next.changeLanguage(selectedLanguage, (err, t) => {
+                        if (err) console.error(err);
+                        updateContent();
+                    });
+                });
+            });
+
+            // Update content dynamically
+            function updateContent() {
+                document.querySelectorAll('[data-i18n]').forEach(element => {
+                    const key = element.getAttribute('data-i18n');
+                    const translation = i18next.t(key);
+                    if (element.tagName === 'INPUT' && element.type === 'text') {
+                        element.placeholder = translation; // Update input placeholders
+                    } else {
+                        element.innerHTML = translation; // Update inner HTML for other elements
+                    }
+                });
+
+               
+            }
+
+            //Use the browser's localStorage to save the user's language preference
+            function setLanguage(language) {
+            // Save to localStorage
+            localStorage.setItem('selectedLanguage', language);
+
+            // Change the language using i18next
+            i18next.changeLanguage(language, (err, t) => {
+                if (err) console.error(err);
+                updateContent();
+            });
+        }
+
+        document.getElementById('languageSelect').addEventListener('change', (e) => {
+            setLanguage(e.target.value);
+        });
+
+
         </script>
         
         

@@ -1,6 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
+    <script src="https://unpkg.com/i18next/dist/umd/i18next.min.js"></script>
+    <script src="https://unpkg.com/i18next-http-backend/i18nextHttpBackend.min.js"></script>
+    <script src="https://unpkg.com/i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>lagkonto</title>
@@ -70,22 +75,57 @@
         <h2>Lag konto</h2>
         <div class="form-group">
             <form action="/signup" method="POST">
-                <label for="signupUsername">Brukernavn:</label>
+                <label for="signupUsername" data-i18n="logg_inn.brukernavn">Brukernavn:</label>
                 <input type="text" id="signupUsername" name="brukernavn" required>
             </div>
             <div class="form-group">
-                <label for="signupEmail">Email:</label>
+                <label for="signupEmail" data-i18n="logg_inn.email">Email:</label>
                 <input type="email" id="signupEmail" name="email" required>
             </div>
             <div class="form-group">
-                <label for="signupPassword">Password:</label>
+                <label for="signupPassword" data-i18n="logg_inn.passord">Password:</label>
                 <input type="password" id="signupPassword" name="passord" required>
             </div>
             <button type="submit">Lag konto</button>
-            <span class="toggle-link" onclick="toggleForms()">Har allerede en konto? Logg Inn</span>
+            <span class="toggle-link" onclick="toggleForms()" data-i18n="logg_inn.har_allerede_konto_logg_inn">Har allerede en konto? Logg Inn</span>
     </form>
     </div>
 </div>
+    
+    <script>
+
+         // Language Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'no'; // Default to 'no'
+
+            i18next
+                .use(i18nextHttpBackend)
+                .use(i18nextBrowserLanguageDetector)
+                .init({
+                    debug: true,
+                    fallbackLng: savedLanguage,
+                    backend: {
+                        loadPath: '/locales/{{lng}}.json', // Path to your translation JSON files
+                    }
+                }, (err, t) => {
+                    if (err) console.error(err);
+                    updateContent(); // Update page content with translations
+                });
+        });
+
+        // Update Translatable Content
+        function updateContent() {
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                const translation = i18next.t(key);
+                if (element.tagName === 'INPUT' && element.type === 'text') {
+                    element.placeholder = translation; // Update input placeholders
+                } else {
+                    element.innerHTML = translation; // Update other elements
+                }
+            });
+        }
+        </script>
     
 </body>
 </html>

@@ -1,11 +1,16 @@
 // server.js
+const bcrypt = require('bcrypt');
 const express = require('express');
+const https = require('https');
+const http = require('http');
+const fs = require('fs');
 const session = require('express-session');
 const multer = require('multer');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
 const path = require('path');
 const dotenv = require('dotenv');
+const nodemailer = require('nodemailer');
 dotenv.config();
 
 const app = express();
@@ -16,9 +21,13 @@ app.use(express.json());  // This will also parse incoming JSON
 const cors = require('cors');
 app.use(cors());
 
+// Serve static files from the 'data' folder
+app.use('/data', express.static(path.join(__dirname, 'data')));
 
 // Serve all static files from the 'public' directory
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'Public')));
+
+app.use('/.well-known', express.static(path.join(__dirname, '.well-known')));
 
 app.use(session({
     secret: '123',  // Replace with a strong secret in production
@@ -52,23 +61,71 @@ app.get('/signup', (req, res) => {
     res.sendFile(path.join(__dirname, 'Public', 'lag konto.html'));
 });
 
+const transporter = nodemailer.createTransport({
+    service: 'Gmail',
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASS,
+    },
+});
+
+
 // User signup route
-app.post('/signup', (req, res) => {
+app.post('/signup', async (req, res) => {
     const { brukernavn, email, passord } = req.body;
 
     // Check if user already exists
-    db.query('SELECT * FROM brukere WHERE email = ?', [email], (err, results) => {
+    db.query('SELECT * FROM brukere WHERE email = ?', [email], async  (err, results) => {
         if (results.length > 0) {
             return res.status(400).json({ message: 'User already exists.' });
         }
 
+         try {
+            // Hash the password before saving to database
+            const hashedPassword = await bcrypt.hash(passord, 10); // Hash password with 10 salt rounds
+
         // Insert new user into database with plaintext password (not recommended for production)
         db.query('INSERT INTO brukere (brukernavn, email, passord) VALUES (?, ?, ?)', 
-            [brukernavn, email, passord], (err, result) => {
+            [brukernavn, email, hashedPassword], (err, result) => {
+                if (err) {
+                    console.error("Error inserting user:", err); // Log the error
+                    return res.status(500).send("Failed to create account.");
+                }
                 
+                req.session.brukerId = result.brukerId; // Set brukerId in session
                 req.session.brukernavn = brukernavn;
-                res.redirect('/forside');
+                // Send welcome email
+                const transporter = nodemailer.createTransport({
+                    service: 'Gmail',
+                    auth: {
+                        user: process.env.GMAIL_USER,
+                        pass: process.env.GMAIL_PASS,
+                    },
+                });
+
+                const mailOptions = {
+                    from: process.env.GMAIL_USER,
+                    to: email,
+                    subject: 'Velkommen til nettstedet vårt!',
+                    html: `
+                        <h1>Hei ${brukernavn},</h1>
+                        <p>Vi er glade for å ønske deg velkommen! Nå kan du utforske nettstedet vårt.</p>
+                    `,
+                };
+
+                transporter.sendMail(mailOptions, (emailErr, info) => {
+                    if (emailErr) {
+                        console.error("Error sending email:", emailErr);
+                        return res.status(500).send("Account created, but welcome email could not be sent.");
+                    }
+                    console.log("Email sent:", info.response);
+                    res.redirect('/forside');
+                });
         });
+        } catch (hashError) {
+            console.error("Error hashing password:", hashError);
+            return res.status(500).send("Error hashing password.");
+        }
     });
 });
 
@@ -124,11 +181,29 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'Public', 'Forside.html'));
 });
 
+// HTTPS options (replace paths with your actual certificate files)
+const httpsOptions = {
+    key: fs.readFileSync('/home/ahmedalshaikh2002/website-folder/Personligarbeid/ishtri.site/private.key'),
+    cert: fs.readFileSync('/home/ahmedalshaikh2002/website-folder/Personligarbeid/ishtri.site/certificate.crt'),
+    ca: fs.readFileSync('/home/ahmedalshaikh2002/website-folder/Personligarbeid/ishtri.site/ca_bundle.crt'),
+};
 
-// Start the server on port 3000
-const PORT = 3000;
-app.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}`);
+// Serve HTTPS
+https.createServer(httpsOptions, app).listen(443,'0.0.0.0', () => {
+   console.log('Secure server running at https://ishtri.site');
+});
+
+// Optional: Redirect HTTP to HTTPS
+//http.createServer(app).listen(80, "0.0.0.0",() => {     
+   // console.log('server running on http://34.46.239.20');
+//});
+
+// Optional: Redirect HTTP to HTTPS
+http.createServer((req, res) => {
+    res.writeHead(301, { Location: `https://${req.headers.host}${req.url}` });
+    res.end();
+}).listen(80, '0.0.0.0', () => {
+    console.log('HTTP server running, redirecting to HTTPS');
 });
 
 // Set up Multer for file storage
@@ -151,27 +226,72 @@ app.get('/forside', (req, res) => {
     res.sendFile(path.join(__dirname, 'Public', 'Forside.html', ));
 });
 
-app.get('/ny-annonse', (req, res) => {
+app.get('/ny-annonse', isAuthenticated, (req, res) => {
     res.sendFile(path.join(__dirname, 'Public', 'Ny-annonse.html'));
+});
+
+app.get('/varslinger', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'Public', 'varslinger.html'));
 });
 
 app.get('/torgetkat', (req, res) => {
     res.sendFile(path.join(__dirname, 'Public', 'TorgetKat.html'));
 });
 
+app.get('/mine-annonser', isAuthenticated, (req, res) => {
+    res.sendFile(path.join(__dirname, 'Public', 'mine-annonser.html'));
+});
 
-// Endpoint to serve filtered products by category
+
 app.get('/api/products', (req, res) => {
-    const { category } = req.query;
-
-    let query = "SELECT productdID, ProductName, Price, Location, Description, Images, brukerId FROM products";
+    const { countries, category, sortPrice, sortDate, subCategory, carBrand} = req.query; 
+    
+    let query = "SELECT * FROM products WHERE 1=1";
     const params = [];
 
+    // Apply category filter if present
     if (category) {
-        query += " WHERE category = ?";
+        query += " AND category = ?";
         params.push(category);
     }
 
+     if (subCategory && subCategory !== '') {
+        query += " AND SubCategori = ?";
+        params.push(subCategory);
+    }
+
+   if (carBrand && carBrand !== '') {
+        query += " AND CarBrand = ?";
+        params.push(carBrand);
+    }
+
+    // Filter by countries
+    if (countries && countries.length > 0) {
+        const placeholders = countries.split(',').map(() => '?').join(',');
+        query += ` AND Country IN (${placeholders})`;
+        params.push(...countries.split(','));
+    }
+
+    // Sorting logic
+    const orderClauses = [];
+    if (sortPrice && sortDate) {   
+        orderClauses.push(`COALESCE(Date, '1970-01-01') ${sortDate.toUpperCase()}`);
+        orderClauses.push(`Price ${sortPrice.toUpperCase()}`);
+    } else if (sortPrice) {
+     
+        orderClauses.push(`Price ${sortPrice.toUpperCase()}`);
+    } else if (sortDate) {
+      
+        orderClauses.push(`COALESCE(Date, '1970-01-01') ${sortDate.toUpperCase()}`);
+    }
+
+    if (orderClauses.length > 0) {
+        query += ` ORDER BY ${orderClauses.join(', ')}`;
+    }
+ 
+
+
+    
     db.query(query, params, (err, results) => {
         if (err) {
             console.error("Error fetching products:", err);
@@ -189,11 +309,6 @@ app.get('/api/products', (req, res) => {
 
         res.json(formattedResults);
     });
-});
-
-// Serve TorgetKat.html
-app.get('/torgetkat', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Public', 'TorgetKat.html'));
 });
 
 
@@ -230,19 +345,19 @@ app.get('/torget', (req, res) => {
 });
 
 // Endpoint to fetch only the products uploaded by a specific user
-app.get('/api/user-products', (req, res) => {
-    // Replace `1` with the actual user ID if you have user sessions or authentication set up
-    const userId = 1; // Example user ID
-    
-    const query = 'SELECT * FROM products WHERE userId = ?';
+app.get('/api/user-products', isAuthenticated, (req, res) => {
+    const userId = req.session.brukerId; // Use the session to get the logged-in user's ID
+
+    const query = 'SELECT * FROM products WHERE brukerId = ?';
     db.query(query, [userId], (err, results) => {
         if (err) {
             console.error("Error fetching user products:", err);
-            return res.status(500).send("Error fetching user products.");
+            return res.status(500).json({ error: "Error fetching user products." });
         }
-        res.json(results); // Send products data as JSON
+        res.json(results);
     });
 });
+
 
 
 // Handle form submission
@@ -252,19 +367,24 @@ app.post('/submit-product', upload.array('Images', 5), (req, res) => {
     }
 
     const brukerId = req.session.brukerId;
-    const { ProductName, Price, Location, Description, Category } = req.body;
-    const Images = req.files.map(file => file.filename).join(',');
+    const { ProductName, Price, Location, Description, Category, SubCategori, carBrand, Country } = req.body;
+    let Images;
+    if (req.files && req.files.length > 0) {
+        Images = req.files.map(file => file.filename).join(','); // Join uploaded image filenames
+    } else {
+        Images = 'default.jpg'; // Use a default image filename
+    }
    
 
-    const query = 'INSERT INTO products (ProductName, Price, Location, Description, Images, brukerId, category) VALUES (?, ?, ?, ?, ?, ?, ?)';
-    const values = [ProductName, parseFloat(Price), Location, Description, Images, brukerId, Category];
+    const query = 'INSERT INTO products (ProductName, Price, Location, Description, Images, brukerId, category, SubCategori, CarBrand, Country) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+    const values = [ProductName, parseFloat(Price), Location, Description, Images, brukerId, Category, SubCategori, carBrand || null, Country || null];
 
     db.query(query, values, (err, result) => {
         if (err) {
             console.error("Error saving product:", err);
             return res.status(500).send("Error saving product.");
         }
-        res.redirect('/torgetkat');
+        res.redirect('/mine-annonser'); 
     });
 });
 
@@ -294,36 +414,38 @@ app.get('/search', (req, res) => {
 
 // Example of the correct endpoint implementation
 app.get('/api/search', (req, res) => {
-    const searchQuery = req.query.query.trim();
-    const sql = "SELECT productdID, ProductName, Price, Location, Images FROM products WHERE LOWER(ProductName) LIKE LOWER(?)";
-    const values = [`%${searchQuery}%`];
+    const { query, sortPrice, sortDate, countries } = req.query;
 
-    db.query(sql, values, (err, results) => {
+    let sqlQuery = "SELECT * FROM products WHERE ProductName LIKE ?";
+    const params = [`%${query}%`];
+
+    if (countries) {
+        const countryList = countries.split(',');
+        const placeholders = countryList.map(() => '?').join(',');
+        sqlQuery += ` AND Country IN (${placeholders})`;
+        params.push(...countryList);
+    }
+
+    const orderClauses = [];
+    if (sortPrice) orderClauses.push(`Price ${sortPrice.toUpperCase()}`);
+    if (sortDate) orderClauses.push(`COALESCE(Date, '1970-01-01') ${sortDate.toUpperCase()}`);
+    if (orderClauses.length > 0) sqlQuery += ` ORDER BY ${orderClauses.join(', ')}`;
+
+    db.query(sqlQuery, params, (err, results) => {
         if (err) {
-            console.error("Error during search:", err);
-            return res.status(500).send("An error occurred during the search.");
+            console.error("Error fetching search results:", err);
+            return res.status(500).json({ error: "Failed to fetch search results." });
         }
 
-        // Map results to include the first image for each product
-        const productsWithImages = results.map(product => {
-            const images = product.Images.split(','); // Split image filenames by comma
-            return {
-                ...product,
-                firstImage: `/uploads/${images[0]}`, // Add the first image URL
-            };
-        });
-
-        res.json(productsWithImages); // Send modified results as JSON
+        res.json(results);
     });
 });
-
 
 
 
 // Product Detail Route
 app.get('/product/:productdID', (req, res) => {
     const { productdID } = req.params; // Access productdID from URL params
-    console.log("Fetching product with ID:", productdID); // Debugging log
     const sql = "SELECT * FROM products WHERE productdID = ?";
     db.query(sql, [productdID], (err, results) => {
         if (err) {
@@ -365,13 +487,16 @@ app.post('/send-message', isAuthenticated, (req, res) => {
     const { productdID, messageContent } = req.body;
     const senderId = req.session.brukerId;
 
-    // Log the incoming data to check
+    console.log("Sender ID:", senderId); // Log senderId for debugging
     console.log("Received productdID:", productdID);
     console.log("Received messageContent:", messageContent);
-    console.log("Sender ID:", senderId);
 
     if (!productdID || !messageContent) {
         return res.status(400).send('Missing productId or messageContent');
+    }
+
+    if (!senderId) {
+        return res.status(401).send("You must be logged in to send a message.");
     }
 
     // Find the product's owner (receiver)
@@ -386,10 +511,13 @@ app.post('/send-message', isAuthenticated, (req, res) => {
             return res.status(404).send("Product not found.");
         }
 
-        const receiverId = results[0].brukerId;  // Get the product owner
+        const receiverId = results[0].brukerId;
 
         // Insert the message into the database
-        const messageQuery = 'INSERT INTO messages (senderId, receiverId, productdID, messageContent, timestamp) VALUES (?, ?, ?, ?, NOW())';
+        const messageQuery = `
+            INSERT INTO messages (senderId, receiverId, productdID, messageContent, timestamp)
+            VALUES (?, ?, ?, ?, NOW())
+        `;
         db.query(messageQuery, [senderId, receiverId, productdID, messageContent], (err) => {
             if (err) {
                 console.error("Error saving message:", err);
@@ -402,12 +530,13 @@ app.post('/send-message', isAuthenticated, (req, res) => {
 
 
 
+
 // Get messages for the logged-in user
 app.get('/api/messages', isAuthenticated, (req, res) => {
     const brukerId = req.session.brukerId;
 
     const query = `
-       SELECT m.messageContent, m.timestamp, p.ProductName, p.productdID, u.brukernavn AS senderName, u.brukerId AS senderId
+       SELECT m.messageContent, m.timestamp, p.ProductName, p.productdID, u.brukernavn AS senderName, u.brukerId AS senderId, m.readd, m.messageId
         FROM messages m
         JOIN products p ON m.productdID = p.productdID
         JOIN brukere u ON m.senderId = u.brukerId
@@ -449,9 +578,10 @@ app.get('/api/unread-messages-count', isAuthenticated, (req, res) => {
 // Endpoint to mark all unread messages as read when user opens messages
 app.post('/api/mark-messages-read', isAuthenticated, (req, res) => {
     const userId = req.session.brukerId;
+    const { messageId } = req.body;
 
-    const query = 'UPDATE messages SET readd = true WHERE receiverId = ? AND readd = false';
-    db.query(query, [userId], (err) => {
+    const query = 'UPDATE messages SET readd = true WHERE receiverId = ? AND messageId = ? AND readd = false';
+    db.query(query, [userId, messageId], (err) => {
         if (err) {
             console.error("Error marking messages as read:", err);
             return res.status(500).send("Error marking messages as read.");
@@ -488,9 +618,33 @@ app.post('/reply-message', isAuthenticated, (req, res) => {
     });
 });
 
+app.delete('/api/delete-product/:productdID', isAuthenticated, (req, res) => {
+    const { productdID } = req.params;
+    const userId = req.session.brukerId;
+
+    if (!productdID) {
+        return res.status(400).json({ error: "Invalid Product ID." });
+    }
+
+    const query = 'DELETE FROM products WHERE productdID = ? AND brukerId = ?';
+    db.query(query, [productdID, userId], (err, result) => {
+        if (err) {
+            console.error("Error deleting product:", err);
+            return res.status(500).json({ error: "Error deleting product." });
+        }
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: "Product not found or not authorized to delete." });
+        }
+
+        res.status(200).json({ message: "Product deleted successfully." });
+    });
+});
+
+
 // Fetch random products
 app.get('/api/random-products', (req, res) => {
-    const query = "SELECT ProductdID, ProductName, Price, Images FROM products ORDER BY RAND() LIMIT 5";
+    const query = "SELECT ProductdID, ProductName, Price, Sold, Images FROM products ORDER BY RAND() LIMIT 5";
     
     db.query(query, (err, results) => {
         if (err) {
@@ -509,6 +663,53 @@ app.get('/api/random-products', (req, res) => {
 });
 
 
+app.put('/api/mark-as-sold/:productdID', isAuthenticated, (req, res) => {
+    const { productdID } = req.params;
+    console.log("Received Product ID:", productdID);
+
+    const userId = req.session.brukerId;
+    console.log("User ID from session:", userId);
+
+    const query = 'UPDATE products SET Sold = true WHERE productdID = ? AND brukerId = ?';
+    const params = [productdID, userId];
+
+    db.query(query, params, (err, result) => {
+        if (err) {
+            console.error("Error executing query:", err);
+            return res.status(500).json({ error: "Failed to mark product as sold." });
+        }
+
+        if (result.affectedRows === 0) {
+            console.log("No matching product found or not authorized.");
+            return res.status(404).json({ error: "Product not found or not authorized." });
+        }
+
+        console.log("Product successfully marked as sold.");
+        res.status(200).json({ message: "Product marked as sold." });
+    });
+});
+
+app.put('/api/mark-as-unsold/:productdID', isAuthenticated, (req, res) => {
+    const { productdID } = req.params;
+
+    const query = 'UPDATE products SET Sold = false WHERE productdID = ? AND brukerId = ?';
+    const params = [productdID, req.session.brukerId];
+
+    db.query(query, params, (err, result) => {
+        if (err) {
+            console.error("Error marking product as unsold:", err);
+            return res.status(500).json({ error: "Failed to mark product as unsold." });
+        }
+
+        if (result.affectedRows === 0) {
+            console.log("No matching product found or not authorized.");
+            return res.status(404).json({ error: "Product not found or not authorized." });
+        }
+
+        console.log("Product successfully marked as unsold.");
+        res.status(200).json({ message: "Product marked as unsold." });
+    });
+});
 
 
 
