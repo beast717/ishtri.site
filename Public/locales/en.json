@@ -29,7 +29,9 @@
         "passord": "Password",
         "lag_konto": "Create Account",
         "email": "Email",
-        "har_allerede_konto_logg_inn": "Already have an account? Log In"
+        "har_allerede_konto_logg_inn": "Already have an account? Log In",
+        "forgot_password": "Forgot password?",
+        "confirm_password": "Confirm password"
 
     },
 

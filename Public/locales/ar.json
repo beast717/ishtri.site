@@ -83,7 +83,9 @@
         "passord": "كلمة المرور",
         "lag_konto": "إنشاء حساب",
         "email": "البريد الإلكتروني",
-        "har_allerede_konto_logg_inn": "هل لديك حساب بالفعل؟ تسجيل الدخول"
+        "har_allerede_konto_logg_inn": "هل لديك حساب بالفعل؟ تسجيل الدخول",
+        "forgot_password": "نسيت كلمة المرور?",
+        "confirm_password": "تأكيد كلمة المرور"
 
 },
 

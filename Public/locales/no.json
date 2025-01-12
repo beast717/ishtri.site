@@ -29,7 +29,10 @@
         "passord": "Passord",
         "lag_konto": "Lag Konto",
         "email": "E-post",
-        "har_allerede_konto_logg_inn": "Har allerede en konto? Logg Inn"
+        "har_allerede_konto_logg_inn": "Har allerede en konto? Logg Inn",
+        "forgot_password": "Glemt passord?",
+        "confirm_password": "Bekreft passord"
+
 
     },
 

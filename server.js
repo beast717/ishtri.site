@@ -72,79 +72,136 @@ const transporter = nodemailer.createTransport({
 
 // User signup route
 app.post('/signup', async (req, res) => {
-    const { brukernavn, email, passord } = req.body;
+    const { brukernavn, email, passord, confirmPassword } = req.body;
 
-    // Check if user already exists
-    db.query('SELECT * FROM brukere WHERE email = ?', [email], async  (err, results) => {
-        if (results.length > 0) {
-            return res.status(400).json({ message: 'User already exists.' });
+    if (passord !== confirmPassword) {
+        return res.status(400).json({ message: 'Passwords do not match.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(passord, 10);
+
+    db.query('INSERT INTO brukere (brukernavn, email, passord) VALUES (?, ?, ?)', 
+        [brukernavn, email, hashedPassword], (err, result) => {
+            if (err) {
+                console.error("Error inserting user:", err);
+                return res.status(500).send("Failed to create account.");
+            }
+            res.redirect('/login');
+        }
+    );
+});
+
+app.post('/forgot-password', (req, res) => {
+    const { email } = req.body;
+
+    db.query('SELECT * FROM brukere WHERE email = ?', [email], (err, results) => {
+        if (err || results.length === 0) {
+            return res.status(400).json({ message: 'User not found.' });
         }
 
-         try {
-            // Hash the password before saving to database
-            const hashedPassword = await bcrypt.hash(passord, 10); // Hash password with 10 salt rounds
+        const user = results[0];
+        const resetLink = `http://ishtri.site/reset-password?email=${email}`;
+        
+        const mailOptions = {
+            from: process.env.GMAIL_USER,
+            to: email,
+            subject: 'Password Reset',
+            html: `<p>Hello ${user.brukernavn},</p>
+                   <p>Click the link below to reset your password:</p>
+                   <a href="${resetLink}">${resetLink}</a>`
+        };
 
-        // Insert new user into database with plaintext password (not recommended for production)
-        db.query('INSERT INTO brukere (brukernavn, email, passord) VALUES (?, ?, ?)', 
-            [brukernavn, email, hashedPassword], (err, result) => {
-                if (err) {
-                    console.error("Error inserting user:", err); // Log the error
-                    return res.status(500).send("Failed to create account.");
-                }
-                
-                req.session.brukerId = result.brukerId; // Set brukerId in session
-                req.session.brukernavn = brukernavn;
-                // Send welcome email
-                const transporter = nodemailer.createTransport({
-                    service: 'Gmail',
-                    auth: {
-                        user: process.env.GMAIL_USER,
-                        pass: process.env.GMAIL_PASS,
-                    },
-                });
-
-                const mailOptions = {
-                    from: process.env.GMAIL_USER,
-                    to: email,
-                    subject: 'Velkommen til nettstedet vårt!',
-                    html: `
-                        <h1>Hei ${brukernavn},</h1>
-                        <p>Vi er glade for å ønske deg velkommen! Nå kan du utforske nettstedet vårt.</p>
-                    `,
-                };
-
-                transporter.sendMail(mailOptions, (emailErr, info) => {
-                    if (emailErr) {
-                        console.error("Error sending email:", emailErr);
-                        return res.status(500).send("Account created, but welcome email could not be sent.");
-                    }
-                    console.log("Email sent:", info.response);
-                    res.redirect('/forside');
-                });
+        transporter.sendMail(mailOptions, (emailErr) => {
+            if (emailErr) {
+                console.error("Error sending email:", emailErr);
+                return res.status(500).send("Failed to send reset email.");
+            }
+            res.json({ message: 'Password reset link sent to your email.' });
         });
-        } catch (hashError) {
-            console.error("Error hashing password:", hashError);
-            return res.status(500).send("Error hashing password.");
-        }
     });
 });
 
-// User login route
-app.post('/login', (req, res) => {
-    const { brukernavn, passord } = req.body;
+app.post('/reset-password', async (req, res) => {
+    const { email, newPassword, confirmPassword } = req.body;
 
-    // Verify user credentials
-    db.query('SELECT * FROM brukere WHERE brukernavn = ? AND passord = ?', [brukernavn, passord], (err, results) => {
+    if (!email || !newPassword || !confirmPassword) {
+        return res.status(400).json({ message: 'All fields are required.' });
+    }
+
+    if (newPassword !== confirmPassword) {
+        return res.status(400).json({ message: 'Passwords do not match.' });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    db.query('UPDATE brukere SET passord = ? WHERE email = ?', [hashedPassword, email], (err) => {
+        if (err) {
+            console.error("Error resetting password:", err);
+            return res.status(500).send("Error resetting password.");
+        }
+        res.send('Password reset successfully. You can now <a href="/login">log in</a>.');
+    });
+});
+
+app.get('/reset-password', (req, res) => {
+    const email = req.query.email;
+    if (!email) {
+        return res.status(400).send("Invalid reset link.");
+    }
+
+    const htmlPath = path.join(__dirname, 'Public', 'ResetPassword.html');
+    fs.readFile(htmlPath, 'utf8', (err, data) => {
+        if (err) {
+            console.error("Error loading reset password page:", err);
+            return res.status(500).send("Error loading page.");
+        }
+
+        // Replace {{email}} placeholder with actual email
+        const pageContent = data.replace('{{email}}', email);
+        res.send(pageContent);
+    });
+});
+
+
+
+
+// User login route
+app.post('/login', async (req, res) => {
+    const { brukernavn, passord } = req.body; // Extracting from request body
+
+    if (!brukernavn || !passord) {
+        return res.status(400).json({ message: 'Username and password are required.' });
+    }
+
+    // Query the database for the user with the provided username
+    db.query('SELECT * FROM brukere WHERE brukernavn = ?', [brukernavn], async (err, results) => {
+        if (err) {
+            console.error("Database error:", err);
+            return res.status(500).json({ message: 'Database error.' });
+        }
+
+        // Check if user exists
         if (results.length === 0) {
             return res.status(401).json({ message: 'Invalid credentials.' });
         }
 
-        // Store username in session on successful login
-        req.session.brukerId = results[0].brukerId; // Ensure brukerId exists in your database schema
-        req.session.brukernavn = brukernavn;
-        return res.redirect('/');
+        const user = results[0];
+
+        // Compare hashed password with the one provided
+        const passwordMatch = await bcrypt.compare(passord, user.passord);
+
+        if (!passwordMatch) {
+            return res.status(401).json({ message: 'Invalid credentials.' });
+        }
+
+        // Successful login - set session
+        req.session.brukerId = user.brukerId;
+        req.session.brukernavn = user.brukernavn;
+        res.redirect('/'); // Redirect to homepage or another page
     });
 });
+
+
 
 // Route to get the logged-in user's brukernavn
 app.get('/api/brukernavn', (req, res) => {
@@ -200,6 +257,10 @@ app.use('/uploads', express.static('uploads'));
 
 // Simulate an admin check
 const isAdmin = true; // Replace this with actual authentication logic in a real application
+
+app.get('/forgot-password', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Public', 'ForgotPassword.html'));
+});
 
 app.get('/forside', (req, res) => {
     res.sendFile(path.join(__dirname, 'Public', 'Forside.html', ));
@@ -340,12 +401,13 @@ app.get('/api/user-products', isAuthenticated, (req, res) => {
 
 
 // Handle form submission
-app.post('/submit-product', upload.array('Images', 5), (req, res) => {
-    if (!isAuthenticated) {
+app.post('/submit-product', isAuthenticated, upload.array('Images', 5), (req, res) => {
+    const brukerId = req.session.brukerId;
+    if (!brukerId) {
+        console.error("No user ID in session. Cannot upload product.");
         return res.status(401).send("You must be logged in to upload a product.");
     }
 
-    const brukerId = req.session.brukerId;
     const { ProductName, Price, Location, Description, Category, SubCategori, carBrand, Country } = req.body;
     let Images;
     if (req.files && req.files.length > 0) {
@@ -353,7 +415,6 @@ app.post('/submit-product', upload.array('Images', 5), (req, res) => {
     } else {
         Images = 'default.jpg'; // Use a default image filename
     }
-   
 
     const query = 'INSERT INTO products (ProductName, Price, Location, Description, Images, brukerId, category, SubCategori, CarBrand, Country) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
     const values = [ProductName, parseFloat(Price), Location, Description, Images, brukerId, Category, SubCategori, carBrand || null, Country || null];
@@ -363,7 +424,7 @@ app.post('/submit-product', upload.array('Images', 5), (req, res) => {
             console.error("Error saving product:", err);
             return res.status(500).send("Error saving product.");
         }
-        res.redirect('/mine-annonser'); 
+        res.redirect('/mine-annonser');
     });
 });
 
