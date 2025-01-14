@@ -1,387 +1,459 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-     <link rel="icon" href="ishtri1.png" sizes="16x16 32x32" type="image/png">
-
+    <link rel="icon" href="ishtri1.png" sizes="16x16 32x32" type="image/png">
     <script src="https://unpkg.com/i18next/dist/umd/i18next.min.js"></script>
     <script src="https://unpkg.com/i18next-http-backend/i18nextHttpBackend.min.js"></script>
     <script src="https://unpkg.com/i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ishtri | Universe Of Products</title>
-    <meta name = "Description" content= "Buy, Sell, Travel And More.">
+    <meta name="Description" content="Buy, Sell, Travel And More.">
     <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
 
-            .body {
-                font-family: Arial, Helvetica, sans-serif;
-                margin: 0; 
-                padding: 0; 
-            }
+        .navBar {
+    width: 100%;
+    height: 80px;
+    background-color: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Space out logo and buttons */
+    padding: 0 10%; /* Adjust padding to control overall spacing */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
 
-            .navBar {
-                font-family: Arial, Helvetica, sans-serif;
-                width: 100%;
-                height: 60px;
-                background-color: white;    
-                display: flex; 
-                align-items: center; 
-                justify-content:space-evenly;
-                border-bottom: 1px solid black;
-                
-            }
+.logoOgTittel {
+    flex: 0 0 auto; /* Prevent the logo from growing or shrinking */
+    margin-left: 20px; /* Add some space from the left edge */
+}
 
-            .navBarButtons {
-                display: flex; 
-                align-items: center;
-                gap: 20px;
-            }
+.navBarButtons {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Space between buttons */
+    flex: 0 1 auto; /* Allow the buttons to shrink but not grow */
+    max-width: 60%; /* Limit the width of the buttons container */
+    margin-left: auto; /* Push buttons to the right */
+    margin-right: auto; /* Center the buttons within the available space */
+}
 
-            .navBarButtons a {
-                color: rgb(0, 0, 0); 
-                text-decoration: none; 
-            }
-
-            .navBarButtons i {
-                font-size:x-large;
-                color: #a7a7a7;
-            }
-
-           
-            #profileContainer {
-                display: flex;
-                align-items: center;
-                gap: 1px; 
-                position: relative;
-                
-            }
-
-            #profileUsername {
-                margin-top: 8px;
-            }
-
-            #dropdownMenu {
-                display: none; /* Hidden by default */
-                position: absolute; /* Position relative to #profileContainer */
-                margin-top: 174px; /* Place the menu directly below the container */
-                left: 0; /* Align it to the left edge of the container */
-                background-color: white;
-                border: 1px solid #ccc;
-                box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-                z-index: 1;
-                padding: 10px;
-                min-width: 100px; /* Ensure a consistent width for the dropdown */
-            }
-            
-
-            .logoOgTittel img {
-                height: 350px;
-                width: 350px;
-                margin-top: 10px;
-            }
+        .logoOgTittel img {
+            height: 300px;
+            width: auto;
+        }
 
 
-            .søkeBarContainer{
-                margin-top: 20px;
-                text-align: center;
-            }
+        .navBarButtons a {
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
 
-            .search-bar {
-                display: inline-flex;
-            }
+        .navBarButtons a:hover {
+            color: #007bff;
+        }
 
-            .søkeBarContainer input[type="text"] {
-                color: rgb(0, 0, 0);
-                padding: 10px;
-                width: 820px;
-                height: 30px;
-                border: 1px solid #ccc;
-                border-radius: 4px;
-                border-right: none;
-            }
-                
-            .search-bar button {
-                padding: 10px 15px;
-                border: 1px solid #ccc;
-                border-left: none; /* Removes the left border to blend with input */
-                border-radius: 0 4px 4px 0; /* Rounded right corners */
-                background-color: white;
-                color: white;
-                cursor: pointer;
-            }
+        .navBarButtons i {
+            font-size: 20px;
+            color: #a7a7a7;
+        }
 
-            .kategorierContainer {
-                font-family: Arial, Helvetica, sans-serif;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin-top: 35px;
+        #profileContainer {
+    display: flex;
+    align-items: center; /* Vertically center the items */
+    gap: 10px; /* Space between icon and username */
+    position: relative;
+    cursor: pointer;
+}
 
-                
-            }
-            
-            .kategori {
-                display: flex;
-                flex-direction: column; /* Stack icon above the text */
-                align-items: center; /* Center items horizontally */
-                margin-right: 70px; /* Space between buttons */
-                transition: transform 0.2s ease-in-out; /* Smooth hover effect */
-            }
+#profileIcon {
+    width: 30px;
+    height: 25px;
+    vertical-align: middle; /* Ensure the icon is vertically centered */
+}
+
+#profileUsername {
+    margin-top: 3px;
+    font-size: 16px;
+    color: #333;
+    vertical-align: middle; /* Ensure the username is vertically centered */
+}
+
+        #dropdownMenu {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            padding: 10px;
+            min-width: 150px;
+            margin-top: 5px; /* Add a small gap between profile and dropdown */
+        }
+
+        #dropdownMenu button, #dropdownMenu a {
+    display: block; /* Make both elements block-level */
+    width: 100%; /* Full width of the dropdown */
+    padding: 10px; /* Consistent padding */
+    text-align: left; /* Align text to the left */
+    background-color: white; /* Background color */
+    color: #333; /* Text color */
+    border: none; /* Remove border */
+    cursor: pointer; /* Pointer cursor for better UX */
+    transition: background-color 0.3s ease; /* Smooth hover effect */
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+#dropdownMenu button:hover, #dropdownMenu a:hover {
+    background-color: #f1f1f1; /* Hover background color */
+}
+
+#dropdownMenu a {
+    text-decoration: none; /* Remove underline from link */
+    border-top: 1px solid #ccc; /* Add a border between items */
+}
+
+        .badge {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    transform: translate(-580%, -30%);
+    color: white;
+    background-color: red;
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    font-size: 10px;
+    text-align: center;
+    line-height: 12px;
+    display: none; /* Initially hidden, as set by JavaScript */
+}
 
         
 
-            .kategorierContainer i {
-                color: #525252;
-                font-size: 30px;
-                margin-bottom: 8px; /* Space between icon and text */
-            }
+       .søkeBarContainer {
+    margin-top: 20px;
+    text-align: center;
+}
 
-            .kategori a {
-                text-decoration: none;
-                color: black;
-            }
+.search-bar {
+    display: inline-flex;
+    align-items: center; /* Align input and button vertically */
+    border: 1px solid #ccc; /* Add a border to the entire search bar */
+    border-radius: 4px; /* Rounded corners for the entire search bar */
+    overflow: hidden; /* Ensure the button doesn't overflow the rounded corners */
+}
 
-            .kategorContainer2 {
-                font-family: Arial, Helvetica, sans-serif;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                margin-top: 60px;
-            }
+.søkeBarContainer input[type="text"] {
+    padding: 12px; /* Match padding with the button */
+    width: 700px; /* Adjust width as needed */
+    height: 70px; /* Match height with the button */
+    border: none; /* Remove the input's border */
+    font-size: 16px;
+    box-sizing: border-box; /* Ensure padding is included in height */
+    outline: none; /* Remove the default focus outline */
+}
 
-            .kategori2:hover{
-                transform:scale(1.05);
-            }
+.search-bar button {
+    padding: 12px 20px; /* Match padding with the input */
+    height: 70px; /* Match height with the input */
+    border: none; /* Remove the button's border */
+    background-color: transparent; /* Make the button background transparent */
+    color: #007bff; /* Set the icon color to match your theme */
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-sizing: border-box; /* Ensure padding is included in height */
+}
 
-            .kategori:hover{
-                transform:scale(1.05);
-            }
+.search-bar button:hover {
+    background-color: rgba(0, 123, 255, 0.1); /* Light blue hover effect */
+}
 
-            .kategori2 {
-                display: flex;
-                flex-direction: column; /* Stack icon above the text */
-                align-items: center; /* Center items horizontally */
-                margin-right: 50px; /* Space between buttons */
-                transition: transform 0.2s ease-in-out; /* Smooth hover effect */
-            }
+.search-bar button img {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) saturate(100%) invert(36%) sepia(98%) saturate(2476%) hue-rotate(200deg) brightness(98%) contrast(104%); /* Make the icon blue */
+}
 
-            .kategorContainer2 i {
-                color: #525252;
-                font-size: 30px;
-                margin-bottom: 8px; /* Space between icon and text */
+        .kategorierContainer, .kategorContainer2 {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    gap: 60px; /* Increase spacing between categories */
+}
 
-            }
+.kategori, .kategori2 {
+    display: flex;
+    flex-direction: column; /* Stack icon and text vertically */
+    align-items: center; /* Center items horizontally */
+    text-align: center; /* Center the text under the icon */
+    transition: transform 0.2s ease-in-out; /* Smooth hover effect */
+}
 
-            .kategori2 a {
-                text-decoration: none;
-                color: black;
-            }
+.kategori:hover, .kategori2:hover {
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
 
-            .badge {
-                position: absolute; /* Position the badge relative to its parent */
-                top: 0px;          /* Adjust vertically to sit above the icon */
-                right: 0px;        /* Adjust horizontally to sit to the right of the icon */
-                transform: translate(-580%, -30%); /* Fine-tune position to sit on the corner */
-                color: white;       /* White text (if any text inside the badge) */
-                background-color: red; /* Red background */
-                border-radius: 50%; /* Make it circular */
-                width: 12px;        /* Fixed width for the dot */
-                height: 12px;       /* Fixed height for the dot */
-                font-size: 10px;    /* Optional: Adjust font size for text inside */
-                text-align: center; /* Center text inside */
-                line-height: 12px;  /* Match height for centering */
-                display: none;      /* Initially hidden, as set by JavaScript */
-            }
+.kategorierContainer i, .kategorContainer2 i {
+    font-size: 30px;
+    color: #525252;
+    margin-bottom: 10px; /* Add space between icon and text */
+}
 
-            #randomProducts div {
-                font-family: Arial, Helvetica, sans-serif;
-                margin-top: 30px;
-                margin-left: 20px;
-                display: flex;
-                flex-direction: column; /* Stack image, name, and price */
-                align-items: center; /* Center-align the content */
-                border: 1px solid #ccc;
-                border-radius: 8px;
-                padding: 15px;
-                text-align: center;
-                min-width: 150px; /* Set a consistent width for products */
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
-                background-color: #f9f9f9;
-                cursor: pointer;
-                transition: transform 0.2s ease-in-out; /* Smooth hover effect */
-            }
+.kategori a, .kategori2 a {
+    text-decoration: none;
+    color: black;
+    font-size: 16px;
+}
 
-            #randomProducts div img {
-                width: 120px;
-                height: 120px;
-                object-fit: cover;
-                border-radius: 4px;
-                margin-bottom: 10px;
-            }
-
-            #randomProducts div:hover {
-                transform: scale(1.05); /* Slightly enlarge on hover */
-            }
-
-            #languageSelect {
-            padding: 3px;
-            font-size: 15px;
-            margin-left: -15px;   
+        #randomProducts {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+            margin-top: 20px;
         }
 
-        /* Highlight Sold Label */
-.sold-label {
-    color: #ffffff;
-    background-color: #ff5722; /* Highlight color (e.g., orange) */
-    padding: 3px 6px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: bold;
-    margin-left: 5px;
-    display: inline-block;
+        #randomProducts div {
+            background-color: white;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            width: 200px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        #randomProducts div:hover {
+            transform: scale(1.05);
+        }
+
+        #randomProducts img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        #randomProducts h4 {
+            font-size: 18px;
+            margin: 10px 0;
+        }
+
+        #randomProducts p {
+            font-size: 16px;
+            color: #007bff;
+        }
+
+        .sold-label {
+            color: white;
+            background-color: #ff5722;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        #languageSelect {
+    padding: 8px 12px; /* Comfortable padding */
+    font-size: 14px; /* Match font size with other navbar elements */
+    border: 1px solid #ccc; /* Subtle border */
+    border-radius: 4px; /* Rounded corners */
+    background-color: white; /* Match navbar background */
+    color: #333; /* Match text color */
+    cursor: pointer;
+    transition: all 0.3s ease; /* Smooth transitions */
+    appearance: none; /* Remove default dropdown arrow */
+    -webkit-appearance: none; /* For Safari */
+    -moz-appearance: none; /* For Firefox */
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333"><path d="M7 10l5 5 5-5z"/></svg>'); /* Custom dropdown arrow */
+    background-repeat: no-repeat;
+    background-position: right 8px center; /* Position the arrow */
+    background-size: 15px; /* Size of the arrow */
+    padding-right: 30px; /* Add extra padding on the right for the arrow */
 }
 
-@media (max-width: 768px) {
+#languageSelect:hover {
+    border-color: #007bff; /* Highlight border on hover */
+    background-color: #f8f9fa; /* Light background on hover */
+}
 
-    .søkeBarContainer input[type="text"] {
-        width: 100%; /* Full width on smaller screens */
+#languageSelect:focus {
+    outline: none; /* Remove default focus outline */
+    border-color: #007bff; /* Highlight border on focus */
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
+}
+
+        @media (max-width: 768px) {
+             body {
+        font-size: 14px; /* Reduce font size for mobile */
+    }
+
+    .navBarButtons a {
+        font-size: 14px; /* Reduce button font size */
     }
     .navBar {
-        flex-wrap: wrap; /* Allow items to wrap */
-        height: auto; /* Adjust height */
-        justify-content: center; /* Center items */
+        flex-direction: column; /* Stack navbar items vertically */
+        height: auto; /* Allow the navbar to grow in height */
+        padding: 10px; /* Reduce padding */
     }
+
     .navBarButtons {
-        gap: 10px; /* Reduce spacing for mobile */
-        font-size: xx-small; /* Stack buttons */
+        flex-direction: column; /* Stack buttons vertically */
+        gap: 10px; /* Reduce spacing between buttons */
+        margin: 10px 0; /* Add margin for spacing */
     }
+
     .logoOgTittel img {
-        height: 200px; /* Resize for smaller screens */
-        width: 200px;
+        height: 150px; /* Reduce logo size for mobile */
     }
+
+     .søkeBarContainer input[type="text"] {
+        width: 100%; /* Full width on mobile */
+        height: 50px; /* Reduce height for mobile */
+    }
+
+    .search-bar button {
+        height: 50px; /* Match height with input */
+    }
+
+    .kategorierContainer, .kategorContainer2 {
+        flex-direction: column; /* Stack categories vertically */
+        gap: 20px; /* Reduce spacing between categories */
+    }
+
     .kategori, .kategori2 {
-        margin-right: 20px; /* Reduce spacing */
-        flex: 1 1 auto; /* Allow flex resizing */
+        margin-right: 0; /* Remove right margin */
     }
-    #randomProducts {
-        flex-wrap: wrap; /* Allow wrapping for better mobile display */
-        gap: 10px;
+
+      #randomProducts {
+        flex-direction: column; /* Stack products vertically */
+        align-items: center; /* Center products */
+    }
+
+    #randomProducts div {
+        width: 90%; /* Full width on mobile */
     }
 }
-
-
-
-
     </style>
 </head>
 <body>
-
-
     <div class="navBar">
         <div class="logoOgTittel">
-            <a href="/forside"><img src="ishtri.svg" alt=""></a>
+            <a href="/forside"><img src="ishtri.svg" alt="Ishtri Logo"></a>
         </div>
         <div class="navBarButtons">
-            <a id="notificationsButton" href="/varslinger"><i class="fas fa-bell"></i> <span data-i18n="navbar.notifications">Varslinger</span>
-</a>
-            <a id="newAdButton" href="/ny-annonse"><i class="fas fa-plus-circle"></i> <span data-i18n="navbar.new_ad">
-            Ny annonse</span>
-</a>
-        <a id="messagesButton" href="/messages" style="position: relative;">
-            <i class="fas fa-envelope"></i> <span data-i18n="navbar.messages">Meldinger</span>
-            <span id="unreadBadge" class="badge">●</span> <!-- Unread badge -->
-        </a>
-                        
-            <a id="loginButton" href="/login"><i class="fas fa-sign-in-alt"></i> <span data-i18n="navbar.log_in">Logg inn</span>
-</a>
-            
+            <a id="notificationsButton" href="/varslinger"><i class="fas fa-bell"></i> <span data-i18n="navbar.notifications">Varslinger</span></a>
+            <a id="newAdButton" href="/ny-annonse"><i class="fas fa-plus-circle"></i> <span data-i18n="navbar.new_ad">Ny annonse</span></a>
+            <a id="messagesButton" href="/messages" style="position: relative;">
+                <i class="fas fa-envelope"></i> <span data-i18n="navbar.messages">Meldinger</span>
+                <span id="unreadBadge" class="badge">●</span>
+            </a>
+            <a id="loginButton" href="/login"><i class="fas fa-sign-in-alt"></i> <span data-i18n="navbar.log_in">Logg inn</span></a>
             <div id="profileContainer" style="display: none;">
-                <img id="profileIcon" src="prrofilepic.svg" alt="..." style="width: 30px; height: 25px; cursor: pointer;">
+                <img id="profileIcon" src="prrofilepic.svg" alt="Profile Icon" style="width: 30px; height: 25px; cursor: pointer;">
                 <span id="profileUsername" style="cursor: pointer;">Username</span>
                 <div id="dropdownMenu">
-                    <button id="logoutButton" style="width: 100%; padding: 10px; background-color: rgb(252, 251, 251); color: rgb(0, 0, 0); border: none; cursor: pointer;" data-i18n="navbar.log_out">Logg ut</button>
-                    <a href="/mine-annonser" style="display: block; padding: 10px; background-color: rgb(252, 251, 251); color: rgb(0, 0, 0); text-decoration: none; text-align: center; border-top: 1px solid #ccc; cursor: pointer;" data-i18n="navbar.mine_annonser">Mine Annonser</a>
+                    <button id="logoutButton" data-i18n="navbar.log_out">Logg ut</button>
+                    <a href="/mine-annonser" data-i18n="navbar.mine_annonser">Mine Annonser</a>
                 </div>
             </div>
-            
-            
-                    <img src="translate.svg" style="width: 30px; height: 25px;">
-                    <select id="languageSelect" style="cursor: pointer;"  onchange="changeLanguage() ">
-                        <option value="en">English</option>  
-                        <option value="ar">العربية</option>
-                        <option value="no">Norsk</option>
-                    </select>
-                </div>
+            <img src="translate.svg" style="width: 30px; height: 25px;">
+            <select id="languageSelect" style="cursor: pointer;" onchange="changeLanguage()">
+                <option value="en">English</option>
+                <option value="ar">العربية</option>
+                <option value="no">Norsk</option>
+            </select>
         </div>
-    
+    </div>
+
     <div class="søkeBarContainer">
         <form action="/search" method="GET">
             <div class="search-bar">
                 <input type="text" data-i18n="search.placeholder" placeholder="søk..." name="query" required>
                 <button>
-                    <img src="https://www.svgrepo.com/show/7109/search.svg" alt="Button Image" style="width: 20px; height: 20px;">
-                  </button>
+                    <img src="https://www.svgrepo.com/show/7109/search.svg" alt="Search Icon" style="width: 20px; height: 20px;">
+                </button>
             </div>
         </form>
     </div>
+
     <div class="kategorierContainer">
         <div class="kategori">
-            <a href="/torgetkat?category=Torget" class="kategori">
+            <a href="/torgetkat?category=Torget">
                 <i class="fas fa-chair"></i>
-                <span  data-i18n="categories.torget">Torget</span>
+                <span data-i18n="categories.torget">Torget</span>
             </a>
-            </div>
+        </div>
         <div class="kategori">
-            <a href="/torgetkat?category=Bil" class="kategori">
+            <a href="/torgetkat?category=Bil">
                 <i class="fas fa-car"></i>
                 <span data-i18n="categories.bil">Bil</span>
             </a>
         </div>
         <div class="kategori">
-            <a href="reise.html" class="kategori">
+            <a href="reise.html">
                 <i class="fas fa-plane"></i>
                 <span data-i18n="categories.reise">Reise</span>
             </a>
         </div>
         <div class="kategori">
-            <a href="/torgetkat?category=Båt" class="kategori">
+            <a href="/torgetkat?category=Båt">
                 <i class="fas fa-ship"></i>
                 <span data-i18n="categories.båt">Båt</span>
             </a>
         </div>
         <div class="kategori">
-            <a href="/torgetkat?category=Mc" class="kategori">
+            <a href="/torgetkat?category=Mc">
                 <i class="fas fa-motorcycle"></i>
                 <span data-i18n="categories.mc">Mc</span>
             </a>
         </div>
     </div>
+
     <div class="kategorContainer2">
         <div class="kategori2">
-            <a href="Torget.html" class="kategori2">
+            <a href="Torget.html">
                 <i class="fas fa-suitcase-rolling"></i>
                 <span data-i18n="categories.pakkereise">Pakkereise</span>
             </a>
         </div>
         <div class="kategori2">
-            <a href="/torgetkat?category=Jobb" class="kategori2">
+            <a href="/torgetkat?category=Jobb">
                 <i class="fas fa-briefcase"></i>
                 <span data-i18n="categories.jobb">Jobb</span>
             </a>
         </div>
         <div class="kategori2">
-            <a href="/torgetkat?category=Eiendom" class="kategori2">
+            <a href="/torgetkat?category=Eiendom">
                 <i class="fas fa-home"></i>
                 <span data-i18n="categories.eiendom">Eiendom</span>
             </a>
         </div>
         <div class="kategori2">
-            <a href="Torget.html" class="kategori2">
+            <a href="Torget.html">
                 <i class="fas fa-laptop"></i>
                 <span data-i18n="categories.ny-brukt elektronikk">Ny-brukt elektronikk</span>
             </a>
         </div>
+    </div>
     </div>
        <div id="randomProducts" style="display: flex; gap: 20px; padding: 10px; min-height: 100px; overflow-x: auto; justify-content: center;">
         <div>
