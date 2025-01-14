@@ -51,6 +51,10 @@ db.connect((err) => {
     console.log("MySQL connected...");
 });
 
+// Set EJS as the default view engine
+app.set('view engine', 'ejs'); // Set the view engine to EJS
+app.set('views', path.join(__dirname, 'views')); // Set the views directory
+
 // Route to serve login page
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'Public', 'Logg inn.html'));
@@ -236,7 +240,7 @@ app.post('/logout', (req, res) => {
 
 // Serve the homepage
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Public', 'Forside.html'));
+     res.render('Forside'); // Renders views/Forside.ejs
 });
 
 app.listen(3000, () => {
@@ -263,25 +267,34 @@ app.get('/forgot-password', (req, res) => {
     res.sendFile(path.join(__dirname, 'Public', 'ForgotPassword.html'));
 });
 
-app.get('/forside', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Public', 'Forside.html', ));
+app.get('/ny-annonse', isAuthenticated, (req, res) => {
+    res.render ('Ny-annonse');
 });
 
-app.get('/ny-annonse', isAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, 'Public', 'Ny-annonse.html'));
+app.get('/productDetails', (req, res) => {
+    res.render ('productDetails');
 });
 
 app.get('/varslinger', isAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, 'Public', 'varslinger.html'));
+    res.render('varslinger');
 });
 
 app.get('/torgetkat', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Public', 'TorgetKat.html'));
+   res.render ('TorgetKat');
 });
 
 app.get('/mine-annonser', isAuthenticated, (req, res) => {
-    res.sendFile(path.join(__dirname, 'Public', 'mine-annonser.html'));
+    res.render('mine-annonser');
 });
+
+app.get('/reise', (req, res) => {
+    res.render('reise');
+});
+
+app.get('/messages', isAuthenticated, (req, res) => {
+    res.render('messages');
+});
+
 
 
 app.get('/api/products', (req, res) => {
@@ -382,7 +395,7 @@ app.get('/torgetkat', (req, res) => {
 
 // Serve Torget.html from the 'public' folder for the /torget route
 app.get('/torget', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Public', 'Torget.html'));
+    res.render('Torget');
 });
 
 // Endpoint to fetch only the products uploaded by a specific user
@@ -445,7 +458,7 @@ app.get('/search', (req, res) => {
 
         if (results.length > 0) {
             // Pass all matching products to a selection page
-            res.sendFile(path.join(__dirname, 'public', 'SearchResults.html'));
+            res.render ('SearchResults');
         } else {
             return res.status(404).send("No products found.");
         }

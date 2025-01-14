@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://unpkg.com/i18next/dist/umd/i18next.min.js"></script>
+    <script src="https://unpkg.com/i18next-http-backend/i18nextHttpBackend.min.js"></script>
+    <script src="https://unpkg.com/i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages</title>
+    <style>
+        
+         /* Main Content */
+         #messagesContainer {
+            font-family: Arial, Helvetica, sans-serif;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 20px auto;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            color: #333;
+        }
+
+        /* Message List */
+        #messageList {
+            margin-top: 20px;
+        }
+
+        .message-group {
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 15px;
+        }
+
+        .message-group h3 {
+            font-size: 20px;
+            margin: 0;
+            color: #333;
+            cursor: pointer;
+        }
+
+        .message-group .message {
+            background-color: #e9f0ff;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        .message-group .message button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .message-group .message button:hover {
+            background-color: #0056b3;
+        }
+
+        .reply-form {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .reply-form textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            resize: vertical;
+        }
+
+        .reply-form button {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .reply-form button:hover {
+            background-color: #218838;
+        }
+
+        @keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2); /* Increase the size slightly */
+        opacity: 0.7; /* Slightly fade out */
+    }
+    100% {
+        transform: scale(1); /* Return to original size */
+        opacity: 1; /* Fully visible */
+    }
+}
+
+.badge2 {
+    display: inline-block;
+    background-color: red;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    animation: pulse 1.5s infinite; /* Apply the pulsing animation */
+}
+
+
+   
+    </style>
+</head>
+<body>
+
+    <%- include('partials/navbar') %>
+
+    <div id="messagesContainer">
+        <h1 data-i18n="meldinger.dine_meldinger">Dine meldinger</h1>
+        <div id="messageList"></div>
+    </div>
+
+    <script>
+        // Fetch brukernavn from the API to check if the user is logged in
+        fetch('/api/brukernavn')
+            .then(response => response.json())
+            .then(data => {
+                if (data.brukernavn) {
+                    // User is logged in, keep buttons enabled
+                    document.getElementById('loginButton').style.display = 'none'; // Hide login button
+                } else {
+                    // User is not logged in, redirect on button click
+                    document.getElementById('notificationsButton').addEventListener('click', (e) => {
+                        e.preventDefault(); // Prevent default navigation
+                        window.location.href = '/login'; // Redirect to login
+                    });
+    
+                    document.getElementById('newAdButton').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        window.location.href = '/login';
+                    });
+    
+                    document.getElementById('messagesButton').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        window.location.href = '/login';
+                    });
+                }
+            })
+            .catch(error => console.error('Error checking login status:', error));
+        </script>
+        
+
+    <script>
+
+        // Load messages from the server and display them
+        async function loadMessages() {
+            try {
+                const response = await fetch('/api/messages');
+                if (!response.ok) throw new Error('Failed to load messages');
+
+                let messages = await response.json();
+                const messageList = document.getElementById('messageList');
+                messageList.innerHTML = '';
+
+                if (messages.length === 0) {
+                    messageList.innerHTML = '<p>Ingen meldinger funnet.</p>';
+                    return;
+                }
+
+                // Group messages by productdID
+                const groupedMessages = groupMessagesByProduct(messages);
+
+                // Convert groupedMessages object to an array of arrays for sorting
+                const groupedMessagesArray = Object.values(groupedMessages);
+
+                // Sort messages within each group and then sort the groups
+                groupedMessagesArray.forEach(group => group.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)));
+
+                groupedMessagesArray.sort((groupA, groupB) => {
+                  if (!groupA || groupA.length === 0) return 1; // Handle empty groups
+                  if (!groupB || groupB.length === 0) return -1;
+                    const latestA = groupA[0]; // Get first message in group A (newest after inner sort)
+                    const latestB = groupB[0]; // Get first message in group B (newest after inner sort)
+                    return new Date(latestB.timestamp) - new Date(latestA.timestamp);
+                });
+
+                // Display each group of messages
+                groupedMessagesArray.forEach(productMessages => {
+                    if (!productMessages || productMessages.length === 0) return; // Skip empty groups
+                    const productId = productMessages[0].productdID;
+                    const productGroup = document.createElement('div');
+                    productGroup.className = 'message-group';
+
+                    const productName = productMessages[0].ProductName;
+                    const hasUnreadMessages = productMessages.some(msg => !msg.readd);
+                    productGroup.innerHTML = `
+                        <h3 onclick="toggleMessageGroup('${productId}')" data-i18n="meldinger.klikk">${productName}</h3>
+                         ${hasUnreadMessages ? '<span class="badge2"></span>' : ''}
+                        <div id="messages-${productId}" style="display: none;"></div>
+                    `;
+
+                    const messagesContainer = productGroup.querySelector(`#messages-${productId}`);
+                    productMessages.forEach(msg => {
+                        const messageElement = document.createElement('div');
+                        messageElement.className = 'message';
+                        const badgeVisibility = msg.readd ? 'none' : 'inline-block';
+                        messageElement.innerHTML = `
+                                 <span class="badge2" id="badge-${msg.messageId}" style="display: ${badgeVisibility}; background-color: red; width: 10px; height: 10px;"></span>
+                                <p><strong>${msg.senderName}:</strong> ${msg.messageContent}</p>
+                                <small>${new Date(msg.timestamp).toLocaleString()}</small>
+                                <button onclick="markAsRead(${msg.messageId})" data-i18n="meldinger.mark_asread">Mark as Read</button>
+                                <button onclick="toggleReplyForm(${msg.senderId}, ${msg.productdID})">Reply</button>
+                                <div id="replyForm-${msg.senderId}-${msg.productdID}" class="reply-form">
+                                    <textarea placeholder="Enter your reply"></textarea>
+                                    <button onclick="sendReply(${msg.senderId}, ${msg.productdID})" data-i18n="meldinger.svar">Send svar</button>
+                                </div>
+                            </div>
+                        `;
+
+                        messagesContainer.appendChild(messageElement);
+                    });
+
+                    messageList.appendChild(productGroup);
+                });
+            } catch (error) {
+                console.error('Error loading messages:', error);
+                document.getElementById('messageList').innerHTML = '<p>Error loading messages.</p>';
+            }
+        }
+
+        async function markAsRead(messageId) {
+            try {
+                const response = await fetch('/api/mark-messages-read', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ messageId })
+                });
+
+                if (!response.ok) throw new Error('Failed to mark message as read.');
+
+                // Hide the badge for the specific message
+                const badge = document.getElementById(`badge-${messageId}`);
+                if (badge) {
+                    badge.style.display = 'none';
+                }
+
+                alert('Message marked as read!');
+                checkUnreadMessages(); // Update the unread badge count
+            } catch (error) {
+                console.error('Error marking message as read:', error);
+                alert('Failed to mark message as read. Please try again.');
+            }
+        }
+
+
+
+        // Group messages by productdID
+        function groupMessagesByProduct(messages) {
+            return messages.reduce((acc, message) => {
+                if (!acc[message.productdID]) {
+                    acc[message.productdID] = [];
+                }
+                acc[message.productdID].push(message);
+                return acc;
+            }, {});
+        }
+
+
+        // Toggle the visibility of the message group
+        function toggleMessageGroup(productId) {
+            const group = document.getElementById(`messages-${productId}`);
+            group.style.display = group.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Toggle the visibility of the reply form
+        function toggleReplyForm(senderId, productdID) {
+            const replyForm = document.getElementById(`replyForm-${senderId}-${productdID}`);
+            replyForm.style.display = replyForm.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Send a reply to the sender
+        async function sendReply(senderId, productdID) {
+            const replyContent = document.querySelector(`#replyForm-${senderId}-${productdID} textarea`).value.trim();
+
+            if (!replyContent) {
+                alert("Reply content cannot be empty.");
+                return;
+            }
+
+            try {
+                const response = await fetch('/reply-message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ originalSenderId: senderId, messageContent: replyContent, productdID })
+                });
+
+                if (!response.ok) throw new Error('Failed to send reply.');
+
+                alert("Reply sent successfully!");
+                document.getElementById(`replyForm-${senderId}-${productdID}`).style.display = 'none';
+                loadMessages(); // Reload messages after sending a reply
+            } catch (error) {
+                console.error('Error sending reply:', error);
+                alert('Failed to send reply. Please try again.');
+            }
+        }
+
+        // Check and update the unread message count
+        async function checkUnreadMessages() {
+            try {
+                const response = await fetch('/api/unread-messages-count');
+                if (!response.ok) throw new Error('Failed to fetch unread messages count.');
+
+                const { unreadCount } = await response.json();
+                console.log("Unread messages count:", unreadCount);
+
+                const badge = document.getElementById('unreadBadge');
+
+                // Show or hide the unread badge
+                if (unreadCount > 0) {
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            } catch (error) {
+                console.error('Error fetching unread messages count:', error);
+            }
+        }
+
+        // Initialize the page
+        async function initializeMessagesPage() {
+            checkUnreadMessages();    // Update the unread badge
+            loadMessages();        // Load messages into the page
+        }
+
+        // Call initialize function on page load
+        window.onload = initializeMessagesPage;
+        // Call checkUnreadMessages every 30 seconds
+        setInterval(checkUnreadMessages, 30000);
+
+    </script>
+
+</body>
+</html>

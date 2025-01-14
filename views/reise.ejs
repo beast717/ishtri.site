@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://unpkg.com/i18next/dist/umd/i18next.min.js"></script>
+    <script src="https://unpkg.com/i18next-http-backend/i18nextHttpBackend.min.js"></script>
+    <script src="https://unpkg.com/i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flight Search</title>
+    <style>
+
+        
+
+        .flight-search-form {
+            max-width: 500px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select, .form-group button {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .form-group button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .form-group button:hover {
+            background-color: #0056b3;
+        }
+
+        .suggestions-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            position: absolute;
+            width: 100%;
+            z-index: 10;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+
+        .suggestions-list li {
+            padding: 10px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .suggestions-list li:hover {
+            background-color: #e9ecef;
+        }
+
+    </style>
+</head>
+
+<body>
+     <%- include('partials/navbar') %>
+    <div class="flight-search-form">
+        <h2 style="text-align: center;">Søk etter flygninger</h2>
+        <form id="flightSearchForm">
+
+            <!-- Trip Type -->
+            <div class="form-group">
+                <label for="tripType">Reise type:</label>
+                <select id="tripType">
+                    <option value="oneway" selected>En-vei</option>
+                    <option value="roundtrip">Tur-retur</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="departure">Fra</label>
+                <input type="text" id="departure" placeholder="Skriv byer/flyplasser..." autocomplete="off" required>
+                <ul id="departure-suggestions" class="suggestions-list"></ul>
+            </div>
+            <div class="form-group">
+                <label for="arrival">Til</label>
+                <input type="text" id="arrival" placeholder="Skriv byer/flyplasser..." autocomplete="off" required>
+                <ul id="arrival-suggestions" class="suggestions-list"></ul>
+            </div>
+            <div class="form-group">
+                <label for="departureDate">Utreise dato</label>
+                <input type="date" id="departureDate" required>
+            </div>
+            <div class="form-group" id="returnDateGroup" style="display: none;">
+                <label for="returnDate">Hjemmreise dato</label>
+                <input type="date" id="returnDate">
+            </div>
+            <div class="form-group">
+                <label for="passengers">Passasjer</label>
+                <select id="passengers">
+                    <option value="1">1 Passasjer</option>
+                    <option value="2">2 Passasjer</option>
+                    <option value="3">3 Passasjer</option>
+                    <option value="4">4 Passasjer</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit">Søk fly</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        let airports = [];
+        let departureIataCode = '';
+        let arrivalIataCode = '';
+
+        // Load airports data from JSON file
+        function loadAirports() {
+            fetch('/data/airports.json')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! Status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    airports = data;
+                    console.log('Loaded Airports Data:', airports);
+                })
+                .catch(error => {
+                    console.error('Error loading airports:', error);
+                });
+        }
+
+        // Filter airports based on user input
+        function filterAirports(input, isDeparture) {
+            const searchTerm = input.toLowerCase();
+            console.log('Search Term:', searchTerm);
+
+            const filteredAirports = airports.filter(airport => {
+                const name = airport.name.toLowerCase();
+                const city = airport.city.toLowerCase();
+                return name.includes(searchTerm) || city.includes(searchTerm);
+            });
+
+            console.log('Filtered Airports:', filteredAirports);
+            displaySuggestions(filteredAirports, isDeparture);
+        }
+
+        // Display filtered suggestions in the dropdown
+        function displaySuggestions(filteredAirports, isDeparture) {
+            const suggestionsList = isDeparture
+                ? document.getElementById('departure-suggestions')
+                : document.getElementById('arrival-suggestions');
+            suggestionsList.innerHTML = '';
+
+            if (filteredAirports.length > 0) {
+                filteredAirports.forEach(airport => {
+                    const suggestionItem = document.createElement('li');
+                    suggestionItem.textContent = `${airport.name} (${airport.iata}) - ${airport.city}`;
+                    suggestionItem.onclick = () => {
+                        selectAirport(airport, isDeparture);
+                    };
+                    suggestionsList.appendChild(suggestionItem);
+                });
+                suggestionsList.style.display = 'block';
+            } else {
+                suggestionsList.style.display = 'none';
+            }
+        }
+
+        // Select an airport from the suggestions
+        function selectAirport(airport, isDeparture) {
+            const input = isDeparture ? document.getElementById('departure') : document.getElementById('arrival');
+            const iataCode = airport.iata;
+
+            input.value = `${airport.name} (${iataCode}) - ${airport.city}`;
+            const suggestionsList = isDeparture
+                ? document.getElementById('departure-suggestions')
+                : document.getElementById('arrival-suggestions');
+            suggestionsList.innerHTML = '';
+            suggestionsList.style.display = 'none';
+
+            if (isDeparture) {
+                departureIataCode = iataCode;
+            } else {
+                arrivalIataCode = iataCode;
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('flightSearchForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const tripType = document.getElementById('tripType').value;
+            const departureDate = document.getElementById('departureDate').value.replace(/-/g, '');
+            const returnDate = tripType === 'roundtrip' ? document.getElementById('returnDate').value.replace(/-/g, '') : '';
+            const passengers = document.getElementById('passengers').value;
+
+            let skyscannerUrl = `https://www.skyscanner.com/transport/flights/${departureIataCode}/${arrivalIataCode}/${departureDate}/`;
+
+            if (tripType === 'roundtrip' && returnDate) {
+                skyscannerUrl += `${returnDate}/`;
+            }
+
+            skyscannerUrl += `?adults=${passengers}`;
+            console.log('Redirecting to:', skyscannerUrl);
+            window.open(skyscannerUrl, '_blank');
+        });
+
+        // Handle trip type toggle
+       document.getElementById('tripType').addEventListener('change', (e) => {
+        const returnDateGroup = document.getElementById('returnDateGroup');
+        returnDateGroup.style.display = e.target.value === 'roundtrip' ? 'block' : 'none';
+    });
+
+
+        // Attach input event listeners
+        document.getElementById('departure').addEventListener('input', (e) => {
+            filterAirports(e.target.value, true);
+        });
+
+        document.getElementById('arrival').addEventListener('input', (e) => {
+            filterAirports(e.target.value, false);
+        });        
+
+    
+    
+          // Search page logic (e.g., airport loading or other functions)
+            window.addEventListener('load', () => {
+                loadAirports(); // Example: Load airports for autocomplete
+                console.log("Search page logic executed.");
+            });
+
+
+    </script>
+
+</body>
+</html>

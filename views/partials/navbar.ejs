@@ -1,0 +1,287 @@
+<!-- views/partials/navbar.ejs -->
+<style>
+
+body {
+font-family: Arial, Helvetica, sans-serif;
+margin: 0;
+padding: 0;
+background-color: #f8f9fa;
+}
+
+.navBar {
+width: 100%;
+height: 80px;
+background-color: white;
+display: flex;
+align-items: center;
+justify-content: space-between; /* Space out logo and buttons */
+padding: 0 10%; /* Adjust padding to control overall spacing */
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+position: sticky;
+top: 0;
+z-index: 1000;
+}
+
+.logoOgTittel {
+flex: 0 0 auto; /* Prevent the logo from growing or shrinking */
+margin-left: 20px; /* Add some space from the left edge */
+}
+
+.navBarButtons {
+display: flex;
+align-items: center;
+gap: 20px; /* Space between buttons */
+flex: 0 1 auto; /* Allow the buttons to shrink but not grow */
+max-width: 60%; /* Limit the width of the buttons container */
+margin-left: auto; /* Push buttons to the right */
+margin-right: auto; /* Center the buttons within the available space */
+}
+
+.logoOgTittel img {
+height: 300px;
+width: auto;
+}
+
+
+.navBarButtons a {
+color: #333;
+text-decoration: none;
+font-size: 16px;
+transition: color 0.3s ease;
+}
+
+.navBarButtons a:hover {
+color: #007bff;
+}
+
+.navBarButtons i {
+font-size: 20px;
+color: #a7a7a7;
+}
+
+#profileContainer {
+display: flex;
+align-items: center; /* Vertically center the items */
+gap: 10px; /* Space between icon and username */
+position: relative;
+cursor: pointer;
+}
+
+#profileIcon {
+width: 30px;
+height: 25px;
+vertical-align: middle; /* Ensure the icon is vertically centered */
+}
+
+#profileUsername {
+margin-top: 3px;
+font-size: 16px;
+color: #333;
+vertical-align: middle; /* Ensure the username is vertically centered */
+}
+
+#dropdownMenu {
+display: none;
+position: absolute;
+top: 100%;
+left: 0;
+background-color: white;
+border: 1px solid #ccc;
+box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+z-index: 1;
+padding: 10px;
+min-width: 150px;
+margin-top: 5px; /* Add a small gap between profile and dropdown */
+}
+
+#dropdownMenu button, #dropdownMenu a {
+display: block; /* Make both elements block-level */
+width: 100%; /* Full width of the dropdown */
+padding: 10px; /* Consistent padding */
+text-align: left; /* Align text to the left */
+background-color: white; /* Background color */
+color: #333; /* Text color */
+border: none; /* Remove border */
+cursor: pointer; /* Pointer cursor for better UX */
+transition: background-color 0.3s ease; /* Smooth hover effect */
+box-sizing: border-box; /* Include padding in width calculation */
+}
+
+#dropdownMenu button:hover, #dropdownMenu a:hover {
+background-color: #f1f1f1; /* Hover background color */
+}
+
+#dropdownMenu a {
+text-decoration: none; /* Remove underline from link */
+border-top: 1px solid #ccc; /* Add a border between items */
+}
+
+.badge {
+position: absolute;
+top: 0px;
+right: 0px;
+transform: translate(-580%, -30%);
+color: white;
+background-color: red;
+border-radius: 50%;
+width: 12px;
+height: 12px;
+font-size: 10px;
+text-align: center;
+line-height: 12px;
+display: none; /* Initially hidden, as set by JavaScript */
+}
+
+#languageSelect {
+padding: 8px 12px; /* Comfortable padding */
+font-size: 14px; /* Match font size with other navbar elements */
+border: 1px solid #ccc; /* Subtle border */
+border-radius: 4px; /* Rounded corners */
+background-color: white; /* Match navbar background */
+color: #333; /* Match text color */
+cursor: pointer;
+transition: all 0.3s ease; /* Smooth transitions */
+appearance: none; /* Remove default dropdown arrow */
+-webkit-appearance: none; /* For Safari */
+-moz-appearance: none; /* For Firefox */
+background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333"><path d="M7 10l5 5 5-5z"/></svg>'); /* Custom dropdown arrow */
+background-repeat: no-repeat;
+background-position: right 8px center; /* Position the arrow */
+background-size: 15px; /* Size of the arrow */
+padding-right: 30px; /* Add extra padding on the right for the arrow */
+}
+
+#languageSelect:hover {
+border-color: #007bff; /* Highlight border on hover */
+background-color: #f8f9fa; /* Light background on hover */
+}
+
+#languageSelect:focus {
+outline: none; /* Remove default focus outline */
+border-color: #007bff; /* Highlight border on focus */
+box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
+}
+   
+</style>
+
+<!-- Add your HTML here -->
+<div class="navBar">
+        <div class="logoOgTittel">
+            <a href="/"><img src="ishtri.svg" alt="Ishtri Logo"></a>
+        </div>
+        <div class="navBarButtons">
+            <a id="notificationsButton" href="/varslinger"><i class="fas fa-bell"></i> <span data-i18n="navbar.notifications">Varslinger</span></a>
+            <a id="newAdButton" href="/ny-annonse"><i class="fas fa-plus-circle"></i> <span data-i18n="navbar.new_ad">Ny annonse</span></a>
+            <a id="messagesButton" href="/messages" style="position: relative;">
+                <i class="fas fa-envelope"></i> <span data-i18n="navbar.messages">Meldinger</span>
+                <span id="unreadBadge" class="badge">●</span>
+            </a>
+            <a id="loginButton" href="/login"><i class="fas fa-sign-in-alt"></i> <span data-i18n="navbar.log_in">Logg inn</span></a>
+            <div id="profileContainer" style="display: none;">
+                <img id="profileIcon" src="prrofilepic.svg" alt="Profile Icon" style="width: 30px; height: 25px; cursor: pointer;">
+                <span id="profileUsername" style="cursor: pointer;">Username</span>
+                <div id="dropdownMenu">
+                    <button id="logoutButton" data-i18n="navbar.log_out">Logg ut</button>
+                    <a href="/mine-annonser" data-i18n="navbar.mine_annonser">Mine Annonser</a>
+                </div>
+            </div>
+            <img src="translate.svg" style="width: 30px; height: 25px;">
+            <select id="languageSelect" style="cursor: pointer;" onchange="changeLanguage()">
+                <option value="en">English</option>
+                <option value="ar">العربية</option>
+                <option value="no">Norsk</option>
+            </select>
+        </div>
+    </div>
+
+<script>
+
+ // Fetch username to toggle login/profile
+            fetch('/api/brukernavn')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.brukernavn) {
+                        document.getElementById('loginButton').style.display = 'none';
+                        const profileContainer = document.getElementById('profileContainer');
+                        profileContainer.style.display = 'flex';
+                        document.getElementById('profileUsername').textContent = data.brukernavn;
+                        document.getElementById('profileIcon').src = data.profileIconUrl || 'prrofilepic.svg';
+                    }
+                });
+
+                document.getElementById('profileContainer').addEventListener('click', function (event) {
+                const dropdownMenu = document.getElementById('dropdownMenu');
+                const isVisible = dropdownMenu.style.display === 'block';
+                dropdownMenu.style.display = isVisible ? 'none' : 'block';
+
+                // Optional: Prevent event from bubbling up if needed
+                event.stopPropagation();
+            });
+
+            // Close dropdown if clicked outside
+            document.addEventListener('click', function () {
+                const dropdownMenu = document.getElementById('dropdownMenu');
+                dropdownMenu.style.display = 'none';
+            });
+    
+            // Fetch unread messages count
+            function checkUnreadMessages() {
+                fetch('/api/unread-messages-count')
+                    .then(response => response.json())
+                    .then(data => {
+                        const badge = document.getElementById('unreadBadge');
+                        badge.style.display = data.unreadCount > 0 ? 'inline-block' : 'none';
+                    });
+            }
+    
+            // Logout functionality
+            document.getElementById('logoutButton').addEventListener('click', () => {
+                fetch('/logout', { method: 'POST' })
+                    .then(response => {
+                        if (response.ok) window.location.href = '/';
+                    });
+            });
+    
+            window.onload = checkUnreadMessages;
+
+            // Language Initialization
+document.addEventListener('DOMContentLoaded', () => {
+    const savedLanguage = localStorage.getItem('selectedLanguage') || 'no'; // Default to 'no'
+
+    i18next
+        .use(i18nextHttpBackend)
+        .use(i18nextBrowserLanguageDetector)
+        .init({
+            debug: true,
+            fallbackLng: savedLanguage,
+            backend: {
+                loadPath: '/locales/{{lng}}.json', // Path to your translation JSON files
+            }
+        }, (err, t) => {
+            if (err) console.error(err);
+            updateContent(); // Update page content with translations
+        });
+// Event listener for language change
+                document.getElementById('languageSelect').addEventListener('change', (e) => {
+                    const selectedLanguage = e.target.value;
+                    i18next.changeLanguage(selectedLanguage, (err, t) => {
+                        if (err) console.error(err);
+                        updateContent();
+                    });
+                });
+            });
+
+// Update Translatable Content
+function updateContent() {
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+        const key = element.getAttribute('data-i18n');
+        const translation = i18next.t(key);
+        if (element.tagName === 'INPUT' && element.type === 'text') {
+            element.placeholder = translation; // Update input placeholders
+        } else {
+            element.innerHTML = translation; // Update other elements
+        }
+    });
+}
+    
+</script>

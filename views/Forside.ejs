@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" href="ishtri1.png" sizes="16x16 32x32" type="image/png">
+    <script src="https://unpkg.com/i18next/dist/umd/i18next.min.js"></script>
+    <script src="https://unpkg.com/i18next-http-backend/i18nextHttpBackend.min.js"></script>
+    <script src="https://unpkg.com/i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ishtri | Universe Of Products</title>
+    <meta name="Description" content="Buy, Sell, Travel And More.">
+    <style>
+
+.søkeBarContainer {
+margin-top: 20px;
+text-align: center;
+}
+
+.search-bar {
+display: inline-flex;
+align-items: center; /* Align input and button vertically */
+border: 1px solid #ccc; /* Add a border to the entire search bar */
+border-radius: 4px; /* Rounded corners for the entire search bar */
+overflow: hidden; /* Ensure the button doesn't overflow the rounded corners */
+}
+
+.søkeBarContainer input[type="text"] {
+padding: 12px; /* Match padding with the button */
+width: 700px; /* Adjust width as needed */
+height: 70px; /* Match height with the button */
+border: none; /* Remove the input's border */
+font-size: 16px;
+box-sizing: border-box; /* Ensure padding is included in height */
+outline: none; /* Remove the default focus outline */
+}
+
+.search-bar button {
+padding: 12px 20px; /* Match padding with the input */
+height: 70px; /* Match height with the input */
+border: none; /* Remove the button's border */
+background-color: transparent; /* Make the button background transparent */
+color: #007bff; /* Set the icon color to match your theme */
+cursor: pointer;
+transition: background-color 0.3s ease;
+box-sizing: border-box; /* Ensure padding is included in height */
+}
+
+.search-bar button:hover {
+background-color: rgba(0, 123, 255, 0.1); /* Light blue hover effect */
+}
+
+.search-bar button img {
+width: 20px;
+height: 20px;
+filter: brightness(0) saturate(100%) invert(36%) sepia(98%) saturate(2476%) hue-rotate(200deg) brightness(98%) contrast(104%); /* Make the icon blue */
+}
+
+.kategorierContainer, .kategorContainer2 {
+display: flex;
+justify-content: center;
+margin-top: 40px;
+gap: 60px; /* Increase spacing between categories */
+}
+
+.kategori, .kategori2 {
+display: flex;
+flex-direction: column; /* Stack icon and text vertically */
+align-items: center; /* Center items horizontally */
+text-align: center; /* Center the text under the icon */
+transition: transform 0.2s ease-in-out; /* Smooth hover effect */
+}
+
+.kategori:hover, .kategori2:hover {
+transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.kategorierContainer i, .kategorContainer2 i {
+font-size: 30px;
+color: #525252;
+margin-bottom: 10px; /* Add space between icon and text */
+}
+
+.kategori a, .kategori2 a {
+text-decoration: none;
+color: black;
+font-size: 16px;
+}
+
+#randomProducts {
+display: flex;
+flex-wrap: wrap;
+justify-content: center;
+gap: 20px;
+padding: 20px;
+margin-top: 20px;
+}
+
+#randomProducts div {
+background-color: white;
+border: 1px solid #ccc;
+border-radius: 8px;
+padding: 15px;
+text-align: center;
+width: 200px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+transition: transform 0.2s ease-in-out;
+}
+
+#randomProducts div:hover {
+transform: scale(1.05);
+}
+
+#randomProducts img {
+width: 100%;
+height: 150px;
+object-fit: cover;
+border-radius: 4px;
+margin-bottom: 10px;
+}
+
+#randomProducts h4 {
+font-size: 18px;
+margin: 10px 0;
+}
+
+#randomProducts p {
+font-size: 16px;
+color: #007bff;
+}
+
+.sold-label {
+color: white;
+background-color: #ff5722;
+padding: 3px 6px;
+border-radius: 4px;
+font-size: 14px;
+font-weight: bold;
+margin-left: 5px;
+}
+
+@media (max-width: 768px) {
+
+    .kategorierContainer, .kategorContainer2 {
+        flex-wrap: nowrap; /* Prevent wrapping */
+        overflow-x: auto; /* Enable horizontal scrolling */
+        justify-content: flex-start; /* Align categories to the start */
+    }
+
+    .kategori, .kategori2 {
+        flex: 0 0 auto; /* Prevent shrinking/growing */
+    }
+
+    .kategorierContainer i, .kategorContainer2 i {
+        font-size: 24px; /* Reduce icon size for mobile */
+    }
+
+    .kategori a, .kategori2 a {
+        font-size: 14px; /* Reduce text size for mobile */
+    }
+
+    .søkeBarContainer input[type="text"] {
+        width: 100%; /* Full width on mobile */
+        height: 50px; /* Reduce height */
+    }
+
+    .search-bar button {
+        height: 50px; /* Match height with input */
+    }
+
+    #randomProducts {
+        flex-direction: column; /* Stack products vertically */
+        align-items: center; /* Center products */
+    }
+
+    #randomProducts div {
+        width: 90%; /* Full width on mobile */
+    }
+}
+    </style>
+</head>
+<body>
+    <%- include('partials/navbar') %>
+    <div class="søkeBarContainer">
+        <form action="/search" method="GET">
+            <div class="search-bar">
+                <input type="text" data-i18n="search.placeholder" placeholder="søk..." name="query" required>
+                <button>
+                    <img src="https://www.svgrepo.com/show/7109/search.svg" alt="Search Icon" style="width: 20px; height: 20px;">
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="kategorierContainer">
+        <div class="kategori">
+            <a href="/torgetkat?category=Torget">
+                <i class="fas fa-chair"></i>
+                <span data-i18n="categories.torget">Torget</span>
+            </a>
+        </div>
+        <div class="kategori">
+            <a href="/torgetkat?category=Bil">
+                <i class="fas fa-car"></i>
+                <span data-i18n="categories.bil">Bil</span>
+            </a>
+        </div>
+        <div class="kategori">
+            <a href="/reise">
+                <i class="fas fa-plane"></i>
+                <span data-i18n="categories.reise">Reise</span>
+            </a>
+        </div>
+        <div class="kategori">
+            <a href="/torgetkat?category=Båt">
+                <i class="fas fa-ship"></i>
+                <span data-i18n="categories.båt">Båt</span>
+            </a>
+        </div>
+        <div class="kategori">
+            <a href="/torgetkat?category=Mc">
+                <i class="fas fa-motorcycle"></i>
+                <span data-i18n="categories.mc">Mc</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="kategorContainer2">
+        <div class="kategori2">
+            <a href="">
+                <i class="fas fa-suitcase-rolling"></i>
+                <span data-i18n="categories.pakkereise">Pakkereise</span>
+            </a>
+        </div>
+        <div class="kategori2">
+            <a href="/torgetkat?category=Jobb">
+                <i class="fas fa-briefcase"></i>
+                <span data-i18n="categories.jobb">Jobb</span>
+            </a>
+        </div>
+        <div class="kategori2">
+            <a href="/torgetkat?category=Eiendom">
+                <i class="fas fa-home"></i>
+                <span data-i18n="categories.eiendom">Eiendom</span>
+            </a>
+        </div>
+        <div class="kategori2">
+            <a href="">
+                <i class="fas fa-laptop"></i>
+                <span data-i18n="categories.ny-brukt elektronikk">Ny-brukt elektronikk</span>
+            </a>
+        </div>
+    </div>
+    </div>
+       <div id="randomProducts" style="display: flex; gap: 20px; padding: 10px; min-height: 100px; overflow-x: auto; justify-content: center;">
+        <div>
+            <img src="path_to_image.jpg" alt="Product Name">
+            <h4>Product Name</h4>
+            <p>Price NOK</p>
+        </div>
+    </div>
+    
+
+
+        <script>
+
+            function loadRandomProducts() {
+                fetch('/api/random-products')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error("Failed to fetch products");
+                        }
+                        return response.json();
+                    })
+                    .then(products => {
+                        const randomProductsContainer = document.getElementById('randomProducts');
+                        randomProductsContainer.innerHTML = ''; // Clear previous content
+                        if (products.length === 0) {
+                            randomProductsContainer.innerHTML = '<p>No products available.</p>';
+                            return;
+                        }
+                        products.forEach(product => {
+
+                           // Check if Images field is defined and not empty
+                        const images = product.Images ? product.Images.split(',') : [];
+                        const firstImage = images.length > 0 ? images[0].trim() : null;
+
+                        if (!firstImage) {
+                            console.log("No image available for product:", product.ProductName);
+                        }
+
+                        const imageUrl = firstImage ? `/uploads/${firstImage}` : '/uploads/default-placeholder.png'; // Use placeholder if no image
+
+                        console.log("Image URL:", imageUrl); // Log the image URL for debugging
+
+
+                            const productDiv = document.createElement('div');
+                            productDiv.style.border = '1px solid #ccc';
+                            productDiv.style.borderRadius = '8px';
+                            productDiv.style.padding = '15px';
+                            productDiv.style.textAlign = 'center';
+                            productDiv.style.minWidth = '150px';
+                            productDiv.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+                            productDiv.style.backgroundColor = '#f9f9f9';
+                            productDiv.style.flexShrink = '0'; // Prevent resizing in flex container 
+
+                            // Add image to the product card
+                            productDiv.innerHTML = `
+                               <img src="${imageUrl}" alt="${product.ProductName}" >
+                                <h4>
+                                ${product.ProductName} 
+                                ${product.Sold ? `<span class="sold-label">(Sold)</span>` : ''}
+                            </h4>
+                                <p>${product.Price} $</p>
+                            `;
+                  
+                            
+                            productDiv.onclick = () => {
+                                window.location.href = `/productDetails?productdID=${product.ProductdID}`;
+                            };
+                            randomProductsContainer.appendChild(productDiv);
+                        });
+                    })
+                    .catch(err => console.error("Error loading products:", err));
+            }
+            window.addEventListener('load', loadRandomProducts);
+        </script>        
+
+        <script>
+
+            document.addEventListener('DOMContentLoaded', () => {
+                i18next
+                    .use(i18nextHttpBackend)
+                    .use(i18nextBrowserLanguageDetector)
+                    .init({
+                        debug: true,
+                        fallbackLng: 'en', // Default language
+                        backend: {
+                            loadPath: '/locales/{{lng}}.json', // Path to translation files
+                        }
+                    }, (err, t) => {
+                        if (err) console.error(err);
+                        updateContent(); // Initial content update
+                    });
+
+                // Event listener for language change
+                document.getElementById('languageSelect').addEventListener('change', (e) => {
+                    const selectedLanguage = e.target.value;
+                    i18next.changeLanguage(selectedLanguage, (err, t) => {
+                        if (err) console.error(err);
+                        updateContent();
+                    });
+                });
+            });
+
+            // Update content dynamically
+            function updateContent() {
+                document.querySelectorAll('[data-i18n]').forEach(element => {
+                    const key = element.getAttribute('data-i18n');
+                    const translation = i18next.t(key);
+                    if (element.tagName === 'INPUT' && element.type === 'text') {
+                        element.placeholder = translation; // Update input placeholders
+                    } else {
+                        element.innerHTML = translation; // Update inner HTML for other elements
+                    }
+                });
+
+               
+            }
+
+            //Use the browser's localStorage to save the user's language preference
+            function setLanguage(language) {
+            // Save to localStorage
+            localStorage.setItem('selectedLanguage', language);
+
+            // Change the language using i18next
+            i18next.changeLanguage(language, (err, t) => {
+                if (err) console.error(err);
+                updateContent();
+            });
+        }
+
+        document.getElementById('languageSelect').addEventListener('change', (e) => {
+            setLanguage(e.target.value);
+        });
+
+
+        </script>
+        
+        
+</body>
+</html>

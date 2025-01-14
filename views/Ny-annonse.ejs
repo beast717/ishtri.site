@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://unpkg.com/i18next/dist/umd/i18next.min.js"></script>
+    <script src="https://unpkg.com/i18next-http-backend/i18nextHttpBackend.min.js"></script>
+    <script src="https://unpkg.com/i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ny annonse</title>
+    <style>
+            
+           
+             /* Category Buttons Styling */
+        .overskrift {
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+            margin-top: 40px;
+            color: black;
+        }
+
+        .kategorierContainer {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-top: 30px;
+        }
+
+        .kategori {
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .kategori i {
+            font-size: 40px;
+            color: #646464;
+            margin-bottom: 10px;
+        }
+
+        .kategori:hover {
+            transform: scale(1.1);
+        }
+
+        .kategori span {
+            font-size: 16px;
+            color: #333;
+        }
+
+        /* Form Container Styling */
+        .formContainer {
+            font-family: Arial, Helvetica, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+            display: none;
+            transition: opacity 0.5s ease;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            margin: 20px auto;
+        }
+
+        .formContainer h3 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .formContainer label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        .formContainer input,
+        .formContainer textarea,
+        .formContainer select {
+            margin-bottom: 15px;
+            padding: 10px;
+            width: 100%;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+
+        .formContainer button {
+            padding: 12px 20px;
+            background-color: #007bff;
+            color: rgb(255, 255, 255);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .formContainer button:hover {
+            background-color: #0056b3;
+        }
+
+
+    </style>
+</head>
+<body>
+
+     <%- include('partials/navbar') %>
+     <!-- Heading -->
+     <div class="overskrift">
+        <h1 data-i18n="form.lag_nyannonse">Lag ny annonse</h1>
+        <h2 data-i18n="form.velg_kat">Velg kategori</h2>
+    </div>
+
+    <!-- Category Selection -->
+    <div class="kategorierContainer">
+        <div class="kategori" onclick="setCategory('Torget')">
+            <i class="fas fa-chair"></i>
+            <span data-i18n="kategori.torget">Torget</span>
+        </div>
+        <div class="kategori" onclick="setCategory('Bil')">
+            <i class="fas fa-car"></i>
+            <span data-i18n="kategori.bil">Bil</span>
+        </div>
+        <div class="kategori" onclick="setCategory('Eiendom')">
+            <i class="fas fa-home"></i>
+            <span data-i18n="kategori.eiendom">Eiendom</span>
+        </div>
+        <div class="kategori" onclick="setCategory('Båt')">
+            <i class="fas fa-ship"></i>
+            <span data-i18n="kategori.båt">Båt</span>
+        </div>
+        <div class="kategori" onclick="setCategory('MC')">
+            <i class="fas fa-motorcycle"></i>
+            <span data-i18n="kategori.mc">MC</span>
+        </div>
+    </div>
+
+    <!-- Form Container -->
+    <div class="formContainer" id="productFormContainer">
+        <h3 data-i18n="form.detaljer">Detaljer for produktet</h3>
+        <form id="productForm" action="/submit-product" method="POST" enctype="multipart/form-data">
+            <label for="ProductName" data-i18n="form.product_name">Produkt navn:</label>
+            <input type="text" id="ProductName" name="ProductName" required>
+
+            <label for="Price" data-i18n="form.price">Pris:</label>
+            <input type="number" id="Price" name="Price" required>
+
+            <label for="Location" data-i18n="form.location">Sted:</label>
+            <input type="text" id="Location" name="Location" required>
+
+            <label for="Description" data-i18n="form.description">Beskrivelse:</label>
+            <textarea id="Description" name="Description" required></textarea>
+
+            <label for="CarBrand" id="carBrandLabel" style="display: none;">Car brand</label>
+            <select id="CarBrand" name="carBrand" style="display: none;">
+                <option value="">None</option>
+                <option value="Toyota">Toyota</option>
+                <option value="Ford">Ford</option>
+                <option value="Volkswagen">Volkswagen</option>
+                <option value="BMW">BMW</option>
+                <option value="Mercedes-Benz">Mercedes-Benz</option>
+                <option value="Audi">Audi</option>
+                <option value="Chevrolet">Chevrolet</option>
+                <option value="Honda">Honda</option>
+                <option value="Hyundai">Hyundai</option>
+                <option value="Nissan">Nissan</option>
+                <option value="Tesla">Tesla</option>
+                <option value="Jeep">Jeep</option>
+                <option value="Mazda">Mazda</option>
+                <option value="Kia">Kia</option>
+                <option value="Subaru">Subaru</option>
+                <option value="Lexus">Lexus</option>
+                <option value="Volvo">Volvo</option>
+                <option value="Jaguar">Jaguar</option>
+                <option value="Porsche">Porsche</option>
+                <option value="Land Rover">Land Rover</option>
+                <option value="Mitsubishi">Mitsubishi</option>
+                <option value="Fiat">Fiat</option>
+                <option value="Peugeot">Peugeot</option>
+                <option value="Renault">Renault</option>
+                <option value="Citroën">Citroën</option>
+                <option value="Škoda">Škoda</option>
+                <option value="Infiniti">Infiniti</option>
+                <option value="Acura">Acura</option>
+                <option value="Alfa Romeo">Alfa Romeo</option>
+                <option value="Aston Martin">Aston Martin</option>
+                <option value="Bentley">Bentley</option>
+                <option value="Bugatti">Bugatti</option>
+                <option value="Cadillac">Cadillac</option>
+                <option value="Chrysler">Chrysler</option>
+                <option value="Dodge">Dodge</option>
+                <option value="Ferrari">Ferrari</option>
+                <option value="GMC">GMC</option>
+                <option value="Hummer">Hummer</option>
+                <option value="Lamborghini">Lamborghini</option>
+                <option value="Lincoln">Lincoln</option>
+                <option value="Maserati">Maserati</option>
+                <option value="McLaren">McLaren</option>
+                <option value="Mini">Mini</option>
+                <option value="Rolls-Royce">Rolls-Royce</option>
+                <option value="Saab">Saab</option>
+                <option value="Scion">Scion</option>
+                <option value="SEAT">SEAT</option>
+                <option value="Smart">Smart</option>
+                <option value="Suzuki">Suzuki</option>
+                <option value="Tata">Tata</option>
+                <option value="Pagani">Pagani</option>
+                <option value="Koenigsegg">Koenigsegg</option>
+                <option value="Genesis">Genesis</option>
+                <option value="MG">MG</option>
+                <option value="Opel">Opel</option>
+                <option value="Daewoo">Daewoo</option>
+                <option value="Isuzu">Isuzu</option>
+                <option value="Geely">Geely</option>
+                <option value="Proton">Proton</option>
+                <option value="Perodua">Perodua</option>
+                <option value="Chery">Chery</option>
+                <option value="BYD">BYD</option>
+                <option value="Great Wall">Great Wall</option>
+                <option value="Mahindra">Mahindra</option>
+                <option value="SsangYong">SsangYong</option>
+                <option value="Lucid">Lucid</option>
+                <option value="Rivian">Rivian</option>
+
+                <!-- Add more brands as needed -->
+            </select>
+
+
+            <label for="SubCategori" data-i18n="form.category" id="subcategoryLabel" style="display: none;">Kategori:</label>
+            <select id="SubCategori" name="SubCategori" style="display: none;">
+                <option value="Elektronikk" data-i18n="subkategori.elektronikk">Elektronikk</option>
+                <option value="Hvitvarer" data-i18n="subkategori.hvitvarer">Hvitvarer</option>
+                <option value="Møbler" data-i18n="subkategori.møbler">Møbler</option>
+                <option value="Klær" data-i18n="subkategori.klær">Klær</option>
+                <option value="Annet" data-i18n="subkategori.annet">Annet</option>
+            </select>
+            
+            <label for="Country" data-i18n="form.country">Land:</label>
+            <select id="Country" name="Country">
+                <option value="" data-i18n="form.ingen">Ingen valgt</option>
+                <option value="United Arab Emirates">United Arab Emirates</option>
+                <option value="Saudi Arabia">Saudi Arabia</option>
+                <option value="Egypt">Egypt</option>
+                <option value="Jordan">Jordan</option>
+                <option value="Qatar">Qatar</option>
+                <option value="Oman">Oman</option>
+                <option value="Kuwait">Kuwait</option>
+                <option value="Bahrain">Bahrain</option>
+                <option value="Iraq">Iraq</option>
+                <option value="Syria">Syria</option>
+                <option value="Lebanon">Lebanon</option>
+                <option value="Yemen">Yemen</option>
+                <option value="Libya">Libya</option>
+                <option value="Sudan">Sudan</option>
+                <option value="Morocco">Morocco</option>
+                <option value="Tunisia">Tunisia</option>
+                <option value="Algeria">Algeria</option>
+                <option value="Palestine">Palestine</option>
+                <option value="Mauritania">Mauritania</option>
+            </select>
+
+            <label for="Images" data-i18n="form.upload_images">Last opp bilder:</label>
+            <input type="file" id="Images" name="Images" multiple>
+
+            <!-- Hidden Category Field -->
+            <input type="hidden" id="Category" name="Category" required>
+
+            <button type="submit" data-i18n="form.submit">Send inn</button>
+        </form>
+    </div>
+        
+        
+        <script>
+            let selectedCategory = '';
+    
+            // Function to set the selected category
+            function setCategory(category) {
+                selectedCategory = category;
+                document.getElementById('Category').value = selectedCategory;
+
+                // Get the subcategory dropdown and label elements
+                const carBrandDropdown = document.getElementById('CarBrand');
+                const carBrandLabel = document.getElementById('carBrandLabel');
+                const subCategoryDropdown = document.getElementById('SubCategori');
+                const subCategoryLabel = document.getElementById('subcategoryLabel');
+
+    
+               // Hide the form container before showing it again with a fade effect
+                const formContainer = document.getElementById('productFormContainer');
+                
+                // Set opacity to 0 to make it disappear
+                formContainer.style.opacity = 0;
+
+                // After the opacity transition, show the form and trigger the fade-in effect
+                setTimeout(() => {
+                    formContainer.style.display = 'block'; // Ensure the form is visible
+                    formContainer.style.transition = 'opacity 0.5s ease';
+                    formContainer.style.opacity = 1; // Fade it in
+
+                    // Conditionally show/hide subcategory dropdown based on the selected category
+                    if (category === 'Torget') {
+                        subCategoryDropdown.style.display = 'block'; // Show dropdown for Torget
+                        subCategoryLabel.style.display = 'block';    // Show label for Torget
+                    } else {
+                        subCategoryDropdown.style.display = 'none'; // Hide dropdown for other categories
+                        subCategoryLabel.style.display = 'none';    // Hide label for other categories
+                    }
+
+                    if (category === 'Bil') {
+                        carBrandDropdown.style.display = 'block';
+                        carBrandLabel.style.display = 'block';
+                    } else {
+                        carBrandDropdown.style.display = 'none';
+                        carBrandLabel.style.display = 'none';
+                    }
+
+                }, 500); // Wait for the previous fade-out effect to complete before fading in
+            }
+    
+            // Form validation before submission
+            document.getElementById('productForm').onsubmit = function(event) {
+                if (!selectedCategory) {
+                    event.preventDefault();
+                    alert('Please select a category!');
+                }
+            };
+        </script>
+        
+        
+</body>
+</html>
