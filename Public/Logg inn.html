@@ -72,19 +72,21 @@
     <!-- Login Form -->
     <div id="loginForm">
         <h2 data-i18n="logg_inn.logg_inn">Logg Inn</h2>
+        <!-- Error message container -->
+        <div id="errorMessage" style="color: red; margin-bottom: 15px; display: none;"></div>
         <div class="form-group">
-            <form action="/login" method="POST">
+            <form id="loginFormElement" action="/login" method="POST">
                 <label for="loginUsername" data-i18n="logg_inn.brukernavn">Brukernavn:</label>
                 <input type="text" id="loginUsername" name="brukernavn" required>
-            </div>
-            <div class="form-group">
-                <label for="loginPassword" data-i18n="logg_inn.passord">Password:</label>
-                <input type="password" id="loginPassword" name="passord" required>
-            </div>
-            <button type="submit" data-i18n="logg_inn.logg_inn">Logg Inn</button>
-            <a href="/forgot-password" class="toggle-link" data-i18n="logg_inn.forgot_password">Forgot Password?</a>
-            <span class="toggle-link" onclick="toggleForms()" data-i18n="logg_inn.lag_konto">Lag en konto</span>
-    </form>
+        </div>
+        <div class="form-group">
+            <label for="loginPassword" data-i18n="logg_inn.passord">Password:</label>
+            <input type="password" id="loginPassword" name="passord" required>
+        </div>
+        <button type="submit" data-i18n="logg_inn.logg_inn">Logg Inn</button>
+        <a href="/forgot-password" class="toggle-link" data-i18n="logg_inn.forgot_password">Forgot Password?</a>
+        <span class="toggle-link" onclick="toggleForms()" data-i18n="logg_inn.lag_konto">Lag en konto</span>
+        </form>
     </div>
 
     <!-- Sign Up Form -->
@@ -115,19 +117,72 @@
 
 
 <script>
-    // Toggle between login and signup forms
-    function toggleForms() {
-        const loginForm = document.getElementById('loginForm');
-        const signupForm = document.getElementById('signupForm');
-        
-        if (loginForm.style.display === 'none') {
-            loginForm.style.display = 'block';
-            signupForm.style.display = 'none';
-        } else {
-            loginForm.style.display = 'none';
-            signupForm.style.display = 'block';
-        }
+     // Function to attach the login form submission handler
+function attachLoginFormListener() {
+    const loginForm = document.getElementById('loginFormElement');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async function (event) {
+            event.preventDefault(); // Prevent the default form submission
+
+            const formData = new FormData(this); // Get form data
+            const data = Object.fromEntries(formData.entries()); // Convert to JSON
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data), // Send form data as JSON
+                });
+
+                if (response.ok) {
+                    // Redirect to the homepage or another page on successful login
+                    window.location.href = '/';
+                } else {
+                    // Display error message if login fails
+                    const errorData = await response.json();
+                    const errorMessage = document.getElementById('errorMessage');
+                    errorMessage.textContent = errorData.message || 'Invalid credentials. Please try again.';
+                    errorMessage.style.display = 'block'; // Show the error message
+
+                    // Re-attach the form submission handler after displaying the error
+                    attachLoginFormListener();
+                }
+            } catch (error) {
+                console.error('Error during login:', error);
+                const errorMessage = document.getElementById('errorMessage');
+                errorMessage.textContent = 'An error occurred. Please try again later.';
+                errorMessage.style.display = 'block'; // Show the error message
+
+                // Re-attach the form submission handler after displaying the error
+                attachLoginFormListener();
+            }
+        });
     }
+}
+
+// Toggle between login and signup forms
+function toggleForms() {
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+
+    if (loginForm.style.display === 'none') {
+        loginForm.style.display = 'block';
+        signupForm.style.display = 'none';
+    } else {
+        loginForm.style.display = 'none';
+        signupForm.style.display = 'block';
+    }
+
+    // Re-attach the login form submission handler after toggling forms
+    attachLoginFormListener();
+}
+
+// Attach the login form submission handler when the page loads
+document.addEventListener('DOMContentLoaded', () => {
+    attachLoginFormListener();
+});
 
      // Language Initialization
         document.addEventListener('DOMContentLoaded', () => {

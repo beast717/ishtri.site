@@ -10,89 +10,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details</title>
     <style>
+        .body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
 
-  .body {
-                font-family: Arial, Helvetica, sans-serif;
-                margin: 0; 
-                padding: 0; 
-            }
+        .navBar {
+            font-family: Arial, Helvetica, sans-serif;
+            width: 100%;
+            height: 60px;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+            border-bottom: 1px solid black;
+        }
 
-            .navBar {
-                font-family: Arial, Helvetica, sans-serif;
-                width: 100%;
-                height: 60px;
-                background-color: white;    
-                display: flex; 
-                align-items: center; 
-                justify-content:space-evenly;
-                border-bottom: 1px solid black;
-                
-            }
+        .navBarButtons {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
 
-            .navBarButtons {
-                display: flex; 
-                align-items: center;
-                gap: 20px;
-            }
+        .navBarButtons a {
+            color: rgb(0, 0, 0);
+            text-decoration: none;
+        }
 
-            .navBarButtons a {
-                color: rgb(0, 0, 0); 
-                text-decoration: none; 
-            }
+        .navBarButtons i {
+            font-size: x-large;
+            color: #a7a7a7;
+        }
 
-            .navBarButtons i {
-                font-size:x-large;
-                color: #a7a7a7;
-            }
+        #profileContainer {
+            display: flex;
+            align-items: center;
+            gap: 1px;
+            position: relative;
+        }
 
-           
-            #profileContainer {
-                display: flex;
-                align-items: center;
-                gap: 1px; 
-                position: relative;
-                
-            }
+        #profileUsername {
+            margin-top: 8px;
+        }
 
-            #profileUsername {
-                margin-top: 8px;
-            }
+        #dropdownMenu {
+            display: none;
+            position: absolute;
+            margin-top: 174px;
+            left: 0;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1;
+            padding: 10px;
+            min-width: 100px;
+        }
 
-            #dropdownMenu {
-                display: none; /* Hidden by default */
-                position: absolute; /* Position relative to #profileContainer */
-                margin-top: 174px; /* Place the menu directly below the container */
-                left: 0; /* Align it to the left edge of the container */
-                background-color: white;
-                border: 1px solid #ccc;
-                box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
-                z-index: 1;
-                padding: 10px;
-                min-width: 100px; /* Ensure a consistent width for the dropdown */
-            }
-            
+        .logoOgTittel img {
+            height: 350px;
+            width: 350px;
+            margin-top: 10px;
+        }
 
-            .logoOgTittel img {
-                height: 350px;
-                width: 350px;
-                margin-top: 10px;
-            }
-
-              .badge {
-                position: absolute; /* Position the badge relative to its parent */
-                top: 0px;          /* Adjust vertically to sit above the icon */
-                right: 0px;        /* Adjust horizontally to sit to the right of the icon */
-                transform: translate(-580%, -30%); /* Fine-tune position to sit on the corner */
-                color: white;       /* White text (if any text inside the badge) */
-                background-color: red; /* Red background */
-                border-radius: 50%; /* Make it circular */
-                width: 12px;        /* Fixed width for the dot */
-                height: 12px;       /* Fixed height for the dot */
-                font-size: 10px;    /* Optional: Adjust font size for text inside */
-                text-align: center; /* Center text inside */
-                line-height: 12px;  /* Match height for centering */
-                display: none;      /* Initially hidden, as set by JavaScript */
-            }
+        .badge {
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            transform: translate(-580%, -30%);
+            color: white;
+            background-color: red;
+            border-radius: 50%;
+            width: 12px;
+            height: 12px;
+            font-size: 10px;
+            text-align: center;
+            line-height: 12px;
+            display: none;
+        }
 
         body {
             font-family: Arial, Helvetica, sans-serif;
@@ -165,10 +160,9 @@
             background-color: #0056b3;
         }
 
-        /* Highlight Sold Label */
         .soldLabel {
             color: #ffffff;
-            background-color: #ff5722; /* Highlight color (e.g., orange) */
+            background-color: #ff5722;
             padding: 5px 8px;
             border-radius: 4px;
             font-size: 16px;
@@ -177,8 +171,51 @@
             display: inline-block;
         }
 
+        /* Custom Modal Styles */
+        #messageModal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 100%;
+        }
 
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
 
+        #sendMessageButton, #cancelMessageButton {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        #sendMessageButton {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #cancelMessageButton {
+            background-color: #ccc;
+            color: black;
+        }
     </style>
 </head>
 <body>
@@ -188,19 +225,13 @@
             <a href="/forside"><img src="ishtri.svg" alt=""></a>
         </div>
         <div class="navBarButtons">
-            <a id="notificationsButton" href="/varslinger"><i class="fas fa-bell"></i> <span data-i18n="navbar.notifications">Varslinger</span>
-</a>
-            <a id="newAdButton" href="/ny-annonse"><i class="fas fa-plus-circle"></i> <span data-i18n="navbar.new_ad">
-            Ny annonse</span>
-</a>
-        <a id="messagesButton" href="/messages" style="position: relative;">
-            <i class="fas fa-envelope"></i> <span data-i18n="navbar.messages">Meldinger</span>
-            <span id="unreadBadge" class="badge">●</span> <!-- Unread badge -->
-        </a>
-                        
-            <a id="loginButton" href="/login"><i class="fas fa-sign-in-alt"></i> <span data-i18n="navbar.log_in">Logg inn</span>
-</a>
-            
+            <a id="notificationsButton" href="/varslinger"><i class="fas fa-bell"></i> <span data-i18n="navbar.notifications">Varslinger</span></a>
+            <a id="newAdButton" href="/ny-annonse"><i class="fas fa-plus-circle"></i> <span data-i18n="navbar.new_ad">Ny annonse</span></a>
+            <a id="messagesButton" href="/messages" style="position: relative;">
+                <i class="fas fa-envelope"></i> <span data-i18n="navbar.messages">Meldinger</span>
+                <span id="unreadBadge" class="badge">●</span>
+            </a>
+            <a id="loginButton" href="/login"><i class="fas fa-sign-in-alt"></i> <span data-i18n="navbar.log_in">Logg inn</span></a>
             <div id="profileContainer" style="display: none;">
                 <img id="profileIcon" src="prrofilepic.svg" alt="..." style="width: 30px; height: 25px; cursor: pointer;">
                 <span id="profileUsername" style="cursor: pointer;">Username</span>
@@ -209,8 +240,18 @@
                     <a href="/mine-annonser" style="display: block; padding: 10px; background-color: rgb(252, 251, 251); color: rgb(0, 0, 0); text-decoration: none; text-align: center; border-top: 1px solid #ccc; cursor: pointer;">Mine Annonser</a>
                 </div>
             </div>
-            </div>
-             </div>
+        </div>
+    </div>
+
+    <!-- Custom Modal for Sending Messages -->
+    <div id="messageModal">
+        <h3>Send Message to Owner</h3>
+        <textarea id="messageInput" rows="5" cols="40" placeholder="Type your message here..."></textarea>
+        <br><br>
+        <button id="sendMessageButton">Send</button>
+        <button id="cancelMessageButton">Cancel</button>
+    </div>
+    <div id="overlay"></div>
 
     <div class="productDetailsContainer">
         <div class="carousel" id="imageCarousel">
@@ -227,84 +268,105 @@
         <button class="sendMessage" id="contactOwner" data-i18n="product_details.contact_owner">Kontakt eier</button>
     </div>
 
-
     <script>
         // Fetch username to toggle login/profile
         fetch('/api/brukernavn')
+            .then(response => response.json())
+            .then(data => {
+                if (data.brukernavn) {
+                    document.getElementById('loginButton').style.display = 'none';
+                    const profileContainer = document.getElementById('profileContainer');
+                    profileContainer.style.display = 'flex';
+                    document.getElementById('profileUsername').textContent = data.brukernavn;
+                    document.getElementById('profileIcon').src = data.profileIconUrl || 'prrofilepic.svg';
+                }
+            });
+
+        // Get references to the modal and overlay
+        const messageModal = document.getElementById('messageModal');
+        const overlay = document.getElementById('overlay');
+        const messageInput = document.getElementById('messageInput');
+        const sendMessageButton = document.getElementById('sendMessageButton');
+        const cancelMessageButton = document.getElementById('cancelMessageButton');
+
+        // Function to show the modal
+        function showMessageModal() {
+            messageModal.style.display = 'block';
+            overlay.style.display = 'block';
+        }
+
+        // Function to hide the modal
+        function hideMessageModal() {
+            messageModal.style.display = 'none';
+            overlay.style.display = 'none';
+            messageInput.value = ''; // Clear the input field
+        }
+
+        // Event listener for the "Contact Owner" button
+        document.getElementById('contactOwner').addEventListener('click', () => {
+            // Check if the user is logged in
+            fetch('/api/brukernavn')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.brukernavn) {
-                        document.getElementById('loginButton').style.display = 'none';
-                        const profileContainer = document.getElementById('profileContainer');
-                        profileContainer.style.display = 'flex';
-                        document.getElementById('profileUsername').textContent = data.brukernavn;
-                        document.getElementById('profileIcon').src = data.profileIconUrl || 'prrofilepic.svg';
-                    }
-                });
-
-                document.getElementById('profileContainer').addEventListener('click', function (event) {
-                const dropdownMenu = document.getElementById('dropdownMenu');
-                const isVisible = dropdownMenu.style.display === 'block';
-                dropdownMenu.style.display = isVisible ? 'none' : 'block';
-
-                // Optional: Prevent event from bubbling up if needed
-                event.stopPropagation();
-            });
-
-            // Close dropdown if clicked outside
-            document.addEventListener('click', function () {
-                const dropdownMenu = document.getElementById('dropdownMenu');
-                dropdownMenu.style.display = 'none';
-            });
-    
-            // Fetch unread messages count
-            function checkUnreadMessages() {
-                fetch('/api/unread-messages-count')
-                    .then(response => response.json())
-                    .then(data => {
-                        const badge = document.getElementById('unreadBadge');
-                        badge.style.display = data.unreadCount > 0 ? 'inline-block' : 'none';
-                    });
-            }
-    
-            // Logout functionality
-            document.getElementById('logoutButton').addEventListener('click', () => {
-                fetch('/logout', { method: 'POST' })
-                    .then(response => {
-                        if (response.ok) window.location.href = '/';
-                    });
-            });
-            
-
-        window.onload = checkUnreadMessages;
-
-            function sendMessage(productdID, messageContent) {
-                fetch('/send-message', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ productdID, messageContent }),
-                })
-                .then(response => {
-                    if (response.ok) {
-                        alert('Message sent successfully!');
+                    if (!data.brukernavn) {
+                        // If the user is not logged in, redirect to the login page
+                        window.location.href = '/login';
                     } else {
-                        response.text().then(text => {
-                            alert('Error: ' + text);
-                        });
+                        // If the user is logged in, show the modal
+                        showMessageModal();
                     }
                 })
                 .catch(error => {
-                    console.error('Error sending message:', error);
-                    alert('An unexpected error occurred.');
+                    console.error('Error checking login status:', error);
                 });
+        });
+
+        // Event listener for the "Send" button in the modal
+        sendMessageButton.addEventListener('click', () => {
+            const messageContent = messageInput.value.trim();
+
+            if (messageContent) {
+                // Send the message if the input is not empty
+                sendMessage(productdID, messageContent);
+                hideMessageModal(); // Hide the modal after sending
+            } else {
+                alert('Please enter a message.'); // Show an alert if the input is empty
             }
+        });
 
-    </script>
-    
+        // Event listener for the "Cancel" button in the modal
+        cancelMessageButton.addEventListener('click', () => {
+            hideMessageModal(); // Hide the modal without sending
+        });
 
-    <script>
+        // Function to send a message
+       function sendMessage(productdID, messageContent) {
+    fetch('/send-message', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productdID, messageContent }),
+    })
+    .then(response => {
+        if (response.ok) {
+            return response.text(); // Parse the response as text
+        } else {
+            return response.text().then(text => {
+                throw new Error(text); // Throw an error with the response text
+            });
+        }
+    })
+    .then(message => {
+        alert(message); // Show success message
+        hideMessageModal(); // Hide the modal after sending
+    })
+    .catch(error => {
+        console.error('Error sending message:', error);
+        alert(error.message); // Show error message to the user
+    });
+}
+        // Fetch product details and populate the page
         const urlParams = new URLSearchParams(window.location.search);
         const productdID = urlParams.get('productdID');
 
@@ -326,7 +388,7 @@
                 document.getElementById('productLocation').textContent = product.Location;
                 document.getElementById('productDescription').textContent = product.Description;
 
-                const images = product.Images.split(',').filter(image => image.trim() !== ''); // Remove empty strings
+                const images = product.Images.split(',').filter(image => image.trim() !== '');
                 const carousel = document.getElementById('imageCarousel');
 
                 // Clear existing images
@@ -337,19 +399,13 @@
                 images.forEach((image, index) => {
                     const img = document.createElement('img');
                     img.src = `/uploads/${image.trim()}`;
-                    if (index === 0) img.classList.add('active'); // Show the first image initially
+                    if (index === 0) img.classList.add('active');
                     carousel.appendChild(img);
                 });
 
                 // Update button visibility
                 updateButtonVisibility(images.length);
-                document.getElementById('contactOwner').addEventListener('click', () => {
-                            const message = prompt('Enter your message:');
-                            if (message) {
-                                sendMessage(productdID, message);
-                            }
-                        });
-                    });
+            });
 
         function prevImage() {
             const images = document.querySelectorAll('.carousel img');
@@ -365,7 +421,6 @@
             images[currentImageIndex].classList.add('active');
         }
 
-        // Function to hide/show buttons based on image count
         function updateButtonVisibility(imageCount) {
             const prevButton = document.querySelector('.carousel .prev');
             const nextButton = document.querySelector('.carousel .next');
@@ -379,9 +434,9 @@
             }
         }
 
-         // Language Initialization
+        // Language Initialization
         document.addEventListener('DOMContentLoaded', () => {
-            const savedLanguage = localStorage.getItem('selectedLanguage') || 'no'; // Default to 'no'
+            const savedLanguage = localStorage.getItem('selectedLanguage') || 'no';
 
             i18next
                 .use(i18nextHttpBackend)
@@ -390,11 +445,11 @@
                     debug: true,
                     fallbackLng: savedLanguage,
                     backend: {
-                        loadPath: '/locales/{{lng}}.json', // Path to your translation JSON files
+                        loadPath: '/locales/{{lng}}.json',
                     }
                 }, (err, t) => {
                     if (err) console.error(err);
-                    updateContent(); // Update page content with translations
+                    updateContent();
                 });
         });
 
@@ -404,14 +459,12 @@
                 const key = element.getAttribute('data-i18n');
                 const translation = i18next.t(key);
                 if (element.tagName === 'INPUT' && element.type === 'text') {
-                    element.placeholder = translation; // Update input placeholders
+                    element.placeholder = translation;
                 } else {
-                    element.innerHTML = translation; // Update other elements
+                    element.innerHTML = translation;
                 }
             });
         }
-
-        
     </script>
 </body>
 </html>

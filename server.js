@@ -165,6 +165,7 @@ app.get('/reset-password', (req, res) => {
 
 
 
+
 // User login route
 app.post('/login', async (req, res) => {
     const { brukernavn, passord } = req.body; // Extracting from request body
@@ -197,7 +198,7 @@ app.post('/login', async (req, res) => {
         // Successful login - set session
         req.session.brukerId = user.brukerId;
         req.session.brukernavn = user.brukernavn;
-        res.redirect('/'); // Redirect to homepage or another page
+        res.status(200).json({ message: 'Login successful.' }); // Send success response
     });
 });
 
@@ -553,21 +554,51 @@ app.post('/send-message', isAuthenticated, (req, res) => {
 
         const receiverId = results[0].brukerId;
 
-        // Insert the message into the database
-        const messageQuery = `
-            INSERT INTO messages (senderId, receiverId, productdID, messageContent, timestamp)
-            VALUES (?, ?, ?, ?, NOW())
-        `;
-        db.query(messageQuery, [senderId, receiverId, productdID, messageContent], (err) => {
+        console.log("Receiver ID:", receiverId); // Log receiverId for debugging
+
+        // Check if the sender is trying to send a message to themselves
+        if (senderId === receiverId) {
+            return res.status(400).send("You cannot send a message to yourself.");
+        }
+
+        // Verify that both senderId and receiverId exist in the brukere table
+        const verifyUsersQuery = 'SELECT brukerId FROM brukere WHERE brukerId IN (?, ?)';
+        db.query(verifyUsersQuery, [senderId, receiverId], (err, userResults) => {
             if (err) {
-                console.error("Error saving message:", err);
-                return res.status(500).send("Error saving message.");
+                console.error("Error verifying users:", err);
+                return res.status(500).send("Error verifying users.");
             }
-            res.status(200).send("Message sent successfully.");
+
+            console.log("User verification results:", userResults); // Log verification results
+
+            if (userResults.length !== 2) {
+                // Check which ID is missing
+                const existingIds = userResults.map(row => row.brukerId);
+                if (!existingIds.includes(senderId)) {
+                    console.error("Invalid senderId:", senderId);
+                    return res.status(400).send("Invalid sender.");
+                }
+                if (!existingIds.includes(receiverId)) {
+                    console.error("Invalid receiverId:", receiverId);
+                    return res.status(400).send("Invalid receiver.");
+                }
+            }
+
+            // Insert the message into the database
+            const messageQuery = `
+                INSERT INTO messages (senderId, receiverId, productdID, messageContent, timestamp)
+                VALUES (?, ?, ?, ?, NOW())
+            `;
+            db.query(messageQuery, [senderId, receiverId, productdID, messageContent], (err) => {
+                if (err) {
+                    console.error("Error saving message:", err);
+                    return res.status(500).send("Error saving message.");
+                }
+                res.status(200).send("Message sent successfully.");
+            });
         });
     });
 });
-
 
 
 
