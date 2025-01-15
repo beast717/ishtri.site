@@ -15,7 +15,6 @@ dotenv.config();
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
-
 app.use(express.json());  // This will also parse incoming JSON
 
 const cors = require('cors');
@@ -36,19 +35,34 @@ app.use(session({
     cookie: { secure: false } // Set to true if using HTTPS
 }));
 
-// MySQL database connection
-const db = mysql.createConnection({
+// MySQL database connection pool
+const pool = mysql.createPool({
     host: process.env.DB_HOST,
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
+    database: process.env.DB_NAME,
+    waitForConnections: true,
+    connectionLimit: 10, // Adjust based on your needs
+    queueLimit: 0,
 });
 
-
-//connect to mysql
-db.connect((err) => {
-    if (err) throw err;
-    console.log("MySQL connected...");
+// Handle MySQL pool errors
+pool.on('error', (err) => {
+    console.error('MySQL pool error:', err);
+    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+        console.log('Reconnecting to MySQL...');
+        // Attempt to reconnect
+        pool.getConnection((err, connection) => {
+            if (err) {
+                console.error('Error reconnecting to MySQL:', err);
+            } else {
+                console.log('Reconnected to MySQL!');
+                connection.release();
+            }
+        });
+    } else {
+        throw err;
+    }
 });
 
 // Set EJS as the default view engine
@@ -73,7 +87,6 @@ const transporter = nodemailer.createTransport({
     },
 });
 
-
 // User signup route
 app.post('/signup', async (req, res) => {
     const { brukernavn, email, passord, confirmPassword } = req.body;
@@ -84,7 +97,7 @@ app.post('/signup', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(passord, 10);
 
-    db.query('INSERT INTO brukere (brukernavn, email, passord) VALUES (?, ?, ?)', 
+    pool.query('INSERT INTO brukere (brukernavn, email, passord) VALUES (?, ?, ?)', 
         [brukernavn, email, hashedPassword], (err, result) => {
             if (err) {
                 console.error("Error inserting user:", err);
@@ -98,7 +111,7 @@ app.post('/signup', async (req, res) => {
 app.post('/forgot-password', (req, res) => {
     const { email } = req.body;
 
-    db.query('SELECT * FROM brukere WHERE email = ?', [email], (err, results) => {
+    pool.query('SELECT * FROM brukere WHERE email = ?', [email], (err, results) => {
         if (err || results.length === 0) {
             return res.status(400).json({ message: 'User not found.' });
         }
@@ -138,7 +151,7 @@ app.post('/reset-password', async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
-    db.query('UPDATE brukere SET passord = ? WHERE email = ?', [hashedPassword, email], (err) => {
+    pool.query('UPDATE brukere SET passord = ? WHERE email = ?', [hashedPassword, email], (err) => {
         if (err) {
             console.error("Error resetting password:", err);
             return res.status(500).send("Error resetting password.");
@@ -166,10 +179,6 @@ app.get('/reset-password', (req, res) => {
     });
 });
 
-
-
-
-
 // User login route
 app.post('/login', async (req, res) => {
     const { brukernavn, passord } = req.body; // Extracting from request body
@@ -179,7 +188,7 @@ app.post('/login', async (req, res) => {
     }
 
     // Query the database for the user with the provided username
-    db.query('SELECT * FROM brukere WHERE brukernavn = ?', [brukernavn], async (err, results) => {
+    pool.query('SELECT * FROM brukere WHERE brukernavn = ?', [brukernavn], async (err, results) => {
         if (err) {
             console.error("Database error:", err);
             return res.status(500).json({ message: 'Database error.' });
@@ -205,8 +214,6 @@ app.post('/login', async (req, res) => {
         res.status(200).json({ message: 'Login successful.' }); // Send success response
     });
 });
-
-
 
 // Route to get the logged-in user's brukernavn
 app.get('/api/brukernavn', (req, res) => {
@@ -295,8 +302,6 @@ app.get('/messages', isAuthenticated, (req, res) => {
     res.render('messages');
 });
 
-
-
 app.get('/api/products', (req, res) => {
     const { countries, category, sortPrice, sortDate, subCategory, carBrand} = req.query; 
     
@@ -332,21 +337,16 @@ app.get('/api/products', (req, res) => {
         orderClauses.push(`COALESCE(Date, '1970-01-01') ${sortDate.toUpperCase()}`);
         orderClauses.push(`Price ${sortPrice.toUpperCase()}`);
     } else if (sortPrice) {
-     
         orderClauses.push(`Price ${sortPrice.toUpperCase()}`);
     } else if (sortDate) {
-      
         orderClauses.push(`COALESCE(Date, '1970-01-01') ${sortDate.toUpperCase()}`);
     }
 
     if (orderClauses.length > 0) {
         query += ` ORDER BY ${orderClauses.join(', ')}`;
     }
- 
 
-
-    
-    db.query(query, params, (err, results) => {
+    pool.query(query, params, (err, results) => {
         if (err) {
             console.error("Error fetching products:", err);
             return res.status(500).json({ error: "Error fetching products." });
@@ -365,7 +365,6 @@ app.get('/api/products', (req, res) => {
     });
 });
 
-
 // Endpoint to serve filtered products by category
 app.get('/torgetkat', (req, res) => {
     const { category } = req.query; // Get category from query parameters
@@ -380,7 +379,7 @@ app.get('/torgetkat', (req, res) => {
     }
 
     // Query the database for filtered products
-    db.query(query, params, (err, results) => {
+    pool.query(query, params, (err, results) => {
         if (err) {
             console.error("Error fetching products:", err);
             return res.status(500).send("Error fetching products.");
@@ -390,8 +389,6 @@ app.get('/torgetkat', (req, res) => {
         res.json(results); // Send the filtered products as a response
     });
 });
-
-
 
 // Serve Torget.html from the 'public' folder for the /torget route
 app.get('/torget', (req, res) => {
@@ -403,7 +400,7 @@ app.get('/api/user-products', isAuthenticated, (req, res) => {
     const userId = req.session.brukerId; // Use the session to get the logged-in user's ID
 
     const query = 'SELECT * FROM products WHERE brukerId = ?';
-    db.query(query, [userId], (err, results) => {
+    pool.query(query, [userId], (err, results) => {
         if (err) {
             console.error("Error fetching user products:", err);
             return res.status(500).json({ error: "Error fetching user products." });
@@ -411,8 +408,6 @@ app.get('/api/user-products', isAuthenticated, (req, res) => {
         res.json(results);
     });
 });
-
-
 
 // Handle form submission
 app.post('/submit-product', isAuthenticated, upload.array('Images', 5), (req, res) => {
@@ -433,7 +428,7 @@ app.post('/submit-product', isAuthenticated, upload.array('Images', 5), (req, re
     const query = 'INSERT INTO products (ProductName, Price, Location, Description, Images, brukerId, category, SubCategori, CarBrand, Country) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
     const values = [ProductName, parseFloat(Price), Location, Description, Images, brukerId, Category, SubCategori, carBrand || null, Country || null];
 
-    db.query(query, values, (err, result) => {
+    pool.query(query, values, (err, result) => {
         if (err) {
             console.error("Error saving product:", err);
             return res.status(500).send("Error saving product.");
@@ -448,7 +443,7 @@ app.get('/search', (req, res) => {
     const sql = "SELECT * FROM products WHERE LOWER(ProductName) LIKE LOWER(?)";
     const values = [`%${searchQuery}%`];
 
-    db.query(sql, values, (err, results) => {
+    pool.query(sql, values, (err, results) => {
         if (err) {
             console.error("Error during search:", err);
             return res.status(500).send("An error occurred during the search.");
@@ -464,7 +459,6 @@ app.get('/search', (req, res) => {
         }
     });
 });
-
 
 // Example of the correct endpoint implementation
 app.get('/api/search', (req, res) => {
@@ -485,7 +479,7 @@ app.get('/api/search', (req, res) => {
     if (sortDate) orderClauses.push(`COALESCE(Date, '1970-01-01') ${sortDate.toUpperCase()}`);
     if (orderClauses.length > 0) sqlQuery += ` ORDER BY ${orderClauses.join(', ')}`;
 
-    db.query(sqlQuery, params, (err, results) => {
+    pool.query(sqlQuery, params, (err, results) => {
         if (err) {
             console.error("Error fetching search results:", err);
             return res.status(500).json({ error: "Failed to fetch search results." });
@@ -495,13 +489,11 @@ app.get('/api/search', (req, res) => {
     });
 });
 
-
-
 // Product Detail Route
 app.get('/product/:productdID', (req, res) => {
     const { productdID } = req.params; // Access productdID from URL params
     const sql = "SELECT * FROM products WHERE productdID = ?";
-    db.query(sql, [productdID], (err, results) => {
+    pool.query(sql, [productdID], (err, results) => {
         if (err) {
             console.error("Error fetching product:", err);
             return res.status(500).send("An error occurred.");
@@ -521,7 +513,7 @@ app.get('/api/product/:productdID', (req, res) => {
     console.log(`Fetching product with ID: ${productdID}`); // Debugging
 
     const query = 'SELECT * FROM products WHERE productdID = ?';
-    db.query(query, [productdID], (err, results) => {
+    pool.query(query, [productdID], (err, results) => {
         if (err) {
             console.error('Database error:', err);
             return res.status(500).json({ error: 'Database error' });
@@ -533,8 +525,6 @@ app.get('/api/product/:productdID', (req, res) => {
         res.json(results[0]);
     });
 });
-
-
 
 // Send a message to the product owner
 app.post('/send-message', isAuthenticated, (req, res) => {
@@ -555,7 +545,7 @@ app.post('/send-message', isAuthenticated, (req, res) => {
 
     // Find the product's owner (receiver)
     const query = 'SELECT brukerId FROM products WHERE productdID = ?';
-    db.query(query, [productdID], (err, results) => {
+    pool.query(query, [productdID], (err, results) => {
         if (err) {
             console.error("Error finding product owner:", err);
             return res.status(500).send("Error finding product owner.");
@@ -576,7 +566,7 @@ app.post('/send-message', isAuthenticated, (req, res) => {
 
         // Verify that both senderId and receiverId exist in the brukere table
         const verifyUsersQuery = 'SELECT brukerId FROM brukere WHERE brukerId IN (?, ?)';
-        db.query(verifyUsersQuery, [senderId, receiverId], (err, userResults) => {
+        pool.query(verifyUsersQuery, [senderId, receiverId], (err, userResults) => {
             if (err) {
                 console.error("Error verifying users:", err);
                 return res.status(500).send("Error verifying users.");
@@ -602,7 +592,7 @@ app.post('/send-message', isAuthenticated, (req, res) => {
                 INSERT INTO messages (senderId, receiverId, productdID, messageContent, timestamp)
                 VALUES (?, ?, ?, ?, NOW())
             `;
-            db.query(messageQuery, [senderId, receiverId, productdID, messageContent], (err) => {
+            pool.query(messageQuery, [senderId, receiverId, productdID, messageContent], (err) => {
                 if (err) {
                     console.error("Error saving message:", err);
                     return res.status(500).send("Error saving message.");
@@ -612,8 +602,6 @@ app.post('/send-message', isAuthenticated, (req, res) => {
         });
     });
 });
-
-
 
 // Get messages for the logged-in user
 app.get('/api/messages', isAuthenticated, (req, res) => {
@@ -626,9 +614,8 @@ app.get('/api/messages', isAuthenticated, (req, res) => {
         JOIN brukere u ON m.senderId = u.brukerId
         WHERE m.receiverId = ?
         ORDER BY m.timestamp DESC
-
     `;
-    db.query(query, [brukerId], (err, results) => {
+    pool.query(query, [brukerId], (err, results) => {
         if (err) {
             console.error("Error fetching messages:", err);
             return res.status(500).send("Error fetching messages.");
@@ -648,7 +635,7 @@ app.get('/api/unread-messages-count', isAuthenticated, (req, res) => {
     const userId = req.session.brukerId;
 
     const query = 'SELECT COUNT(*) AS unreadCount FROM messages WHERE receiverId = ? AND readd = false';
-    db.query(query, [userId], (err, results) => {
+    pool.query(query, [userId], (err, results) => {
         if (err) {
             console.error("Error fetching unread messages count:", err);
             return res.status(500).send("Error fetching unread messages count.");
@@ -665,7 +652,7 @@ app.post('/api/mark-messages-read', isAuthenticated, (req, res) => {
     const { messageId } = req.body;
 
     const query = 'UPDATE messages SET readd = true WHERE receiverId = ? AND messageId = ? AND readd = false';
-    db.query(query, [userId, messageId], (err) => {
+    pool.query(query, [userId, messageId], (err) => {
         if (err) {
             console.error("Error marking messages as read:", err);
             return res.status(500).send("Error marking messages as read.");
@@ -693,7 +680,7 @@ app.post('/reply-message', isAuthenticated, (req, res) => {
         INSERT INTO messages (senderId, receiverId, productdID, messageContent, timestamp)
         VALUES (?, ?, ?, ?, NOW())
     `;
-    db.query(query, [senderId, originalSenderId, productdID, messageContent], (err) => {
+    pool.query(query, [senderId, originalSenderId, productdID, messageContent], (err) => {
         if (err) {
             console.error("Error saving reply message:", err);
             return res.status(500).send("Error saving reply message.");
@@ -711,7 +698,7 @@ app.delete('/api/delete-product/:productdID', isAuthenticated, (req, res) => {
     }
 
     const query = 'DELETE FROM products WHERE productdID = ? AND brukerId = ?';
-    db.query(query, [productdID, userId], (err, result) => {
+    pool.query(query, [productdID, userId], (err, result) => {
         if (err) {
             console.error("Error deleting product:", err);
             return res.status(500).json({ error: "Error deleting product." });
@@ -725,12 +712,11 @@ app.delete('/api/delete-product/:productdID', isAuthenticated, (req, res) => {
     });
 });
 
-
 // Fetch random products
 app.get('/api/random-products', (req, res) => {
     const query = "SELECT ProductdID, ProductName, Price, Sold, Images FROM products ORDER BY RAND() LIMIT 5";
     
-    db.query(query, (err, results) => {
+    pool.query(query, (err, results) => {
         if (err) {
             console.error("Error fetching random products:", err);
             return res.status(500).json({ error: "Error fetching random products." });
@@ -746,7 +732,6 @@ app.get('/api/random-products', (req, res) => {
     });
 });
 
-
 app.put('/api/mark-as-sold/:productdID', isAuthenticated, (req, res) => {
     const { productdID } = req.params;
     console.log("Received Product ID:", productdID);
@@ -757,7 +742,7 @@ app.put('/api/mark-as-sold/:productdID', isAuthenticated, (req, res) => {
     const query = 'UPDATE products SET Sold = true WHERE productdID = ? AND brukerId = ?';
     const params = [productdID, userId];
 
-    db.query(query, params, (err, result) => {
+    pool.query(query, params, (err, result) => {
         if (err) {
             console.error("Error executing query:", err);
             return res.status(500).json({ error: "Failed to mark product as sold." });
@@ -779,7 +764,7 @@ app.put('/api/mark-as-unsold/:productdID', isAuthenticated, (req, res) => {
     const query = 'UPDATE products SET Sold = false WHERE productdID = ? AND brukerId = ?';
     const params = [productdID, req.session.brukerId];
 
-    db.query(query, params, (err, result) => {
+    pool.query(query, params, (err, result) => {
         if (err) {
             console.error("Error marking product as unsold:", err);
             return res.status(500).json({ error: "Failed to mark product as unsold." });
@@ -794,11 +779,3 @@ app.put('/api/mark-as-unsold/:productdID', isAuthenticated, (req, res) => {
         res.status(200).json({ message: "Product marked as unsold." });
     });
 });
-
-
-
-
-
-
-
-
