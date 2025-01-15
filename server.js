@@ -5,6 +5,7 @@ const https = require('https');
 const http = require('http');
 const fs = require('fs');
 const session = require('express-session');
+const MySQLStore = require('express-mysql-session')(session);
 const multer = require('multer');
 const mysql = require('mysql2');
 const bodyParser = require('body-parser');
@@ -28,12 +29,6 @@ app.use(express.static(path.join(__dirname, 'Public')));
 
 app.use('/.well-known', express.static(path.join(__dirname, '.well-known')));
 
-app.use(session({
-    secret: '123',  // Replace with a strong secret in production
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false } // Set to true if using HTTPS
-}));
 
 // MySQL database connection pool
 const pool = mysql.createPool({
@@ -45,6 +40,9 @@ const pool = mysql.createPool({
     connectionLimit: 10, // Adjust based on your needs
     queueLimit: 0,
 });
+
+// Create a MySQL session store
+const sessionStore = new MySQLStore({}, pool);
 
 // Handle MySQL pool errors
 pool.on('error', (err) => {
@@ -64,6 +62,20 @@ pool.on('error', (err) => {
         throw err;
     }
 });
+
+// Configure express-session to use the MySQL store
+app.use(session({
+    store: sessionStore, // Use MySQL to store sessions
+    secret: process.env.SESSION_SECRET, // Use a strong secret from environment variables
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+        maxAge: 24 * 60 * 60 * 1000, // Session expires after 24 hours
+        httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
+        sameSite: 'strict', // Prevent cross-site requests
+    },
+}));
 
 // Set EJS as the default view engine
 app.set('view engine', 'ejs'); // Set the view engine to EJS
