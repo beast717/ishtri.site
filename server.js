@@ -37,8 +37,10 @@ const pool = mysql.createPool({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     waitForConnections: true,
-    connectionLimit: 10, // Adjust based on your needs
+    connectionLimit: 10,
     queueLimit: 0,
+    enableKeepAlive: true, // Enable keep-alive to maintain the connection
+    keepAliveInitialDelay: 10000, // Delay before sending the first keep-alive packet
 });
 
 // Create a MySQL session store
@@ -49,7 +51,6 @@ pool.on('error', (err) => {
     console.error('MySQL pool error:', err);
     if (err.code === 'PROTOCOL_CONNECTION_LOST') {
         console.log('Reconnecting to MySQL...');
-        // Attempt to reconnect
         pool.getConnection((err, connection) => {
             if (err) {
                 console.error('Error reconnecting to MySQL:', err);
