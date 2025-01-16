@@ -65,15 +65,15 @@ pool.on('error', (err) => {
 
 // Configure express-session to use the MySQL store
 app.use(session({
-    store: sessionStore, // Use MySQL to store sessions
-    secret: process.env.SESSION_SECRET, // Use a strong secret from environment variables
+    store: sessionStore,
+    secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
         secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
-        maxAge: 24 * 60 * 60 * 1000, // Session expires after 24 hours
-        httpOnly: true, // Prevent client-side JavaScript from accessing the cookie
-        sameSite: 'strict', // Prevent cross-site requests
+        maxAge: 24 * 60 * 60 * 1000,
+        httpOnly: true,
+        sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax', // Use 'strict' in production, 'lax' in development
     },
 }));
 
@@ -260,6 +260,10 @@ app.post('/logout', (req, res) => {
 // Serve the homepage
 app.get('/', (req, res) => {
      res.render('Forside'); // Renders views/Forside.ejs
+});
+
+app.get('/favorites', isAuthenticated, (req, res) => {
+    res.render('favorites');
 });
 
 app.listen(3000, () => {
@@ -790,4 +794,106 @@ app.put('/api/mark-as-unsold/:productdID', isAuthenticated, (req, res) => {
         console.log("Product successfully marked as unsold.");
         res.status(200).json({ message: "Product marked as unsold." });
     });
+});
+
+// Endpoint to fetch conversation history between two users for a specific product
+app.get('/api/conversation', isAuthenticated, (req, res) => {
+    const { productdID } = req.query;
+    const userId = req.session.brukerId;
+
+    if (!productdID) {
+        return res.status(400).json({ error: "productdID is required." });
+    }
+
+    const query = `
+        SELECT m.messageId, m.senderId, m.receiverId, m.productdID, m.messageContent, m.timestamp, m.readd, 
+               u.brukernavn AS senderName, p.ProductName
+        FROM messages m
+        JOIN brukere u ON m.senderId = u.brukerId
+        JOIN products p ON m.productdID = p.productdID
+        WHERE m.productdID = ? AND (m.senderId = ? OR m.receiverId = ?)
+        ORDER BY m.timestamp ASC
+    `;
+
+    pool.query(query, [productdID, userId, userId], (err, results) => {
+        if (err) {
+            console.error("Error fetching conversation:", err);
+            return res.status(500).json({ error: "Error fetching conversation." });
+        }
+
+        res.json(results);
+    });
+});
+
+app.post('/api/favorite', isAuthenticated, (req, res) => {
+    const { productdID } = req.body;
+    const userId = req.session.brukerId;
+
+    if (!productdID) {
+        return res.status(400).json({ error: "Product ID is required." });
+    }
+
+    const query = 'INSERT INTO favorites (userId, productdID) VALUES (?, ?)';
+    pool.query(query, [userId, productdID], (err, result) => {
+        if (err) {
+            console.error("Error favoriting product:", err);
+            return res.status(500).json({ error: "Error favoriting product." });
+        }
+        res.status(200).json({ message: "Product favorited successfully." });
+    });
+});
+
+// Remove a product from favorites
+app.post('/api/unfavorite', isAuthenticated, (req, res) => {
+    const { productdID } = req.body;
+    const userId = req.session.brukerId;
+
+    if (!productdID) {
+        return res.status(400).json({ error: "Product ID is required." });
+    }
+
+    const query = 'DELETE FROM favorites WHERE userId = ? AND productdID = ?';
+    pool.query(query, [userId, productdID], (err, result) => {
+        if (err) {
+            console.error("Error unfavoriting product:", err);
+            return res.status(500).json({ error: "Error unfavoriting product." });
+        }
+        res.status(200).json({ message: "Product unfavorited successfully." });
+    });
+});
+
+// Get favorited products for the logged-in user
+app.get('/api/favorites', isAuthenticated, (req, res) => {
+    const userId = req.session.brukerId;
+
+    const query = `
+        SELECT p.* 
+        FROM products p
+        JOIN favorites f ON p.productdID = f.productdID
+        WHERE f.userId = ?
+    `;
+    pool.query(query, [userId], (err, results) => {
+        if (err) {
+            console.error("Error fetching favorites:", err);
+            return res.status(500).json({ error: "Error fetching favorites." });
+        }
+        res.json(results);
+    });
+});
+
+app.get('/api/isFavorited', (req, res) => {
+    const { productdID } = req.query;
+    const userId = req.user.id; // Assuming you have user authentication
+
+    // Query the database to check if the product is favorited by the user
+    db.query(
+        'SELECT * FROM favorites WHERE userId = ? AND productdID = ?',
+        [userId, productdID],
+        (err, results) => {
+            if (err) {
+                return res.status(500).json({ error: "Database error" });
+            }
+            res.json({ isFavorited: results.length > 0 });
+        }
+    );
 });

@@ -8,6 +8,7 @@ padding: 0;
 background-color: #f8f9fa;
 }
 
+
 .navBar {
 width: 100%;
 height: 80px;
@@ -164,6 +165,8 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
    
 </style>
 
+<script src="/shared.js"></script>
+
 <!-- Add your HTML here -->
 <div class="navBar">
         <div class="logoOgTittel">
@@ -183,6 +186,10 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
                 <div id="dropdownMenu">
                     <button id="logoutButton" data-i18n="navbar.log_out">Logg ut</button>
                     <a href="/mine-annonser" data-i18n="navbar.mine_annonser">Mine Annonser</a>
+                    <a href="/favorites" class="favorites-link">
+                        <i class="fas fa-heart"></i> <!-- Heart icon -->
+                        <span >Favorites</span>
+                    </a>
                 </div>
             </div>
             <img src="translate.svg" style="width: 30px; height: 25px;">
@@ -196,92 +203,83 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
 
 <script>
 
- // Fetch username to toggle login/profile
-            fetch('/api/brukernavn')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.brukernavn) {
-                        document.getElementById('loginButton').style.display = 'none';
-                        const profileContainer = document.getElementById('profileContainer');
-                        profileContainer.style.display = 'flex';
-                        document.getElementById('profileUsername').textContent = data.brukernavn;
-                        document.getElementById('profileIcon').src = data.profileIconUrl || 'prrofilepic.svg';
-                    }
-                });
-
-                document.getElementById('profileContainer').addEventListener('click', function (event) {
-                const dropdownMenu = document.getElementById('dropdownMenu');
-                const isVisible = dropdownMenu.style.display === 'block';
-                dropdownMenu.style.display = isVisible ? 'none' : 'block';
-
-                // Optional: Prevent event from bubbling up if needed
-                event.stopPropagation();
-            });
-
-            // Close dropdown if clicked outside
-            document.addEventListener('click', function () {
-                const dropdownMenu = document.getElementById('dropdownMenu');
-                dropdownMenu.style.display = 'none';
-            });
-    
-            // Fetch unread messages count
-            function checkUnreadMessages() {
-                fetch('/api/unread-messages-count')
-                    .then(response => response.json())
-                    .then(data => {
-                        const badge = document.getElementById('unreadBadge');
-                        badge.style.display = data.unreadCount > 0 ? 'inline-block' : 'none';
-                    });
+ (function () {
+    // Fetch username to toggle login/profile
+    fetch('/api/brukernavn')
+        .then(response => response.json())
+        .then(data => {
+            if (data.brukernavn) {
+                document.getElementById('loginButton').style.display = 'none';
+                const profileContainer = document.getElementById('profileContainer');
+                profileContainer.style.display = 'flex';
+                document.getElementById('profileUsername').textContent = data.brukernavn;
+                document.getElementById('profileIcon').src = data.profileIconUrl || 'prrofilepic.svg';
             }
-    
-            // Logout functionality
-            document.getElementById('logoutButton').addEventListener('click', () => {
-                fetch('/logout', { method: 'POST' })
-                    .then(response => {
-                        if (response.ok) window.location.href = '/';
-                    });
-            });
-    
-            window.onload = checkUnreadMessages;
-
-            // Language Initialization
-document.addEventListener('DOMContentLoaded', () => {
-    const savedLanguage = localStorage.getItem('selectedLanguage') || 'no'; // Default to 'no'
-
-    i18next
-        .use(i18nextHttpBackend)
-        .use(i18nextBrowserLanguageDetector)
-        .init({
-            debug: true,
-            fallbackLng: savedLanguage,
-            backend: {
-                loadPath: '/locales/{{lng}}.json', // Path to your translation JSON files
-            }
-        }, (err, t) => {
-            if (err) console.error(err);
-            updateContent(); // Update page content with translations
         });
-// Event listener for language change
-                document.getElementById('languageSelect').addEventListener('change', (e) => {
-                    const selectedLanguage = e.target.value;
-                    i18next.changeLanguage(selectedLanguage, (err, t) => {
-                        if (err) console.error(err);
-                        updateContent();
-                    });
-                });
+
+    document.getElementById('profileContainer').addEventListener('click', function (event) {
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const isVisible = dropdownMenu.style.display === 'block';
+        dropdownMenu.style.display = isVisible ? 'none' : 'block';
+        event.stopPropagation();
+    });
+
+    // Close dropdown if clicked outside
+    document.addEventListener('click', function () {
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        dropdownMenu.style.display = 'none';
+    });
+
+
+    // Logout functionality
+    document.getElementById('logoutButton').addEventListener('click', () => {
+        fetch('/logout', { method: 'POST' })
+            .then(response => {
+                if (response.ok) window.location.href = '/';
+            });
+    });
+
+    window.onload = checkUnreadMessages;
+
+    // Language Initialization
+    document.addEventListener('DOMContentLoaded', () => {
+        const savedLanguage = localStorage.getItem('selectedLanguage') || 'no'; // Default to 'no'
+
+        i18next
+            .use(i18nextHttpBackend)
+            .use(i18nextBrowserLanguageDetector)
+            .init({
+                debug: true,
+                fallbackLng: savedLanguage,
+                backend: {
+                    loadPath: '/locales/{{lng}}.json', // Path to your translation JSON files
+                }
+            }, (err, t) => {
+                if (err) console.error(err);
+                updateContent(); // Update page content with translations
             });
 
-// Update Translatable Content
-function updateContent() {
-    document.querySelectorAll('[data-i18n]').forEach(element => {
-        const key = element.getAttribute('data-i18n');
-        const translation = i18next.t(key);
-        if (element.tagName === 'INPUT' && element.type === 'text') {
-            element.placeholder = translation; // Update input placeholders
-        } else {
-            element.innerHTML = translation; // Update other elements
-        }
+        // Event listener for language change
+        document.getElementById('languageSelect').addEventListener('change', (e) => {
+            const selectedLanguage = e.target.value;
+            i18next.changeLanguage(selectedLanguage, (err, t) => {
+                if (err) console.error(err);
+                updateContent();
+            });
+        });
     });
-}
-    
+
+    // Update Translatable Content
+    function updateContent() {
+        document.querySelectorAll('[data-i18n]').forEach(element => {
+            const key = element.getAttribute('data-i18n');
+            const translation = i18next.t(key);
+            if (element.tagName === 'INPUT' && element.type === 'text') {
+                element.placeholder = translation; // Update input placeholders
+            } else {
+                element.innerHTML = translation; // Update other elements
+            }
+        });
+    }
+})();
 </script>

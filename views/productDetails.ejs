@@ -132,11 +132,13 @@
             background-color: #ccc;
             color: black;
         }
+
     </style>
 </head>
 <body>
 
      <%- include('partials/navbar') %>
+     <script src="/shared.js"></script>
 
     <!-- Custom Modal for Sending Messages -->
     <div id="messageModal">
@@ -161,9 +163,12 @@
         <p id="productDescription">Product Description</p>
 
         <button class="sendMessage" id="contactOwner" data-i18n="product_details.contact_owner">Kontakt eier</button>
+        <button id="favoriteButton" class="sendMessage">Favorite</button>
     </div>
 
     <script>
+        (function () {
+
 
         // Get references to the modal and overlay
         const messageModal = document.getElementById('messageModal');
@@ -316,6 +321,108 @@
                 nextButton.style.display = 'block';
             }
         }
+
+     
+    // Existing JavaScript code for product details
+    // ...
+
+    // New JavaScript code for favorites
+  function initializeFavorites() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const productdID = urlParams.get('productdID');
+    const isFavoritedFromURL = urlParams.get('favorited') === 'true'; // Get the favorite status from the URL
+
+    const favoriteButton = document.getElementById('favoriteButton');
+
+    // Set the initial state of the favorite button based on the URL parameter
+    if (isFavoritedFromURL) {
+        favoriteButton.textContent = 'Unfavorite';
+        favoriteButton.classList.add('unfavorite');
+    } else {
+        favoriteButton.textContent = 'Favorite';
+        favoriteButton.classList.remove('unfavorite');
+    }
+
+    // Check if the product is favorited by the user (from the backend)
+    function checkIfFavorited(productdID) {
+        fetch('/api/favorites')
+            .then(response => response.json())
+            .then(favorites => {
+                const isFavorited = favorites.some(product => product.ProductdID === Number(productdID));
+                if (isFavorited) {
+                    favoriteButton.textContent = 'Unfavorite';
+                    favoriteButton.classList.add('unfavorite');
+                } else {
+                    favoriteButton.textContent = 'Favorite';
+                    favoriteButton.classList.remove('unfavorite');
+                }
+            })
+            .catch(error => console.error("Error checking favorites:", error));
+    }
+
+    // Call this function when the page loads
+    checkIfFavorited(productdID);
+}
+
+    // Toggle favorite/unfavorite
+favoriteButton.addEventListener('click', () => {
+    const isFavorited = favoriteButton.classList.contains('unfavorite');
+
+    if (isFavorited) {
+        favoriteButton.textContent = 'Favorite';
+        favoriteButton.classList.remove('unfavorite');
+        fetch('/api/unfavorite', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ productdID }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            
+        })
+        .catch(error => {
+            console.error("Error unfavoriting product:", error);
+            alert("Failed to unfavorite product. Please try again.");
+        });
+    } else {
+        favoriteButton.textContent = 'Unfavorite';
+        favoriteButton.classList.add('unfavorite');
+        fetch('/api/favorite', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ productdID }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            
+        })
+        .catch(error => {
+            console.error("Error favoriting product:", error);
+            alert("Failed to favorite product. Please try again.");
+        });
+    }
+});
+
+    // Initialize favorites after the page loads
+    window.addEventListener('load', initializeFavorites);
+    window.onload = function () {
+    checkUnreadMessages(); // Check for unread messages
+};
+})();
 
         
     </script>

@@ -10,11 +10,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TorgetKat</title>
     <style>           
-
-            h1 {
+        h1 {
             text-align: center;
             margin-bottom: 20px;
-            }
+        }
 
         .productsContainer {
             margin-top: -27px;
@@ -56,16 +55,14 @@
             margin-top: 20px;
         }
 
-        /* Style for the filter container */
         .filter-container {
             display: flex;
             align-items: center;
-            gap: 10px; /* Spacing between label and dropdown */
+            gap: 10px;
             margin-top: 10px;
             font-family: 'Arial', sans-serif;
         }
 
-        /* Style for the label */
         .filter-container label {
             font-size: 13px;
             color: #333;
@@ -73,90 +70,84 @@
         }
 
         #priceFilter, #dateFilter, #subCategoryFilter {
-        padding: 7px;
-        font-size: 13px;
-        border-radius: 4px;
-        background-color: #f9f9f9;
-        transition: background-color 0.3s ease, border-color 0.3s ease;
-        cursor: pointer;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    }
+            padding: 7px;
+            font-size: 13px;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
 
-           /* Style for the page container */
         .page-container {
-            display: flex; /* Enable horizontal layout */
-            gap: 20px; /* Add space between side panel and products */
+            display: flex;
+            gap: 20px;
             padding: 20px;
         }
 
-/* Adjust side panel styling */
-.side-panel {
-    font-family: Arial, Helvetica, sans-serif;;
-    width: 250px;
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    flex-shrink: 0; /* Prevent shrinking when the screen size is smaller */
-}
+        .side-panel {
+            font-family: Arial, Helvetica, sans-serif;
+            width: 250px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
 
-.side-panel h3 {
-    margin-bottom: 15px;
-    font-size: 18px;
-    color: #333;
-    text-align: center;
-}
+        .side-panel h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #333;
+            text-align: center;
+        }
 
-.country-list, .car-brand-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
+        .country-list, .car-brand-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
 
+        .country-list li, .car-brand-list li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+        }
 
-.country-list li, .car-brand-list li {
-    margin-bottom: 10px;
-    display: flex;
-    align-items: center;
-}
+        .country-list input[type="checkbox"], .car-brand-list input[type="checkbox"] {
+            margin-right: 10px;
+            cursor: pointer;
+        }
 
-/* Style for the checkbox and labels */
-.country-list input[type="checkbox"], .car-brand-list input[type="checkbox"] {
-    margin-right: 10px;
-    cursor: pointer;
-}
+        .country-list label, .car-brand-list label {
+            font-size: 16px;
+            color: #555;
+            cursor: pointer;
+        }
 
-.country-list label, .car-brand-list label {
-    font-size: 16px;
-    color: #555;
-    cursor: pointer;
-}
+        .country-list label:hover, .car-brand-list label:hover {
+            color: #007bff;
+        }
 
-/* Hover effect on labels */
-.country-list label:hover, .car-brand-list label:hover {
-    color: #007bff;
-}
+        .sold-label {
+            color: #ffffff;
+            background-color: #ff5722;
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 5px;
+            display: inline-block;
+        }
 
-/* Highlight Sold Label */
-.sold-label {
-    color: #ffffff;
-    background-color: #ff5722; /* Highlight color (e.g., orange) */
-    padding: 3px 6px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: bold;
-    margin-left: 5px;
-    display: inline-block;
-}
-
-   
+        
     </style>
 </head>
 <body>
-     <%- include('partials/navbar') %>
+    <%- include('partials/navbar') %>
+    <script src="/shared.js"></script>
 
-    <!-- Price Filter Dropdown -->
     <div class="filter-container" style="margin-bottom: 20px;">
         <label for="priceFilter" data-i18n="filter.sorter_etter">Sorter etter:</label>
         <select id="priceFilter" onchange="applyFilters()">
@@ -203,12 +194,11 @@
                 <li><input type="checkbox" id="morocco" value="Morocco"> <label for="morocco">Morocco</label></li>
                 <li><input type="checkbox" id="tunisia" value="Tunisia"> <label for="tunisia">Tunisia</label></li>
                 <li><input type="checkbox" id="algeria" value="Algeria"> <label for="algeria">Algeria</label></li>
-                <li><input type="checkbox" id="Palestine" value="Palestine"> <label for="Palestine">palestine</label></li>
+                <li><input type="checkbox" id="Palestine" value="Palestine"> <label for="Palestine">Palestine</label></li>
                 <li><input type="checkbox" id="Mauritania" value="Mauritania"> <label for="Mauritania">Mauritania</label></li>
-                </ul>
-            <!-- Add below the country-list section -->
+            </ul>
             <h3 id="filterCar">Filter Car</h3>
-            <ul class="car-brand-list" id= "kjørr">
+            <ul class="car-brand-list" id="kjørr">
                 <li><input type="checkbox" id="toyota" value="Toyota"> <label for="toyota">Toyota</label></li>
                 <li><input type="checkbox" id="ford" value="Ford"> <label for="ford">Ford</label></li>
                 <li><input type="checkbox" id="volkswagen" value="Volkswagen"> <label for="volkswagen">Volkswagen</label></li>
@@ -276,137 +266,238 @@
                 <li><input type="checkbox" id="ssangyong" value="SsangYong"> <label for="ssangyong">SsangYong</label></li>
                 <li><input type="checkbox" id="lucid" value="Lucid"> <label for="lucid">Lucid</label></li>
                 <li><input type="checkbox" id="rivian" value="Rivian"> <label for="rivian">Rivian</label></li>
-
-
             </ul>
-
         </div>
 
         <div class="productsContainer" id="productsContainer">
             <p>Loading products...</p>
         </div>
+    </div>
 
     <script>
+        (function () {
+    console.log("Initializing TorgetKat page...");
 
+    function fetchProducts(priceOrder = 'asc', selectedCountries = [], dateOrder = 'desc', subCategory = '', selectedCarBrands = []) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('category') || 'default';
 
-// Fetch products based on selected filters
-function fetchProducts(priceOrder = 'asc', selectedCountries = [], dateOrder = 'desc', subCategory = '', selectedCarBrands = []) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const category = urlParams.get('category') || 'default';
+        let apiUrl = `/api/products?category=${category}`;
+        if (subCategory) apiUrl += `&subCategory=${subCategory}`;
+        if (priceOrder) apiUrl += `&sortPrice=${priceOrder}`;
+        if (dateOrder) apiUrl += `&sortDate=${dateOrder}`;
+        if (selectedCountries.length) apiUrl += `&countries=${selectedCountries.join(',')}`;
+        if (selectedCarBrands.length) apiUrl += `&carBrand=${selectedCarBrands.join(',')}`;
 
-    // Construct the API URL with filters
-    let apiUrl = `/api/products?category=${category}`;
-    if (subCategory) apiUrl += `&subCategory=${subCategory}`;
-    if (priceOrder) apiUrl += `&sortPrice=${priceOrder}`;
-    if (dateOrder) apiUrl += `&sortDate=${dateOrder}`;
-    if (selectedCountries.length) apiUrl += `&countries=${selectedCountries.join(',')}`;
-    if (selectedCarBrands.length) apiUrl += `&carBrand=${selectedCarBrands.join(',')}`;
+        console.log("Fetching products from:", apiUrl);
 
-    console.log("API URL:", apiUrl); // Debug log the constructed URL
-
-    fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            return response.json();
-        })
-        .then(products => {
-            console.log("Fetched products:", products);
-            displayProducts(products);
-        })
-        .catch(error => {
-            console.error("Error fetching products:", error);
-            const container = document.getElementById('productsContainer');
-            container.innerHTML = `<p class="no-products">Error loading products: ${error.message}</p>`;
-        });
-}
-
-// Display products in the DOM
-function displayProducts(products) {
-    const container = document.getElementById('productsContainer');
-    container.innerHTML = ''; // Clear existing content
-
-    if (products.length === 0) {
-        container.innerHTML = '<p class="no-products">No products found for this category.</p>';
-        return;
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+            .then(products => {
+                console.log("Fetched products:", products);
+                displayProducts(products);
+            })
+            .catch(error => {
+                console.error("Error fetching products:", error);
+                const container = document.getElementById('productsContainer');
+                if (container) {
+                    container.innerHTML = `<p class="no-products">Error loading products: ${error.message}</p>`;
+                } else {
+                    console.error("productsContainer element not found!");
+                }
+            });
     }
 
-    products.forEach(product => {
-        const productDiv = document.createElement('div');
-        productDiv.className = 'product';
+    function displayProducts(products) {
+        const container = document.getElementById('productsContainer');
+        if (!container) {
+            console.error("productsContainer element not found!");
+            return;
+        }
 
-        productDiv.innerHTML = `
-            <img src="/uploads/${product.Images.split(',')[0]}" alt="${product.ProductName}">
-            <div>
-                <h3>
-                    ${product.ProductName} 
-                    ${product.Sold ? `<span class="sold-label">(Sold)</span>` : ''}
-                </h3>
-                <p><strong>Price:</strong> ${product.Price} $</p>
-                <p><strong>Location:</strong> ${product.Location}</p>
-            </div>
-        `;
+        container.innerHTML = '';
 
-        productDiv.addEventListener('click', () => {
-            window.location.href = `/productDetails?productdID=${product.ProductdID}`;
+        if (products.length === 0) {
+            container.innerHTML = '<p class="no-products">No products found for this category.</p>';
+            return;
+        }
+
+        products.forEach(product => {
+            const productDiv = document.createElement('div');
+            productDiv.className = 'product';
+
+            const images = product.Images ? product.Images.split(',') : [];
+            const firstImage = images.length > 0 ? `/uploads/${images[0].trim()}` : '/uploads/default-placeholder.png';
+
+            productDiv.innerHTML = `
+                <img src="${firstImage}" alt="${product.ProductName}">
+                <i class="fas fa-heart favorite-icon" data-product-id="${product.ProductdID}"></i>
+                <div>
+                    <h3>
+                        ${product.ProductName} 
+                        ${product.Sold ? `<span class="sold-label">(Sold)</span>` : ''}
+                    </h3>
+                    <p><strong>Price:</strong> ${product.Price} $</p>
+                    <p><strong>Location:</strong> ${product.Location}</p>
+                </div>
+            `;
+
+           productDiv.addEventListener('click', () => {
+            const favoriteIcon = productDiv.querySelector('.favorite-icon');
+            const isFavorited = favoriteIcon.classList.contains('favorited'); // Check if the product is favorited
+            window.location.href = `/productDetails?productdID=${product.ProductdID}&favorited=${isFavorited}`;
         });
 
-        container.appendChild(productDiv);
+            container.appendChild(productDiv);
+        });
+
+        initializeFavorites();
+
+        document.querySelectorAll('.favorite-icon').forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const productdID = icon.getAttribute('data-product-id');
+                const isFavorited = icon.classList.contains('favorited');
+
+                if (isFavorited) {
+                    fetch('/api/unfavorite', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ productdID }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        icon.classList.remove('favorited');
+                        icon.style.color = '#ccc';
+                    })
+                    .catch(error => console.error("Error unfavoriting product:", error));
+                } else {
+                    fetch('/api/favorite', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ productdID }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        icon.classList.add('favorited');
+                        icon.style.color = '#ff4757';
+                    })
+                    .catch(error => console.error("Error favoriting product:", error));
+                }
+            });
+        });
+
+        
+    }
+
+    let favoritesInitialized = false; // Track if favorites have been initialized
+
+    function initializeFavorites() {
+    fetch('/api/favorites')
+        .then(response => response.json())
+        .then(favorites => {
+
+            // Loop through all favorite icons and update their state
+            document.querySelectorAll('.favorite-icon').forEach(icon => {
+                const productdID = icon.getAttribute('data-product-id');
+                const isFavorited = favorites.some(product => product.ProductdID === Number(productdID));
+
+                if (isFavorited) {
+                    icon.classList.add('favorited');
+                    icon.style.color = '#ff4757'; // Red color for favorited products
+                } else {
+                    icon.classList.remove('favorited');
+                    icon.style.color = '#ccc'; // Default color for non-favorited products
+                }
+            });
+        })
+        .catch(error => console.error("Error checking favorites:", error));
+}
+
+    function applyFilters() {
+        console.log("Applying filters...");
+
+        const selectedCarBrands = Array.from(document.querySelectorAll('.car-brand-list input[type="checkbox"]:checked'))
+            .map(checkbox => checkbox.value);
+        const priceOrder = document.getElementById('priceFilter').value;
+        const dateOrder = document.getElementById('dateFilter').value;
+        const subCategory = document.getElementById('subCategoryFilter')?.value || '';
+        const selectedCountries = Array.from(document.querySelectorAll('.country-list input[type="checkbox"]:checked'))
+            .map(checkbox => checkbox.value);
+
+        console.log("Selected filters:", { priceOrder, selectedCountries, dateOrder, subCategory, selectedCarBrands });
+
+        fetchProducts(priceOrder, selectedCountries, dateOrder, subCategory, selectedCarBrands);
+    }
+
+    const priceFilter = document.getElementById('priceFilter');
+    const dateFilter = document.getElementById('dateFilter');
+    const subCategoryFilter = document.getElementById('subCategoryFilter');
+
+    if (priceFilter && dateFilter && subCategoryFilter) {
+        priceFilter.addEventListener('change', applyFilters);
+        dateFilter.addEventListener('change', applyFilters);
+        subCategoryFilter.addEventListener('change', applyFilters);
+    } else {
+        console.error("One or more filter elements not found!");
+    }
+
+    document.querySelectorAll('.country-list input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', applyFilters);
     });
-}
 
-// Unified filter handling
-function applyFilters() {
-    const selectedCarBrands = Array.from(document.querySelectorAll('.car-brand-list input[type="checkbox"]:checked'))
-        .map(checkbox => checkbox.value);
-    const priceOrder = document.getElementById('priceFilter').value;
-    const dateOrder = document.getElementById('dateFilter').value;
-    const subCategory = document.getElementById('subCategoryFilter')?.value || '';
-    const selectedCountries = Array.from(document.querySelectorAll('.country-list input[type="checkbox"]:checked'))
-        .map(checkbox => checkbox.value);
+    document.querySelectorAll('.car-brand-list input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', applyFilters);
+    });
 
-    fetchProducts(priceOrder, selectedCountries, dateOrder, subCategory, selectedCarBrands);
-}
+    window.onload = function () {
+        console.log("Page loaded. Initializing...");
 
-// Attach event listeners to filters
-document.getElementById('priceFilter').addEventListener('change', applyFilters);
-document.getElementById('dateFilter').addEventListener('change', applyFilters);
-document.querySelectorAll('.country-list input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', applyFilters);
-});
-document.querySelectorAll('.car-brand-list input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', applyFilters);
-});
+        checkUnreadMessages();
 
-// Initialize page
-window.onload = function () {
-    checkUnreadMessages();
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('category') || 'default';
+        const subcategoryFilterContainer = document.getElementById('subcategoryFilterContainer');
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const category = urlParams.get('category') || 'default';
-    const subcategoryFilterContainer = document.getElementById('subcategoryFilterContainer');
+        if (category === 'Torget') {
+            if (subcategoryFilterContainer) {
+                subcategoryFilterContainer.style.display = 'block';
+            } else {
+                console.error("subcategoryFilterContainer element not found!");
+            }
+        } else {
+            if (subcategoryFilterContainer) {
+                subcategoryFilterContainer.style.display = 'none';
+            }
+        }
 
-    if (category === 'Torget') {
-        subcategoryFilterContainer.style.display = 'block';
-    } else {
-        subcategoryFilterContainer.style.display = 'none';
-    }
+        const carBrandDropdown = document.getElementById('kjørr');
+        const carBrandLabel = document.getElementById('filterCar');
 
-    const carBrandDropdown = document.getElementById('kjørr');
-    const carBrandLabel = document.getElementById('filterCar');
+        if (category === 'Bil') {
+            if (carBrandDropdown && carBrandLabel) {
+                carBrandDropdown.style.display = 'block';
+                carBrandLabel.style.display = 'block';
+            } else {
+                console.error("carBrandDropdown or carBrandLabel element not found!");
+            }
+        } else {
+            if (carBrandDropdown && carBrandLabel) {
+                carBrandDropdown.style.display = 'none';
+                carBrandLabel.style.display = 'none';
+            }
+        }
 
-    if (category === 'Bil') {
-        carBrandDropdown.style.display = 'block';
-        carBrandLabel.style.display = 'block';
-                        
-    } else {
-        carBrandDropdown.style.display = 'none';
-        carBrandLabel.style.display = 'none';
-                        
-    }
-
-    applyFilters();
-};
-
-</script>
+        applyFilters();
+    };
+})();
+    </script>
 </body>
 </html>
