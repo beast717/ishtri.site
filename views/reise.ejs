@@ -11,33 +11,58 @@
     <title>Flight Search</title>
     <style>
 
+        .form-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Full viewport height */
+            padding: 20px; /* Add some padding for smaller screens */
+        }
+
         
 
         .flight-search-form {
             max-width: 500px;
-            margin: 50px auto;
+            width: 100%;
             background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .flight-search-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: #333;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
         }
 
         .form-group input, .form-group select, .form-group button {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
             font-size: 16px;
+            color: #333;
+            background-color: #f9f9f9;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+            outline: none;
         }
 
         .form-group button {
@@ -45,6 +70,7 @@
             color: #fff;
             border: none;
             cursor: pointer;
+            font-weight: 600;
             transition: background-color 0.3s;
         }
 
@@ -58,13 +84,13 @@
             margin: 0;
             max-height: 200px;
             overflow-y: auto;
-            border: 1px solid #ccc;
+            border: 1px solid #ddd;
             background-color: #fff;
             position: absolute;
-            width: 100%;
+            width: calc(100% - 24px);
             z-index: 10;
-            border-radius: 4px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 6px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             display: none;
         }
 
@@ -72,21 +98,53 @@
             padding: 10px;
             cursor: pointer;
             font-size: 14px;
+            color: #333;
+            transition: background-color 0.3s;
         }
 
         .suggestions-list li:hover {
-            background-color: #e9ecef;
+            background-color: #f1f1f1;
         }
 
+        .form-group input::placeholder {
+            color: #999;
+        }
+
+        .form-group select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007BFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 12px;
+        }
+
+        .form-group select:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+        }
+
+        .form-group button {
+            margin-top: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .flight-search-form {
+                padding: 20px;
+            }
+
+            .form-group input, .form-group select, .form-group button {
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 
 <body>
-     <%- include('partials/navbar') %>
+    <%- include('partials/navbar') %>
+     <div class="form-container">
     <div class="flight-search-form">
-        <h2 style="text-align: center;">Søk etter flygninger</h2>
+        <h2>Søk etter flygninger</h2>
         <form id="flightSearchForm">
-
             <!-- Trip Type -->
             <div class="form-group">
                 <label for="tripType">Reise type:</label>
@@ -128,6 +186,7 @@
             </div>
         </form>
     </div>
+      </div>
 
     <script>
         let airports = [];
@@ -229,11 +288,10 @@
         });
 
         // Handle trip type toggle
-       document.getElementById('tripType').addEventListener('change', (e) => {
-        const returnDateGroup = document.getElementById('returnDateGroup');
-        returnDateGroup.style.display = e.target.value === 'roundtrip' ? 'block' : 'none';
-    });
-
+        document.getElementById('tripType').addEventListener('change', (e) => {
+            const returnDateGroup = document.getElementById('returnDateGroup');
+            returnDateGroup.style.display = e.target.value === 'roundtrip' ? 'block' : 'none';
+        });
 
         // Attach input event listeners
         document.getElementById('departure').addEventListener('input', (e) => {
@@ -242,18 +300,13 @@
 
         document.getElementById('arrival').addEventListener('input', (e) => {
             filterAirports(e.target.value, false);
-        });        
+        });
 
-    
-    
-          // Search page logic (e.g., airport loading or other functions)
-            window.addEventListener('load', () => {
-                loadAirports(); // Example: Load airports for autocomplete
-                console.log("Search page logic executed.");
-            });
-
-
+        // Search page logic (e.g., airport loading or other functions)
+        window.addEventListener('load', () => {
+            loadAirports(); // Example: Load airports for autocomplete
+            console.log("Search page logic executed.");
+        });
     </script>
-
 </body>
 </html>

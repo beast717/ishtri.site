@@ -183,6 +183,13 @@
             </ul>
         </div>
 
+        <div class="filter-container" style="margin-bottom: 20px;">
+    <label for="cityFilter" data-i18n="filter.city">City:</label>
+    <select id="cityFilter" onchange="applyFilters()" style="display: none;">
+        <option value="">All Cities</option>
+    </select>
+</div>
+
         <div class="productsContainer" id="productsContainer">
             <p>Loading products...</p>
         </div>
@@ -363,6 +370,31 @@ document.addEventListener('click', (e) => {
             .catch(error => console.error("Error favoriting product:", error));
         }
     }
+});
+
+document.querySelectorAll('.country-list input[type="checkbox"]').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        const selectedCountry = this.value;
+        const cityFilter = document.getElementById('cityFilter');
+
+        if (this.checked && selectedCountry) {
+            fetch(`/api/cities?country=${selectedCountry}`)
+                .then(response => response.json())
+                .then(cities => {
+                    cityFilter.innerHTML = '<option value="">All Cities</option>';
+                    cities.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city.cityName;
+                        option.textContent = city.cityName;
+                        cityFilter.appendChild(option);
+                    });
+                    cityFilter.style.display = 'block';
+                })
+                .catch(error => console.error("Error fetching cities:", error));
+        } else {
+            cityFilter.style.display = 'none';
+        }
+    });
 });
     </script>
 </body>

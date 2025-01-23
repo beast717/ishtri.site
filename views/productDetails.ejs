@@ -88,54 +88,100 @@
         }
 
         /* Custom Modal Styles */
-        #messageModal {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border: 1px solid #ccc;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            border-radius: 8px;
-            max-width: 400px;
-            width: 100%;
-        }
+#messageModal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px;
+    border: 1px solid #e0e0e0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 101; /* Above the overlay */
+    border-radius: 8px;
+    max-width: 400px;
+    width: 90%;
+    font-family: Arial, sans-serif;
+}
 
-        #overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
+#overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    backdrop-filter: blur(5px); /* Add blur effect to the background */
+}
 
-        #sendMessageButton, #cancelMessageButton {
-            padding: 10px 20px;
-            margin: 5px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+#messageModal h3 {
+    margin-top: 0;
+    font-size: 20px;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
 
-        #sendMessageButton {
-            background-color: #007bff;
-            color: white;
-        }
+#messageInput {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.5;
+    resize: vertical;
+    margin-bottom: 20px;
+    box-sizing: border-box;
+}
 
-        #cancelMessageButton {
-            background-color: #ccc;
-            color: black;
-        }
+#messageInput:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+#sendMessageButton, #cancelMessageButton {
+    padding: 10px 20px;
+    margin: 5px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+#sendMessageButton {
+    background-color: #007bff;
+    color: white;
+}
+
+#sendMessageButton:hover {
+    background-color: #0056b3;
+}
+
+#cancelMessageButton {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+#cancelMessageButton:hover {
+    background-color: #e0e0e0;
+}
+
+/* Button Container for Alignment */
+#messageModal .button-container {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
 
     </style>
 </head>
 <body>
+    <div class="page-content">
 
      <%- include('partials/navbar') %>
      <script src="/shared.js"></script>
@@ -165,9 +211,23 @@
         <button class="sendMessage" id="contactOwner" data-i18n="product_details.contact_owner">Kontakt eier</button>
         <button id="favoriteButton" class="sendMessage">Favorite</button>
     </div>
+    </div>
 
     <script>
         (function () {
+
+            // Function to show the modal
+function showMessageModal() {
+    document.getElementById('messageModal').style.display = 'block';
+    document.getElementById('overlay').style.display = 'block';
+}
+
+// Function to hide the modal
+function hideMessageModal() {
+    document.getElementById('messageModal').style.display = 'none';
+    document.getElementById('overlay').style.display = 'none';
+    document.getElementById('messageInput').value = ''; // Clear the input field
+}
 
 
         // Get references to the modal and overlay

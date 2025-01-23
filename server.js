@@ -320,48 +320,92 @@ app.get('/messages', isAuthenticated, (req, res) => {
 });
 
 app.get('/api/products', (req, res) => {
-    const { countries, category, sortPrice, sortDate, subCategory, carBrand} = req.query; 
-    
+    const category = req.query.category || 'default';
+    const sortPrice = req.query.sortPrice || 'asc';
+    const sortDate = req.query.sortDate || 'desc';
+    const countries = req.query.countries ? req.query.countries.split(',') : [];
+    const cities = req.query.city ? req.query.city.split(',') : [];
+    const subCategory = req.query.subCategory || '';
+    const carBrand = req.query.carBrand ? req.query.carBrand.split(',') : [];
+
+    // List of all 22 Arab League countries
+    const arabicCountries = [
+        "Algeria",
+        "Bahrain",
+        "Comoros",
+        "Djibouti",
+        "Egypt",
+        "Iraq",
+        "Jordan",
+        "Kuwait",
+        "Lebanon",
+        "Libya",
+        "Mauritania",
+        "Morocco",
+        "Oman",
+        "Palestine",
+        "Qatar",
+        "Saudi Arabia",
+        "Somalia",
+        "Sudan",
+        "Syria",
+        "Tunisia",
+        "United Arab Emirates",
+        "Yemen"
+    ];
+
     let query = "SELECT * FROM products WHERE 1=1";
     const params = [];
 
-    // Apply category filter if present
-    if (category) {
+    // Category filter
+    if (category && category !== 'default') {
         query += " AND category = ?";
         params.push(category);
     }
 
-     if (subCategory && subCategory !== '') {
+    // Subcategory filter
+    if (subCategory && subCategory !== '') {
         query += " AND SubCategori = ?";
         params.push(subCategory);
     }
 
-   if (carBrand && carBrand !== '') {
-        query += " AND CarBrand = ?";
-        params.push(carBrand);
+    // Car brand filter
+    if (carBrand.length > 0) {
+        query += ` AND carBrand IN (${carBrand.map(() => '?').join(',')})`;
+        params.push(...carBrand);
     }
 
-    // Filter by countries
-    if (countries && countries.length > 0) {
-        const placeholders = countries.split(',').map(() => '?').join(',');
-        query += ` AND Country IN (${placeholders})`;
-        params.push(...countries.split(','));
+    // Country filter (only allow valid Arabic countries)
+    const validCountries = countries.filter(country => 
+        arabicCountries.includes(country)
+    );
+
+    if (validCountries.length > 0) {
+        query += ` AND Country IN (${validCountries.map(() => '?').join(',')})`;
+        params.push(...validCountries);
+
+        // City filter (only if country is selected)
+        if (cities.length > 0) {
+            query += ` AND city IN (${cities.map(() => '?').join(',')})`;
+            params.push(...cities);
+        }
     }
 
-    // Sorting logic
+    // Sorting
     const orderClauses = [];
-    if (sortPrice && sortDate) {   
-        orderClauses.push(`COALESCE(Date, '1970-01-01') ${sortDate.toUpperCase()}`);
-        orderClauses.push(`Price ${sortPrice.toUpperCase()}`);
-    } else if (sortPrice) {
-        orderClauses.push(`Price ${sortPrice.toUpperCase()}`);
-    } else if (sortDate) {
-        orderClauses.push(`COALESCE(Date, '1970-01-01') ${sortDate.toUpperCase()}`);
-    }
-
+    if (sortPrice) orderClauses.push(`Price ${sortPrice.toUpperCase()}`);
+    if (sortDate) orderClauses.push(`CAST(Date AS DATETIME) ${sortDate.toUpperCase()}`);
+    
     if (orderClauses.length > 0) {
         query += ` ORDER BY ${orderClauses.join(', ')}`;
     }
+
+    console.log('====== FILTER PARAMETERS ======');
+    console.log('Sort Price:', sortPrice);
+    console.log('Sort Date:', sortDate);
+    console.log('Countries:', countries);
+    console.log('Final Query:', query);
+    console.log('Query Parameters:', params);
 
     pool.query(query, params, (err, results) => {
         if (err) {
@@ -369,16 +413,18 @@ app.get('/api/products', (req, res) => {
             return res.status(500).json({ error: "Error fetching products." });
         }
 
-        // Format results to include the first image URL for each product
+        // Format results with first image
         const formattedResults = results.map(product => {
             const images = product.Images ? product.Images.split(',') : [];
             return {
                 ...product,
-                firstImage: images.length > 0 ? `/uploads/${images[0]}` : null,
+                firstImage: images.length > 0 
+                    ? `/uploads/${images[0].trim()}`
+                    : '/uploads/default-placeholder.png'
             };
         });
 
-        res.json(formattedResults);
+        res.json(formattedResults || []);
     });
 });
 
@@ -434,7 +480,7 @@ app.post('/submit-product', isAuthenticated, upload.array('Images', 5), (req, re
         return res.status(401).send("You must be logged in to upload a product.");
     }
 
-    const { ProductName, Price, Location, Description, Category, SubCategori, carBrand, Country } = req.body;
+    const { ProductName, Price, Location, Description, Category, SubCategori, carBrand, Country, City } = req.body;
     let Images;
     if (req.files && req.files.length > 0) {
         Images = req.files.map(file => file.filename).join(','); // Join uploaded image filenames
@@ -442,8 +488,8 @@ app.post('/submit-product', isAuthenticated, upload.array('Images', 5), (req, re
         Images = 'default.jpg'; // Use a default image filename
     }
 
-    const query = 'INSERT INTO products (ProductName, Price, Location, Description, Images, brukerId, category, SubCategori, CarBrand, Country) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
-    const values = [ProductName, parseFloat(Price), Location, Description, Images, brukerId, Category, SubCategori, carBrand || null, Country || null];
+    const query = 'INSERT INTO products (ProductName, Price, Location, Description, Images, brukerId, category, SubCategori, CarBrand, Country, City, Date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())';
+    const values = [ProductName, parseFloat(Price), Location, Description, Images, brukerId, Category, SubCategori, carBrand || null, Country || null, City || null];
 
     pool.query(query, values, (err, result) => {
         if (err) {
@@ -897,4 +943,21 @@ app.get('/api/isFavorited', (req, res) => {
             res.json({ isFavorited: results.length > 0 });
         }
     );
+});
+
+app.get('/api/cities', (req, res) => {
+    const { country } = req.query;
+
+    if (!country) {
+        return res.status(400).json({ error: "Country is required." });
+    }
+
+    const query = 'SELECT cityName FROM cities WHERE country = ?';
+    pool.query(query, [country], (err, results) => {
+        if (err) {
+            console.error("Error fetching cities:", err);
+            return res.status(500).json({ error: "Error fetching cities." });
+        }
+        res.json(results);
+    });
 });

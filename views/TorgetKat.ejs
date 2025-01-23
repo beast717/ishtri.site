@@ -85,62 +85,109 @@
             padding: 20px;
         }
 
-        .side-panel {
-            font-family: Arial, Helvetica, sans-serif;
-            width: 250px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            flex-shrink: 0;
-        }
+.side-panel {
+font-family: Arial, Helvetica, sans-serif;
+width: 250px;
+background-color: #f9f9f9;
+border: 1px solid #ddd;
+border-radius: 8px;
+padding: 15px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+flex-shrink: 0;
+}
 
-        .side-panel h3 {
-            margin-bottom: 15px;
-            font-size: 18px;
-            color: #333;
-            text-align: center;
-        }
+.side-panel h3 {
+margin-bottom: 15px;
+font-size: 18px;
+color: #333;
+text-align: center;
+}
 
-        .country-list, .car-brand-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+.country-list, .car-brand-list {
+list-style: none;
+padding: 0;
+margin: 0;
+}
 
-        .country-list li, .car-brand-list li {
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-        }
 
-        .country-list input[type="checkbox"], .car-brand-list input[type="checkbox"] {
-            margin-right: 10px;
-            cursor: pointer;
-        }
+.country-list li, .car-brand-list li {
+display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 10px;
+}
 
-        .country-list label, .car-brand-list label {
-            font-size: 16px;
-            color: #555;
-            cursor: pointer;
-        }
+.country-list li > div {
+    display: flex;
+    flex-direction: row; /* Align checkbox and label horizontally */
+    align-items: center; /* Vertically center the checkbox and label */
+    gap: 10px; /* Add spacing between checkbox and label */
+}
 
-        .country-list label:hover, .car-brand-list label:hover {
-            color: #007bff;
-        }
+.car-brand-list li > div {
+    display: flex;
+    flex-direction: row; /* Align checkbox and label horizontally */
+    align-items: center; /* Vertically center the checkbox and label */
+    gap: 10px; /* Add spacing between checkbox and label */
+}
 
-        .sold-label {
-            color: #ffffff;
-            background-color: #ff5722;
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: bold;
-            margin-left: 5px;
-            display: inline-block;
-        }
 
+.country-list input[type="checkbox"], .car-brand-list input[type="checkbox"] {
+margin-right: 10px;
+cursor: pointer;
+}
+
+.country-list label, .car-brand-list label {
+font-size: 16px;
+color: #555;
+cursor: pointer;
+}
+
+.country-list label:hover, .car-brand-list label:hover {
+color: #007bff;
+}
+
+.sold-label {
+color: #ffffff;
+background-color: #ff5722;
+padding: 3px 6px;
+border-radius: 4px;
+font-size: 14px;
+font-weight: bold;
+margin-left: 5px;
+display: inline-block;
+}
+
+
+/* City List Styling (Nested) */
+.city-list {
+    list-style: none;
+    padding-left: 20; /* Reduced padding to align cities properly */
+    margin: 5px 0 0 0; /* Adjusted margin to remove any left offset */
+    display: none; /* Hidden by default */
+}
+
+.city-list li {
+    display: flex;
+    flex-direction: row;
+    align-items: center; /* Align checkbox and label vertically */
+    margin-bottom: 5px; /* Add spacing between cities */
+}
+
+.city-list input[type="checkbox"] {
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.city-list label {
+    font-size: 14px;
+    color: #777;
+    cursor: pointer;
+}
+
+.city-list label:hover {
+    color: #007bff;
+}
         
     </style>
 </head>
@@ -177,97 +224,586 @@
         <div class="side-panel">
             <h3 data-i18n="filter.filter_land">Filter by Country</h3>
             <ul class="country-list">
-                <li><input type="checkbox" id="uae" value="UAE"> <label for="uae">United Arab Emirates</label></li>
-                <li><input type="checkbox" id="saudi" value="Saudi Arabia"> <label for="saudi">Saudi Arabia</label></li>
-                <li><input type="checkbox" id="egypt" value="Egypt"> <label for="egypt">Egypt</label></li>
-                <li><input type="checkbox" id="jordan" value="Jordan"> <label for="jordan">Jordan</label></li>
-                <li><input type="checkbox" id="qatar" value="Qatar"> <label for="qatar">Qatar</label></li>
-                <li><input type="checkbox" id="oman" value="Oman"> <label for="oman">Oman</label></li>
-                <li><input type="checkbox" id="kuwait" value="Kuwait"> <label for="kuwait">Kuwait</label></li>
-                <li><input type="checkbox" id="bahrain" value="Bahrain"> <label for="bahrain">Bahrain</label></li>
-                <li><input type="checkbox" id="iraq" value="Iraq"> <label for="iraq">Iraq</label></li>
-                <li><input type="checkbox" id="syria" value="Syria"> <label for="syria">Syria</label></li>
-                <li><input type="checkbox" id="lebanon" value="Lebanon"> <label for="lebanon">Lebanon</label></li>
-                <li><input type="checkbox" id="yemen" value="Yemen"> <label for="yemen">Yemen</label></li>
-                <li><input type="checkbox" id="libya" value="Libya"> <label for="libya">Libya</label></li>
-                <li><input type="checkbox" id="sudan" value="Sudan"> <label for="sudan">Sudan</label></li>
-                <li><input type="checkbox" id="morocco" value="Morocco"> <label for="morocco">Morocco</label></li>
-                <li><input type="checkbox" id="tunisia" value="Tunisia"> <label for="tunisia">Tunisia</label></li>
-                <li><input type="checkbox" id="algeria" value="Algeria"> <label for="algeria">Algeria</label></li>
-                <li><input type="checkbox" id="Palestine" value="Palestine"> <label for="Palestine">Palestine</label></li>
-                <li><input type="checkbox" id="Mauritania" value="Mauritania"> <label for="Mauritania">Mauritania</label></li>
-            </ul>
-            <h3 id="filterCar">Filter Car</h3>
-            <ul class="car-brand-list" id="kjørr">
-                <li><input type="checkbox" id="toyota" value="Toyota"> <label for="toyota">Toyota</label></li>
-                <li><input type="checkbox" id="ford" value="Ford"> <label for="ford">Ford</label></li>
-                <li><input type="checkbox" id="volkswagen" value="Volkswagen"> <label for="volkswagen">Volkswagen</label></li>
-                <li><input type="checkbox" id="bmw" value="BMW"> <label for="bmw">BMW</label></li>
-                <li><input type="checkbox" id="mercedes" value="Mercedes-Benz"> <label for="mercedes">Mercedes-Benz</label></li>
-                <li><input type="checkbox" id="audi" value="Audi"> <label for="audi">Audi</label></li>
-                <li><input type="checkbox" id="chevrolet" value="Chevrolet"> <label for="chevrolet">Chevrolet</label></li>
-                <li><input type="checkbox" id="honda" value="Honda"> <label for="honda">Honda</label></li>
-                <li><input type="checkbox" id="hyundai" value="Hyundai"> <label for="hyundai">Hyundai</label></li>
-                <li><input type="checkbox" id="nissan" value="Nissan"> <label for="nissan">Nissan</label></li>
-                <li><input type="checkbox" id="tesla" value="Tesla"> <label for="tesla">Tesla</label></li>
-                <li><input type="checkbox" id="jeep" value="Jeep"> <label for="jeep">Jeep</label></li>
-                <li><input type="checkbox" id="mazda" value="Mazda"> <label for="mazda">Mazda</label></li>
-                <li><input type="checkbox" id="kia" value="Kia"> <label for="kia">Kia</label></li>
-                <li><input type="checkbox" id="subaru" value="Subaru"> <label for="subaru">Subaru</label></li>
-                <li><input type="checkbox" id="lexus" value="Lexus"> <label for="lexus">Lexus</label></li>
-                <li><input type="checkbox" id="volvo" value="Volvo"> <label for="volvo">Volvo</label></li>
-                <li><input type="checkbox" id="jaguar" value="Jaguar"> <label for="jaguar">Jaguar</label></li>
-                <li><input type="checkbox" id="porsche" value="Porsche"> <label for="porsche">Porsche</label></li>
-                <li><input type="checkbox" id="landrover" value="Land Rover"> <label for="landrover">Land Rover</label></li>
-                <li><input type="checkbox" id="mitsubishi" value="Mitsubishi"> <label for="mitsubishi">Mitsubishi</label></li>
-                <li><input type="checkbox" id="fiat" value="Fiat"> <label for="fiat">Fiat</label></li>
-                <li><input type="checkbox" id="peugeot" value="Peugeot"> <label for="peugeot">Peugeot</label></li>
-                <li><input type="checkbox" id="renault" value="Renault"> <label for="renault">Renault</label></li>
-                <li><input type="checkbox" id="citroen" value="Citroën"> <label for="citroen">Citroën</label></li>
-                <li><input type="checkbox" id="skoda" value="Škoda"> <label for="skoda">Škoda</label></li>
-                <li><input type="checkbox" id="infiniti" value="Infiniti"> <label for="infiniti">Infiniti</label></li>
-                <li><input type="checkbox" id="acura" value="Acura"> <label for="acura">Acura</label></li>
-                <li><input type="checkbox" id="alfa-romeo" value="Alfa Romeo"> <label for="alfa-romeo">Alfa Romeo</label></li>
-                <li><input type="checkbox" id="aston-martin" value="Aston Martin"> <label for="aston-martin">Aston Martin</label></li>
-                <li><input type="checkbox" id="bentley" value="Bentley"> <label for="bentley">Bentley</label></li>
-                <li><input type="checkbox" id="bugatti" value="Bugatti"> <label for="bugatti">Bugatti</label></li>
-                <li><input type="checkbox" id="cadillac" value="Cadillac"> <label for="cadillac">Cadillac</label></li>
-                <li><input type="checkbox" id="chrysler" value="Chrysler"> <label for="chrysler">Chrysler</label></li>
-                <li><input type="checkbox" id="dodge" value="Dodge"> <label for="dodge">Dodge</label></li>
-                <li><input type="checkbox" id="ferrari" value="Ferrari"> <label for="ferrari">Ferrari</label></li>
-                <li><input type="checkbox" id="gmc" value="GMC"> <label for="gmc">GMC</label></li>
-                <li><input type="checkbox" id="hummer" value="Hummer"> <label for="hummer">Hummer</label></li>
-                <li><input type="checkbox" id="lamborghini" value="Lamborghini"> <label for="lamborghini">Lamborghini</label></li>
-                <li><input type="checkbox" id="lincoln" value="Lincoln"> <label for="lincoln">Lincoln</label></li>
-                <li><input type="checkbox" id="maserati" value="Maserati"> <label for="maserati">Maserati</label></li>
-                <li><input type="checkbox" id="mcLaren" value="McLaren"> <label for="mcLaren">McLaren</label></li>
-                <li><input type="checkbox" id="mini" value="Mini"> <label for="mini">Mini</label></li>
-                <li><input type="checkbox" id="rolls-royce" value="Rolls-Royce"> <label for="rolls-royce">Rolls-Royce</label></li>
-                <li><input type="checkbox" id="saab" value="Saab"> <label for="saab">Saab</label></li>
-                <li><input type="checkbox" id="scion" value="Scion"> <label for="scion">Scion</label></li>
-                <li><input type="checkbox" id="seat" value="SEAT"> <label for="seat">SEAT</label></li>
-                <li><input type="checkbox" id="smart" value="Smart"> <label for="smart">Smart</label></li>
-                <li><input type="checkbox" id="suzuki" value="Suzuki"> <label for="suzuki">Suzuki</label></li>
-                <li><input type="checkbox" id="tata" value="Tata"> <label for="tata">Tata</label></li>
-                <li><input type="checkbox" id="pagani" value="Pagani"> <label for="pagani">Pagani</label></li>
-                <li><input type="checkbox" id="koenigsegg" value="Koenigsegg"> <label for="koenigsegg">Koenigsegg</label></li>
-                <li><input type="checkbox" id="genesis" value="Genesis"> <label for="genesis">Genesis</label></li>
-                <li><input type="checkbox" id="mg" value="MG"> <label for="mg">MG</label></li>
-                <li><input type="checkbox" id="opel" value="Opel"> <label for="opel">Opel</label></li>
-                <li><input type="checkbox" id="daewoo" value="Daewoo"> <label for="daewoo">Daewoo</label></li>
-                <li><input type="checkbox" id="isuzu" value="Isuzu"> <label for="isuzu">Isuzu</label></li>
-                <li><input type="checkbox" id="geely" value="Geely"> <label for="geely">Geely</label></li>
-                <li><input type="checkbox" id="proton" value="Proton"> <label for="proton">Proton</label></li>
-                <li><input type="checkbox" id="perodua" value="Perodua"> <label for="perodua">Perodua</label></li>
-                <li><input type="checkbox" id="chery" value="Chery"> <label for="chery">Chery</label></li>
-                <li><input type="checkbox" id="byd" value="BYD"> <label for="byd">BYD</label></li>
-                <li><input type="checkbox" id="great-wall" value="Great Wall"> <label for="great-wall">Great Wall</label></li>
-                <li><input type="checkbox" id="mahindra" value="Mahindra"> <label for="mahindra">Mahindra</label></li>
-                <li><input type="checkbox" id="ssangyong" value="SsangYong"> <label for="ssangyong">SsangYong</label></li>
-                <li><input type="checkbox" id="lucid" value="Lucid"> <label for="lucid">Lucid</label></li>
-                <li><input type="checkbox" id="rivian" value="Rivian"> <label for="rivian">Rivian</label></li>
-            </ul>
+                <ul class="country-list">
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="uae" value="United Arab Emirates">
+            <label for="uae">United Arab Emirates</label>
         </div>
+        <ul class="city-list" id="uae-cities" style="display: none;">
+            <!-- Cities for UAE will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="saudi" value="Saudi Arabia">
+            <label for="saudi">Saudi Arabia</label>
+        </div>
+        <ul class="city-list" id="saudi-cities" style="display: none;">
+            <!-- Cities for Saudi Arabia will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="egypt" value="Egypt">
+            <label for="egypt">Egypt</label>
+        </div>
+        <ul class="city-list" id="egypt-cities" style="display: none;">
+            <!-- Cities for Egypt will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="jordan" value="Jordan">
+            <label for="jordan">Jordan</label>
+        </div>
+        <ul class="city-list" id="jordan-cities" style="display: none;">
+            <!-- Cities for Jordan will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="qatar" value="Qatar">
+            <label for="qatar">Qatar</label>
+        </div>
+        <ul class="city-list" id="qatar-cities" style="display: none;">
+            <!-- Cities for Qatar will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="oman" value="Oman">
+            <label for="oman">Oman</label>
+        </div>
+        <ul class="city-list" id="oman-cities" style="display: none;">
+            <!-- Cities for Oman will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="kuwait" value="Kuwait">
+            <label for="kuwait">Kuwait</label>
+        </div>
+        <ul class="city-list" id="kuwait-cities" style="display: none;">
+            <!-- Cities for Kuwait will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="bahrain" value="Bahrain">
+            <label for="bahrain">Bahrain</label>
+        </div>
+        <ul class="city-list" id="bahrain-cities" style="display: none;">
+            <!-- Cities for Bahrain will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="iraq" value="Iraq">
+            <label for="iraq">Iraq</label>
+        </div>
+        <ul class="city-list" id="iraq-cities" style="display: none;">
+            <!-- Cities for Iraq will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="syria" value="Syria">
+            <label for="syria">Syria</label>
+        </div>
+        <ul class="city-list" id="syria-cities" style="display: none;">
+            <!-- Cities for Syria will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="lebanon" value="Lebanon">
+            <label for="lebanon">Lebanon</label>
+        </div>
+        <ul class="city-list" id="lebanon-cities" style="display: none;">
+            <!-- Cities for Lebanon will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="yemen" value="Yemen">
+            <label for="yemen">Yemen</label>
+        </div>
+        <ul class="city-list" id="yemen-cities" style="display: none;">
+            <!-- Cities for Yemen will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="libya" value="Libya">
+            <label for="libya">Libya</label>
+        </div>
+        <ul class="city-list" id="libya-cities" style="display: none;">
+            <!-- Cities for Libya will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="sudan" value="Sudan">
+            <label for="sudan">Sudan</label>
+        </div>
+        <ul class="city-list" id="sudan-cities" style="display: none;">
+            <!-- Cities for Sudan will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="morocco" value="Morocco">
+            <label for="morocco">Morocco</label>
+        </div>
+        <ul class="city-list" id="morocco-cities" style="display: none;">
+            <!-- Cities for Morocco will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="tunisia" value="Tunisia">
+            <label for="tunisia">Tunisia</label>
+        </div>
+        <ul class="city-list" id="tunisia-cities" style="display: none;">
+            <!-- Cities for Tunisia will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="algeria" value="Algeria">
+            <label for="algeria">Algeria</label>
+        </div>
+        <ul class="city-list" id="algeria-cities" style="display: none;">
+            <!-- Cities for Algeria will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="palestine" value="Palestine">
+            <label for="palestine">Palestine</label>
+        </div>
+        <ul class="city-list" id="palestine-cities" style="display: none;">
+            <!-- Cities for Palestine will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="mauritania" value="Mauritania">
+            <label for="mauritania">Mauritania</label>
+        </div>
+        <ul class="city-list" id="mauritania-cities" style="display: none;">
+            <!-- Cities for Mauritania will be dynamically added here -->
+        </ul>
+    </li>
+</ul>
+    
+    <h3 id="filterCar">Filter Car</h3>
+    <ul class="car-brand-list" id="kjørr">
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="toyota" value="Toyota">
+                <label for="toyota">Toyota</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="ford" value="Ford">
+                <label for="ford">Ford</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="volkswagen" value="Volkswagen">
+                <label for="volkswagen">Volkswagen</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="bmw" value="BMW">
+                <label for="bmw">BMW</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="mercedes" value="Mercedes-Benz">
+                <label for="mercedes">Mercedes-Benz</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="audi" value="Audi">
+                <label for="audi">Audi</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="chevrolet" value="Chevrolet">
+                <label for="chevrolet">Chevrolet</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="honda" value="Honda">
+                <label for="honda">Honda</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="hyundai" value="Hyundai">
+                <label for="hyundai">Hyundai</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="nissan" value="Nissan">
+                <label for="nissan">Nissan</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="tesla" value="Tesla">
+                <label for="tesla">Tesla</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="jeep" value="Jeep">
+                <label for="jeep">Jeep</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="mazda" value="Mazda">
+                <label for="mazda">Mazda</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="kia" value="Kia">
+                <label for="kia">Kia</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="subaru" value="Subaru">
+                <label for="subaru">Subaru</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="lexus" value="Lexus">
+                <label for="lexus">Lexus</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="volvo" value="Volvo">
+                <label for="volvo">Volvo</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="jaguar" value="Jaguar">
+                <label for="jaguar">Jaguar</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="porsche" value="Porsche">
+                <label for="porsche">Porsche</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="landrover" value="Land Rover">
+                <label for="landrover">Land Rover</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="mitsubishi" value="Mitsubishi">
+                <label for="mitsubishi">Mitsubishi</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="fiat" value="Fiat">
+                <label for="fiat">Fiat</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="peugeot" value="Peugeot">
+                <label for="peugeot">Peugeot</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="renault" value="Renault">
+                <label for="renault">Renault</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="citroen" value="Citroën">
+                <label for="citroen">Citroën</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="skoda" value="Škoda">
+                <label for="skoda">Škoda</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="infiniti" value="Infiniti">
+                <label for="infiniti">Infiniti</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="acura" value="Acura">
+                <label for="acura">Acura</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="alfa-romeo" value="Alfa Romeo">
+                <label for="alfa-romeo">Alfa Romeo</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="aston-martin" value="Aston Martin">
+                <label for="aston-martin">Aston Martin</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="bentley" value="Bentley">
+                <label for="bentley">Bentley</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="bugatti" value="Bugatti">
+                <label for="bugatti">Bugatti</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="cadillac" value="Cadillac">
+                <label for="cadillac">Cadillac</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="chrysler" value="Chrysler">
+                <label for="chrysler">Chrysler</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="dodge" value="Dodge">
+                <label for="dodge">Dodge</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="ferrari" value="Ferrari">
+                <label for="ferrari">Ferrari</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="gmc" value="GMC">
+                <label for="gmc">GMC</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="hummer" value="Hummer">
+                <label for="hummer">Hummer</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="lamborghini" value="Lamborghini">
+                <label for="lamborghini">Lamborghini</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="lincoln" value="Lincoln">
+                <label for="lincoln">Lincoln</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="maserati" value="Maserati">
+                <label for="maserati">Maserati</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="mcLaren" value="McLaren">
+                <label for="mcLaren">McLaren</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="mini" value="Mini">
+                <label for="mini">Mini</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="rolls-royce" value="Rolls-Royce">
+                <label for="rolls-royce">Rolls-Royce</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="saab" value="Saab">
+                <label for="saab">Saab</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="scion" value="Scion">
+                <label for="scion">Scion</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="seat" value="SEAT">
+                <label for="seat">SEAT</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="smart" value="Smart">
+                <label for="smart">Smart</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="suzuki" value="Suzuki">
+                <label for="suzuki">Suzuki</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="tata" value="Tata">
+                <label for="tata">Tata</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="pagani" value="Pagani">
+                <label for="pagani">Pagani</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="koenigsegg" value="Koenigsegg">
+                <label for="koenigsegg">Koenigsegg</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="genesis" value="Genesis">
+                <label for="genesis">Genesis</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="mg" value="MG">
+                <label for="mg">MG</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="opel" value="Opel">
+                <label for="opel">Opel</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="daewoo" value="Daewoo">
+                <label for="daewoo">Daewoo</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="isuzu" value="Isuzu">
+                <label for="isuzu">Isuzu</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="geely" value="Geely">
+                <label for="geely">Geely</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="proton" value="Proton">
+                <label for="proton">Proton</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="perodua" value="Perodua">
+                <label for="perodua">Perodua</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="chery" value="Chery">
+                <label for="chery">Chery</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="byd" value="BYD">
+                <label for="byd">BYD</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="great-wall" value="Great Wall">
+                <label for="great-wall">Great Wall</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="mahindra" value="Mahindra">
+                <label for="mahindra">Mahindra</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="ssangyong" value="SsangYong">
+                <label for="ssangyong">SsangYong</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="lucid" value="Lucid">
+                <label for="lucid">Lucid</label>
+            </div>
+        </li>
+        <li>
+            <div> <!-- Wrapper for checkbox and label -->
+                <input type="checkbox" id="rivian" value="Rivian">
+                <label for="rivian">Rivian</label>
+            </div>
+        </li>
+    </ul>
+</div>
 
         <div class="productsContainer" id="productsContainer">
             <p>Loading products...</p>
@@ -278,38 +814,38 @@
         (function () {
     console.log("Initializing TorgetKat page...");
 
-    function fetchProducts(priceOrder = 'asc', selectedCountries = [], dateOrder = 'desc', subCategory = '', selectedCarBrands = []) {
-        const urlParams = new URLSearchParams(window.location.search);
-        const category = urlParams.get('category') || 'default';
+    function fetchProducts(priceOrder = '', selectedCountries = [], dateOrder = '', subCategory = '', selectedCarBrands = [], selectedCity = '') {
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('category') || 'default';
 
-        let apiUrl = `/api/products?category=${category}`;
-        if (subCategory) apiUrl += `&subCategory=${subCategory}`;
-        if (priceOrder) apiUrl += `&sortPrice=${priceOrder}`;
-        if (dateOrder) apiUrl += `&sortDate=${dateOrder}`;
-        if (selectedCountries.length) apiUrl += `&countries=${selectedCountries.join(',')}`;
-        if (selectedCarBrands.length) apiUrl += `&carBrand=${selectedCarBrands.join(',')}`;
+    let apiUrl = `/api/products?category=${category}`;
+    if (subCategory) apiUrl += `&subCategory=${subCategory}`;
+    if (priceOrder) apiUrl += `&sortPrice=${priceOrder}`;
+    if (dateOrder) apiUrl += `&sortDate=${dateOrder}`;
+    if (selectedCountries.length) apiUrl += `&countries=${selectedCountries.join(',')}`;
+    if (selectedCarBrands.length) apiUrl += `&carBrand=${selectedCarBrands.join(',')}`;
+    if (selectedCity) apiUrl += `&city=${selectedCity}`;
 
-        console.log("Fetching products from:", apiUrl);
-
-        fetch(apiUrl)
-            .then(response => {
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                return response.json();
-            })
-            .then(products => {
-                console.log("Fetched products:", products);
-                displayProducts(products);
-            })
-            .catch(error => {
-                console.error("Error fetching products:", error);
-                const container = document.getElementById('productsContainer');
-                if (container) {
-                    container.innerHTML = `<p class="no-products">Error loading products: ${error.message}</p>`;
-                } else {
-                    console.error("productsContainer element not found!");
-                }
-            });
-    }
+    fetch(apiUrl)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(products => {
+            if (!Array.isArray(products)) {
+                console.error("Invalid products data:", products);
+                throw new Error("Invalid products data received from the server.");
+            }
+            displayProducts(products);
+        })
+        .catch(error => {
+            console.error("Error fetching products:", error);
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = `<p class="no-products">Error loading products: ${error.message}</p>`;
+        });
+}
 
     function displayProducts(products) {
         const container = document.getElementById('productsContainer');
@@ -422,20 +958,31 @@
 }
 
     function applyFilters() {
-        console.log("Applying filters...");
+    const selectedCarBrands = Array.from(document.querySelectorAll('.car-brand-list input[type="checkbox"]:checked'))
+        .map(checkbox => checkbox.value);
+    const priceOrder = document.getElementById('priceFilter').value;
+    const dateOrder = document.getElementById('dateFilter').value;
+     console.log('Selected Date Filter:', dateOrder); // Add this line
+    const subCategory = document.getElementById('subCategoryFilter')?.value || '';
+     const selectedCountries = Array.from(document.querySelectorAll('.country-list input[type="checkbox"]:checked'))
+        .map(checkbox => checkbox.value);
 
-        const selectedCarBrands = Array.from(document.querySelectorAll('.car-brand-list input[type="checkbox"]:checked'))
-            .map(checkbox => checkbox.value);
-        const priceOrder = document.getElementById('priceFilter').value;
-        const dateOrder = document.getElementById('dateFilter').value;
-        const subCategory = document.getElementById('subCategoryFilter')?.value || '';
-        const selectedCountries = Array.from(document.querySelectorAll('.country-list input[type="checkbox"]:checked'))
-            .map(checkbox => checkbox.value);
+    // Get selected cities
+    const selectedCities = [];
+    document.querySelectorAll('.city-list input[type="checkbox"]:checked').forEach(checkbox => {
+        selectedCities.push(checkbox.value);
+    });
+    console.log("Selected Car Brands:", selectedCarBrands);
 
-        console.log("Selected filters:", { priceOrder, selectedCountries, dateOrder, subCategory, selectedCarBrands });
-
-        fetchProducts(priceOrder, selectedCountries, dateOrder, subCategory, selectedCarBrands);
-    }
+    fetchProducts(
+        document.getElementById('priceFilter').value,
+        selectedCountries, // Pass countries here
+        document.getElementById('dateFilter').value,
+        document.getElementById('subCategoryFilter')?.value || '',
+        selectedCarBrands, // Pass car brands here
+        selectedCities.join(',')
+    );
+}
 
     const priceFilter = document.getElementById('priceFilter');
     const dateFilter = document.getElementById('dateFilter');
@@ -495,6 +1042,64 @@
             }
         }
 
+        document.querySelectorAll('.country-list input[type="checkbox"]').forEach(checkbox => {
+    checkbox.addEventListener('change', function () {
+        // Check if the checkbox is a country (has a city list)
+        const countryId = this.id;
+        const cityList = document.getElementById(`${countryId}-cities`);
+
+        // If no city list exists, this isn't a country checkbox
+        if (!cityList) {
+            return; // Exit if not a country checkbox
+        }
+
+        // Rest of the code to handle countries and cities...
+        const selectedCountry = this.value;
+
+        if (this.checked) {
+            // Fetch cities for the selected country
+            fetch(`/api/cities?country=${selectedCountry}`)
+                .then(response => response.json())
+                .then(cities => {
+                    // Clear existing cities
+                    cityList.innerHTML = '';
+
+                    // Add cities to the city list
+                    cities.forEach(city => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <input type="checkbox" id="${city.cityName}" value="${city.cityName}">
+                            <label for="${city.cityName}">${city.cityName}</label>
+                        `;
+                        cityList.appendChild(li);
+                    });
+
+                    // Show the city list
+                    cityList.style.display = 'block';
+
+                    // Add event listeners to the newly created city checkboxes
+                    cityList.querySelectorAll('input[type="checkbox"]').forEach(cityCheckbox => {
+                        cityCheckbox.addEventListener('change', applyFilters);
+                    });
+
+                    // Fetch products for the selected country
+                    applyFilters();
+                })
+                .catch(error => console.error("Error fetching cities:", error));
+        } else {
+            // Hide the city list and clear products if the country is unselected
+            cityList.style.display = 'none';
+            applyFilters(); // Re-fetch products without the unselected country
+        }
+    });
+});
+    document.querySelectorAll('.city-list').forEach(cityList => {
+    cityList.addEventListener('change', function (event) {
+        if (event.target.type === 'checkbox') {
+            applyFilters(); // Re-fetch products when a city is selected or unselected
+        }
+    });
+});
         applyFilters();
     };
 })();
