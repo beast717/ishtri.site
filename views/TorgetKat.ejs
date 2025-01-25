@@ -1193,44 +1193,58 @@ function handleCategoryVisibility() {
             }
 
             // Country checkboxes
-            document.querySelectorAll('.country-list input[type="checkbox"]').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const cityList = document.getElementById(`${this.id}-cities`);
-                
-                if (this.checked) {
-                    fetch(`/api/cities?country=${this.value}`)
-                        .then(response => response.json())
-                        .then(cities => {
-                            cityList.innerHTML = cities.map(city => `
-                                <li>
-                                    <input type="checkbox" id="${city.cityName}" 
-                                           value="${city.cityName}"
-                                           ${currentFilters.selectedCities.includes(city.cityName) ? 'checked' : ''}>
-                                    <label for="${city.cityName}">${city.cityName}</label>
-                                </li>
-                            `).join('');
-                            
-                            cityList.querySelectorAll('input').forEach(cityCheckbox => {
-                                cityCheckbox.addEventListener('change', applyFilters);
-                            });
-                        })
-                        .catch(error => {
-                            console.error("Error fetching cities:", error);
-                            cityList.innerHTML = '<li>Error loading cities</li>';
-                        });
-                } else {
-                    // Clear city selections when country is deselected
-                    currentFilters.selectedCities = currentFilters.selectedCities.filter(
-                        city => !cityList.querySelectorAll('input').values.includes(city)
-                    );
-                    cityList.innerHTML = '';
-                }
-                
-                cityList.style.display = this.checked ? 'block' : 'none';
-                applyFilters();
-            });
-        });
+           document.querySelectorAll('.country-list input[type="checkbox"]').forEach(checkbox => {
+    checkbox.addEventListener('change', async function() {
+        const country = this.value;
+        const cityList = document.getElementById(`${this.id}-cities`);
 
+        if (this.checked) {
+            try {
+                // Fetch cities for the selected country
+                const response = await fetch(`/api/cities?country=${encodeURIComponent(country)}`);
+                const cities = await response.json();
+                
+                // Populate city list
+                cityList.innerHTML = cities.map(city => `
+                    <li>
+                        <input type="checkbox" id="${city.cityName}" 
+                               value="${city.cityName}">
+                        <label for="${city.cityName}">${city.cityName}</label>
+                    </li>
+                `).join('');
+                
+                // Add event listeners to new city checkboxes
+                cityList.querySelectorAll('input').forEach(cityCheckbox => {
+                    cityCheckbox.addEventListener('change', applyFilters);
+                });
+                
+                // Show the city list
+                cityList.style.display = 'block';
+
+                // Trigger filters for COUNTRY selection
+                applyFilters(); // 👈 Added this line
+
+            } catch (error) {
+                console.error("Error loading cities:", error);
+                cityList.innerHTML = '<li>Error loading cities</li>';
+            }
+        } else {
+            // Clear cities and hide the list
+            cityList.innerHTML = '';
+            cityList.style.display = 'none';
+            
+            // Remove cities from filters
+            currentFilters.selectedCities = currentFilters.selectedCities.filter(
+                city => !Array.from(cityList.querySelectorAll('input'))
+                              .map(cb => cb.value)
+                              .includes(city)
+            );
+
+            // Trigger filters for COUNTRY deselection
+            applyFilters(); // 👈 This already exists
+        }
+    });
+});
 
             // Car brand checkboxes
             document.querySelectorAll('.car-brand-list input[type="checkbox"]').forEach(checkbox => {
