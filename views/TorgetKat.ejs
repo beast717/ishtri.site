@@ -8,82 +8,83 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TorgetKat</title>
-    <style>           
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-        }
+    <title>Universe of Products</title>
+    <style>   
 
-        .productsContainer {
-            margin-top: -27px;
-            padding: 20px;
-            flex: 1;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
-        }
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
 
-        .product {
-            font-family: Arial, Helvetica, sans-serifx;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 10px 0;
-            background-color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+.productsContainer {
+    margin-top: -27px;
+    padding: 20px;
+    flex: 1;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
+}
 
-        .product:hover {
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        }
+.product {
+    font-family: Arial, Helvetica, sans-serifx;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    background-color: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
 
-        .product img {
-            max-width: 300px;
-            height: auto;
-            border-radius: 5px;
-        }
+.product:hover {
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-        .product h3 {
-            margin: 0;
-        }
+.product img {
+    max-width: 300px;
+    height: auto;
+    border-radius: 5px;
+}
 
-        .no-products {
-            text-align: center;
-            font-size: 18px;
-            margin-top: 20px;
-        }
+.product h3 {
+    margin: 0;
+}
 
-        .filter-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-            font-family: 'Arial', sans-serif;
-        }
+.no-products {
+    text-align: center;
+    font-size: 18px;
+    margin-top: 20px;
+}
 
-        .filter-container label {
-            font-size: 13px;
-            color: #333;
-            font-weight: bold;
-        }
+.filter-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    font-family: 'Arial', sans-serif;
+}
 
-        #priceFilter, #dateFilter, #subCategoryFilter {
-            padding: 7px;
-            font-size: 13px;
-            border-radius: 4px;
-            background-color: #f9f9f9;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
+.filter-container label {
+    font-size: 13px;
+    color: #333;
+    font-weight: bold;
+}
 
-        .page-container {
-            display: flex;
-            gap: 20px;
-            padding: 20px;
-        }
+#priceFilter, #dateFilter, #subCategoryFilter {
+    padding: 7px;
+    font-size: 13px;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.page-container {
+    display: flex;
+    gap: 20px;
+    padding: 20px;
+}
 
 .side-panel {
 font-family: Arial, Helvetica, sans-serif;
@@ -112,23 +113,23 @@ margin: 0;
 
 .country-list li, .car-brand-list li {
 display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 10px;
+flex-direction: column;
+align-items: flex-start;
+margin-bottom: 10px;
 }
 
 .country-list li > div {
-    display: flex;
-    flex-direction: row; /* Align checkbox and label horizontally */
-    align-items: center; /* Vertically center the checkbox and label */
-    gap: 10px; /* Add spacing between checkbox and label */
+display: flex;
+flex-direction: row; /* Align checkbox and label horizontally */
+align-items: center; /* Vertically center the checkbox and label */
+gap: 10px; /* Add spacing between checkbox and label */
 }
 
 .car-brand-list li > div {
-    display: flex;
-    flex-direction: row; /* Align checkbox and label horizontally */
-    align-items: center; /* Vertically center the checkbox and label */
-    gap: 10px; /* Add spacing between checkbox and label */
+display: flex;
+flex-direction: row; /* Align checkbox and label horizontally */
+align-items: center; /* Vertically center the checkbox and label */
+gap: 10px; /* Add spacing between checkbox and label */
 }
 
 
@@ -161,32 +162,99 @@ display: inline-block;
 
 /* City List Styling (Nested) */
 .city-list {
-    list-style: none;
-    padding-left: 20; /* Reduced padding to align cities properly */
-    margin: 5px 0 0 0; /* Adjusted margin to remove any left offset */
-    display: none; /* Hidden by default */
+list-style: none;
+padding-left: 20; /* Reduced padding to align cities properly */
+margin: 5px 0 0 0; /* Adjusted margin to remove any left offset */
+display: none; /* Hidden by default */
 }
 
 .city-list li {
-    display: flex;
-    flex-direction: row;
-    align-items: center; /* Align checkbox and label vertically */
-    margin-bottom: 5px; /* Add spacing between cities */
+display: flex;
+flex-direction: row;
+align-items: center; /* Align checkbox and label vertically */
+margin-bottom: 5px; /* Add spacing between cities */
 }
 
 .city-list input[type="checkbox"] {
-    margin-right: 10px;
-    cursor: pointer;
+margin-right: 10px;
+cursor: pointer;
 }
 
 .city-list label {
-    font-size: 14px;
-    color: #777;
-    cursor: pointer;
+font-size: 14px;
+color: #777;
+cursor: pointer;
 }
 
 .city-list label:hover {
-    color: #007bff;
+color: #007bff;
+}
+
+.load-more-btn {
+display: block;
+margin: 30px auto;
+padding: 12px 24px;
+background: #007bff;
+color: white;
+border: none;
+border-radius: 25px;
+cursor: pointer;
+transition: all 0.3s ease;
+font-size: 16px;
+}
+
+.load-more-btn:hover {
+background: #0056b3;
+transform: translateY(-2px);
+box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.load-more-btn:disabled {
+background: #cccccc;
+cursor: not-allowed;
+transform: none;
+box-shadow: none;
+}
+
+.loading-overlay {
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: rgba(255, 255, 255, 0.8);
+display: none;
+justify-content: center;
+align-items: center;
+z-index: 1000;
+}
+
+.reset-filters-btn {
+position: fixed;
+bottom: 30px;
+right: 30px;
+padding: 12px 24px;
+background: #dc3545;
+color: white;
+border: none;
+border-radius: 25px;
+cursor: pointer;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+transition: all 0.3s ease;
+z-index: 1000;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.reset-filters-btn:hover {
+background: #bb2d3b;
+transform: translateY(-2px);
+box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.reset-filters-btn:active {
+transform: translateY(0);
 }
         
     </style>
@@ -200,6 +268,7 @@ display: inline-block;
         <select id="priceFilter" onchange="applyFilters()">
             <option value="asc" data-i18n="filter.lavest_pris">Lavest Pris</option>
             <option value="desc" data-i18n="filter.høyest_pris">Høyest Pris</option>
+            <option value="" data-i18n="filter.alle">alle</option>
         </select>
         <label for="dateFilter" data-i18n="filter.utgitt">Utgitt:</label>
         <select id="dateFilter" onchange="applyFilters()">
@@ -217,6 +286,9 @@ display: inline-block;
                 <option value="Møbler" data-i18n="subkategori.møbler">Møbler</option>
                 <option value="Annet" data-i18n="subkategori.annet">Annet</option>
             </select>
+            <button onclick="resetFilters()" class="reset-filters-btn">
+    ⟳ Reset Filters
+</button>
         </div> 
     </div>  
 
@@ -809,90 +881,199 @@ display: inline-block;
             <p>Loading products...</p>
         </div>
     </div>
+    <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+</div>
 
     <script>
-        (function () {
-    console.log("Initializing TorgetKat page...");
+    (function () {
+        console.log("Initializing TorgetKat page...");
+        let filterTimeout;
+        const DEBOUNCE_DELAY = 300; // ms
 
-    function fetchProducts(priceOrder = '', selectedCountries = [], dateOrder = '', subCategory = '', selectedCarBrands = [], selectedCity = '') {
-    const urlParams = new URLSearchParams(window.location.search);
-    const category = urlParams.get('category') || 'default';
 
-    let apiUrl = `/api/products?category=${category}`;
-    if (subCategory) apiUrl += `&subCategory=${subCategory}`;
-    if (priceOrder) apiUrl += `&sortPrice=${priceOrder}`;
-    if (dateOrder) apiUrl += `&sortDate=${dateOrder}`;
-    if (selectedCountries.length) apiUrl += `&countries=${selectedCountries.join(',')}`;
-    if (selectedCarBrands.length) apiUrl += `&carBrand=${selectedCarBrands.join(',')}`;
-    if (selectedCity) apiUrl += `&city=${selectedCity}`;
+        // Pagination variables
+        let currentPage = 1;
+        let isLoading = false;
+        let hasMore = true;
+        const limit = 20;
 
-    fetch(apiUrl)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+        // Current filter state
+        let currentFilters = {
+            priceOrder: '',
+            selectedCountries: [],
+            dateOrder: '',
+            subCategory: '',
+            selectedCarBrands: [],
+            selectedCities: []
+        };
+
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        function fetchProducts(loadMore = false, cacheBuster = null) {
+            if (isLoading || (!loadMore && !hasMore)) return;
+            
+            showLoading();
+            isLoading = true;
+
+            const offset = (currentPage - 1) * limit;
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category') || 'default';
+
+            // Build API URL with current filters
+            let apiUrl = `/api/products?category=${category}&limit=${limit}&offset=${offset}`;
+                    // Add cache busting
+            if (cacheBuster) {
+                apiUrl += `&_=${cacheBuster}`;
             }
-            return response.json();
-        })
-        .then(products => {
-            if (!Array.isArray(products)) {
-                console.error("Invalid products data:", products);
-                throw new Error("Invalid products data received from the server.");
-            }
-            displayProducts(products);
-        })
-        .catch(error => {
-            console.error("Error fetching products:", error);
+            if (currentFilters.subCategory) apiUrl += `&subCategory=${currentFilters.subCategory}`;
+            if (currentFilters.priceOrder) apiUrl += `&sortPrice=${currentFilters.priceOrder}`;
+            if (currentFilters.dateOrder) apiUrl += `&sortDate=${currentFilters.dateOrder}`;
+            if (currentFilters.selectedCountries.length) apiUrl += `&countries=${currentFilters.selectedCountries.join(',')}`;
+            if (currentFilters.selectedCarBrands.length) apiUrl += `&carBrand=${currentFilters.selectedCarBrands.join(',')}`;
+            if (currentFilters.selectedCities.length) apiUrl += `&cities=${currentFilters.selectedCities.join(',')}`;
+
+            // Show loading state
             const container = document.getElementById('productsContainer');
-            container.innerHTML = `<p class="no-products">Error loading products: ${error.message}</p>`;
-        });
-}
+            const loadButton = document.getElementById('loadMoreButton');
+            if (!loadMore) container.innerHTML = '<p>Loading products...</p>';
+            if (loadButton) {
+                loadButton.disabled = true;
+                loadButton.textContent = 'Loading...';
+            }
 
-    function displayProducts(products) {
-        const container = document.getElementById('productsContainer');
-        if (!container) {
-            console.error("productsContainer element not found!");
-            return;
+            fetch(apiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    hasMore = (currentPage * limit) < data.total;
+                    displayProducts(data.products, loadMore);
+                    currentPage++;
+                    isLoading = false;
+
+                    // Update load more button
+                    if (loadButton) {
+                        loadButton.disabled = false;
+                        loadButton.textContent = 'Load More';
+                        if (!hasMore) loadButton.remove();
+                    } else if (hasMore) {
+                        addLoadMoreButton();
+                    }
+                     hideLoading();
+                })
+                .catch(error => {
+                    console.error("Error fetching products:", error);
+                    isLoading = false;
+                    const container = document.getElementById('productsContainer');
+                    container.innerHTML = `
+                        <div class="error-message">
+                            <p>Error loading products. Please try again.</p>
+                            <button onclick="fetchProducts()">Retry</button>
+                        </div>
+                    `;
+                    hideLoading();
+                    if (loadButton) {
+                        loadButton.disabled = false;
+                        loadButton.textContent = 'Load More';
+                    }
+                });
         }
 
-        container.innerHTML = '';
+        function resetFilters() {
+            console.log('[DEBUG] Resetting filters...');
+            
+            // 1. Reset UI elements
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            document.getElementById('priceFilter').value = 'asc';
+            document.getElementById('dateFilter').value = '';
+            document.getElementById('subCategoryFilter').value = '';
+            
+            // 2. Clear city lists
+            document.querySelectorAll('.city-list').forEach(list => {
+                list.innerHTML = '';
+                list.style.display = 'none';
+            });
 
-        if (products.length === 0) {
-            container.innerHTML = '<p class="no-products">No products found for this category.</p>';
-            return;
-        }
+            // 3. Reset internal state
+            currentFilters = {
+                priceOrder: 'asc',
+                dateOrder: '',
+                subCategory: '',
+                selectedCountries: [],
+                selectedCarBrands: [],
+                selectedCities: []
+            };
 
-        products.forEach(product => {
-            const productDiv = document.createElement('div');
-            productDiv.className = 'product';
+            // 4. Reset pagination
+            currentPage = 1;
+            hasMore = true;
+            isLoading = false; 
 
-            const images = product.Images ? product.Images.split(',') : [];
-            const firstImage = images.length > 0 ? `/uploads/${images[0].trim()}` : '/uploads/default-placeholder.png';
+            // 5. Clear container and force fresh load
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = '<p>Loading products...</p>';
+            
+            // 6. Fetch with cache busting
+            fetchProducts(false, Date.now());
+        };
 
-            productDiv.innerHTML = `
-                <img src="${firstImage}" alt="${product.ProductName}">
-                <i class="fas fa-heart favorite-icon" data-product-id="${product.ProductdID}"></i>
-                <div>
-                    <h3>
-                        ${product.ProductName} 
-                        ${product.Sold ? `<span class="sold-label">(Sold)</span>` : ''}
-                    </h3>
-                    <p><strong>Price:</strong> ${product.Price} $</p>
-                    <p><strong>Location:</strong> ${product.Location}</p>
-                </div>
-            `;
+        window.resetFilters = resetFilters;
+        window.fetchProducts = fetchProducts;
 
-           productDiv.addEventListener('click', () => {
-            const favoriteIcon = productDiv.querySelector('.favorite-icon');
-            const isFavorited = favoriteIcon.classList.contains('favorited'); // Check if the product is favorited
-            window.location.href = `/productDetails?productdID=${product.ProductdID}&favorited=${isFavorited}`;
-        });
+        function displayProducts(products, append = false) {
+            const container = document.getElementById('productsContainer');
+            if (!container) return;
 
-            container.appendChild(productDiv);
-        });
+            if (!append) {
+                container.innerHTML = '';
+                currentPage = 1;
+            }
 
-        initializeFavorites();
+            if (products.length === 0 && !append) {
+                container.innerHTML = '<p class="no-products">No products found for this category.</p>';
+                return;
+            }
 
-        document.querySelectorAll('.favorite-icon').forEach(icon => {
+            products.forEach(product => {
+                const productDiv = document.createElement('div');
+                productDiv.className = 'product';
+
+                const images = product.Images ? product.Images.split(',') : [];
+                const firstImage = images.length > 0 ? `/uploads/${images[0].trim()}` : '/uploads/default-placeholder.png';
+
+                productDiv.innerHTML = `
+                    <img src="${firstImage}" alt="${product.ProductName}">
+                    <i class="fas fa-heart favorite-icon" data-product-id="${product.ProductdID}"></i>
+                    <div>
+                        <h3>
+                            ${product.ProductName} 
+                            ${product.Sold ? `<span class="sold-label">(Sold)</span>` : ''}
+                        </h3>
+                        <p><strong>Price:</strong> ${product.Price} $</p>
+                        <p><strong>Location:</strong> ${product.Location}</p>
+                    </div>
+                `;
+
+                productDiv.addEventListener('click', () => {
+                    const favoriteIcon = productDiv.querySelector('.favorite-icon');
+                    const isFavorited = favoriteIcon.classList.contains('favorited');
+                    window.location.href = `/productDetails?productdID=${product.ProductdID}&favorited=${isFavorited}`;
+                });
+
+                container.appendChild(productDiv);
+            });
+
+            initializeFavorites();
+
+            document.querySelectorAll('.favorite-icon').forEach(icon => {
             icon.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const productdID = icon.getAttribute('data-product-id');
@@ -929,180 +1110,158 @@ display: inline-block;
                 }
             });
         });
-
-        
     }
 
-    let favoritesInitialized = false; // Track if favorites have been initialized
+        function addLoadMoreButton() {
+            const existingButton = document.getElementById('loadMoreButton');
+            if (existingButton) return;
 
-    function initializeFavorites() {
-    fetch('/api/favorites')
-        .then(response => response.json())
-        .then(favorites => {
+            const button = document.createElement('button');
+            button.id = 'loadMoreButton';
+            button.className = 'load-more-btn';
+            button.textContent = 'Load More';
+            button.addEventListener('click', () => fetchProducts(true));
+            
+            const container = document.getElementById('productsContainer');
+            container.appendChild(button);
+        }
 
-            // Loop through all favorite icons and update their state
-            document.querySelectorAll('.favorite-icon').forEach(icon => {
-                const productdID = icon.getAttribute('data-product-id');
-                const isFavorited = favorites.some(product => product.ProductdID === Number(productdID));
+        function applyFilters() {
+            clearTimeout(filterTimeout);
+            filterTimeout = setTimeout(() => {
+                // Update current filters
+                currentFilters = {
+                    priceOrder: document.getElementById('priceFilter').value,
+                    dateOrder: document.getElementById('dateFilter').value,
+                    subCategory: document.getElementById('subCategoryFilter')?.value || '',
+                    selectedCountries: Array.from(document.querySelectorAll('.country-list input[type="checkbox"]:checked'))
+                        .map(checkbox => checkbox.value),
+                    selectedCarBrands: Array.from(document.querySelectorAll('.car-brand-list input[type="checkbox"]:checked'))
+                        .map(checkbox => checkbox.value),
+                    selectedCities: Array.from(document.querySelectorAll('.city-list input[type="checkbox"]:checked'))
+                        .map(checkbox => checkbox.value)
+                };
 
-                if (isFavorited) {
-                    icon.classList.add('favorited');
-                    icon.style.color = '#ff4757'; // Red color for favorited products
+                // Reset pagination
+                currentPage = 1;
+                hasMore = true;
+            // Clear existing products
+                document.getElementById('productsContainer').innerHTML = '<p>Loading products...</p>';
+                
+                fetchProducts();
+            }, DEBOUNCE_DELAY);
+        }
+
+    document.getElementById('dateFilter').addEventListener('change', () => {
+    document.getElementById('priceFilter').value = '';
+    applyFilters();
+});
+    document.getElementById('priceFilter').addEventListener('change', () => {
+    document.getElementById('dateFilter').value = '';
+    applyFilters();
+});
+
+function handleCategoryVisibility() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('category') || 'default';
+    const subcategoryContainer = document.getElementById('subcategoryFilterContainer');
+    const carBrandSection = document.getElementById('kjørr');
+    const carBrandLabel = document.getElementById('filterCar');
+
+    // Toggle subcategory filter
+    if (subcategoryContainer) {
+        subcategoryContainer.style.display = category === 'Torget' ? 'block' : 'none';
+    }
+
+    // Toggle car brand filter
+    if (carBrandSection && carBrandLabel) {
+        const shouldShow = category === 'Bil';
+        carBrandSection.style.display = shouldShow ? 'block' : 'none';
+        carBrandLabel.style.display = shouldShow ? 'block' : 'none';
+    }
+}
+
+        function initializeFilters() {
+            // Price and Date filters
+            document.getElementById('priceFilter').addEventListener('change', applyFilters);
+            document.getElementById('dateFilter').addEventListener('change', applyFilters);
+            
+            // Subcategory filter
+            const subCategoryFilter = document.getElementById('subCategoryFilter');
+            if (subCategoryFilter) {
+                subCategoryFilter.addEventListener('change', applyFilters);
+            }
+
+            // Country checkboxes
+            document.querySelectorAll('.country-list input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const cityList = document.getElementById(`${this.id}-cities`);
+                
+                if (this.checked) {
+                    fetch(`/api/cities?country=${this.value}`)
+                        .then(response => response.json())
+                        .then(cities => {
+                            cityList.innerHTML = cities.map(city => `
+                                <li>
+                                    <input type="checkbox" id="${city.cityName}" 
+                                           value="${city.cityName}"
+                                           ${currentFilters.selectedCities.includes(city.cityName) ? 'checked' : ''}>
+                                    <label for="${city.cityName}">${city.cityName}</label>
+                                </li>
+                            `).join('');
+                            
+                            cityList.querySelectorAll('input').forEach(cityCheckbox => {
+                                cityCheckbox.addEventListener('change', applyFilters);
+                            });
+                        })
+                        .catch(error => {
+                            console.error("Error fetching cities:", error);
+                            cityList.innerHTML = '<li>Error loading cities</li>';
+                        });
                 } else {
-                    icon.classList.remove('favorited');
-                    icon.style.color = '#ccc'; // Default color for non-favorited products
-                }
-            });
-        })
-        .catch(error => console.error("Error checking favorites:", error));
-}
-
-    function applyFilters() {
-    const selectedCarBrands = Array.from(document.querySelectorAll('.car-brand-list input[type="checkbox"]:checked'))
-        .map(checkbox => checkbox.value);
-    const priceOrder = document.getElementById('priceFilter').value;
-    const dateOrder = document.getElementById('dateFilter').value;
-     console.log('Selected Date Filter:', dateOrder); // Add this line
-    const subCategory = document.getElementById('subCategoryFilter')?.value || '';
-     const selectedCountries = Array.from(document.querySelectorAll('.country-list input[type="checkbox"]:checked'))
-        .map(checkbox => checkbox.value);
-
-    // Get selected cities
-    const selectedCities = [];
-    document.querySelectorAll('.city-list input[type="checkbox"]:checked').forEach(checkbox => {
-        selectedCities.push(checkbox.value);
-    });
-    console.log("Selected Car Brands:", selectedCarBrands);
-
-    fetchProducts(
-        document.getElementById('priceFilter').value,
-        selectedCountries, // Pass countries here
-        document.getElementById('dateFilter').value,
-        document.getElementById('subCategoryFilter')?.value || '',
-        selectedCarBrands, // Pass car brands here
-        selectedCities.join(',')
-    );
-}
-
-    const priceFilter = document.getElementById('priceFilter');
-    const dateFilter = document.getElementById('dateFilter');
-    const subCategoryFilter = document.getElementById('subCategoryFilter');
-
-    if (priceFilter && dateFilter && subCategoryFilter) {
-        priceFilter.addEventListener('change', applyFilters);
-        dateFilter.addEventListener('change', applyFilters);
-        subCategoryFilter.addEventListener('change', applyFilters);
-    } else {
-        console.error("One or more filter elements not found!");
-    }
-
-    document.querySelectorAll('.country-list input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', applyFilters);
-    });
-
-    document.querySelectorAll('.car-brand-list input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', applyFilters);
-    });
-
-    window.onload = function () {
-        console.log("Page loaded. Initializing...");
-
-        checkUnreadMessages();
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const category = urlParams.get('category') || 'default';
-        const subcategoryFilterContainer = document.getElementById('subcategoryFilterContainer');
-
-        if (category === 'Torget') {
-            if (subcategoryFilterContainer) {
-                subcategoryFilterContainer.style.display = 'block';
-            } else {
-                console.error("subcategoryFilterContainer element not found!");
-            }
-        } else {
-            if (subcategoryFilterContainer) {
-                subcategoryFilterContainer.style.display = 'none';
-            }
-        }
-
-        const carBrandDropdown = document.getElementById('kjørr');
-        const carBrandLabel = document.getElementById('filterCar');
-
-        if (category === 'Bil') {
-            if (carBrandDropdown && carBrandLabel) {
-                carBrandDropdown.style.display = 'block';
-                carBrandLabel.style.display = 'block';
-            } else {
-                console.error("carBrandDropdown or carBrandLabel element not found!");
-            }
-        } else {
-            if (carBrandDropdown && carBrandLabel) {
-                carBrandDropdown.style.display = 'none';
-                carBrandLabel.style.display = 'none';
-            }
-        }
-
-        document.querySelectorAll('.country-list input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', function () {
-        // Check if the checkbox is a country (has a city list)
-        const countryId = this.id;
-        const cityList = document.getElementById(`${countryId}-cities`);
-
-        // If no city list exists, this isn't a country checkbox
-        if (!cityList) {
-            return; // Exit if not a country checkbox
-        }
-
-        // Rest of the code to handle countries and cities...
-        const selectedCountry = this.value;
-
-        if (this.checked) {
-            // Fetch cities for the selected country
-            fetch(`/api/cities?country=${selectedCountry}`)
-                .then(response => response.json())
-                .then(cities => {
-                    // Clear existing cities
+                    // Clear city selections when country is deselected
+                    currentFilters.selectedCities = currentFilters.selectedCities.filter(
+                        city => !cityList.querySelectorAll('input').values.includes(city)
+                    );
                     cityList.innerHTML = '';
+                }
+                
+                cityList.style.display = this.checked ? 'block' : 'none';
+                applyFilters();
+            });
+        });
 
-                    // Add cities to the city list
-                    cities.forEach(city => {
-                        const li = document.createElement('li');
-                        li.innerHTML = `
-                            <input type="checkbox" id="${city.cityName}" value="${city.cityName}">
-                            <label for="${city.cityName}">${city.cityName}</label>
-                        `;
-                        cityList.appendChild(li);
+
+            // Car brand checkboxes
+            document.querySelectorAll('.car-brand-list input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', applyFilters);
+            });
+        }
+
+        function initializeFavorites() {
+            fetch('/api/favorites')
+                .then(response => response.json())
+                .then(favorites => {
+                    document.querySelectorAll('.favorite-icon').forEach(icon => {
+                        const productdID = icon.getAttribute('data-product-id');
+                        const isFavorited = favorites.some(product => product.ProductdID === Number(productdID));
+                        icon.classList.toggle('favorited', isFavorited);
+                        icon.style.color = isFavorited ? '#ff4757' : '#ccc';
                     });
-
-                    // Show the city list
-                    cityList.style.display = 'block';
-
-                    // Add event listeners to the newly created city checkboxes
-                    cityList.querySelectorAll('input[type="checkbox"]').forEach(cityCheckbox => {
-                        cityCheckbox.addEventListener('change', applyFilters);
-                    });
-
-                    // Fetch products for the selected country
-                    applyFilters();
                 })
-                .catch(error => console.error("Error fetching cities:", error));
-        } else {
-            // Hide the city list and clear products if the country is unselected
-            cityList.style.display = 'none';
-            applyFilters(); // Re-fetch products without the unselected country
+                .catch(error => console.error("Error checking favorites:", error));
         }
-    });
-});
-    document.querySelectorAll('.city-list').forEach(cityList => {
-    cityList.addEventListener('change', function (event) {
-        if (event.target.type === 'checkbox') {
-            applyFilters(); // Re-fetch products when a city is selected or unselected
-        }
-    });
-});
-        applyFilters();
-    };
-})();
-    </script>
+
+        window.onload = function () {
+            fetchProducts();
+            checkUnreadMessages();
+            initializeFilters();
+            initializeFavorites();
+            applyFilters();
+            handleCategoryVisibility();
+            checkUnreadMessages();
+        };
+    })();
+</script>
 </body>
 </html>

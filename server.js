@@ -320,40 +320,26 @@ app.get('/messages', isAuthenticated, (req, res) => {
 });
 
 app.get('/api/products', (req, res) => {
-    const category = req.query.category || 'default';
-    const sortPrice = req.query.sortPrice || 'asc';
-    const sortDate = req.query.sortDate || 'desc';
-    const countries = req.query.countries ? req.query.countries.split(',') : [];
-    const cities = req.query.city ? req.query.city.split(',') : [];
-    const subCategory = req.query.subCategory || '';
-    const carBrand = req.query.carBrand ? req.query.carBrand.split(',') : [];
+    const {
+        category,          // Filter by category
+        sortPrice,         // Sort by price (asc/desc)
+        sortDate,          // Sort by date (asc/desc)
+        countries,         // Filter by countries (comma-separated)
+        cities,            // Filter by cities (comma-separated)
+        subCategory,       // Filter by subcategory
+        carBrand,          // Filter by car brand (comma-separated)
+        limit = 20,        // Number of products per page (default: 20)
+        offset = 0         // Offset for pagination (default: 0)
+    } = req.query;
 
-    // List of all 22 Arab League countries
+    // List of valid Arab League countries (for filtering)
     const arabicCountries = [
-        "Algeria",
-        "Bahrain",
-        "Comoros",
-        "Djibouti",
-        "Egypt",
-        "Iraq",
-        "Jordan",
-        "Kuwait",
-        "Lebanon",
-        "Libya",
-        "Mauritania",
-        "Morocco",
-        "Oman",
-        "Palestine",
-        "Qatar",
-        "Saudi Arabia",
-        "Somalia",
-        "Sudan",
-        "Syria",
-        "Tunisia",
-        "United Arab Emirates",
-        "Yemen"
+        "Algeria", "Bahrain", "Comoros", "Djibouti", "Egypt", "Iraq", "Jordan", "Kuwait", "Lebanon", "Libya",
+        "Mauritania", "Morocco", "Oman", "Palestine", "Qatar", "Saudi Arabia", "Somalia", "Sudan", "Syria",
+        "Tunisia", "United Arab Emirates", "Yemen"
     ];
 
+    // Base query
     let query = "SELECT * FROM products WHERE 1=1";
     const params = [];
 
@@ -370,24 +356,29 @@ app.get('/api/products', (req, res) => {
     }
 
     // Car brand filter
-    if (carBrand.length > 0) {
-        query += ` AND carBrand IN (${carBrand.map(() => '?').join(',')})`;
-        params.push(...carBrand);
+    if (carBrand) {
+        const carBrands = carBrand.split(',').filter(brand => brand.trim() !== '');
+        if (carBrands.length > 0) {
+            query += ` AND carBrand IN (${carBrands.map(() => '?').join(',')})`;
+            params.push(...carBrands);
+        }
     }
 
     // Country filter (only allow valid Arabic countries)
-    const validCountries = countries.filter(country => 
-        arabicCountries.includes(country)
-    );
+    if (countries) {
+        const countryList = countries.split(',').filter(country => arabicCountries.includes(country));
+        if (countryList.length > 0) {
+            query += ` AND Country IN (${countryList.map(() => '?').join(',')})`;
+            params.push(...countryList);
 
-    if (validCountries.length > 0) {
-        query += ` AND Country IN (${validCountries.map(() => '?').join(',')})`;
-        params.push(...validCountries);
-
-        // City filter (only if country is selected)
-        if (cities.length > 0) {
-            query += ` AND city IN (${cities.map(() => '?').join(',')})`;
-            params.push(...cities);
+            // City filter (only if country is selected)
+            if (cities) {
+                const cityList = cities.split(',').filter(city => city.trim() !== '');
+                if (cityList.length > 0) {
+                    query += ` AND City IN (${cityList.map(() => '?').join(',')})`;
+                    params.push(...cityList);
+                }
+            }
         }
     }
 
@@ -395,36 +386,48 @@ app.get('/api/products', (req, res) => {
     const orderClauses = [];
     if (sortPrice) orderClauses.push(`Price ${sortPrice.toUpperCase()}`);
     if (sortDate) orderClauses.push(`CAST(Date AS DATETIME) ${sortDate.toUpperCase()}`);
-    
     if (orderClauses.length > 0) {
         query += ` ORDER BY ${orderClauses.join(', ')}`;
     }
 
-    console.log('====== FILTER PARAMETERS ======');
-    console.log('Sort Price:', sortPrice);
-    console.log('Sort Date:', sortDate);
-    console.log('Countries:', countries);
-    console.log('Final Query:', query);
-    console.log('Query Parameters:', params);
+    // Pagination
+    query += ` LIMIT ? OFFSET ?`;
+    params.push(parseInt(limit), parseInt(offset));
 
+    // Execute the query
     pool.query(query, params, (err, results) => {
         if (err) {
             console.error("Error fetching products:", err);
             return res.status(500).json({ error: "Error fetching products." });
         }
 
-        // Format results with first image
+        // Format results with the first image
         const formattedResults = results.map(product => {
             const images = product.Images ? product.Images.split(',') : [];
             return {
                 ...product,
-                firstImage: images.length > 0 
+                firstImage: images.length > 0
                     ? `/uploads/${images[0].trim()}`
                     : '/uploads/default-placeholder.png'
             };
         });
 
-        res.json(formattedResults || []);
+        // Get the total count of products (for pagination)
+        const countQuery = "SELECT COUNT(*) AS total FROM products WHERE 1=1";
+        pool.query(countQuery, params.slice(0, -2), (err, countResult) => { // Remove LIMIT and OFFSET params
+            if (err) {
+                console.error("Error fetching total count:", err);
+                return res.status(500).json({ error: "Error fetching total count." });
+            }
+
+            const total = countResult[0].total;
+
+            // Return the results with total count
+            res.json({
+                total,
+                products: formattedResults
+            });
+        });
     });
 });
 
