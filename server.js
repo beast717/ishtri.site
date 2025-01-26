@@ -299,10 +299,6 @@ app.get('/productDetails', (req, res) => {
     res.render ('productDetails');
 });
 
-app.get('/varslinger', isAuthenticated, (req, res) => {
-    res.render('varslinger');
-});
-
 app.get('/torgetkat', (req, res) => {
    res.render ('TorgetKat');
 });
@@ -499,6 +495,34 @@ app.post('/submit-product', isAuthenticated, upload.array('Images', 5), (req, re
             console.error("Error saving product:", err);
             return res.status(500).send("Error saving product.");
         }
+     // Trigger notifications after successful product creation
+    const newProductId = result.insertId;
+    
+    // Find matching preferences
+    pool.query(
+            `SELECT DISTINCT userId FROM notification_prefs
+            WHERE (JSON_CONTAINS(categories, JSON_ARRAY(?)) OR 
+                  (minPrice <= ? AND maxPrice >= ?))`,
+            [req.body.Category, req.body.Price, req.body.Price],
+            (err, prefResults) => {
+                if (err) console.error("Notification error:", err);
+
+                // Group by user ID to prevent duplicates
+                const uniqueUsers = [...new Set(prefResults.map(user => user.userId))];
+                
+                uniqueUsers.forEach(userId => {
+                    pool.query(
+                        `INSERT INTO notifications 
+                        (userId, productdID, message)
+                        VALUES (?, ?, ?)
+                        ON DUPLICATE KEY UPDATE
+                        createdAt = CURRENT_TIMESTAMP`,
+                        [userId, newProductId, 
+                        `New ${req.body.Category} product matching your preferences`]
+                    );
+                });
+            }
+        );
         res.redirect('/mine-annonser');
     });
 });
@@ -963,4 +987,183 @@ app.get('/api/cities', (req, res) => {
         }
         res.json(results);
     });
+});
+
+// Get notification preferences
+app.get('/api/notification-preferences', isAuthenticated, (req, res) => {
+  const userId = req.session.brukerId;
+  pool.query(
+    'SELECT * FROM notification_prefs WHERE userId = ?',
+    [userId],
+    (err, results) => {
+      if (err) return res.status(500).json({ error: 'Database error' });
+      res.json(results[0] || {});
+    }
+  );
+});
+
+app.post('/api/notification-preferences', isAuthenticated, (req, res) => {
+    const userId = req.session.brukerId;
+    let { categories, minPrice, maxPrice } = req.body;
+
+    // Ensure categories is always an array
+    if (!Array.isArray(categories)) {
+        categories = categories ? [categories] : [];
+    }
+
+    const query = `
+        INSERT INTO notification_prefs (userId, categories, minPrice, maxPrice)
+        VALUES (?, ?, ?, ?)
+        ON DUPLICATE KEY UPDATE
+        categories = VALUES(categories),
+        minPrice = VALUES(minPrice),
+        maxPrice = VALUES(maxPrice)
+    `;
+
+    pool.query(
+        query,
+        [userId, JSON.stringify(categories), minPrice, maxPrice],
+        (err) => {
+            if (err) return res.status(500).json({ error: 'Error saving preferences' });
+            res.json({ message: 'Preferences saved!' });
+        }
+    );
+});
+
+// Get notifications with badge count
+app.get('/api/notifications', isAuthenticated, (req, res) => {
+  const userId = req.session.brukerId;
+
+  // Get notifications
+  pool.query(
+    `SELECT n.*, p.ProductName, p.Price 
+     FROM notifications n
+     JOIN products p ON n.productdID = p.productdID
+     WHERE n.userId = ?
+     ORDER BY createdAt DESC`,
+    [userId],
+    (err, notifications) => {
+      if (err) return res.status(500).json({ error: 'Database error' });
+
+      // Get unread count
+      pool.query(
+        'SELECT COUNT(*) AS unreadCount FROM notifications WHERE userId = ? AND isRead = FALSE',
+        [userId],
+        (err, countResult) => {
+          if (err) return res.status(500).json({ error: 'Database error' });
+          
+          res.json({
+            notifications,
+            unreadCount: countResult[0].unreadCount
+          });
+        }
+      );
+    }
+  );
+});
+
+// Mark notifications as read
+app.post('/api/notifications/mark-read', isAuthenticated, (req, res) => {
+  const userId = req.session.brukerId;
+  pool.query(
+    'UPDATE notifications SET isRead = TRUE WHERE userId = ?',
+    [userId],
+    (err) => {
+      if (err) return res.status(500).json({ error: 'Database error' });
+      res.json({ message: 'Notifications marked as read' });
+    }
+  );
+});
+
+app.get('/notifications', isAuthenticated, (req, res) => {
+    const userId = req.session.brukerId;
+    
+    // Define available categories
+    const availableCategories = [
+        'Torget', 'Bil', 'Reise', 'Båt', 'Mc', 
+        'Jobb', 'Eiendom', 'Elektronikk'
+    ];
+
+    pool.query('SELECT * FROM notification_prefs WHERE userId = ?', [userId], (err, prefResults) => {
+        if (err) return res.status(500).send("Database error");
+
+        // Safely parse categories with fallback
+        const preferences = prefResults[0] ? {
+            ...prefResults[0],
+            categories: tryParseJSON(prefResults[0].categories) || []
+        } : { categories: [], minPrice: null, maxPrice: null };
+
+        pool.query(
+            `SELECT n.*, p.ProductName, p.Price 
+             FROM notifications n
+             JOIN products p ON n.productdID = p.productdID
+             WHERE n.userId = ?
+             ORDER BY n.createdAt DESC`,
+            [userId],
+            (err, notificationResults) => {
+                if (err) return res.status(500).send("Database error");
+
+                res.render('notifications', {
+                    preferences: preferences,
+                    notifications: notificationResults,
+                    categories: availableCategories // Now properly defined
+                });
+            }
+        );
+    });
+
+    // Add helper function inside the route handler
+    function tryParseJSON(jsonString) {
+        try {
+            return JSON.parse(jsonString);
+        } catch (e) {
+            return null;
+        }
+    }
+});
+
+// Mark single notification as read
+app.post('/api/notifications/mark-read/:notificationId', isAuthenticated, (req, res) => {
+    const { notificationId } = req.params;
+    const userId = req.session.brukerId;
+
+    pool.query(
+        `UPDATE notifications 
+         SET isRead = TRUE 
+         WHERE notificationId = ? AND userId = ?`,
+        [notificationId, userId],
+        (err) => {
+            if (err) return res.status(500).json({ error: 'Database error' });
+            res.sendStatus(200);
+        }
+    );
+});
+
+// Mark all notifications as read
+app.post('/api/notifications/mark-all-read', isAuthenticated, (req, res) => {
+    const userId = req.session.brukerId;
+
+    pool.query(
+        `UPDATE notifications 
+         SET isRead = TRUE 
+         WHERE userId = ? AND isRead = FALSE`,
+        [userId],
+        (err) => {
+            if (err) return res.status(500).json({ error: 'Database error' });
+            res.sendStatus(200);
+        }
+    );
+});
+
+// Get unread notification count
+app.get('/api/notifications/count', isAuthenticated, (req, res) => {
+  const userId = req.session.brukerId;
+  pool.query(
+    'SELECT COUNT(*) AS count FROM notifications WHERE userId = ? AND isRead = FALSE',
+    [userId],
+    (err, results) => {
+      if (err) return res.status(500).json({ error: 'Database error' });
+      res.json({ count: results[0].count });
+    }
+  );
 });
