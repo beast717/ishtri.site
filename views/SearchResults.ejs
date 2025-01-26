@@ -4,137 +4,258 @@
     <script src="https://unpkg.com/i18next/dist/umd/i18next.min.js"></script>
     <script src="https://unpkg.com/i18next-http-backend/i18nextHttpBackend.min.js"></script>
     <script src="https://unpkg.com/i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Search Results</title>
+    <title>Search results</title>
+
+    
     <style>
-        .productsContainer {
-            margin-top: -27px;
-            padding: 20px;
-            flex: 1;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
-        }
+h1 {
+text-align: center;
+margin-bottom: 20px;
+}
 
-        .product {
-            font-family: Arial, Helvetica, sans-serif;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 10px 0;
-            background-color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+.productsContainer {
+margin-top: -27px;
+padding: 20px;
+flex: 1;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
+}
 
-        .product:hover {
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        }
+.product {
+font-family: Arial, Helvetica, sans-serifx;
+border: 1px solid #ddd;
+border-radius: 8px;
+padding: 15px;
+margin: 10px 0;
+background-color: white;
+cursor: pointer;
+display: flex;
+align-items: center;
+gap: 15px;
+}
 
-        .product img {
-            max-width: 300px;
-            height: auto;
-            border-radius: 5px;
-        }
+.product:hover {
+box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-        .product h3 {
-            margin: 0;
-        }
+.product img {
+max-width: 300px;
+height: auto;
+border-radius: 5px;
+}
 
-        .no-products {
-            text-align: center;
-            font-size: 18px;
-            margin-top: 20px;
-        }
+.product h3 {
+margin: 0;
+}
 
-        .page-container {
-            display: flex;
-            gap: 20px;
-            padding: 20px;
-        }
+.no-products {
+text-align: center;
+font-size: 18px;
+margin-top: 20px;
+}
 
-        .side-panel {
-            font-family: Arial, Helvetica, sans-serif;
-            width: 250px;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            flex-shrink: 0;
-        }
+.filter-container {
+display: flex;
+align-items: center;
+gap: 10px;
+margin-top: 10px;
+font-family: 'Arial', sans-serif;
+}
 
-        .side-panel h3 {
-            margin-bottom: 15px;
-            font-size: 18px;
-            color: #333;
-            text-align: center;
-        }
+.filter-container label {
+font-size: 13px;
+color: #333;
+font-weight: bold;
+}
 
-        .country-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+#priceFilter, #dateFilter, #subCategoryFilter {
+padding: 7px;
+font-size: 13px;
+border-radius: 4px;
+background-color: #f9f9f9;
+transition: background-color 0.3s ease, border-color 0.3s ease;
+cursor: pointer;
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
 
-        .country-list li {
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-        }
+.page-container {
+display: flex;
+gap: 20px;
+padding: 20px;
+}
 
-        .country-list input[type="checkbox"] {
-            margin-right: 10px;
-            cursor: pointer;
-        }
+.side-panel {
+font-family: Arial, Helvetica, sans-serif;
+width: 250px;
+background-color: #f9f9f9;
+border: 1px solid #ddd;
+border-radius: 8px;
+padding: 15px;
+box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+flex-shrink: 0;
+}
 
-        .country-list label {
-            font-size: 16px;
-            color: #555;
-            cursor: pointer;
-        }
+.side-panel h3 {
+margin-bottom: 15px;
+font-size: 18px;
+color: #333;
+text-align: center;
+}
 
-        .country-list label:hover {
-            color: #007bff;
-        }
+.country-list, .car-brand-list {
+list-style: none;
+padding: 0;
+margin: 0;
+}
 
-        .filter-container {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-top: 10px;
-            font-family: 'Arial', sans-serif;
-        }
 
-        .filter-container label {
-            font-size: 13px;
-            color: #333;
-            font-weight: bold;
-        }
+.country-list li, .car-brand-list li {
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+margin-bottom: 10px;
+}
 
-        #priceFilter, #dateFilter {
-            padding: 7px;
-            font-size: 13px;
-            border-radius: 4px;
-            background-color: #f9f9f9;
-            transition: background-color 0.3s ease, border-color 0.3s ease;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
+.country-list li > div {
+display: flex;
+flex-direction: row; /* Align checkbox and label horizontally */
+align-items: center; /* Vertically center the checkbox and label */
+gap: 10px; /* Add spacing between checkbox and label */
+}
 
-        .sold-label {
-            color: #ffffff;
-            background-color: #ff5722;
-            padding: 3px 6px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: bold;
-            margin-left: 5px;
-            display: inline-block;
-        }
+.car-brand-list li > div {
+display: flex;
+flex-direction: row; /* Align checkbox and label horizontally */
+align-items: center; /* Vertically center the checkbox and label */
+gap: 10px; /* Add spacing between checkbox and label */
+}
+
+
+.country-list input[type="checkbox"], .car-brand-list input[type="checkbox"] {
+margin-right: 10px;
+cursor: pointer;
+}
+
+.country-list label, .car-brand-list label {
+font-size: 16px;
+color: #555;
+cursor: pointer;
+}
+
+.country-list label:hover, .car-brand-list label:hover {
+color: #007bff;
+}
+
+.sold-label {
+color: #ffffff;
+background-color: #ff5722;
+padding: 3px 6px;
+border-radius: 4px;
+font-size: 14px;
+font-weight: bold;
+margin-left: 5px;
+display: inline-block;
+}
+
+
+/* City List Styling (Nested) */
+.city-list {
+list-style: none;
+padding-left: 20; /* Reduced padding to align cities properly */
+margin: 5px 0 0 0; /* Adjusted margin to remove any left offset */
+display: none; /* Hidden by default */
+}
+
+.city-list li {
+display: flex;
+flex-direction: row;
+align-items: center; /* Align checkbox and label vertically */
+margin-bottom: 5px; /* Add spacing between cities */
+}
+
+.city-list input[type="checkbox"] {
+margin-right: 10px;
+cursor: pointer;
+}
+
+.city-list label {
+font-size: 14px;
+color: #777;
+cursor: pointer;
+}
+
+.city-list label:hover {
+color: #007bff;
+}
+
+.load-more-btn {
+display: block;
+margin: 30px auto;
+padding: 12px 24px;
+background: #007bff;
+color: white;
+border: none;
+border-radius: 25px;
+cursor: pointer;
+transition: all 0.3s ease;
+font-size: 16px;
+}
+
+.load-more-btn:hover {
+background: #0056b3;
+transform: translateY(-2px);
+box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.load-more-btn:disabled {
+background: #cccccc;
+cursor: not-allowed;
+transform: none;
+box-shadow: none;
+}
+
+.loading-overlay {
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: rgba(255, 255, 255, 0.8);
+display: none;
+justify-content: center;
+align-items: center;
+z-index: 1000;
+}
+
+.reset-filters-btn {
+position: fixed;
+bottom: 30px;
+right: 30px;
+padding: 12px 24px;
+background: #dc3545;
+color: white;
+border: none;
+border-radius: 25px;
+cursor: pointer;
+box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+transition: all 0.3s ease;
+z-index: 1000;
+display: flex;
+align-items: center;
+gap: 8px;
+}
+
+.reset-filters-btn:hover {
+background: #bb2d3b;
+transform: translateY(-2px);
+box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+}
+
+.reset-filters-btn:active {
+transform: translateY(0);
+}
 
         
     </style>
@@ -142,161 +263,598 @@
 <body>
     <%- include('partials/navbar') %>
 
-    <!-- Price Filter Dropdown -->
-    <div class="filter-container" style="margin-bottom: 20px;">
+   <div class="filter-container" style="margin-bottom: 20px;">
         <label for="priceFilter" data-i18n="filter.sorter_etter">Sorter etter:</label>
-        <select id="priceFilter" onchange="applyPriceFilter()">
+        <select id="priceFilter" onchange="applyFilters()">
             <option value="asc" data-i18n="filter.lavest_pris">Lavest Pris</option>
             <option value="desc" data-i18n="filter.høyest_pris">Høyest Pris</option>
+            <option value="" data-i18n="filter.alle">alle</option>
         </select>
         <label for="dateFilter" data-i18n="filter.utgitt">Utgitt:</label>
-        <select id="dateFilter" onchange="applyDateFilter()">
-            <option value="desc" data-i18n="filter.alle">alle</option>
+        <select id="dateFilter" onchange="applyFilters()">
+            <option value="" data-i18n="filter.alle">alle</option>
             <option value="desc" data-i18n="filter.nylige">Nylige</option>
             <option value="asc" data-i18n="filter.eldre">Eldre</option>
         </select>
-    </div>
+        <div id="subcategoryFilterContainer" style="display: none;">
+            <label for="subCategoryFilter" data-i18n="form.category">Kategori:</label>
+            <select id="subCategoryFilter" onchange="applyFilters()">
+                <option value="" data-i18n="filter.alle">Alle</option>
+                <option value="Klær" data-i18n="subkategori.klær">Klær</option>
+                <option value="Elektronikk" data-i18n="subkategori.elektronikk">Elektronikk</option>
+                <option value="Hvitvarer" data-i18n="subkategori.hvitvarer">Hvitvarer</option>
+                <option value="Møbler" data-i18n="subkategori.møbler">Møbler</option>
+                <option value="Annet" data-i18n="subkategori.annet">Annet</option>
+            </select>
+            <button onclick="resetFilters()" class="reset-filters-btn">
+    ⟳ Reset Filters
+</button>
+        </div> 
+    </div>  
 
     <div class="page-container">
         <div class="side-panel">
             <h3 data-i18n="filter.filter_land">Filter by Country</h3>
             <ul class="country-list">
-                <li><input type="checkbox" id="uae" value="UAE"> <label for="uae">United Arab Emirates</label></li>
-                <li><input type="checkbox" id="saudi" value="Saudi Arabia"> <label for="saudi">Saudi Arabia</label></li>
-                <li><input type="checkbox" id="egypt" value="Egypt"> <label for="egypt">Egypt</label></li>
-                <li><input type="checkbox" id="jordan" value="Jordan"> <label for="jordan">Jordan</label></li>
-                <li><input type="checkbox" id="qatar" value="Qatar"> <label for="qatar">Qatar</label></li>
-                <li><input type="checkbox" id="oman" value="Oman"> <label for="oman">Oman</label></li>
-                <li><input type="checkbox" id="kuwait" value="Kuwait"> <label for="kuwait">Kuwait</label></li>
-                <li><input type="checkbox" id="bahrain" value="Bahrain"> <label for="bahrain">Bahrain</label></li>
-                <li><input type="checkbox" id="iraq" value="Iraq"> <label for="iraq">Iraq</label></li>
-                <li><input type="checkbox" id="syria" value="Syria"> <label for="syria">Syria</label></li>
-                <li><input type="checkbox" id="lebanon" value="Lebanon"> <label for="lebanon">Lebanon</label></li>
-                <li><input type="checkbox" id="yemen" value="Yemen"> <label for="yemen">Yemen</label></li>
-                <li><input type="checkbox" id="libya" value="Libya"> <label for="libya">Libya</label></li>
-                <li><input type="checkbox" id="sudan" value="Sudan"> <label for="sudan">Sudan</label></li>
-                <li><input type="checkbox" id="morocco" value="Morocco"> <label for="morocco">Morocco</label></li>
-                <li><input type="checkbox" id="tunisia" value="Tunisia"> <label for="tunisia">Tunisia</label></li>
-                <li><input type="checkbox" id="algeria" value="Algeria"> <label for="algeria">Algeria</label></li>
-                <li><input type="checkbox" id="Palestine" value="Palestine"> <label for="Palestine">palestine</label></li>
-                <li><input type="checkbox" id="Mauritania" value="Mauritania"> <label for="Mauritania">Mauritania</label></li>
-            </ul>
+                <ul class="country-list">
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="uae" value="United Arab Emirates">
+            <label for="uae">United Arab Emirates</label>
         </div>
-
-        <div class="filter-container" style="margin-bottom: 20px;">
-    <label for="cityFilter" data-i18n="filter.city">City:</label>
-    <select id="cityFilter" onchange="applyFilters()" style="display: none;">
-        <option value="">All Cities</option>
-    </select>
+        <ul class="city-list" id="uae-cities" style="display: none;">
+            <!-- Cities for UAE will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="saudi" value="Saudi Arabia">
+            <label for="saudi">Saudi Arabia</label>
+        </div>
+        <ul class="city-list" id="saudi-cities" style="display: none;">
+            <!-- Cities for Saudi Arabia will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="egypt" value="Egypt">
+            <label for="egypt">Egypt</label>
+        </div>
+        <ul class="city-list" id="egypt-cities" style="display: none;">
+            <!-- Cities for Egypt will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="jordan" value="Jordan">
+            <label for="jordan">Jordan</label>
+        </div>
+        <ul class="city-list" id="jordan-cities" style="display: none;">
+            <!-- Cities for Jordan will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="qatar" value="Qatar">
+            <label for="qatar">Qatar</label>
+        </div>
+        <ul class="city-list" id="qatar-cities" style="display: none;">
+            <!-- Cities for Qatar will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="oman" value="Oman">
+            <label for="oman">Oman</label>
+        </div>
+        <ul class="city-list" id="oman-cities" style="display: none;">
+            <!-- Cities for Oman will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="kuwait" value="Kuwait">
+            <label for="kuwait">Kuwait</label>
+        </div>
+        <ul class="city-list" id="kuwait-cities" style="display: none;">
+            <!-- Cities for Kuwait will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="bahrain" value="Bahrain">
+            <label for="bahrain">Bahrain</label>
+        </div>
+        <ul class="city-list" id="bahrain-cities" style="display: none;">
+            <!-- Cities for Bahrain will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="iraq" value="Iraq">
+            <label for="iraq">Iraq</label>
+        </div>
+        <ul class="city-list" id="iraq-cities" style="display: none;">
+            <!-- Cities for Iraq will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="syria" value="Syria">
+            <label for="syria">Syria</label>
+        </div>
+        <ul class="city-list" id="syria-cities" style="display: none;">
+            <!-- Cities for Syria will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="lebanon" value="Lebanon">
+            <label for="lebanon">Lebanon</label>
+        </div>
+        <ul class="city-list" id="lebanon-cities" style="display: none;">
+            <!-- Cities for Lebanon will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="yemen" value="Yemen">
+            <label for="yemen">Yemen</label>
+        </div>
+        <ul class="city-list" id="yemen-cities" style="display: none;">
+            <!-- Cities for Yemen will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="libya" value="Libya">
+            <label for="libya">Libya</label>
+        </div>
+        <ul class="city-list" id="libya-cities" style="display: none;">
+            <!-- Cities for Libya will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="sudan" value="Sudan">
+            <label for="sudan">Sudan</label>
+        </div>
+        <ul class="city-list" id="sudan-cities" style="display: none;">
+            <!-- Cities for Sudan will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="morocco" value="Morocco">
+            <label for="morocco">Morocco</label>
+        </div>
+        <ul class="city-list" id="morocco-cities" style="display: none;">
+            <!-- Cities for Morocco will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="tunisia" value="Tunisia">
+            <label for="tunisia">Tunisia</label>
+        </div>
+        <ul class="city-list" id="tunisia-cities" style="display: none;">
+            <!-- Cities for Tunisia will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="algeria" value="Algeria">
+            <label for="algeria">Algeria</label>
+        </div>
+        <ul class="city-list" id="algeria-cities" style="display: none;">
+            <!-- Cities for Algeria will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="palestine" value="Palestine">
+            <label for="palestine">Palestine</label>
+        </div>
+        <ul class="city-list" id="palestine-cities" style="display: none;">
+            <!-- Cities for Palestine will be dynamically added here -->
+        </ul>
+    </li>
+    <li>
+        <div> <!-- Nested flex container for checkbox and label -->
+            <input type="checkbox" id="mauritania" value="Mauritania">
+            <label for="mauritania">Mauritania</label>
+        </div>
+        <ul class="city-list" id="mauritania-cities" style="display: none;">
+            <!-- Cities for Mauritania will be dynamically added here -->
+        </ul>
+    </li>
+</ul>  
 </div>
+
 
         <div class="productsContainer" id="productsContainer">
             <p>Loading products...</p>
         </div>
     </div>
+    <div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+</div>
 
-    <script>
-        // Fetch products initially with default sorting
-        const priceOrder = document.getElementById('priceFilter').value;  // Default price sorting
-        const dateOrder = document.getElementById('dateFilter').value;   // Default date sorting
-        const selectedCountries = Array.from(document.querySelectorAll('.country-list input[type="checkbox"]:checked'))
-            .map(checkbox => checkbox.value);
+   <script>
 
-        fetchProducts(priceOrder, selectedCountries, dateOrder);
+    (function () {
+        let filterTimeout;
+        const DEBOUNCE_DELAY = 300; // ms
 
-        // Apply the price filter based on user selection
-        function applyPriceFilter() {
-            const priceOrder = document.getElementById('priceFilter').value; // 'asc' or 'desc'
-            const dateOrder = document.getElementById('dateFilter').value;   // Retrieve date order
-            const selectedCountries = Array.from(document.querySelectorAll('.country-list input[type="checkbox"]:checked'))
-                .map(checkbox => checkbox.value);
 
-            fetchProducts(priceOrder, selectedCountries, dateOrder);
+        // Pagination variables
+        let currentPage = 1;
+        let isLoading = false;
+        let hasMore = true;
+        const limit = 20;
+
+        // Current filter state
+        let currentFilters = {
+            priceOrder: '',
+            selectedCountries: [],
+            dateOrder: '',
+            subCategory: '',
+            selectedCarBrands: [],
+            selectedCities: []
+        };
+
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
         }
 
-        // Apply the date filter based on user selection
-        function applyDateFilter() {
-            const dateOrder = document.getElementById('dateFilter').value || '';  // 'asc' or 'desc'
-            const priceOrder = document.getElementById('priceFilter').value; // Retrieve price order
-            const selectedCountries = Array.from(document.querySelectorAll('.country-list input[type="checkbox"]:checked'))
-                .map(checkbox => checkbox.value);
-
-            fetchProducts(priceOrder, selectedCountries, dateOrder);
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
         }
 
-        // Fetch products with optional category and price sorting
-        function fetchProducts(priceOrder = 'asc', selectedCountries = [], dateOrder = 'desc') {
-            const queryParams = new URLSearchParams(window.location.search);
-            const searchQuery = queryParams.get("query");
+        function fetchProducts(loadMore = false, cacheBuster = null) {
+            if (isLoading || (!loadMore && !hasMore)) return;
+            
+            showLoading();
+            isLoading = true;
 
-            let apiUrl = `/api/search?query=${searchQuery}`;
+            const offset = (currentPage - 1) * limit;
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchQuery = urlParams.get("query");
 
-            if (priceOrder) apiUrl += `&sortPrice=${priceOrder}`;
-            if (dateOrder !== '') apiUrl += `&sortDate=${dateOrder}`;
-            if (selectedCountries.length) apiUrl += `&countries=${selectedCountries.join(',')}`;
+            // Build API URL with current filters
+            let apiUrl = `/api/search?query=${searchQuery}&limit=${limit}&offset=${offset}`;
+                    // Add cache busting
+            if (cacheBuster) {
+                apiUrl += `&_=${cacheBuster}`;
+            }
+            if (currentFilters.subCategory) apiUrl += `&subCategory=${currentFilters.subCategory}`;
+            if (currentFilters.priceOrder) apiUrl += `&sortPrice=${currentFilters.priceOrder}`;
+            if (currentFilters.dateOrder) apiUrl += `&sortDate=${currentFilters.dateOrder}`;
+            if (currentFilters.selectedCountries.length) apiUrl += `&countries=${currentFilters.selectedCountries.join(',')}`;
+            if (currentFilters.selectedCarBrands.length) apiUrl += `&carBrand=${currentFilters.selectedCarBrands.join(',')}`;
+            if (currentFilters.selectedCities.length) apiUrl += `&cities=${currentFilters.selectedCities.join(',')}`;
 
-            // Fetch products from the server
-            fetch(apiUrl)
-                .then(response => {
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    return response.json();
-                })
-                .then(products => {
-                    console.log("Fetched products:", products); // Debug log the fetched data
-                    displayProducts(products);
-                })
-                .catch(error => {
-                    console.error("Error fetching products:", error);
-                    const container = document.getElementById('productsContainer');
-                    container.innerHTML = `<p class="no-products">Error loading products: ${error.message}</p>`;
-                });
-        }
-
-        // Display products in the DOM
-        function displayProducts(products) {
+            // Show loading state
             const container = document.getElementById('productsContainer');
-            container.innerHTML = ''; // Clear the existing content
-
-            if (products.length === 0) {
-                container.innerHTML = '<p class="no-products">No products found for this category.</p>';
-                return;
+            const loadButton = document.getElementById('loadMoreButton');
+            if (!loadMore) container.innerHTML = '<p>Loading products...</p>';
+            if (loadButton) {
+                loadButton.disabled = true;
+                loadButton.textContent = 'Loading...';
             }
 
-            products.forEach(product => {
-                const productDiv = document.createElement('div');
-                productDiv.className = 'product';
+            fetch(apiUrl)
+                .then(response => response.json())
+                    .then(products => { // 👈 Directly receive the array
+                        console.log("[DEBUG] API Products:", products);
+                        hasMore = (currentPage * limit) < products.length; // 👈 Approximate total
+                        displayProducts(products, loadMore);
+                        currentPage++;
+                        isLoading = false;
+                        hideLoading();
 
-                productDiv.innerHTML = `
-                    <img src="/uploads/${product.Images.split(',')[0]}" alt="${product.ProductName}">
-                    <i class="fas fa-heart favorite-icon" data-product-id="${product.ProductdID}"></i>
-                    <div>
-                        <h3>
-                            ${product.ProductName} 
-                            ${product.Sold ? `<span class="sold-label">(Sold)</span>` : ''}
-                        </h3>
-                        <p><strong>Pris:</strong> ${product.Price} NOK</p>
-                        <p><strong>Sted:</strong> ${product.Location}</p>
-                    </div>
-                `;
-
-                // Add click event to redirect to product details page (excluding the heart icon)
-                productDiv.addEventListener('click', (e) => {
-                    // Check if the click target is the heart icon
-                    if (!e.target.classList.contains('favorite-icon')) {
-                        const favoriteIcon = productDiv.querySelector('.favorite-icon');
-                        const isFavorited = favoriteIcon.classList.contains('favorited'); // Check if the product is favorited
-                        window.location.href = `/productDetails?productdID=${product.ProductdID}&favorited=${isFavorited}`;
+                    // Update load more button
+                    if (loadButton) {
+                        loadButton.disabled = false;
+                        loadButton.textContent = 'Load More';
+                        if (!hasMore) loadButton.remove();
+                    } else if (hasMore) {
+                        addLoadMoreButton();
+                    }
+                     hideLoading();
+                })
+                .catch(error => {
+                    console.error("[DEBUG] Error fetching products:", error); 
+                    console.error("Error fetching products:", error);
+                    isLoading = false;
+                    const container = document.getElementById('productsContainer');
+                    container.innerHTML = `
+                        <div class="error-message">
+                            <p>Error loading products. Please try again.</p>
+                            <button onclick="fetchProducts()">Retry</button>
+                        </div>
+                    `;
+                    hideLoading();
+                    if (loadButton) {
+                        loadButton.disabled = false;
+                        loadButton.textContent = 'Load More';
                     }
                 });
-
-                container.appendChild(productDiv);
-            });
-
-            // Initialize favorite icons after products are displayed
-            initializeFavorites();
         }
 
-        // Initialize favorite icons
+        function resetFilters() {
+            
+            // 1. Reset UI elements
+            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            document.getElementById('priceFilter').value = 'asc';
+            document.getElementById('dateFilter').value = '';
+            document.getElementById('subCategoryFilter').value = '';
+            
+            // 2. Clear city lists
+            document.querySelectorAll('.city-list').forEach(list => {
+                list.innerHTML = '';
+                list.style.display = 'none';
+            });
+
+            // 3. Reset internal state
+            currentFilters = {
+                priceOrder: 'asc',
+                dateOrder: '',
+                subCategory: '',
+                selectedCountries: [],
+                selectedCarBrands: [],
+                selectedCities: []
+            };
+
+            // 4. Reset pagination
+            currentPage = 1;
+            hasMore = true;
+            isLoading = false; 
+
+            // 5. Clear container and force fresh load
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = '<p>Loading products...</p>';
+            
+            // 6. Fetch with cache busting
+            fetchProducts(false, Date.now());
+        };
+
+        window.resetFilters = resetFilters;
+        window.fetchProducts = fetchProducts;
+function displayProducts(products, append = false) {
+    const container = document.getElementById('productsContainer');
+    if (!container) return;
+
+    if (!append) {
+        container.innerHTML = '';
+        currentPage = 1;
+    }
+
+    if (!products || !Array.isArray(products)) {
+        container.innerHTML = '<p class="no-products">No products found.</p>';
+        return;
+    }
+
+    if (products.length === 0 && !append) {
+        container.innerHTML = '<p class="no-products">No products found for this search.</p>';
+        return;
+    }
+
+    products.forEach(product => {
+        const productDiv = document.createElement('div');
+        productDiv.className = 'product';
+
+        // 1. Fix image handling
+    const images = product.Images ? product.Images.split(',') : [];
+    const firstImage = images.length > 0 
+        ? `/uploads/${images[0].trim()}` 
+        : '/uploads/default-placeholder.png'; // 👈 Defined here
+
+    // 2. Use firstImage in template
+    productDiv.innerHTML = `
+        <img src="${firstImage}" alt="${product.ProductName}">
+        <i class="fas fa-heart favorite-icon" data-product-id="${product.ProductdID}"></i>
+        <div>
+            <h3>
+                ${product.ProductName} 
+                ${product.Sold === 1 ? `<span class="sold-label">(Sold)</span>` : ''}
+            </h3>
+            <p><strong>Price:</strong> ${product.Price} $</p>
+            <p><strong>Location:</strong>${product.Location}</p>
+        </div>
+    `;
+
+        productDiv.addEventListener('click', () => {
+            window.location.href = `/productDetails?productdID=${product.ProductdID}`;
+        });
+
+        container.appendChild(productDiv);
+    });
+
+    initializeFavorites();      
+
+            document.querySelectorAll('.favorite-icon').forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const productdID = icon.getAttribute('data-product-id');
+                const isFavorited = icon.classList.contains('favorited');
+
+                if (isFavorited) {
+                    fetch('/api/unfavorite', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ productdID }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        icon.classList.remove('favorited');
+                        icon.style.color = '#ccc';
+                    })
+                    .catch(error => console.error("Error unfavoriting product:", error));
+                } else {
+                    fetch('/api/favorite', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ productdID }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        icon.classList.add('favorited');
+                        icon.style.color = '#ff4757';
+                    })
+                    .catch(error => console.error("Error favoriting product:", error));
+                }
+            });
+        });
+    }
+
+        function addLoadMoreButton() {
+            const existingButton = document.getElementById('loadMoreButton');
+            if (existingButton) return;
+
+            const button = document.createElement('button');
+            button.id = 'loadMoreButton';
+            button.className = 'load-more-btn';
+            button.textContent = 'Load More';
+            button.addEventListener('click', () => fetchProducts(true));
+            
+            const container = document.getElementById('productsContainer');
+            container.appendChild(button);
+        }
+
+        function applyFilters() {
+            clearTimeout(filterTimeout);
+            filterTimeout = setTimeout(() => {
+                // Update current filters
+                currentFilters = {
+                    priceOrder: document.getElementById('priceFilter').value,
+                    dateOrder: document.getElementById('dateFilter').value,
+                    subCategory: document.getElementById('subCategoryFilter')?.value || '',
+                    selectedCountries: Array.from(document.querySelectorAll('.country-list input[type="checkbox"]:checked'))
+                        .map(checkbox => checkbox.value),
+                    selectedCarBrands: Array.from(document.querySelectorAll('.car-brand-list input[type="checkbox"]:checked'))
+                        .map(checkbox => checkbox.value),
+                    selectedCities: Array.from(document.querySelectorAll('.city-list input[type="checkbox"]:checked'))
+                        .map(checkbox => checkbox.value)
+                };
+
+                // Reset pagination
+                currentPage = 1;
+                hasMore = true;
+            // Clear existing products
+                document.getElementById('productsContainer').innerHTML = '<p>Loading products...</p>';
+                
+                fetchProducts();
+            }, DEBOUNCE_DELAY);
+        }
+
+    document.getElementById('dateFilter').addEventListener('change', () => {
+    document.getElementById('priceFilter').value = '';
+    applyFilters();
+});
+    document.getElementById('priceFilter').addEventListener('change', () => {
+    document.getElementById('dateFilter').value = '';
+    applyFilters();
+});
+
+function handleCategoryVisibility() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('category') || 'default';
+    const subcategoryContainer = document.getElementById('subcategoryFilterContainer');
+    const carBrandSection = document.getElementById('kjørr');
+    const carBrandLabel = document.getElementById('filterCar');
+
+    // Toggle subcategory filter
+    if (subcategoryContainer) {
+        subcategoryContainer.style.display = category === 'Torget' ? 'block' : 'none';
+    }
+
+    // Toggle car brand filter
+    if (carBrandSection && carBrandLabel) {
+        const shouldShow = category === 'Bil';
+        carBrandSection.style.display = shouldShow ? 'block' : 'none';
+        carBrandLabel.style.display = shouldShow ? 'block' : 'none';
+    }
+}
+
+        function initializeFilters() {
+            // Price and Date filters
+            document.getElementById('priceFilter').addEventListener('change', applyFilters);
+            document.getElementById('dateFilter').addEventListener('change', applyFilters);
+            
+            // Subcategory filter
+            const subCategoryFilter = document.getElementById('subCategoryFilter');
+            if (subCategoryFilter) {
+                subCategoryFilter.addEventListener('change', applyFilters);
+            }
+
+            // Country checkboxes
+           document.querySelectorAll('.country-list input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', async function() {
+        const country = this.value;
+        const cityList = document.getElementById(`${this.id}-cities`);
+
+        if (this.checked) {
+            try {
+                // Fetch cities for the selected country
+                const response = await fetch(`/api/cities?country=${encodeURIComponent(country)}`);
+                const cities = await response.json();
+                
+                // Populate city list
+                cityList.innerHTML = cities.map(city => `
+                    <li>
+                        <input type="checkbox" id="${city.cityName}" 
+                               value="${city.cityName}">
+                        <label for="${city.cityName}">${city.cityName}</label>
+                    </li>
+                `).join('');
+                
+                // Add event listeners to new city checkboxes
+                cityList.querySelectorAll('input').forEach(cityCheckbox => {
+                    cityCheckbox.addEventListener('change', applyFilters);
+                });
+                
+                // Show the city list
+                cityList.style.display = 'block';
+
+                // Trigger filters for COUNTRY selection
+                applyFilters(); // 👈 Added this line
+
+            } catch (error) {
+                console.error("Error loading cities:", error);
+                cityList.innerHTML = '<li>Error loading cities</li>';
+            }
+        } else {
+            // Clear cities and hide the list
+            cityList.innerHTML = '';
+            cityList.style.display = 'none';
+            
+            // Remove cities from filters
+            currentFilters.selectedCities = currentFilters.selectedCities.filter(
+                city => !Array.from(cityList.querySelectorAll('input'))
+                              .map(cb => cb.value)
+                              .includes(city)
+            );
+
+            // Trigger filters for COUNTRY deselection
+            applyFilters(); // 👈 This already exists
+        }
+    });
+});
+
+            // Car brand checkboxes
+            document.querySelectorAll('.car-brand-list input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', applyFilters);
+            });
+        }
+
         function initializeFavorites() {
             fetch('/api/favorites')
                 .then(response => response.json())
@@ -304,98 +862,23 @@
                     document.querySelectorAll('.favorite-icon').forEach(icon => {
                         const productdID = icon.getAttribute('data-product-id');
                         const isFavorited = favorites.some(product => product.ProductdID === Number(productdID));
-
-                        if (isFavorited) {
-                            icon.classList.add('favorited');
-                            icon.style.color = '#ff4757'; // Red color for favorited products
-                        } else {
-                            icon.classList.remove('favorited');
-                            icon.style.color = '#ccc'; // Default color for non-favorited products
-                        }
+                        icon.classList.toggle('favorited', isFavorited);
+                        icon.style.color = isFavorited ? '#ff4757' : '#ccc';
                     });
                 })
                 .catch(error => console.error("Error checking favorites:", error));
         }
 
-        // Attach event listeners to filters
-        document.getElementById('priceFilter').addEventListener('change', applyPriceFilter);
-        document.getElementById('dateFilter').addEventListener('change', applyDateFilter);
-        document.querySelectorAll('.country-list input[type="checkbox"]').forEach(checkbox => {
-            checkbox.addEventListener('change', () => {
-                const priceOrder = document.getElementById('priceFilter').value;
-                const dateOrder = document.getElementById('dateFilter').value;
-                const selectedCountries = Array.from(document.querySelectorAll('.country-list input[type="checkbox"]:checked'))
-                    .map(checkbox => checkbox.value);
-
-                fetchProducts(priceOrder, selectedCountries, dateOrder);
-            });
-        });
-
-        // Handle favorite icon clicks
-document.addEventListener('click', (e) => {
-    if (e.target.classList.contains('favorite-icon')) {
-        e.preventDefault(); // Prevent default behavior
-        e.stopPropagation(); // Stop event from bubbling up to the parent container
-
-        const productdID = e.target.getAttribute('data-product-id');
-        const isFavorited = e.target.classList.contains('favorited');
-
-        if (isFavorited) {
-            fetch('/api/unfavorite', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ productdID }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                e.target.classList.remove('favorited');
-                e.target.style.color = '#ccc';
-            })
-            .catch(error => console.error("Error unfavoriting product:", error));
-        } else {
-            fetch('/api/favorite', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ productdID }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                e.target.classList.add('favorited');
-                e.target.style.color = '#ff4757';
-            })
-            .catch(error => console.error("Error favoriting product:", error));
-        }
-    }
-});
-
-document.querySelectorAll('.country-list input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', function() {
-        const selectedCountry = this.value;
-        const cityFilter = document.getElementById('cityFilter');
-
-        if (this.checked && selectedCountry) {
-            fetch(`/api/cities?country=${selectedCountry}`)
-                .then(response => response.json())
-                .then(cities => {
-                    cityFilter.innerHTML = '<option value="">All Cities</option>';
-                    cities.forEach(city => {
-                        const option = document.createElement('option');
-                        option.value = city.cityName;
-                        option.textContent = city.cityName;
-                        cityFilter.appendChild(option);
-                    });
-                    cityFilter.style.display = 'block';
-                })
-                .catch(error => console.error("Error fetching cities:", error));
-        } else {
-            cityFilter.style.display = 'none';
-        }
-    });
-});
-    </script>
+        window.onload = function () {
+            fetchProducts();
+            checkUnreadMessages();
+            initializeFilters();
+            initializeFavorites();
+            applyFilters();
+            handleCategoryVisibility();
+            checkUnreadMessages();
+        };
+    })();
+</script>
 </body>
 </html>
