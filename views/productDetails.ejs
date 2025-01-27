@@ -12,83 +12,173 @@
     <style>
         
       
-        .productDetailsContainer {
-            padding: 20px;
-            max-width: 800px;
-            margin: auto;
-            background-color: white;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
+.productDetailsContainer {
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
 
-        .carousel {
-            position: relative;
-            max-width: 100%;
-            height: 300px;
-            margin-bottom: 20px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+.carousel {
+    position: relative;
+    max-width: 100%;
+    height: 300px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        .carousel img {
-            width: 100%;
-            height: auto;
-            display: none;
-        }
+.carousel img {
+    width: 100%;
+    height: auto;
+    display: none;
+}
 
-        .carousel img.active {
-            display: block;
-        }
+.carousel img.active {
+    display: block;
+}
 
-        .carousel .prev, .carousel .next {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background-color: rgba(0, 0, 0, 0.5);
-            color: white;
-            border: none;
-            cursor: pointer;
-            padding: 10px;
-            border-radius: 50%;
-        }
+.carousel .prev, .carousel .next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 50%;
+}
 
-        .carousel .prev {
-            left: 10px;
-        }
+.carousel .prev {
+    left: 10px;
+}
 
-        .carousel .next {
-            right: 10px;
-        }
+.carousel .next {
+    right: 10px;
+}
 
-        .sendMessage {
-            margin-top: 10px;
-            padding: 10px 15px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+.sendMessage {
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
 
-        .sendMessage:hover {
-            background-color: #0056b3;
-        }
+.sendMessage:hover {
+    background-color: #0056b3;
+}
 
-        .soldLabel {
-            color: #ffffff;
-            background-color: #ff5722;
-            padding: 5px 8px;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: bold;
-            margin-left: 5px;
-            display: inline-block;
-        }
+.soldLabel {
+    color: #ffffff;
+    background-color: #ff5722;
+    padding: 5px 8px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-left: 5px;
+    display: inline-block;
+}
 
-        /* Custom Modal Styles */
+/* Custom Modal Styles */
 #messageModal {
+display: none;
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+background: white;
+padding: 30px;
+border: 1px solid #e0e0e0;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+z-index: 101; /* Above the overlay */
+border-radius: 8px;
+max-width: 400px;
+width: 90%;
+font-family: Arial, sans-serif;
+}
+
+#overlay {
+display: none;
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background: rgba(0, 0, 0, 0.5);
+z-index: 100;
+backdrop-filter: blur(5px); /* Add blur effect to the background */
+}
+
+#messageModal h3 {
+margin-top: 0;
+font-size: 20px;
+color: #333;
+text-align: center;
+margin-bottom: 20px;
+}
+
+#messageInput {
+width: 100%;
+padding: 10px;
+border: 1px solid #e0e0e0;
+border-radius: 4px;
+font-size: 14px;
+line-height: 1.5;
+resize: vertical;
+margin-bottom: 20px;
+box-sizing: border-box;
+}
+
+#messageInput:focus {
+border-color: #007bff;
+outline: none;
+box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+#sendMessageButton, #cancelMessageButton {
+padding: 10px 20px;
+margin: 5px;
+border: none;
+border-radius: 4px;
+cursor: pointer;
+font-size: 14px;
+transition: background-color 0.3s ease;
+}
+
+#sendMessageButton {
+background-color: #007bff;
+color: white;
+}
+
+#sendMessageButton:hover {
+background-color: #0056b3;
+}
+
+#cancelMessageButton {
+background-color: #f0f0f0;
+color: #333;
+}
+
+#cancelMessageButton:hover {
+background-color: #e0e0e0;
+}
+
+/* Button Container for Alignment */
+#messageModal .button-container {
+display: flex;
+justify-content: flex-end;
+margin-top: 10px;
+}
+
+#loginModal {
     display: none;
     position: fixed;
     top: 50%;
@@ -98,14 +188,61 @@
     padding: 30px;
     border: 1px solid #e0e0e0;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    z-index: 101; /* Above the overlay */
+    z-index: 101;
     border-radius: 8px;
     max-width: 400px;
     width: 90%;
     font-family: Arial, sans-serif;
+    text-align: center;
 }
 
-#overlay {
+#loginModal h3 {
+    margin-top: 0;
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+#loginModal p {
+    color: #666;
+    margin-bottom: 25px;
+}
+
+#loginModal .button-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+#loginButton1 {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#loginButton1:hover {
+    background-color: #0056b3;
+}
+
+#cancelLoginButton {
+    background-color: #f0f0f0;
+    color: #333;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#cancelLoginButton:hover {
+    background-color: #e0e0e0;
+}
+
+#loginOverlay {
     display: none;
     position: fixed;
     top: 0;
@@ -114,68 +251,7 @@
     height: 100%;
     background: rgba(0, 0, 0, 0.5);
     z-index: 100;
-    backdrop-filter: blur(5px); /* Add blur effect to the background */
-}
-
-#messageModal h3 {
-    margin-top: 0;
-    font-size: 20px;
-    color: #333;
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-#messageInput {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #e0e0e0;
-    border-radius: 4px;
-    font-size: 14px;
-    line-height: 1.5;
-    resize: vertical;
-    margin-bottom: 20px;
-    box-sizing: border-box;
-}
-
-#messageInput:focus {
-    border-color: #007bff;
-    outline: none;
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-#sendMessageButton, #cancelMessageButton {
-    padding: 10px 20px;
-    margin: 5px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-}
-
-#sendMessageButton {
-    background-color: #007bff;
-    color: white;
-}
-
-#sendMessageButton:hover {
-    background-color: #0056b3;
-}
-
-#cancelMessageButton {
-    background-color: #f0f0f0;
-    color: #333;
-}
-
-#cancelMessageButton:hover {
-    background-color: #e0e0e0;
-}
-
-/* Button Container for Alignment */
-#messageModal .button-container {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 10px;
+    backdrop-filter: blur(5px);
 }
 
     </style>
@@ -211,280 +287,202 @@
         <button class="sendMessage" id="contactOwner" data-i18n="product_details.contact_owner">Kontakt eier</button>
         <button id="favoriteButton" class="sendMessage">Favorite</button>
     </div>
+    <div id="loginModal">
+    <h3>You need to log in to favorite this product</h3>
+    <p>Please log in to access this feature.</p>
+    <div class="button-container">
+        <button id="loginButton1">Log In</button>
+        <button id="cancelLoginButton">Cancel</button>
+    </div>
+</div>
+<div id="loginOverlay"></div>
+
     </div>
 
     <script>
-        (function () {
-
-            // Function to show the modal
-function showMessageModal() {
-    document.getElementById('messageModal').style.display = 'block';
-    document.getElementById('overlay').style.display = 'block';
-}
-
-// Function to hide the modal
-function hideMessageModal() {
-    document.getElementById('messageModal').style.display = 'none';
-    document.getElementById('overlay').style.display = 'none';
-    document.getElementById('messageInput').value = ''; // Clear the input field
-}
-
-
-        // Get references to the modal and overlay
-        const messageModal = document.getElementById('messageModal');
-        const overlay = document.getElementById('overlay');
-        const messageInput = document.getElementById('messageInput');
-        const sendMessageButton = document.getElementById('sendMessageButton');
-        const cancelMessageButton = document.getElementById('cancelMessageButton');
-
-        // Function to show the modal
+    (function () {
+        // ========== MODAL HANDLING ========== //
+        // Message Modal
         function showMessageModal() {
-            messageModal.style.display = 'block';
-            overlay.style.display = 'block';
+            document.getElementById('messageModal').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
         }
 
-        // Function to hide the modal
         function hideMessageModal() {
-            messageModal.style.display = 'none';
-            overlay.style.display = 'none';
-            messageInput.value = ''; // Clear the input field
+            document.getElementById('messageModal').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('messageInput').value = '';
         }
 
-        // Event listener for the "Contact Owner" button
-        document.getElementById('contactOwner').addEventListener('click', () => {
-            // Check if the user is logged in
-            fetch('/api/brukernavn')
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.brukernavn) {
-                        // If the user is not logged in, redirect to the login page
-                        window.location.href = '/login';
-                    } else {
-                        // If the user is logged in, show the modal
-                        showMessageModal();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error checking login status:', error);
-                });
-        });
-
-        // Event listener for the "Send" button in the modal
-        sendMessageButton.addEventListener('click', () => {
-            const messageContent = messageInput.value.trim();
-
-            if (messageContent) {
-                // Send the message if the input is not empty
-                sendMessage(productdID, messageContent);
-                hideMessageModal(); // Hide the modal after sending
-            } else {
-                alert('Please enter a message.'); // Show an alert if the input is empty
-            }
-        });
-
-        // Event listener for the "Cancel" button in the modal
-        cancelMessageButton.addEventListener('click', () => {
-            hideMessageModal(); // Hide the modal without sending
-        });
-
-        // Function to send a message
-       function sendMessage(productdID, messageContent) {
-    fetch('/send-message', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ productdID, messageContent }),
-    })
-    .then(response => {
-        if (response.ok) {
-            return response.text(); // Parse the response as text
-        } else {
-            return response.text().then(text => {
-                throw new Error(text); // Throw an error with the response text
-            });
+        // Login Modal
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'block';
+            document.getElementById('loginOverlay').style.display = 'block';
         }
-    })
-    .then(message => {
-        alert(message); // Show success message
-        hideMessageModal(); // Hide the modal after sending
-    })
-    .catch(error => {
-        console.error('Error sending message:', error);
-        alert(error.message); // Show error message to the user
-    });
-}
-        // Fetch product details and populate the page
+
+        function hideLoginModal() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('loginOverlay').style.display = 'none';
+        }
+
+        // ========== DOM REFERENCES ========== //
+        const messageInput = document.getElementById('messageInput');
+        const favoriteButton = document.getElementById('favoriteButton');
         const urlParams = new URLSearchParams(window.location.search);
         const productdID = urlParams.get('productdID');
-
         let currentImageIndex = 0;
 
+        // ========== MESSAGE FUNCTIONALITY ========== //
+        document.getElementById('contactOwner').addEventListener('click', () => {
+            fetch('/api/brukernavn')
+                .then(response => response.json())
+                .then(data => data.brukernavn ? showMessageModal() : window.location.href = '/login')
+                .catch(console.error);
+        });
+
+        document.getElementById('sendMessageButton').addEventListener('click', () => {
+            const messageContent = messageInput.value.trim();
+            messageContent ? sendMessage(productdID, messageContent) : alert('Please enter a message.');
+        });
+
+        document.getElementById('cancelMessageButton').addEventListener('click', hideMessageModal);
+
+        // ========== FAVORITE FUNCTIONALITY ========== //
+        function initializeFavorites() {
+            // Check backend for current favorite status
+            fetch('/api/favorites')
+                .then(response => response.json())
+                .then(favorites => {
+                    const isFavorited = favorites.some(p => p.ProductdID == productdID);
+                    favoriteButton.textContent = isFavorited ? 'Unfavorite' : 'Favorite';
+                    favoriteButton.classList.toggle('unfavorite', isFavorited);
+                })
+                .catch(console.error);
+        }
+
+        document.getElementById('favoriteButton').addEventListener('click', () => {
+            fetch('/api/brukernavn')
+                .then(response => response.json())
+                .then(data => data.brukernavn ? toggleFavorite() : showLoginModal())
+                .catch(console.error);
+        });
+
+        function toggleFavorite() {
+            const isFavorited = favoriteButton.classList.contains('unfavorite');
+            const endpoint = isFavorited ? '/api/unfavorite' : '/api/favorite';
+            
+            fetch(endpoint, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ productdID })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                favoriteButton.textContent = isFavorited ? 'Favorite' : 'Unfavorite';
+                favoriteButton.classList.toggle('unfavorite');
+            })
+            .catch(error => {
+                console.error("Favorite error:", error);
+                alert(`Failed to ${isFavorited ? 'unfavorite' : 'favorite'} product. Please try again.`);
+            });
+        }
+
+        // ========== LOGIN MODAL HANDLERS ========== //
+        document.getElementById('loginButton1').addEventListener('click', () => window.location.href = '/login');
+        document.getElementById('cancelLoginButton').addEventListener('click', hideLoginModal);
+
+        // ========== PRODUCT INITIALIZATION ========== //
         fetch(`/api/product/${productdID}`)
             .then(response => response.json())
             .then(product => {
-                const productTitleElement = document.getElementById('productTitle');
-                productTitleElement.textContent = product.ProductName;
-
+                // Update product info
+                const titleElement = document.getElementById('productTitle');
+                titleElement.textContent = product.ProductName;
+                
                 if (product.Sold) {
                     const soldLabel = document.createElement('span');
                     soldLabel.className = 'soldLabel';
                     soldLabel.textContent = '(Sold)';
-                    productTitleElement.appendChild(soldLabel);
+                    titleElement.appendChild(soldLabel);
                 }
+
                 document.getElementById('productPrice').textContent = product.Price;
                 document.getElementById('productLocation').textContent = product.Location;
                 document.getElementById('productDescription').textContent = product.Description;
 
-                const images = product.Images.split(',').filter(image => image.trim() !== '');
+                // Handle product images
+                const images = product.Images.split(',').filter(img => img.trim());
                 const carousel = document.getElementById('imageCarousel');
-
-                // Clear existing images
-                const existingImages = carousel.querySelectorAll('img');
-                existingImages.forEach(img => img.remove());
-
-                // Append images dynamically
-                images.forEach((image, index) => {
+                carousel.querySelectorAll('img').forEach(img => img.remove());
+                
+                images.forEach((imgSrc, index) => {
                     const img = document.createElement('img');
-                    img.src = `/uploads/${image.trim()}`;
+                    img.src = `/uploads/${imgSrc.trim()}`;
                     if (index === 0) img.classList.add('active');
                     carousel.appendChild(img);
                 });
 
-                // Update button visibility
-                updateButtonVisibility(images.length);
+                updateCarouselButtons(images.length);
             });
 
-        function prevImage() {
+        // ========== CAROUSEL CONTROLS ========== //
+        function updateCarouselButtons(imageCount) {
+            document.querySelectorAll('.carousel button').forEach(btn => {
+                btn.style.display = imageCount <= 1 ? 'none' : 'block';
+            });
+        }
+
+        window.prevImage = function() {
             const images = document.querySelectorAll('.carousel img');
             images[currentImageIndex].classList.remove('active');
             currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
             images[currentImageIndex].classList.add('active');
         }
 
-        function nextImage() {
+        window.nextImage = function() {
             const images = document.querySelectorAll('.carousel img');
             images[currentImageIndex].classList.remove('active');
             currentImageIndex = (currentImageIndex + 1) % images.length;
             images[currentImageIndex].classList.add('active');
         }
 
-        function updateButtonVisibility(imageCount) {
-            const prevButton = document.querySelector('.carousel .prev');
-            const nextButton = document.querySelector('.carousel .next');
+        // ========== INITIALIZE PAGE ========== //
+        window.addEventListener('load', () => {
+            initializeFavorites();
+            checkUnreadMessages(); // Assuming this is defined elsewhere
+        });
 
-            if (imageCount <= 1) {
-                prevButton.style.display = 'none';
-                nextButton.style.display = 'none';
-            } else {
-                prevButton.style.display = 'block';
-                nextButton.style.display = 'block';
+        // ========== MESSAGE SENDING ========== //
+         function sendMessage() {
+            const messageContent = messageInput.value.trim();
+            
+            if (!productdID || !messageContent) {
+                alert('Missing required information');
+                return;
             }
+
+            fetch('/send-message', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ 
+                    productdID: productdID, 
+                    messageContent: messageContent 
+                })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to send message');
+                alert('Message sent successfully!');
+                hideMessageModal();
+            })
+            .catch(error => {
+                console.error('Message error:', error);
+                alert(error.message);
+            });
         }
 
-     
-    // Existing JavaScript code for product details
-    // ...
-
-    // New JavaScript code for favorites
-  function initializeFavorites() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const productdID = urlParams.get('productdID');
-    const isFavoritedFromURL = urlParams.get('favorited') === 'true'; // Get the favorite status from the URL
-
-    const favoriteButton = document.getElementById('favoriteButton');
-
-    // Set the initial state of the favorite button based on the URL parameter
-    if (isFavoritedFromURL) {
-        favoriteButton.textContent = 'Unfavorite';
-        favoriteButton.classList.add('unfavorite');
-    } else {
-        favoriteButton.textContent = 'Favorite';
-        favoriteButton.classList.remove('unfavorite');
-    }
-
-    // Check if the product is favorited by the user (from the backend)
-    function checkIfFavorited(productdID) {
-        fetch('/api/favorites')
-            .then(response => response.json())
-            .then(favorites => {
-                const isFavorited = favorites.some(product => product.ProductdID === Number(productdID));
-                if (isFavorited) {
-                    favoriteButton.textContent = 'Unfavorite';
-                    favoriteButton.classList.add('unfavorite');
-                } else {
-                    favoriteButton.textContent = 'Favorite';
-                    favoriteButton.classList.remove('unfavorite');
-                }
-            })
-            .catch(error => console.error("Error checking favorites:", error));
-    }
-
-    // Call this function when the page loads
-    checkIfFavorited(productdID);
-}
-
-    // Toggle favorite/unfavorite
-favoriteButton.addEventListener('click', () => {
-    const isFavorited = favoriteButton.classList.contains('unfavorite');
-
-    if (isFavorited) {
-        favoriteButton.textContent = 'Favorite';
-        favoriteButton.classList.remove('unfavorite');
-        fetch('/api/unfavorite', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ productdID }),
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            
-        })
-        .catch(error => {
-            console.error("Error unfavoriting product:", error);
-            alert("Failed to unfavorite product. Please try again.");
-        });
-    } else {
-        favoriteButton.textContent = 'Unfavorite';
-        favoriteButton.classList.add('unfavorite');
-        fetch('/api/favorite', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ productdID }),
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            
-        })
-        .catch(error => {
-            console.error("Error favoriting product:", error);
-            alert("Failed to favorite product. Please try again.");
-        });
-    }
-});
-
-    // Initialize favorites after the page loads
-    window.addEventListener('load', initializeFavorites);
-    window.onload = function () {
-    checkUnreadMessages(); // Check for unread messages
-};
-})();
-
-        
-    </script>
+        // Updated message button handler
+        document.getElementById('sendMessageButton').addEventListener('click', sendMessage);
+    })();
+</script>
 </body>
 </html>
