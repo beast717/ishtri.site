@@ -1165,7 +1165,8 @@ select[multiple] option:checked {
                         `;
                         
                         const cityList = countryItem.querySelector('.city-list');
-                        countryData.cities && countryData.cities.forEach((cityName, index) => {
+                        countryData.cities = countryData.cities || []; // Ensure it's an array
+                        countryData.cities.forEach((cityName, index) => {
                             const cityId = countryData.city_ids[index];
                             cityList.innerHTML += `
                                 <li>

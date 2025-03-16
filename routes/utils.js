@@ -7,8 +7,8 @@ router.get('/countries', async (req, res, next) => {
     try {
         const [results] = await pool.promise().query(
             `SELECT c.country, 
-                    JSON_ARRAYAGG(c.cityid) AS city_ids,
-                    JSON_ARRAYAGG(c.cityName) AS cities
+                    COALESCE(JSON_ARRAYAGG(c.cityid), JSON_ARRAY()) AS city_ids,
+                    COALESCE(JSON_ARRAYAGG(c.cityName), JSON_ARRAY()) AS cities
              FROM cities c
              GROUP BY c.country`
         );
