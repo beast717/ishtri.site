@@ -1130,7 +1130,7 @@ select[multiple] option:checked {
                 
                 // Populate cities for this country
                 const cityList = countryItem.querySelector('.city-list');
-                countryData.cities && countryData.cities.forEach((cityName, index) => {
+                countryData.cities.forEach((cityName, index) => {
                     const cityId = countryData.city_ids[index];
                     cityList.innerHTML += `
                         <li>
@@ -1139,7 +1139,6 @@ select[multiple] option:checked {
                         </li>
                     `;
                 });
-
 
              // Modify the country checkbox event listener to uncheck cities
             document.querySelectorAll('.country-list input[type="checkbox"]').forEach(countryCheckbox => {
