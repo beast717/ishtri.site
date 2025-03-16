@@ -2,17 +2,25 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
 
-// Get countries with cities
 router.get('/countries', async (req, res, next) => {
     try {
-        const [results] = await pool.promise().query(
-            `SELECT c.country, 
-                    COALESCE(JSON_ARRAYAGG(c.cityid), JSON_ARRAY()) AS city_ids,
-                    COALESCE(JSON_ARRAYAGG(c.cityName), JSON_ARRAY()) AS cities
-             FROM cities c
-             GROUP BY c.country`
-        );
-        res.json(results);
+        const [results] = await pool.promise().query(`
+            SELECT 
+                c.country,
+                GROUP_CONCAT(c.cityid) AS city_ids,
+                GROUP_CONCAT(c.cityName) AS cities
+            FROM cities c
+            GROUP BY c.country
+        `);
+
+        // Transform to array format
+        const transformed = results.map(row => ({
+            country: row.country,
+            city_ids: row.city_ids ? row.city_ids.split(',').map(Number) : [],
+            cities: row.cities ? row.cities.split(',') : []
+        }));
+
+        res.json(transformed);
     } catch (err) {
         next(err);
     }

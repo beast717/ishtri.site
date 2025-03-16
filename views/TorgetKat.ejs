@@ -1166,8 +1166,11 @@ select[multiple] option:checked {
                         
                         const cityList = countryItem.querySelector('.city-list');
                         countryData.cities = countryData.cities || []; // Ensure it's an array
-                        countryData.cities.forEach((cityName, index) => {
-                            const cityId = countryData.city_ids[index];
+                        const cities = Array.isArray(countryData.cities) ? countryData.cities : [];
+                        const cityIds = Array.isArray(countryData.city_ids) ? countryData.city_ids : [];
+
+                        cities.forEach((cityName, index) => {
+                            const cityId = cityIds[index] || `unknown_${index}`; // Handle missing IDs
                             cityList.innerHTML += `
                                 <li>
                                     <input type="checkbox" id="city_${cityId}" value="${cityId}">
