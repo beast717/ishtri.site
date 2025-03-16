@@ -254,6 +254,13 @@ margin-top: 10px;
     backdrop-filter: blur(5px);
 }
 
+.custom-title {
+    color: #666;
+    font-size: 1.2rem;
+    margin-top: -10px;
+    margin-bottom: 15px;
+    font-weight: normal;
+}
     </style>
 </head>
 <body>
@@ -280,7 +287,7 @@ margin-top: 10px;
         </div>
 
         <h1 id="productTitle">Product Title</h1>
-        <p><strong data-i18n="product_details.price">Pris:</strong> <span id="productPrice"></span></p>
+        <p><strong>Price</strong> <span id="productPrice"></span></p>
         <p><strong data-i18n="product_details.location">Sted:</strong> <span id="productLocation"></span></p>
         <p id="productDescription">Product Description</p>
 
@@ -334,7 +341,7 @@ margin-top: 10px;
 
         // ========== MESSAGE FUNCTIONALITY ========== //
         document.getElementById('contactOwner').addEventListener('click', () => {
-            fetch('/api/brukernavn')
+            fetch('/api/auth/current-user')
                 .then(response => response.json())
                 .then(data => data.brukernavn ? showMessageModal() : window.location.href = '/login')
                 .catch(console.error);
@@ -361,29 +368,30 @@ margin-top: 10px;
         }
 
         document.getElementById('favoriteButton').addEventListener('click', () => {
-            fetch('/api/brukernavn')
+            fetch('/api/auth/current-user')
                 .then(response => response.json())
                 .then(data => data.brukernavn ? toggleFavorite() : showLoginModal())
                 .catch(console.error);
         });
 
         function toggleFavorite() {
-            const isFavorited = favoriteButton.classList.contains('unfavorite');
-            const endpoint = isFavorited ? '/api/unfavorite' : '/api/favorite';
-            
-            fetch(endpoint, {
+            fetch('/api/favorites', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ productdID })
             })
             .then(response => {
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                favoriteButton.textContent = isFavorited ? 'Favorite' : 'Unfavorite';
-                favoriteButton.classList.toggle('unfavorite');
+                return response.json();
+            })
+            .then(data => {
+                const newState = data.message.includes('Added');
+                favoriteButton.textContent = newState ? 'Unfavorite' : 'Favorite';
+                favoriteButton.classList.toggle('unfavorite', newState);
             })
             .catch(error => {
                 console.error("Favorite error:", error);
-                alert(`Failed to ${isFavorited ? 'unfavorite' : 'favorite'} product. Please try again.`);
+                alert(`Failed to toggle favorite. Please try again.`);
             });
         }
 
@@ -392,38 +400,128 @@ margin-top: 10px;
         document.getElementById('cancelLoginButton').addEventListener('click', hideLoginModal);
 
         // ========== PRODUCT INITIALIZATION ========== //
-        fetch(`/api/product/${productdID}`)
-            .then(response => response.json())
-            .then(product => {
-                // Update product info
-                const titleElement = document.getElementById('productTitle');
-                titleElement.textContent = product.ProductName;
-                
-                if (product.Sold) {
-                    const soldLabel = document.createElement('span');
-                    soldLabel.className = 'soldLabel';
-                    soldLabel.textContent = '(Sold)';
-                    titleElement.appendChild(soldLabel);
-                }
+        fetch(`/api/products/${productdID}`)
+        .then(response => response.json())
+        .then(product => {
+            const isJob = product.category === 'Jobb';
+            const isCar = product.category === 'Bil';
+            const isProperty = product.category === 'Eiendom';
 
-                document.getElementById('productPrice').textContent = product.Price;
-                document.getElementById('productLocation').textContent = product.Location;
-                document.getElementById('productDescription').textContent = product.Description;
+            // Get DOM elements first
+            const titleElement = document.getElementById('productTitle');
+            const priceElement = document.getElementById('productPrice');
+            const locationElement = document.getElementById('productLocation');
+            const descElement = document.getElementById('productDescription');
 
-                // Handle product images
-                const images = product.Images.split(',').filter(img => img.trim());
-                const carousel = document.getElementById('imageCarousel');
-                carousel.querySelectorAll('img').forEach(img => img.remove());
-                
-                images.forEach((imgSrc, index) => {
-                    const img = document.createElement('img');
-                    img.src = `/uploads/${imgSrc.trim()}`;
-                    if (index === 0) img.classList.add('active');
-                    carousel.appendChild(img);
-                });
+            // Update title
+            titleElement.textContent = isJob ? product.JobTitle : 
+                                  isCar ? `${product.brand_name} ${product.model_name}` : 
+                                  product.ProductName;
 
-                updateCarouselButtons(images.length);
+            if (product.Sold) {
+                const soldLabel = document.createElement('span');
+                soldLabel.className = 'soldLabel';
+                soldLabel.textContent = '(Sold)';
+                titleElement.appendChild(soldLabel);
+            }
+
+            // Handle amenities with proper error checking
+            let amenities = [];
+            try {
+              if (product.Amenities && product.Amenities !== '[]') {
+                amenities = JSON.parse(product.Amenities);
+              }
+            } catch (e) {
+              // Fallback for malformed JSON
+              amenities = typeof product.Amenities === 'string' ? 
+                          product.Amenities.split(',') : 
+                          [];
+            }
+
+             // Handle Property Details
+            if (isProperty) {
+                // Price display
+                priceElement.innerHTML = `
+                    ${product.Price} kr<br>
+                    <strong>Type:</strong> ${product.PropertyType}<br>
+                    <strong>Size:</strong> ${product.SizeSqm} m²
+                `;
+
+                // Description section
+                descElement.innerHTML = `
+                    <div class="property-details">
+                        <p><strong>Property Type:</strong> ${product.PropertyType}</p>
+                        <p><strong>Size:</strong> ${product.SizeSqm} m²</p>
+                        <p><strong>Rooms:</strong> ${product.NumRooms}</p>
+                        <p><strong>Bathrooms:</strong> ${product.NumBathrooms}</p>
+                        <p><strong>Year Built:</strong> ${product.YearBuilt || 'Not specified'}</p>
+                        <p><strong>Energy Class:</strong> ${product.EnergyClass || 'Not specified'}</p>
+                        <p><strong>Amenities:</strong> ${amenities.join(', ') || 'Ingen spesielle fasiliteter'}</p>
+                    </div>
+                    ${product.Description ? `<div class="description">${product.Description}</div>` : ''}
+                `;
+
+                // Update location
+                locationElement.textContent = product.Location;
+            }
+            // Handle car details
+            else if (isCar) {
+                const customTitleElement = document.createElement('h2');
+                customTitleElement.className = 'custom-title';
+                customTitleElement.textContent = product.ProductName;
+                titleElement.insertAdjacentElement('afterend', customTitleElement);
+
+                priceElement.innerHTML = `
+                    ${product.Price} kr<br>
+                    <strong data-i18n="form.brand">Brand:</strong> ${product.brand_name}<br>
+                    <strong data-i18n="form.model">Model:</strong> ${product.model_name}<br>
+                    <strong data-i18n="form.year">Year:</strong> ${product.Year}<br>
+                    <strong data-i18n="form.mileage">Mileage:</strong> ${product.Mileage}
+                `;
+
+                descElement.innerHTML = `
+                    ${product.Description || ''}
+                    <p><strong data-i18n="form.fuel_type">Fuel Type:</strong> <span data-i18n="fuel.${product.FuelType.toLowerCase()}">${product.FuelType}</span></p>
+                    <p><strong data-i18n="form.transmission">Transmission:</strong> <span data-i18n="transmission.${product.Transmission.toLowerCase()}">${product.Transmission || 'Not specified'}</span></p>
+                `;
+            }
+            // Handle job details
+            else if (isJob) {
+                priceElement.innerHTML = `<strong data-i18n="form.employment_type">Ansettelsesform:</strong> ${product.EmploymentType}`;
+
+                descElement.innerHTML = `
+                    <p><strong data-i18n="form.company_name">Bedrift:</strong> ${product.CompanyName}</p>
+                    <p><strong data-i18n="form.salary">Lønn:</strong> ${product.Salary}</p>
+                    <p><strong data-i18n="form.deadline">Søknadsfrist:</strong> ${product.ApplicationDeadline}</p>
+                    <p><strong data-i18n="form.contact_email">Kontakt-e-post:</strong> ${product.ContactEmail}</p>
+                    ${product.JobDescription}
+                `;
+            }
+            // Default case
+            else {
+                priceElement.textContent = `${product.Price} kr`;
+                descElement.textContent = product.Description;
+            }
+
+            // Location display
+            locationElement.textContent = isJob ? product.Location : 
+                      isCar ? `${product.Location}${product.country ? ', ' + product.country : ''}` 
+                      : product.Location;
+
+            // Handle images
+            const images = product.Images.split(',').filter(img => img.trim());
+            const carousel = document.getElementById('imageCarousel');
+            carousel.querySelectorAll('img').forEach(img => img.remove());
+            
+            images.forEach((imgSrc, index) => {
+                const img = document.createElement('img');
+                img.src = `/uploads/${imgSrc.trim()}`;
+                if (index === 0) img.classList.add('active');
+                carousel.appendChild(img);
             });
+
+            updateCarouselButtons(images.length);
+        });
 
         // ========== CAROUSEL CONTROLS ========== //
         function updateCarouselButtons(imageCount) {
@@ -461,7 +559,7 @@ margin-top: 10px;
                 return;
             }
 
-            fetch('/send-message', {
+            fetch('/api/messages', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ 
@@ -480,8 +578,6 @@ margin-top: 10px;
             });
         }
 
-        // Updated message button handler
-        document.getElementById('sendMessageButton').addEventListener('click', sendMessage);
     })();
 </script>
 </body>

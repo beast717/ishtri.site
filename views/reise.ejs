@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flight Search</title>
+    <title data-i18n="flight_search.title">Flight Search</title>
     <style>
 
         .form-container {
@@ -143,46 +143,48 @@
     <%- include('partials/navbar') %>
      <div class="form-container">
     <div class="flight-search-form">
-        <h2>Søk etter flygninger</h2>
+        <h2 data-i18n="flight_search.title">Flight Search</h2>
         <form id="flightSearchForm">
             <!-- Trip Type -->
             <div class="form-group">
-                <label for="tripType">Reise type:</label>
+                <label for="tripType">
+                    <span data-i18n="flight_search.trip_type">Trip Type:</span>
+                </label>
                 <select id="tripType">
-                    <option value="oneway" selected>En-vei</option>
-                    <option value="roundtrip">Tur-retur</option>
+                    <option value="oneway" data-i18n="flight_search.one_way">One Way</option>
+                    <option value="roundtrip" data-i18n="flight_search.round_trip">Round Trip</option>
                 </select>
             </div>
 
             <div class="form-group">
-                <label for="departure">Fra</label>
-                <input type="text" id="departure" placeholder="Skriv byer/flyplasser..." autocomplete="off" required>
+                <label for="departure" data-i18n="flight_search.from">From</label>
+                <input type="text" id="departure" data-i18n="[placeholder]flight_search.enter_city" placeholder="Enter cities/airports..." autocomplete="off" required>
                 <ul id="departure-suggestions" class="suggestions-list"></ul>
             </div>
             <div class="form-group">
-                <label for="arrival">Til</label>
-                <input type="text" id="arrival" placeholder="Skriv byer/flyplasser..." autocomplete="off" required>
+                <label for="arrival" data-i18n="flight_search.to">To</label>
+                <input type="text" id="arrival" data-i18n="[placeholder]flight_search.enter_city" placeholder="Enter cities/airports..." autocomplete="off" required>
                 <ul id="arrival-suggestions" class="suggestions-list"></ul>
             </div>
             <div class="form-group">
-                <label for="departureDate">Utreise dato</label>
+                <label for="departureDate" data-i18n="flight_search.departure_date">Departure Date</label>
                 <input type="date" id="departureDate" required>
             </div>
             <div class="form-group" id="returnDateGroup" style="display: none;">
-                <label for="returnDate">Hjemmreise dato</label>
+                <label for="returnDate" data-i18n="flight_search.return_date">Return Date</label>
                 <input type="date" id="returnDate">
             </div>
             <div class="form-group">
-                <label for="passengers">Passasjer</label>
+                <label for="passengers" data-i18n="flight_search.passengers">Number of Passengers</label>
                 <select id="passengers">
-                    <option value="1">1 Passasjer</option>
-                    <option value="2">2 Passasjer</option>
-                    <option value="3">3 Passasjer</option>
-                    <option value="4">4 Passasjer</option>
+                    <option value="1" data-i18n="flight_search.passenger_count.one">1 Passenger</option>
+                    <option value="2" data-i18n="flight_search.passenger_count.two">2 Passengers</option>
+                    <option value="3" data-i18n="flight_search.passenger_count.three">3 Passengers</option>
+                    <option value="4" data-i18n="flight_search.passenger_count.four">4 Passengers</option>
                 </select>
             </div>
             <div class="form-group">
-                <button type="submit">Søk fly</button>
+                <button type="submit" data-i18n="flight_search.search">Search Flights</button>
             </div>
         </form>
     </div>

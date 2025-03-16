@@ -266,25 +266,35 @@
                     <div class="form-group">
                         <label>Categories to Monitor</label>
                         <select class="multi-select" id="categories" multiple>
-                            <% categories.forEach(cat => { %>
-                                <option value="<%= cat %>" 
-                                    <%= preferences.categories.includes(cat) ? 'selected' : '' %>>
-                                    <%= cat %>
-                                </option>
-                            <% }); %>
+                        <% if (typeof categories !== 'undefined' && categories.length) { %>
+                          <% categories.forEach(cat => { %>
+                            <option value="<%= cat %>"
+                              <%= preferences.categories.includes(cat) ? 'selected' : '' %>>
+                              <%= cat %>
+                            </option>
+                          <% }) %>
+                        <% } else { %>
+                          <option disabled>No categories available</option>
+                        <% } %>
                         </select>
                     </div>
 
                     <div class="price-range-group">
                         <div>
                             <label>Minimum Price</label>
-                            <input type="number" class="price-input" id="minPrice" 
-                                   value="<%= preferences.minPrice || '' %>" placeholder="NOK">
+                            <input type="number" 
+       class="price-input" 
+       id="minPrice"
+       value="<%= preferences.minPrice || '' %>" 
+       placeholder="NOK">
                         </div>
                         <div>
                             <label>Maximum Price</label>
-                            <input type="number" class="price-input" id="maxPrice" 
-                                   value="<%= preferences.maxPrice || '' %>" placeholder="NOK">
+                            <input type="number" 
+       class="price-input" 
+       id="maxPrice"
+       value="<%= preferences.maxPrice || '' %>" 
+       placeholder="NOK">
                         </div>
                     </div>
 
@@ -349,7 +359,7 @@
             };
 
             try {
-                const response = await fetch('/api/notification-preferences', {
+                const response = await fetch('/api/notifications/preferences', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -395,7 +405,7 @@
     };
 
     try {
-        const response = await fetch('/api/notification-preferences', {
+        const response = await fetch('/api/notifications/preferences', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

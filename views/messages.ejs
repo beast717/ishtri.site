@@ -132,41 +132,10 @@
 <body>
 
     <%- include('partials/navbar') %>
-
     <div id="messagesContainer">
         <h1 data-i18n="meldinger.dine_meldinger">Dine meldinger</h1>
         <div id="messageList"></div>
     </div>
-
-    <script>
-        // Fetch brukernavn from the API to check if the user is logged in
-        fetch('/api/brukernavn')
-            .then(response => response.json())
-            .then(data => {
-                if (data.brukernavn) {
-                    // User is logged in, keep buttons enabled
-                    document.getElementById('loginButton').style.display = 'none'; // Hide login button
-                } else {
-                    // User is not logged in, redirect on button click
-                    document.getElementById('notificationsButton').addEventListener('click', (e) => {
-                        e.preventDefault(); // Prevent default navigation
-                        window.location.href = '/login'; // Redirect to login
-                    });
-    
-                    document.getElementById('newAdButton').addEventListener('click', (e) => {
-                        e.preventDefault();
-                        window.location.href = '/login';
-                    });
-    
-                    document.getElementById('messagesButton').addEventListener('click', (e) => {
-                        e.preventDefault();
-                        window.location.href = '/login';
-                    });
-                }
-            })
-            .catch(error => console.error('Error checking login status:', error));
-        </script>
-        
 
     <script>
 
@@ -248,7 +217,7 @@
 
         async function markAsRead(messageId) {
             try {
-                const response = await fetch('/api/mark-messages-read', {
+                const response = await fetch('/api/messages/mark-read', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ messageId })
@@ -306,7 +275,7 @@
             }
 
             try {
-                const response = await fetch('/reply-message', {
+                const response = await fetch('/api/messages/reply', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ originalSenderId: senderId, messageContent: replyContent, productdID })
@@ -326,7 +295,7 @@
         // Check and update the unread message count
         async function checkUnreadMessages() {
             try {
-                const response = await fetch('/api/unread-messages-count');
+                const response = await fetch('/api/messages/unread-count');
                 if (!response.ok) throw new Error('Failed to fetch unread messages count.');
 
                 const { unreadCount } = await response.json();

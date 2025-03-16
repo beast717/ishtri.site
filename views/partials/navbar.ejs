@@ -211,7 +211,7 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
                 <i class="fas fa-envelope"></i> <span data-i18n="navbar.messages">Meldinger</span>
                 <span id="unreadBadge" class="badge">●</span>
             </a>
-            <a id="loginButton" href="/login"><i class="fas fa-sign-in-alt"></i> <span data-i18n="navbar.log_in">Logg inn</span></a>
+            <a id="loginButton" href="Logg inn.html"><i class="fas fa-sign-in-alt"></i> <span data-i18n="navbar.log_in">Logg inn</span></a>
             <div id="profileContainer" style="display: none;">
                 <img id="profileIcon" src="prrofilepic.svg" alt="Profile Icon" style="width: 30px; height: 25px; cursor: pointer;">
                 <span id="profileUsername" style="cursor: pointer;">Username</span>
@@ -243,7 +243,7 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
 
  (function () {
     // Fetch username to toggle login/profile
-    fetch('/api/brukernavn')
+    fetch('/api/auth/current-user')
         .then(response => response.json())
         .then(data => {
             if (data.brukernavn) {
@@ -271,7 +271,7 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
 
     // Logout functionality
     document.getElementById('logoutButton').addEventListener('click', () => {
-        fetch('/logout', { method: 'POST' })
+        fetch('/api/auth/logout', { method: 'POST' })
             .then(response => {
                 if (response.ok) window.location.href = '/';
             });
@@ -309,7 +309,7 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
 
     // Move this OUTSIDE the DOMContentLoaded listener
     function updateNotificationBadge() {
-        fetch('/api/notifications/count')
+        fetch('/notifications/unread-count')
             .then(response => response.json())
             .then(data => {
                 const badge = document.getElementById('notificationBadge');

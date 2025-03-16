@@ -29,14 +29,40 @@
         "location": "الموقع",
         "description": "الوصف",
         "category": "الفئة",
-        "country": "الدولة",
+        "country": "البلد",
+        "city": "المدينة",
+        "select_city": "اختر المدينة",
         "upload_images": "تحميل الصور",
         "submit": "إرسال",
         "lag_nyannonse": "إنشاء إعلان جديد",
         "velg_kat": "حدد الفئة",
 	"detaljer": "تفاصيل للمنتج",
 	"ingen" : "لا شيء",
-	"velg_fil": "لم يتم تحديد أي ملف"
+	"velg_fil": "لم يتم تحديد أي ملف",
+        "car_details": "تفاصيل السيارة",
+        "brand": "الماركة",
+        "model": "الموديل",
+        "year": "سنة الصنع",
+        "mileage": "عدد الكيلومترات",
+        "fuel_type": "نوع الوقود",
+        "transmission": "ناقل الحركة",
+        "select_brand": "اختر الماركة",
+        "select_model": "اختر الموديل أولاً",
+        "title": "العنوان",
+        "property_type": "نوع العقار",
+        "velg": "اختر",
+        "job_title": "المسمى الوظيفي",
+        "company_name": "اسم الشركة",
+        "employment_type": "نوع التوظيف",
+        "salary": "نطاق الراتب",
+        "job_description": "الوصف الوظيفي",
+        "deadline": "الموعد النهائي للتقديم",
+        "contact_email": "البريد الإلكتروني للتواصل",
+        "application_link": "رابط التقديم (اختياري)",
+        "salary_placeholder": "مثال: 450,000 - 550,000 في السنة",
+        "job_description_placeholder": "وصف المنصب والمسؤوليات...",
+        "email_placeholder": "applications@company.com",
+        "url_placeholder": "https://"
     },
     "product_details": {
      "price": "السعر",
@@ -84,8 +110,12 @@
         "lag_konto": "إنشاء حساب",
         "email": "البريد الإلكتروني",
         "har_allerede_konto_logg_inn": "هل لديك حساب بالفعل؟ تسجيل الدخول",
-        "forgot_password": "نسيت كلمة المرور?",
-        "confirm_password": "تأكيد كلمة المرور"
+        "forgot_password": "نسيت كلمة المرور",
+        "confirm_password": "تأكيد كلمة المرور",
+        "reset_password": "إعادة تعيين كلمة المرور",
+        "back_to_login": "العودة إلى تسجيل الدخول",
+        "reset_your_password": "إعادة تعيين كلمة المرور الخاصة بك",
+        "new_password": "كلمة المرور الجديدة"
 
 },
 
@@ -95,6 +125,76 @@
     "svar": "إجابة",
     "dine_meldinger": "رسائلك"
 	
+    },
+    "flight_search": {
+        "title": "البحث عن رحلات",
+        "from": "من",
+        "to": "إلى",
+        "departure_date": "تاريخ المغادرة",
+        "return_date": "تاريخ العودة",
+        "passengers": "عدد المسافرين",
+        "search": "بحث عن رحلات",
+        "one_way": "ذهاب فقط",
+        "round_trip": "ذهاب وعودة",
+        "trip_type": "نوع الرحلة",
+        "enter_city": "أدخل المدن/المطارات...",
+        "passenger_count": {
+            "one": "مسافر واحد",
+            "two": "مسافران",
+            "three": "3 مسافرين",
+            "four": "4 مسافرين"
+        }
+    },
+    "fuel": {
+        "petrol": "بنزين",
+        "diesel": "ديزل",
+        "electric": "كهربائي",
+        "hybrid": "هجين"
+    },
+    "transmission": {
+        "manual": "يدوي",
+        "automatic": "أوتوماتيك"
+    },
+    "employment": {
+        "full_time": "دوام كامل",
+        "part_time": "دوام جزئي",
+        "contract": "عقد",
+        "temporary": "مؤقت",
+        "internship": "تدريب"
+    },
+    "property": {
+        "house": "منزل",
+        "apartment": "شقة",
+        "commercial": "عقار تجاري",
+        "vacation": "منزل عطلات",
+        "land": "قطعة أرض",
+        "details": "تفاصيل العقار",
+        "size": "المساحة (م²)",
+        "rooms": "عدد غرف النوم",
+        "bathrooms": "عدد الحمامات",
+        "year_built": "سنة البناء",
+        "energy_class": "فئة الطاقة"
+    },
+    "amenities": {
+        "balcony": "شرفة",
+        "fireplace": "مدفأة",
+        "parking": "موقف سيارات",
+        "elevator": "مصعد",
+        "smarthome": "منزل ذكي",
+        "title": "المرافق"
+    },
+    "notifications": {
+        "no_notifications": "لا توجد إشعارات حتى الآن",
+        "mark_as_read": "تحديد كمقروء",
+        "new_message": "رسالة جديدة من {{user}}",
+        "new_offer": "عرض جديد على إعلانك: {{title}}",
+        "price_update": "تم تحديث السعر لـ {{title}}",
+        "listing_sold": "تم تحديد إعلانك {{title}} كمباع",
+        "listing_expired": "انتهت صلاحية إعلانك {{title}}",
+        "message_sent": "تم إرسال الرسالة بنجاح",
+        "message_received": "لقد تلقيت رسالة جديدة",
+        "offer_accepted": "تم قبول عرضك",
+        "offer_rejected": "تم رفض عرضك"
     }
 }
 

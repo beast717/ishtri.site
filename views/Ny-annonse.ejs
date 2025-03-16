@@ -10,175 +10,193 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>New ad</title>
     <style>
-        /* Container for the entire page content */
-        .page-container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
+/* Container for the entire page content */
+.page-container {
+width: 100%;
+max-width: 1200px;
+margin: 0 auto;
+padding: 20px;
+display: flex;
+flex-direction: column;
+align-items: center;
+}
 
-        /* Heading Styling */
-        .overskrift {
-            text-align: center;
-            margin-top: 40px;
-            color: #333;
-        }
+/* Heading Styling */
+.overskrift {
+text-align: center;
+margin-top: 40px;
+color: #333;
+}
 
-        .overskrift h1 {
-            font-size: 32px;
-            margin-bottom: 10px;
-            font-weight: 600;
-        }
+.overskrift h1 {
+font-size: 32px;
+margin-bottom: 10px;
+font-weight: 600;
+}
 
-        .overskrift h2 {
-            font-size: 20px;
-            color: #555;
-            font-weight: 400;
-        }
+.overskrift h2 {
+font-size: 20px;
+color: #555;
+font-weight: 400;
+}
 
-        /* Category Buttons Styling */
-        .kategorierContainer {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 30px;
-            flex-wrap: wrap;
-        }
+/* Category Buttons Styling */
+.kategorierContainer {
+display: flex;
+justify-content: center;
+gap: 30px;
+margin-top: 30px;
+flex-wrap: wrap;
+}
 
-        .kategori {
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.3s ease-in-out;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            width: 150px;
-        }
+.kategori {
+text-align: center;
+cursor: pointer;
+transition: transform 0.3s ease-in-out;
+background-color: #fff;
+padding: 20px;
+border-radius: 12px;
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+width: 150px;
+}
 
-        .kategori i {
-            font-size: 40px;
-            color: #007bff;
-            margin-bottom: 10px;
-        }
+.kategori i {
+font-size: 40px;
+color: #007bff;
+margin-bottom: 10px;
+}
 
-        .kategori span {
-            font-size: 16px;
-            color: #333;
-            font-weight: 500;
-        }
+.kategori span {
+font-size: 16px;
+color: #333;
+font-weight: 500;
+}
 
-        .kategori:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
+.kategori:hover {
+transform: scale(1.05);
+box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
 
-        /* Form Container Styling */
-        .formContainer {
-            font-family: Arial, Helvetica, sans-serif;
-            text-align: center;
-            margin-top: 50px;
-            display: none;
-            transition: opacity 0.5s ease;
-            padding: 30px;
-            border-radius: 12px;
-            background-color: white;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 600px;
-        }
+/* Form Container Styling */
+.formContainer {
+font-family: Arial, Helvetica, sans-serif;
+text-align: center;
+margin-top: 50px;
+display: none;
+transition: opacity 0.5s ease;
+padding: 30px;
+border-radius: 12px;
+background-color: white;
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+width: 100%;
+max-width: 600px;
+}
 
-        .formContainer h3 {
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: #333;
-            font-weight: 600;
-        }
+.formContainer h3 {
+font-size: 24px;
+margin-bottom: 20px;
+color: #333;
+font-weight: 600;
+}
 
-        .formContainer label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #555;
-            text-align: left;
-        }
+.formContainer label {
+display: block;
+margin-bottom: 8px;
+font-weight: 600;
+color: #555;
+text-align: left;
+}
 
-        .formContainer input,
-        .formContainer textarea,
-        .formContainer select {
-            margin-bottom: 20px;
-            padding: 12px;
-            width: 100%;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-            color: #333;
-            background-color: #f9f9f9;
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
+.formContainer input,
+.formContainer textarea,
+.formContainer select {
+margin-bottom: 20px;
+padding: 12px;
+width: 100%;
+border-radius: 6px;
+border: 1px solid #ddd;
+font-size: 16px;
+color: #333;
+background-color: #f9f9f9;
+transition: border-color 0.3s, box-shadow 0.3s;
+}
 
-        .formContainer input:focus,
-        .formContainer textarea:focus,
-        .formContainer select:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
-            outline: none;
-        }
+.formContainer input:focus,
+.formContainer textarea:focus,
+.formContainer select:focus {
+border-color: #007bff;
+box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+outline: none;
+}
 
-        .formContainer button {
-            padding: 12px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: background-color 0.3s;
-        }
+.formContainer button {
+padding: 12px 20px;
+background-color: #007bff;
+color: #fff;
+border: none;
+border-radius: 6px;
+cursor: pointer;
+font-weight: 600;
+transition: background-color 0.3s;
+}
 
-        .formContainer button:hover {
-            background-color: #0056b3;
-        }
+.formContainer button:hover {
+background-color: #0056b3;
+}
 
-        .formContainer textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
+.formContainer textarea {
+resize: vertical;
+min-height: 100px;
+}
 
-        .formContainer select {
-            appearance: none;
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007BFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            background-size: 12px;
-        }
+.formContainer select {
+appearance: none;
+background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007BFF%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+background-repeat: no-repeat;
+background-position: right 10px center;
+background-size: 12px;
+}
 
-        @media (max-width: 768px) {
-            .kategorierContainer {
-                gap: 20px;
-            }
+/* Replace all display: none with */
+#productFields, #jobFields, #propertyFields, #carFields {
+    display: none;
+}
 
-            .kategori {
-                width: 120px;
-                padding: 15px;
-            }
+.active {
+    display: block !important;
+}
 
-            .kategori i {
-                font-size: 30px;
-            }
+.formContainer {
+    display: none;
+}
 
-            .kategori span {
-                font-size: 14px;
-            }
+.formContainer.active {
+    display: block;
+}
 
-            .formContainer {
-                padding: 20px;
-            }
-        }
+
+@media (max-width: 768px) {
+.kategorierContainer {
+gap: 20px;
+}
+
+.kategori {
+width: 120px;
+padding: 15px;
+}
+
+.kategori i {
+font-size: 30px;
+}
+
+.kategori span {
+font-size: 14px;
+}
+
+.formContainer {
+padding: 20px;
+}
+}
     </style>
 </head>
 <body>
@@ -222,136 +240,213 @@
         <!-- Form Container -->
         <div class="formContainer" id="productFormContainer">
             <h3 data-i18n="form.detaljer">Detaljer for produktet</h3>
-            <form id="productForm" action="/submit-product" method="POST" enctype="multipart/form-data">
-                <label for="ProductName" data-i18n="form.product_name">Produkt navn:</label>
-                <input type="text" id="ProductName" name="ProductName" required>
+                <form id="productForm" action="/api/products" method="POST" enctype="multipart/form-data" novalidate>
 
-                <label for="Price" data-i18n="form.price">Pris:</label>
-                <input type="number" id="Price" name="Price" required>
+                <div id="productFields" style="display: none;">
+                    <label for="ProductName" data-i18n="form.product_name">Product Name</label>
+                    <input type="text" id="ProductName" name="ProductName" required>
 
-                <label for="Location" data-i18n="form.location">Sted:</label>
+                    <label for="Price" data-i18n="form.price">Price</label>
+                    <input type="number" id="Price" name="TorgetPrice" required>
+
+                    <label for="SubCategori" data-i18n="form.category" id="subcategoryLabel" style="display: none;">Category</label>
+                    <select id="SubCategori" name="SubCategori" style="display: none;">
+                        <option value="Elektronikk" data-i18n="subkategori.elektronikk">Electronics</option>
+                        <option value="Hvitvarer" data-i18n="subkategori.hvitvarer">White Goods</option>
+                        <option value="Møbler" data-i18n="subkategori.møbler">Furniture</option>
+                        <option value="Klær" data-i18n="subkategori.klær">Clothes</option>
+                        <option value="Annet" data-i18n="subkategori.annet">Other</option>
+                     </select>
+
+                <label for="Description" data-i18n="form.description">Description</label>
+                <textarea id="Description" name="Description" required></textarea>
+            </div>
+
+                <div id="jobFields" style="display: none;">
+                    <label for="JobTitle" data-i18n="form.job_title">Job Title</label>
+                    <input type="text" id="JobTitle" name="JobTitle" required>
+
+                    <label for="CompanyName" data-i18n="form.company_name">Company Name</label>
+                    <input type="text" id="CompanyName" name="CompanyName" required>
+
+                    <label for="EmploymentType" data-i18n="form.employment_type">Employment Type</label>
+                    <select id="EmploymentType" name="EmploymentType" >
+                        <option value="Fast" data-i18n="employment.full_time">Full Time</option>
+                        <option value="Deltid" data-i18n="employment.part_time">Part Time</option>
+                        <option value="Kontrakt" data-i18n="employment.contract">Contract</option>
+                        <option value="Vikariat" data-i18n="employment.temporary">Temporary</option>
+                        <option value="Lærling" data-i18n="employment.internship">Internship</option>
+                    </select>
+
+                    <label for="Salary" data-i18n="form.salary">Salary Range</label>
+                    <input type="text" id="Salary" name="Salary" data-i18n="[placeholder]form.salary_placeholder" placeholder="e.g., 450,000 - 550,000 per year" >
+
+                    <label for="JobDescription" data-i18n="form.job_description">Job Description</label>
+                    <textarea id="JobDescription" name="JobDescription" data-i18n="[placeholder]form.job_description_placeholder" placeholder="Describe the position and responsibilities..." ></textarea>
+
+                    <label for="ApplicationDeadline" data-i18n="form.deadline">Application Deadline</label>
+                    <input type="date" id="ApplicationDeadline" name="ApplicationDeadline" required>
+
+                    <label for="ContactEmail" data-i18n="form.contact_email">Contact Email</label>
+                    <input type="email" id="ContactEmail" name="ContactEmail" data-i18n="[placeholder]form.email_placeholder" placeholder="applications@company.com" >
+
+                    <label for="ApplicationLink" data-i18n="form.application_link">Application Link (optional)</label>
+                    <input type="url" id="ApplicationLink" name="ApplicationLink" data-i18n="[placeholder]form.url_placeholder" placeholder="https://">
+            </div>
+
+            <!-- Property Specific Fields -->
+            <div id="propertyFields" style="display: none;">
+                <h3 data-i18n="property.details">Property Details</h3>
+                
+                <div class="form-columns">
+                    <div class="form-column">
+                        <label for="propertyTitle" data-i18n="form.title">Title</label>
+                        <input type="text" id="propertyTitle" name="ProductName" required>
+                        
+                        <label for="PropertyPrice" data-i18n="form.price">Price</label>
+                        <input type="number" id="PropertyPrice" name="PropertyPrice" required>
+                        
+                        <label for="PropertyType" data-i18n="form.property_type">Property Type</label>
+                        <select id="PropertyType" name="PropertyType" required>
+                            <option value="" data-i18n="form.velg">Select</option>
+                            <option value="House" data-i18n="property.house">House</option>
+                            <option value="Apartment" data-i18n="property.apartment">Apartment</option>
+                            <option value="Commercial" data-i18n="property.commercial">Commercial Property</option>
+                            <option value="Vacation" data-i18n="property.vacation">Vacation Home</option>
+                            <option value="Land" data-i18n="property.land">Land Plot</option>
+                        </select>
+
+                        <label for="SizeSqm" data-i18n="property.size">Size (m²)</label>
+                        <input type="number" id="SizeSqm" name="SizeSqm" min="10" step="1" required>
+
+                        <label for="NumRooms" data-i18n="property.rooms">Number of Bedrooms</label>
+                        <input type="number" id="NumRooms" name="NumRooms" min="1" max="20" required>
+
+                        <label for="NumBathrooms" data-i18n="property.bathrooms">Number of Bathrooms</label>
+                        <input type="number" id="NumBathrooms" name="NumBathrooms" min="1" max="10" required>
+                    </div>
+
+                    <div class="form-column">
+                        <label data-i18n="amenities.title">Amenities</label>
+                        <div class="checkbox-group">
+                            <label>
+                                <input type="checkbox" name="Amenities[]" value="Balcony"> 
+                                <span data-i18n="amenities.balcony">Balcony</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" name="Amenities[]" value="Fireplace"> 
+                                <span data-i18n="amenities.fireplace">Fireplace</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" name="Amenities[]" value="Parking"> 
+                                <span data-i18n="amenities.parking">Parking</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" name="Amenities[]" value="Elevator"> 
+                                <span data-i18n="amenities.elevator">Elevator</span>
+                            </label>
+                            <label>
+                                <input type="checkbox" name="Amenities[]" value="SmartHome"> 
+                                <span data-i18n="amenities.smarthome">Smart Home</span>
+                            </label>
+                        </div>
+
+                        <label for="YearBuilt" data-i18n="property.year_built">Year Built</label>
+                        <input type="number" id="YearBuilt" name="YearBuilt" min="1800" max="2024">
+
+                        <label for="EnergyClass" data-i18n="property.energy_class">Energy Class</label>
+                        <select id="EnergyClass" name="EnergyClass">
+                            <option value="">-</option>
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                            <option value="E">E</option>
+                        </select>
+
+                        <label for="PropertyDescription" data-i18n="form.description">Description (Optional)</label>
+                        <textarea id="PropertyDescription" name="Description" rows="4" placeholder="Add a description of your property..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Car Specific Fields -->
+        <div id="carFields" style="display: none;">
+            <h3 data-i18n="form.car_details">Car Details</h3>
+            <div class="form-columns">
+                <div class="form-column">
+                     <label for="car-ProductName" data-i18n="form.title">Title</label>
+                     <input type="text" id="car-ProductName" name="ProductName" required>
+
+                     <label for="CarBrand" data-i18n="form.brand">Brand</label>
+                     <select id="CarBrand" name="brand_id" required>
+                         <option value="" data-i18n="form.select_brand">Select Brand</option>
+                         <!-- Options loaded dynamically -->
+                     </select>
+
+                     <label for="CarModel" data-i18n="form.model">Model</label>
+                     <select id="CarModel" name="model_id" required disabled>
+                         <option value="" data-i18n="form.select_model">Select Model First</option>
+                         <!-- Models loaded dynamically -->
+                     </select>
+
+                     <label for="Year" data-i18n="form.year">Year</label>
+                     <input type="number" id="Year" name="Year" min="1900" max="2024" required>
+                </div>
+                <div class="form-column">
+                    <label for="Mileage" data-i18n="form.mileage">Mileage</label>
+                    <input type="number" id="Mileage" name="Mileage" min="0" step="1000" required>
+
+                    <label for="car-Price" data-i18n="form.price">Price</label>
+                    <input type="number" id="car-Price" name="CarPrice" 
+                    pattern="[0-9]+([,\.][0-9]{1,2})?" 
+                    title="Use numbers (e.g., 150000 or 150000.50)"
+                    required>
+
+                    <label for="FuelType" data-i18n="form.fuel_type">Fuel Type</label>
+                    <select id="FuelType" name="FuelType" required>
+                        <option value="" data-i18n="form.velg">Select</option>
+                        <option value="Petrol" data-i18n="fuel.petrol">Petrol</option>
+                        <option value="Diesel" data-i18n="fuel.diesel">Diesel</option>
+                        <option value="Electric" data-i18n="fuel.electric">Electric</option>
+                        <option value="Hybrid" data-i18n="fuel.hybrid">Hybrid</option>
+                    </select>
+
+                    <label for="Transmission" data-i18n="form.transmission">Transmission</label>
+                    <select id="Transmission" name="Transmission">
+                        <option value="" data-i18n="form.velg">Select</option>
+                        <option value="Manual" data-i18n="transmission.manual">Manual</option>
+                        <option value="Automatic" data-i18n="transmission.automatic">Automatic</option>
+                    </select>
+
+                    <label for="car-Description" data-i18n="form.description">Description</label>
+                    <textarea id="car-Description" name="Description" required></textarea>
+                </div>
+            </div>
+        </div>
+
+                
+
+                <label for="Country" data-i18n="form.country">Country</label>
+                <select id="Country" name="Country">
+                    <option value="" data-i18n="form.ingen">None selected</option>
+                </select>
+
+                <label for="City" id="cityLabel" style="display: none;" data-i18n="form.city">City</label>
+                <select id="City" name="City" style="display: none;">
+                    <option value="" data-i18n="form.select_city">Select City</option>
+                </select>
+
+                <label for="Location" data-i18n="form.location">Location</label>
                 <input type="text" id="Location" name="Location" required>
 
-                <label for="Description" data-i18n="form.description">Beskrivelse:</label>
-                <textarea id="Description" name="Description" required></textarea>
-
-                <label for="CarBrand" id="carBrandLabel" style="display: none;">Car brand</label>
-                <select id="CarBrand" name="carBrand" style="display: none;">
-                    <option value="">None</option>
-                    <option value="Toyota">Toyota</option>
-                    <option value="Ford">Ford</option>
-                    <option value="Volkswagen">Volkswagen</option>
-                    <option value="BMW">BMW</option>
-                    <option value="Mercedes-Benz">Mercedes-Benz</option>
-                    <option value="Audi">Audi</option>
-                    <option value="Chevrolet">Chevrolet</option>
-                    <option value="Honda">Honda</option>
-                    <option value="Hyundai">Hyundai</option>
-                    <option value="Nissan">Nissan</option>
-                    <option value="Tesla">Tesla</option>
-                    <option value="Jeep">Jeep</option>
-                    <option value="Mazda">Mazda</option>
-                    <option value="Kia">Kia</option>
-                    <option value="Subaru">Subaru</option>
-                    <option value="Lexus">Lexus</option>
-                    <option value="Volvo">Volvo</option>
-                    <option value="Jaguar">Jaguar</option>
-                    <option value="Porsche">Porsche</option>
-                    <option value="Land Rover">Land Rover</option>
-                    <option value="Mitsubishi">Mitsubishi</option>
-                    <option value="Fiat">Fiat</option>
-                    <option value="Peugeot">Peugeot</option>
-                    <option value="Renault">Renault</option>
-                    <option value="Citroën">Citroën</option>
-                    <option value="Škoda">Škoda</option>
-                    <option value="Infiniti">Infiniti</option>
-                    <option value="Acura">Acura</option>
-                    <option value="Alfa Romeo">Alfa Romeo</option>
-                    <option value="Aston Martin">Aston Martin</option>
-                    <option value="Bentley">Bentley</option>
-                    <option value="Bugatti">Bugatti</option>
-                    <option value="Cadillac">Cadillac</option>
-                    <option value="Chrysler">Chrysler</option>
-                    <option value="Dodge">Dodge</option>
-                    <option value="Ferrari">Ferrari</option>
-                    <option value="GMC">GMC</option>
-                    <option value="Hummer">Hummer</option>
-                    <option value="Lamborghini">Lamborghini</option>
-                    <option value="Lincoln">Lincoln</option>
-                    <option value="Maserati">Maserati</option>
-                    <option value="McLaren">McLaren</option>
-                    <option value="Mini">Mini</option>
-                    <option value="Rolls-Royce">Rolls-Royce</option>
-                    <option value="Saab">Saab</option>
-                    <option value="Scion">Scion</option>
-                    <option value="SEAT">SEAT</option>
-                    <option value="Smart">Smart</option>
-                    <option value="Suzuki">Suzuki</option>
-                    <option value="Tata">Tata</option>
-                    <option value="Pagani">Pagani</option>
-                    <option value="Koenigsegg">Koenigsegg</option>
-                    <option value="Genesis">Genesis</option>
-                    <option value="MG">MG</option>
-                    <option value="Opel">Opel</option>
-                    <option value="Daewoo">Daewoo</option>
-                    <option value="Isuzu">Isuzu</option>
-                    <option value="Geely">Geely</option>
-                    <option value="Proton">Proton</option>
-                    <option value="Perodua">Perodua</option>
-                    <option value="Chery">Chery</option>
-                    <option value="BYD">BYD</option>
-                    <option value="Great Wall">Great Wall</option>
-                    <option value="Mahindra">Mahindra</option>
-                    <option value="SsangYong">SsangYong</option>
-                    <option value="Lucid">Lucid</option>
-                    <option value="Rivian">Rivian</option>
-                </select>
-
-                <label for="SubCategori" data-i18n="form.category" id="subcategoryLabel" style="display: none;">Kategori:</label>
-                <select id="SubCategori" name="SubCategori" style="display: none;">
-                    <option value="Elektronikk" data-i18n="subkategori.elektronikk">Elektronikk</option>
-                    <option value="Hvitvarer" data-i18n="subkategori.hvitvarer">Hvitvarer</option>
-                    <option value="Møbler" data-i18n="subkategori.møbler">Møbler</option>
-                    <option value="Klær" data-i18n="subkategori.klær">Klær</option>
-                    <option value="Annet" data-i18n="subkategori.annet">Annet</option>
-                </select>
-
-                <label for="Country" data-i18n="form.country">Land:</label>
-                <select id="Country" name="Country">
-                    <option value="" data-i18n="form.ingen">Ingen valgt</option>
-                    <option value="United Arab Emirates">United Arab Emirates</option>
-                    <option value="Saudi Arabia">Saudi Arabia</option>
-                    <option value="Egypt">Egypt</option>
-                    <option value="Jordan">Jordan</option>
-                    <option value="Qatar">Qatar</option>
-                    <option value="Oman">Oman</option>
-                    <option value="Kuwait">Kuwait</option>
-                    <option value="Bahrain">Bahrain</option>
-                    <option value="Iraq">Iraq</option>
-                    <option value="Syria">Syria</option>
-                    <option value="Lebanon">Lebanon</option>
-                    <option value="Yemen">Yemen</option>
-                    <option value="Libya">Libya</option>
-                    <option value="Sudan">Sudan</option>
-                    <option value="Morocco">Morocco</option>
-                    <option value="Tunisia">Tunisia</option>
-                    <option value="Algeria">Algeria</option>
-                    <option value="Palestine">Palestine</option>
-                    <option value="Mauritania">Mauritania</option>
-                </select>
-
-                <label for="City" id="cityLabel" style="display: none;">City</label>
-                <select id="City" name="City" style="display: none;">
-                    <option value="">Select City</option>
-                </select>
-
-                <label for="Images" data-i18n="form.upload_images">Last opp bilder:</label>
+                <label for="Images" data-i18n="form.upload_images">Upload Images</label>
                 <input type="file" id="Images" name="Images" multiple>
 
                 <!-- Hidden Category Field -->
                 <input type="hidden" id="Category" name="Category" required>
 
-                <button type="submit" data-i18n="form.submit">Send inn</button>
+                <button type="submit" data-i18n="form.submit">Submit</button>
             </form>
         </div>
     </div>
@@ -359,56 +454,110 @@
     <script>
         let selectedCategory = '';
 
-        // Function to set the selected category
         function setCategory(category) {
-            selectedCategory = category;
-            document.getElementById('Category').value = selectedCategory;
+    selectedCategory = category;
+    document.getElementById('Category').value = category;
 
-            // Get the subcategory dropdown and label elements
-            const carBrandDropdown = document.getElementById('CarBrand');
-            const carBrandLabel = document.getElementById('carBrandLabel');
-            const subCategoryDropdown = document.getElementById('SubCategori');
-            const subCategoryLabel = document.getElementById('subcategoryLabel');
+    // Get all sections and the form container
+    const sections = {
+        product: document.getElementById('productFields'),
+        job: document.getElementById('jobFields'),
+        property: document.getElementById('propertyFields'),
+        car: document.getElementById('carFields'),
+        formContainer: document.getElementById('productFormContainer')
+    };
 
-            // Hide the form container before showing it again with a fade effect
-            const formContainer = document.getElementById('productFormContainer');
+    // Hide all sections first
+    Object.values(sections).forEach(section => {
+        if (section) section.classList.remove('active');
+    });
 
-            // Set opacity to 0 to make it disappear
-            formContainer.style.opacity = 0;
+    // Show form container
+    sections.formContainer.classList.add('active');
 
-            // After the opacity transition, show the form and trigger the fade-in effect
-            setTimeout(() => {
-                formContainer.style.display = 'block'; // Ensure the form is visible
-                formContainer.style.transition = 'opacity 0.5s ease';
-                formContainer.style.opacity = 1; // Fade it in
+    // Clear all required attributes first
+    const allRequired = document.querySelectorAll('[required]');
+    allRequired.forEach(field => field.removeAttribute('required'));
 
-                // Conditionally show/hide subcategory dropdown based on the selected category
-                if (category === 'Torget') {
-                    subCategoryDropdown.style.display = 'block'; // Show dropdown for Torget
-                    subCategoryLabel.style.display = 'block';    // Show label for Torget
-                } else {
-                    subCategoryDropdown.style.display = 'none'; // Hide dropdown for other categories
-                    subCategoryLabel.style.display = 'none';    // Hide label for other categories
-                }
+    // Show and handle specific category
+    switch(category) {
+        case 'Torget':
+            sections.product.classList.add('active');
+            ['ProductName', 'Price', 'Location', 'Description'].forEach(field => {
+                document.getElementById(field)?.setAttribute('required', 'true');
+            });
+            break;
 
-                if (category === 'Bil') {
-                    carBrandDropdown.style.display = 'block';
-                    carBrandLabel.style.display = 'block';
-                } else {
-                    carBrandDropdown.style.display = 'none';
-                    carBrandLabel.style.display = 'none';
-                }
+        case 'Jobb':
+            sections.job.classList.add('active');
+            ['JobTitle', 'CompanyName', 'EmploymentType', 'ApplicationDeadline'].forEach(field => {
+                document.getElementById(field)?.setAttribute('required', 'true');
+            });
+            break;
 
-            }, 500); // Wait for the previous fade-out effect to complete before fading in
+        case 'Eiendom':
+              sections.property.classList.add('active');
+              ['PropertyType', 'SizeSqm', 'NumRooms', 'NumBathrooms'].forEach(field => {
+                document.getElementById(field)?.setAttribute('required', 'true');
+              });
+              break;
+
+        case 'Bil':
+            sections.car.classList.add('active');
+            ['CarBrand', 'CarModel', 'Year', 'Mileage', 'FuelType', 
+             'Price', 'ProductName', 'Location', 'Description'].forEach(field => {
+                document.getElementById(field)?.setAttribute('required', 'true');
+            });
+
+             // When activating car fields:
+            document.getElementById('ProductName').disabled = true;
+            document.getElementById('Description').disabled = true;
+            // And enable the car-specific fields:
+            document.getElementById('car-ProductName').disabled = false;
+            document.getElementById('car-Description').disabled = false;
+            break;
+    }
+}
+
+
+    // Update form validation
+    document.getElementById('productForm').onsubmit = function(event) {
+        if (!selectedCategory) {
+            event.preventDefault();
+            alert('Vennligst velg en kategori!');
+            return;
         }
 
-        // Form validation before submission
-        document.getElementById('productForm').onsubmit = function(event) {
-            if (!selectedCategory) {
+        if (selectedCategory === 'Jobb') {
+            const jobTitle = document.getElementById('JobTitle').value;
+            const companyName = document.getElementById('CompanyName').value;
+            const salary = document.getElementById('Salary').value;
+            const deadline = document.getElementById('ApplicationDeadline').value;
+            
+            if (!jobTitle || !companyName || !deadline) {
                 event.preventDefault();
-                alert('Please select a category!');
+                alert('Vennligst fyll ut alle obligatoriske felt!');
             }
-        };
+        }
+    };
+
+    // Add this to load countries when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    // Load countries
+    fetch('/api/utils/countriess')
+        .then(response => response.json())
+        .then(countries => {
+            const countrySelect = document.getElementById('Country');
+            countries.forEach(country => {
+                const option = document.createElement('option');
+                option.value = country;
+                option.textContent = country;
+                countrySelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error loading countries:', error));
+        });
+
 
         document.getElementById('Country').addEventListener('change', function() {
             const selectedCountry = this.value;
@@ -416,14 +565,14 @@
             const cityLabel = document.getElementById('cityLabel');
 
             if (selectedCountry) {
-                fetch(`/api/cities?country=${selectedCountry}`)
+                fetch(`/api/utils/cities/${selectedCountry}`)
                     .then(response => response.json())
                     .then(cities => {
                         cityDropdown.innerHTML = '<option value="">Select City</option>';
                         cities.forEach(city => {
                             const option = document.createElement('option');
-                            option.value = city.cityName;
-                            option.textContent = city.cityName;
+                            option.value = city;
+                            option.textContent = city;
                             cityDropdown.appendChild(option);
                         });
                         cityDropdown.style.display = 'block';
@@ -435,6 +584,54 @@
                 cityLabel.style.display = 'none';
             }
         });
+
+        // Load car brands on page load
+document.addEventListener('DOMContentLoaded', () => {
+    fetch('/api/utils/car-brands')
+        .then(response => response.json())
+        .then(brands => {
+            const brandSelect = document.getElementById('CarBrand');
+            brands.forEach(brand => {
+                const option = document.createElement('option');
+                option.value = brand.brand_id;
+                option.textContent = brand.brand_name;
+                brandSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error loading car brands:', error);
+            // Show error message to user
+        });
+});
+
+// Load models when brand changes
+document.getElementById('CarBrand').addEventListener('change', function() {
+    const brandId = this.value;
+    const modelSelect = document.getElementById('CarModel');
+    document.getElementById('CarModel').disabled = false;
+    
+    if (!brandId) {
+        modelSelect.disabled = true;
+        return;
+    }
+
+    fetch(`/api/utils/car-models/${brandId}`)
+        .then(response => response.json())
+        .then(models => {
+            modelSelect.innerHTML = '<option value="" data-i18n="form.velg_modell">Velg modell</option>';
+            models.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model.model_id;
+                option.textContent = model.model_name;
+                modelSelect.appendChild(option);
+            });
+            modelSelect.disabled = false;
+        })
+        .catch(error => {
+            console.error('Error loading models:', error);
+            modelSelect.disabled = true;
+        });
+});
     </script>
 </body>
 </html>

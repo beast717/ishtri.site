@@ -161,7 +161,7 @@ button:disabled {
 
     <script>
         // Fetch user's products
-        fetch('/api/user-products')
+        fetch('/api/utils/users')
             .then(response => response.json())
             .then(products => {
                 const container = document.getElementById('productsContainer');
@@ -176,8 +176,12 @@ button:disabled {
                     const productDiv = document.createElement('div');
                     productDiv.className = 'product';
 
+                    const firstImage = product.Images 
+                      ? `/uploads/${product.Images.split(',')[0].trim()}` 
+                      : '/uploads/default.jpg'; // default image
+
                     productDiv.innerHTML = `
-                        <img src="/uploads/${product.Images.split(',')[0]}" alt="${product.ProductName}">
+                      <img src="${firstImage}" alt="${product.ProductName}">
                         <div>
                             <h3>
                                 ${product.ProductName} 
@@ -207,54 +211,52 @@ button:disabled {
 
 
                 // Attach "Mark as Sold" event listeners
-document.querySelectorAll('.sold-button').forEach(button => {
-    button.addEventListener('click', (event) => {
-        event.stopPropagation(); // Prevent the click from propagating to the parent div and redirecting
-        const ProductdID = button.getAttribute('data-id');
-        if (confirm('Are you sure you want to mark this product as sold?')) {
-            fetch(`/api/mark-as-sold/${ProductdID}`, { method: 'PUT' })
-                .then(response => response.json())
-                .then(result => {
-                    alert(result.message || 'Product marked as sold.');
-                    location.reload(); // Reload the page to show the updated status
-                })
-                .catch(error => {
-                    console.error('Error marking product as sold:', error);
-                    alert('Failed to mark the product as sold.');
+                document.querySelectorAll('.sold-button').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        event.stopPropagation();
+                        const ProductdID = button.getAttribute('data-id');
+                        if (confirm('Are you sure you want to mark this product as sold?')) {
+                            fetch(`/api/products/sold/${ProductdID}`, { method: 'PUT' })
+                                .then(response => response.json())
+                                .then(result => {
+                                    alert(result.message || 'Product marked as sold.');
+                                    location.reload(); // Reload the page to show the updated status
+                                })
+                                .catch(error => {
+                                    console.error('Error marking product as sold:', error);
+                                    alert('Failed to mark the product as sold.');
+                                });
+                        }
+                    });
                 });
-        }
-    });
-});
-
-
-                
+            
                // Attach "Mark as Unsold" event listeners
-document.querySelectorAll('.unsold-button').forEach(button => {
-    button.addEventListener('click', (event) => {
-        event.stopPropagation(); // Prevent the click from propagating to the parent div and redirecting
-        const ProductdID = button.getAttribute('data-id');
-        if (confirm('Are you sure you want to mark this product as unsold?')) {
-            fetch(`/api/mark-as-unsold/${ProductdID}`, { method: 'PUT' })
-                .then(response => response.json())
-                .then(result => {
-                    alert(result.message || 'Product marked as unsold.');
-                    location.reload(); // Reload the page to show the updated status
-                })
-                .catch(error => {
-                    console.error('Error marking product as unsold:', error);
-                    alert('Failed to mark the product as unsold.');
+                document.querySelectorAll('.unsold-button').forEach(button => {
+                    button.addEventListener('click', (event) => {
+                        event.stopPropagation(); 
+                        const ProductdID = button.getAttribute('data-id');
+                        if (confirm('Are you sure you want to mark this product as unsold?')) {
+                            fetch(`/api/products/unsold/${ProductdID}`, { method: 'PUT' })
+                                .then(response => response.json())
+                                .then(result => {
+                                    alert(result.message || 'Product marked as unsold.');
+                                    location.reload(); 
+                                })
+                                .catch(error => {
+                                    console.error('Error marking product as unsold:', error);
+                                    alert('Failed to mark the product as unsold.');
+                                });
+                        }
+                    });
                 });
-        }
-    });
-});
 
                 // Attach delete event listeners
                 document.querySelectorAll('.delete-button').forEach(button => {
-                    button.addEventListener('click', () => {
-                        event.stopPropagation(); // Prevent parent event handlers
+                    button.addEventListener('click', (event) => {
+                        event.stopPropagation(); 
                         const ProductdID = button.getAttribute('data-id');
                         if (confirm('Are you sure you want to delete this product?')) {
-                            fetch(`/api/delete-product/${ProductdID}`, { method: 'DELETE' })
+                            fetch(`/api/products/delete-product/${ProductdID}`, { method: 'DELETE' })
                                 .then(response => response.json())
                                 .then(result => {
                                     alert(result.message || 'Product deleted.');
@@ -268,8 +270,6 @@ document.querySelectorAll('.unsold-button').forEach(button => {
                     });
                 });
             })
-
-
             .catch(error => {
                 console.error('Error fetching products:', error);
                 const container = document.getElementById('productsContainer');

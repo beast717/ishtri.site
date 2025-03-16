@@ -16,7 +16,7 @@ h1 {
 }
 
 .productsContainer {
-    margin-top: -27px;
+    margin-top: -27px;  
     padding: 20px;
     flex: 1;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* Responsive grid */
@@ -255,6 +255,64 @@ box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
 .reset-filters-btn:active {
 transform: translateY(0);
 }
+
+.custom-title {
+    color: #666;
+    font-size: 1.2rem;
+    font-weight: normal;
+}
+
+.filter-section {
+    margin: 15px 0;
+    padding: 10px;
+    border-top: 1px solid #eee;
+}
+
+.filter-section h4 {
+    margin: 0 0 10px 0;
+    color: #333;
+    font-size: 14px;
+}
+
+.range-inputs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.range-inputs input {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+select[multiple] {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    height: auto;
+    min-height: 80px;
+}
+
+select[multiple] option {
+    padding: 5px;
+}
+
+select[multiple] option:checked {
+    background-color: #007bff;
+    color: white;
+}
+
+.date-input input {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
         
     </style>
 </head>
@@ -285,601 +343,162 @@ transform: translateY(0);
                 <option value="Møbler" data-i18n="subkategori.møbler">Møbler</option>
                 <option value="Annet" data-i18n="subkategori.annet">Annet</option>
             </select>
-            <button onclick="resetFilters()" class="reset-filters-btn">
-    ⟳ Reset Filters
-</button>
         </div> 
     </div>  
+
+    <!-- Move reset filters button outside of subcategoryFilterContainer -->
+    <button onclick="resetFilters()" class="reset-filters-btn" id="resetFiltersBtn" style="display: none;">
+        ⟳ Reset Filters
+    </button>
 
     <div class="page-container">
         <div class="side-panel">
             <h3 data-i18n="filter.filter_land">Filter by Country</h3>
             <ul class="country-list">
                 <ul class="country-list">
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="uae" value="United Arab Emirates">
-            <label for="uae">United Arab Emirates</label>
-        </div>
-        <ul class="city-list" id="uae-cities" style="display: none;">
-            <!-- Cities for UAE will be dynamically added here -->
+            </ul>
         </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="saudi" value="Saudi Arabia">
-            <label for="saudi">Saudi Arabia</label>
-        </div>
-        <ul class="city-list" id="saudi-cities" style="display: none;">
-            <!-- Cities for Saudi Arabia will be dynamically added here -->
-        </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="egypt" value="Egypt">
-            <label for="egypt">Egypt</label>
-        </div>
-        <ul class="city-list" id="egypt-cities" style="display: none;">
-            <!-- Cities for Egypt will be dynamically added here -->
-        </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="jordan" value="Jordan">
-            <label for="jordan">Jordan</label>
-        </div>
-        <ul class="city-list" id="jordan-cities" style="display: none;">
-            <!-- Cities for Jordan will be dynamically added here -->
-        </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="qatar" value="Qatar">
-            <label for="qatar">Qatar</label>
-        </div>
-        <ul class="city-list" id="qatar-cities" style="display: none;">
-            <!-- Cities for Qatar will be dynamically added here -->
-        </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="oman" value="Oman">
-            <label for="oman">Oman</label>
-        </div>
-        <ul class="city-list" id="oman-cities" style="display: none;">
-            <!-- Cities for Oman will be dynamically added here -->
-        </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="kuwait" value="Kuwait">
-            <label for="kuwait">Kuwait</label>
-        </div>
-        <ul class="city-list" id="kuwait-cities" style="display: none;">
-            <!-- Cities for Kuwait will be dynamically added here -->
-        </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="bahrain" value="Bahrain">
-            <label for="bahrain">Bahrain</label>
-        </div>
-        <ul class="city-list" id="bahrain-cities" style="display: none;">
-            <!-- Cities for Bahrain will be dynamically added here -->
-        </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="iraq" value="Iraq">
-            <label for="iraq">Iraq</label>
-        </div>
-        <ul class="city-list" id="iraq-cities" style="display: none;">
-            <!-- Cities for Iraq will be dynamically added here -->
-        </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="syria" value="Syria">
-            <label for="syria">Syria</label>
-        </div>
-        <ul class="city-list" id="syria-cities" style="display: none;">
-            <!-- Cities for Syria will be dynamically added here -->
-        </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="lebanon" value="Lebanon">
-            <label for="lebanon">Lebanon</label>
-        </div>
-        <ul class="city-list" id="lebanon-cities" style="display: none;">
-            <!-- Cities for Lebanon will be dynamically added here -->
-        </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="yemen" value="Yemen">
-            <label for="yemen">Yemen</label>
-        </div>
-        <ul class="city-list" id="yemen-cities" style="display: none;">
-            <!-- Cities for Yemen will be dynamically added here -->
-        </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="libya" value="Libya">
-            <label for="libya">Libya</label>
-        </div>
-        <ul class="city-list" id="libya-cities" style="display: none;">
-            <!-- Cities for Libya will be dynamically added here -->
-        </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="sudan" value="Sudan">
-            <label for="sudan">Sudan</label>
-        </div>
-        <ul class="city-list" id="sudan-cities" style="display: none;">
-            <!-- Cities for Sudan will be dynamically added here -->
-        </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="morocco" value="Morocco">
-            <label for="morocco">Morocco</label>
-        </div>
-        <ul class="city-list" id="morocco-cities" style="display: none;">
-            <!-- Cities for Morocco will be dynamically added here -->
-        </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="tunisia" value="Tunisia">
-            <label for="tunisia">Tunisia</label>
-        </div>
-        <ul class="city-list" id="tunisia-cities" style="display: none;">
-            <!-- Cities for Tunisia will be dynamically added here -->
-        </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="algeria" value="Algeria">
-            <label for="algeria">Algeria</label>
-        </div>
-        <ul class="city-list" id="algeria-cities" style="display: none;">
-            <!-- Cities for Algeria will be dynamically added here -->
-        </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="palestine" value="Palestine">
-            <label for="palestine">Palestine</label>
-        </div>
-        <ul class="city-list" id="palestine-cities" style="display: none;">
-            <!-- Cities for Palestine will be dynamically added here -->
-        </ul>
-    </li>
-    <li>
-        <div> <!-- Nested flex container for checkbox and label -->
-            <input type="checkbox" id="mauritania" value="Mauritania">
-            <label for="mauritania">Mauritania</label>
-        </div>
-        <ul class="city-list" id="mauritania-cities" style="display: none;">
-            <!-- Cities for Mauritania will be dynamically added here -->
-        </ul>
-    </li>
-</ul>
     
-    <h3 id="filterCar">Filter Car</h3>
-    <ul class="car-brand-list" id="kjørr">
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="toyota" value="Toyota">
-                <label for="toyota">Toyota</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="ford" value="Ford">
-                <label for="ford">Ford</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="volkswagen" value="Volkswagen">
-                <label for="volkswagen">Volkswagen</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="bmw" value="BMW">
-                <label for="bmw">BMW</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="mercedes" value="Mercedes-Benz">
-                <label for="mercedes">Mercedes-Benz</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="audi" value="Audi">
-                <label for="audi">Audi</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="chevrolet" value="Chevrolet">
-                <label for="chevrolet">Chevrolet</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="honda" value="Honda">
-                <label for="honda">Honda</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="hyundai" value="Hyundai">
-                <label for="hyundai">Hyundai</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="nissan" value="Nissan">
-                <label for="nissan">Nissan</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="tesla" value="Tesla">
-                <label for="tesla">Tesla</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="jeep" value="Jeep">
-                <label for="jeep">Jeep</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="mazda" value="Mazda">
-                <label for="mazda">Mazda</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="kia" value="Kia">
-                <label for="kia">Kia</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="subaru" value="Subaru">
-                <label for="subaru">Subaru</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="lexus" value="Lexus">
-                <label for="lexus">Lexus</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="volvo" value="Volvo">
-                <label for="volvo">Volvo</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="jaguar" value="Jaguar">
-                <label for="jaguar">Jaguar</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="porsche" value="Porsche">
-                <label for="porsche">Porsche</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="landrover" value="Land Rover">
-                <label for="landrover">Land Rover</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="mitsubishi" value="Mitsubishi">
-                <label for="mitsubishi">Mitsubishi</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="fiat" value="Fiat">
-                <label for="fiat">Fiat</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="peugeot" value="Peugeot">
-                <label for="peugeot">Peugeot</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="renault" value="Renault">
-                <label for="renault">Renault</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="citroen" value="Citroën">
-                <label for="citroen">Citroën</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="skoda" value="Škoda">
-                <label for="skoda">Škoda</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="infiniti" value="Infiniti">
-                <label for="infiniti">Infiniti</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="acura" value="Acura">
-                <label for="acura">Acura</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="alfa-romeo" value="Alfa Romeo">
-                <label for="alfa-romeo">Alfa Romeo</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="aston-martin" value="Aston Martin">
-                <label for="aston-martin">Aston Martin</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="bentley" value="Bentley">
-                <label for="bentley">Bentley</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="bugatti" value="Bugatti">
-                <label for="bugatti">Bugatti</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="cadillac" value="Cadillac">
-                <label for="cadillac">Cadillac</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="chrysler" value="Chrysler">
-                <label for="chrysler">Chrysler</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="dodge" value="Dodge">
-                <label for="dodge">Dodge</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="ferrari" value="Ferrari">
-                <label for="ferrari">Ferrari</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="gmc" value="GMC">
-                <label for="gmc">GMC</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="hummer" value="Hummer">
-                <label for="hummer">Hummer</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="lamborghini" value="Lamborghini">
-                <label for="lamborghini">Lamborghini</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="lincoln" value="Lincoln">
-                <label for="lincoln">Lincoln</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="maserati" value="Maserati">
-                <label for="maserati">Maserati</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="mcLaren" value="McLaren">
-                <label for="mcLaren">McLaren</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="mini" value="Mini">
-                <label for="mini">Mini</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="rolls-royce" value="Rolls-Royce">
-                <label for="rolls-royce">Rolls-Royce</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="saab" value="Saab">
-                <label for="saab">Saab</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="scion" value="Scion">
-                <label for="scion">Scion</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="seat" value="SEAT">
-                <label for="seat">SEAT</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="smart" value="Smart">
-                <label for="smart">Smart</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="suzuki" value="Suzuki">
-                <label for="suzuki">Suzuki</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="tata" value="Tata">
-                <label for="tata">Tata</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="pagani" value="Pagani">
-                <label for="pagani">Pagani</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="koenigsegg" value="Koenigsegg">
-                <label for="koenigsegg">Koenigsegg</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="genesis" value="Genesis">
-                <label for="genesis">Genesis</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="mg" value="MG">
-                <label for="mg">MG</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="opel" value="Opel">
-                <label for="opel">Opel</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="daewoo" value="Daewoo">
-                <label for="daewoo">Daewoo</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="isuzu" value="Isuzu">
-                <label for="isuzu">Isuzu</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="geely" value="Geely">
-                <label for="geely">Geely</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="proton" value="Proton">
-                <label for="proton">Proton</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="perodua" value="Perodua">
-                <label for="perodua">Perodua</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="chery" value="Chery">
-                <label for="chery">Chery</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="byd" value="BYD">
-                <label for="byd">BYD</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="great-wall" value="Great Wall">
-                <label for="great-wall">Great Wall</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="mahindra" value="Mahindra">
-                <label for="mahindra">Mahindra</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="ssangyong" value="SsangYong">
-                <label for="ssangyong">SsangYong</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="lucid" value="Lucid">
-                <label for="lucid">Lucid</label>
-            </div>
-        </li>
-        <li>
-            <div> <!-- Wrapper for checkbox and label -->
-                <input type="checkbox" id="rivian" value="Rivian">
-                <label for="rivian">Rivian</label>
-            </div>
-        </li>
-    </ul>
-</div>
+        <h3 id="filterCar">Filter Car</h3>
+            <ul class="car-brand-list" id="carBrandList"></ul>
+
+            <!-- Add Car Specific Filters -->
+            <div id="carSpecificFilters" style="display: none;">
+                <!-- Year Range Filter -->
+                <div class="filter-section">
+                    <h4>Year Range</h4>
+                    <div class="range-inputs">
+                        <input type="number" id="yearFrom" placeholder="From" min="1900" max="2024">
+                        <input type="number" id="yearTo" placeholder="To" min="1900" max="2024">
+                    </div>
+                </div>
+
+                <!-- Mileage Range Filter -->
+                <div class="filter-section">
+                    <h4>Mileage (km)</h4>
+                    <div class="range-inputs">
+                        <input type="number" id="mileageFrom" placeholder="From" min="0">
+                        <input type="number" id="mileageTo" placeholder="To">
+                    </div>
+                </div>
+
+                <!-- Fuel Type Filter -->
+                <div class="filter-section">
+                    <h4>Fuel Type</h4>
+                    <select id="fuelTypeFilter" multiple>
+                        <option value="Bensin">Bensin</option>
+                        <option value="Diesel">Diesel</option>
+                        <option value="Hybrid">Hybrid</option>
+                        <option value="Electric">Electric</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+
+                <!-- Transmission Filter -->
+                <div class="filter-section">
+                    <h4>Transmission</h4>
+                    <select id="transmissionFilter" multiple>
+                        <option value="Manual">Manual</option>
+                        <option value="Automatic">Automatic</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Add Property Specific Filters -->
+            <div id="propertySpecificFilters" style="display: none;">
+                <!-- Property Type Filter -->
+                <div class="filter-section">
+                    <h4>Property Type</h4>
+                    <select id="propertyTypeFilter" multiple>
+                        <option value="Apartment">Apartment</option>
+                        <option value="House">House</option>
+                        <option value="Cabin">Cabin</option>
+                        <option value="Townhouse">Townhouse</option>
+                        <option value="Commercial">Commercial</option>
+                    </select>
+                </div>
+
+                <!-- Size Range Filter -->
+                <div class="filter-section">
+                    <h4>Size (m²)</h4>
+                    <div class="range-inputs">
+                        <input type="number" id="sizeFrom" placeholder="From" min="0">
+                        <input type="number" id="sizeTo" placeholder="To">
+                    </div>
+                </div>
+
+                <!-- Rooms Filter -->
+                <div class="filter-section">
+                    <h4>Number of Rooms</h4>
+                    <div class="range-inputs">
+                        <input type="number" id="roomsFrom" placeholder="From" min="0">
+                        <input type="number" id="roomsTo" placeholder="To">
+                    </div>
+                </div>
+
+                <!-- Bathrooms Filter -->
+                <div class="filter-section">
+                    <h4>Number of Bathrooms</h4>
+                    <div class="range-inputs">
+                        <input type="number" id="bathroomsFrom" placeholder="From" min="0">
+                        <input type="number" id="bathroomsTo" placeholder="To">
+                    </div>
+                </div>
+
+                <!-- Energy Class Filter -->
+                <div class="filter-section">
+                    <h4>Energy Class</h4>
+                    <select id="energyClassFilter" multiple>
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                        <option value="E">E</option>
+                        <option value="F">F</option>
+                        <option value="G">G</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Add Work Specific Filters -->
+            <div id="workSpecificFilters" style="display: none;">
+                <!-- Employment Type Filter -->
+                <div class="filter-section">
+                    <h4>Employment Type</h4>
+                    <select id="employmentTypeFilter" multiple>
+                        <option value="Full-time">Full-time</option>
+                        <option value="Part-time">Part-time</option>
+                        <option value="Contract">Contract</option>
+                        <option value="Temporary">Temporary</option>
+                        <option value="Internship">Internship</option>
+                    </select>
+                </div>
+
+                <!-- Salary Range Filter -->
+                <div class="filter-section">
+                    <h4>Salary Range (NOK)</h4>
+                    <div class="range-inputs">
+                        <input type="number" id="salaryFrom" placeholder="From" min="0">
+                        <input type="number" id="salaryTo" placeholder="To">
+                    </div>
+                </div>
+
+                <!-- Application Deadline Filter -->
+                <div class="filter-section">
+                    <h4>Application Deadline</h4>
+                    <div class="date-input">
+                        <input type="date" id="deadlineDate">
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="productsContainer" id="productsContainer">
             <p>Loading products...</p>
         </div>
     </div>
+
+
     <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner"></div>
 </div>
@@ -904,7 +523,19 @@ transform: translateY(0);
             dateOrder: '',
             subCategory: '',
             selectedCarBrands: [],
-            selectedCities: []
+            selectedCities: [],
+            yearRange: { from: null, to: null },
+            mileageRange: { from: null, to: null },
+            fuelTypes: [],
+            transmissionTypes: [],
+            propertyTypes: [],
+            sizeRange: { from: null, to: null },
+            roomsRange: { from: null, to: null },
+            bathroomsRange: { from: null, to: null },
+            energyClasses: [],
+            employmentTypes: [],
+            salaryRange: { from: null, to: null },
+            applicationDeadline: null
         };
 
         function showLoading() {
@@ -934,9 +565,79 @@ transform: translateY(0);
             if (currentFilters.subCategory) apiUrl += `&subCategory=${currentFilters.subCategory}`;
             if (currentFilters.priceOrder) apiUrl += `&sortPrice=${currentFilters.priceOrder}`;
             if (currentFilters.dateOrder) apiUrl += `&sortDate=${currentFilters.dateOrder}`;
-            if (currentFilters.selectedCountries.length) apiUrl += `&countries=${currentFilters.selectedCountries.join(',')}`;
             if (currentFilters.selectedCarBrands.length) apiUrl += `&carBrand=${currentFilters.selectedCarBrands.join(',')}`;
-            if (currentFilters.selectedCities.length) apiUrl += `&cities=${currentFilters.selectedCities.join(',')}`;
+            if (currentFilters.selectedCountries.length) {
+              apiUrl += `&countries=${encodeURIComponent(currentFilters.selectedCountries.join(','))}`;
+            }
+            if (currentFilters.selectedCities.length) {
+              apiUrl += `&cities=${currentFilters.selectedCities.join(',')}`;
+            }
+
+            // Add car specific filters
+            if (category === 'Bil') {
+                if (currentFilters.yearRange.from) {
+                    apiUrl += `&yearFrom=${currentFilters.yearRange.from}`;
+                }
+                if (currentFilters.yearRange.to) {
+                    apiUrl += `&yearTo=${currentFilters.yearRange.to}`;
+                }
+                if (currentFilters.mileageRange.from) {
+                    apiUrl += `&mileageFrom=${currentFilters.mileageRange.from}`;
+                }
+                if (currentFilters.mileageRange.to) {
+                    apiUrl += `&mileageTo=${currentFilters.mileageRange.to}`;
+                }
+                if (currentFilters.fuelTypes.length) {
+                    apiUrl += `&fuelTypes=${currentFilters.fuelTypes.join(',')}`;
+                }
+                if (currentFilters.transmissionTypes.length) {
+                    apiUrl += `&transmissionTypes=${currentFilters.transmissionTypes.join(',')}`;
+                }
+            }
+
+            // Add property specific filters
+            if (category === 'Eiendom') {
+                if (currentFilters.propertyTypes.length) {
+                    apiUrl += `&propertyType=${encodeURIComponent(currentFilters.propertyTypes.join(','))}`;
+                }
+                if (currentFilters.sizeRange.from) {
+                    apiUrl += `&sizeSqmFrom=${encodeURIComponent(currentFilters.sizeRange.from)}`;
+                }
+                if (currentFilters.sizeRange.to) {
+                    apiUrl += `&sizeSqmTo=${encodeURIComponent(currentFilters.sizeRange.to)}`;
+                }
+                if (currentFilters.roomsRange.from) {
+                    apiUrl += `&numRoomsFrom=${encodeURIComponent(currentFilters.roomsRange.from)}`;
+                }
+                if (currentFilters.roomsRange.to) {
+                    apiUrl += `&numRoomsTo=${encodeURIComponent(currentFilters.roomsRange.to)}`;
+                }
+                if (currentFilters.bathroomsRange.from) {
+                    apiUrl += `&numBathroomsFrom=${encodeURIComponent(currentFilters.bathroomsRange.from)}`;
+                }
+                if (currentFilters.bathroomsRange.to) {
+                    apiUrl += `&numBathroomsTo=${encodeURIComponent(currentFilters.bathroomsRange.to)}`;
+                }
+                if (currentFilters.energyClasses.length) {
+                    apiUrl += `&energyClass=${encodeURIComponent(currentFilters.energyClasses.join(','))}`;
+                }
+            }
+
+            // Add work specific filters
+            if (category === 'Jobb') {
+                if (currentFilters.employmentTypes.length) {
+                    apiUrl += `&employmentTypes=${currentFilters.employmentTypes.join(',')}`;
+                }
+                if (currentFilters.salaryRange.from) {
+                    apiUrl += `&salaryFrom=${currentFilters.salaryRange.from}`;
+                }
+                if (currentFilters.salaryRange.to) {
+                    apiUrl += `&salaryTo=${currentFilters.salaryRange.to}`;
+                }
+                if (currentFilters.applicationDeadline) {
+                    apiUrl += `&deadline=${currentFilters.applicationDeadline}`;
+                }
+            }
 
             // Show loading state
             const container = document.getElementById('productsContainer');
@@ -983,23 +684,59 @@ transform: translateY(0);
                 });
         }
 
-        function resetFilters() {
-            console.log('[DEBUG] Resetting filters...');
-            
+        function resetFilters() {  
             // 1. Reset UI elements
             document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
                 checkbox.checked = false;
             });
+
+            // 2. Hide city lists instead of clearing them
+            document.querySelectorAll('.city-list').forEach(list => {
+                list.style.display = 'none'; 
+            });
             
+            // Reset dropdowns
             document.getElementById('priceFilter').value = 'asc';
             document.getElementById('dateFilter').value = '';
-            document.getElementById('subCategoryFilter').value = '';
-            
-            // 2. Clear city lists
-            document.querySelectorAll('.city-list').forEach(list => {
-                list.innerHTML = '';
-                list.style.display = 'none';
-            });
+
+            // Reset category-specific filters
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category') || 'default';
+
+            // Reset Torget filters
+            if (category === 'Torget') {
+                document.getElementById('subCategoryFilter').value = '';
+            }
+
+            // Reset Car filters
+            if (category === 'Bil') {
+                document.getElementById('yearFrom').value = '';
+                document.getElementById('yearTo').value = '';
+                document.getElementById('mileageFrom').value = '';
+                document.getElementById('mileageTo').value = '';
+                document.getElementById('fuelTypeFilter').selectedIndex = -1;
+                document.getElementById('transmissionFilter').selectedIndex = -1;
+            }
+
+            // Reset Property filters
+            if (category === 'Eiendom') {
+                document.getElementById('propertyTypeFilter').selectedIndex = -1;
+                document.getElementById('sizeFrom').value = '';
+                document.getElementById('sizeTo').value = '';
+                document.getElementById('roomsFrom').value = '';
+                document.getElementById('roomsTo').value = '';
+                document.getElementById('bathroomsFrom').value = '';
+                document.getElementById('bathroomsTo').value = '';
+                document.getElementById('energyClassFilter').selectedIndex = -1;
+            }
+
+            // Reset Work filters
+            if (category === 'Jobb') {
+                document.getElementById('employmentTypeFilter').selectedIndex = -1;
+                document.getElementById('salaryFrom').value = '';
+                document.getElementById('salaryTo').value = '';
+                document.getElementById('deadlineDate').value = '';
+            }
 
             // 3. Reset internal state
             currentFilters = {
@@ -1008,7 +745,19 @@ transform: translateY(0);
                 subCategory: '',
                 selectedCountries: [],
                 selectedCarBrands: [],
-                selectedCities: []
+                selectedCities: [],
+                yearRange: { from: null, to: null },
+                mileageRange: { from: null, to: null },
+                fuelTypes: [],
+                transmissionTypes: [],
+                propertyTypes: [],
+                sizeRange: { from: null, to: null },
+                roomsRange: { from: null, to: null },
+                bathroomsRange: { from: null, to: null },
+                energyClasses: [],
+                employmentTypes: [],
+                salaryRange: { from: null, to: null },
+                applicationDeadline: null
             };
 
             // 4. Reset pagination
@@ -1022,7 +771,7 @@ transform: translateY(0);
             
             // 6. Fetch with cache busting
             fetchProducts(false, Date.now());
-        };
+        }
 
         window.resetFilters = resetFilters;
         window.fetchProducts = fetchProducts;
@@ -1042,6 +791,10 @@ transform: translateY(0);
             }
 
             products.forEach(product => {
+                const isJob = product.category === 'Jobb';
+                const isCar = product.category === 'Bil';
+                const isProperty = product.category === 'Eiendom'; 
+                
                 const productDiv = document.createElement('div');
                 productDiv.className = 'product';
 
@@ -1049,15 +802,38 @@ transform: translateY(0);
                 const firstImage = images.length > 0 ? `/uploads/${images[0].trim()}` : '/uploads/default-placeholder.png';
 
                 productDiv.innerHTML = `
-                    <img src="${firstImage}" alt="${product.ProductName}">
-                    <i class="fas fa-heart favorite-icon" data-product-id="${product.ProductdID}"></i>
+                    <img src="${firstImage}" alt="${isJob ? product.JobTitle : 
+                    isCar ? `${product.brand_name} ${product.model_name}` : 
+                    product.ProductName}">
                     <div>
                         <h3>
-                            ${product.ProductName} 
+                            ${isJob ? product.JobTitle || 'No title' : 
+                            isCar ? 
+                                `${product.brand_name || 'Unknown brand'} ${product.model_name || ''}`.trim() : 
+                                product.ProductName || 'Unnamed product'}
                             ${product.Sold ? `<span class="sold-label">(Sold)</span>` : ''}
+                            <i class="favorite-icon fas fa-heart" data-product-id="${product.ProductdID}"></i> 
                         </h3>
-                        <p><strong>Price:</strong> ${product.Price} $</p>
-                        <p><strong>Location:</strong> ${product.Location}</p>
+                        ${isCar ? `<p class="custom-title">${product.ProductName}</p>` : ''}
+                        ${isJob ? `
+                            <p><strong>Bedrift:</strong> ${product.CompanyName || 'Not specified'}</p>
+                            <p><strong>Ansettelsesform:</strong> ${product.EmploymentType || 'Not specified'}</p>
+                        ` : ''}
+                        ${isCar ? `
+                            <p><strong>Årsmodell:</strong> ${product.Year || 'N/A'}</p>
+                            <p><strong>Kilometer:</strong> ${product.Mileage ? `${product.Mileage} km` : 'N/A'}</p>
+                            <p><strong>Drivstoff:</strong> ${product.FuelType || 'Not specified'}</p>
+                        ` : ''}
+                        ${isProperty ? `
+                            <p><strong>Pris:</strong> ${product.Price ? `${product.Price.toLocaleString('no-NO')} kr` : 'Pris på forespørsel'}</p>
+                            <p><strong>Type:</strong> ${product.PropertyType}</p>
+                            <p><strong>Størrelse:</strong> ${product.SizeSqm} m²</p>
+                        ` : ''}
+                        <p><strong>Sted:</strong> ${ 
+                            (product.cityName || product.Location || 'Not specified') + 
+                            (product.country ? `, ${product.country}` : '')
+                        }</p>
+                        ${!isJob && !isCar && !isProperty ? `<p><strong>Pris:</strong> ${product.Price ? `${product.Price} kr` : 'Contact for price'}</p>` : ''}
                     </div>
                 `;
 
@@ -1079,7 +855,7 @@ transform: translateY(0);
                 const isFavorited = icon.classList.contains('favorited');
 
                 if (isFavorited) {
-                    fetch('/api/unfavorite', {
+                    fetch('/api/favorites', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1093,7 +869,7 @@ transform: translateY(0);
                     })
                     .catch(error => console.error("Error unfavoriting product:", error));
                 } else {
-                    fetch('/api/favorite', {
+                    fetch('/api/favorites', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -1128,128 +904,301 @@ transform: translateY(0);
         function applyFilters() {
             clearTimeout(filterTimeout);
             filterTimeout = setTimeout(() => {
-                // Update current filters
+                // Get values from car filters
+                const yearFrom = document.getElementById('yearFrom')?.value;
+                const yearTo = document.getElementById('yearTo')?.value;
+                const mileageFrom = document.getElementById('mileageFrom')?.value;
+                const mileageTo = document.getElementById('mileageTo')?.value;
+                const fuelTypeSelect = document.getElementById('fuelTypeFilter');
+                const transmissionSelect = document.getElementById('transmissionFilter');
+
+                // Get values from property filters
+                const propertyTypeSelect = document.getElementById('propertyTypeFilter');
+                const sizeFrom = document.getElementById('sizeFrom')?.value;
+                const sizeTo = document.getElementById('sizeTo')?.value;
+                const roomsFrom = document.getElementById('roomsFrom')?.value;
+                const roomsTo = document.getElementById('roomsTo')?.value;
+                const bathroomsFrom = document.getElementById('bathroomsFrom')?.value;
+                const bathroomsTo = document.getElementById('bathroomsTo')?.value;
+                const energyClassSelect = document.getElementById('energyClassFilter');
+
+                // Get values from work filters
+                const employmentTypeSelect = document.getElementById('employmentTypeFilter');
+                const salaryFrom = document.getElementById('salaryFrom')?.value;
+                const salaryTo = document.getElementById('salaryTo')?.value;
+                const deadlineDate = document.getElementById('deadlineDate')?.value;
+
                 currentFilters = {
                     priceOrder: document.getElementById('priceFilter').value,
                     dateOrder: document.getElementById('dateFilter').value,
                     subCategory: document.getElementById('subCategoryFilter')?.value || '',
-                    selectedCountries: Array.from(document.querySelectorAll('.country-list input[type="checkbox"]:checked'))
-                        .map(checkbox => checkbox.value),
-                    selectedCarBrands: Array.from(document.querySelectorAll('.car-brand-list input[type="checkbox"]:checked'))
-                        .map(checkbox => checkbox.value),
-                    selectedCities: Array.from(document.querySelectorAll('.city-list input[type="checkbox"]:checked'))
-                        .map(checkbox => checkbox.value)
+                    selectedCountries: Array.from(
+                        document.querySelectorAll('.country-list input[type="checkbox"]:checked')
+                    ).map(checkbox => checkbox.value),
+                    selectedCities: Array.from(
+                        document.querySelectorAll('.city-list input[type="checkbox"]:checked')
+                    ).map(checkbox => checkbox.value),
+                    selectedCarBrands: Array.from(
+                        document.querySelectorAll('.car-brand-list input[type="checkbox"]:checked')
+                    ).map(checkbox => checkbox.value),
+                    yearRange: {
+                        from: yearFrom || null,
+                        to: yearTo || null
+                    },
+                    mileageRange: {
+                        from: mileageFrom || null,
+                        to: mileageTo || null
+                    },
+                    fuelTypes: Array.from(fuelTypeSelect?.selectedOptions || []).map(option => option.value),
+                    transmissionTypes: Array.from(transmissionSelect?.selectedOptions || []).map(option => option.value),
+                    propertyTypes: Array.from(propertyTypeSelect?.selectedOptions || []).map(option => option.value),
+                    sizeRange: {
+                        from: sizeFrom || null,
+                        to: sizeTo || null
+                    },
+                    roomsRange: {
+                        from: roomsFrom || null,
+                        to: roomsTo || null
+                    },
+                    bathroomsRange: {
+                        from: bathroomsFrom || null,
+                        to: bathroomsTo || null
+                    },
+                    energyClasses: Array.from(energyClassSelect?.selectedOptions || []).map(option => option.value),
+                    employmentTypes: Array.from(employmentTypeSelect?.selectedOptions || []).map(option => option.value),
+                    salaryRange: {
+                        from: salaryFrom || null,
+                        to: salaryTo || null
+                    },
+                    applicationDeadline: deadlineDate || null
                 };
 
-                // Reset pagination
+                // Force reset pagination
                 currentPage = 1;
                 hasMore = true;
-            // Clear existing products
                 document.getElementById('productsContainer').innerHTML = '<p>Loading products...</p>';
-                
                 fetchProducts();
             }, DEBOUNCE_DELAY);
         }
 
-    document.getElementById('dateFilter').addEventListener('change', () => {
-    document.getElementById('priceFilter').value = '';
-    applyFilters();
-});
-    document.getElementById('priceFilter').addEventListener('change', () => {
-    document.getElementById('dateFilter').value = '';
-    applyFilters();
-});
+        document.getElementById('dateFilter').addEventListener('change', () => {
+        document.getElementById('priceFilter').value = '';
+        applyFilters();
+    });
+        document.getElementById('priceFilter').addEventListener('change', () => {
+        document.getElementById('dateFilter').value = '';
+        applyFilters();
+    });
 
-function handleCategoryVisibility() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const category = urlParams.get('category') || 'default';
-    const subcategoryContainer = document.getElementById('subcategoryFilterContainer');
-    const carBrandSection = document.getElementById('kjørr');
-    const carBrandLabel = document.getElementById('filterCar');
+    function handleCategoryVisibility() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('category') || 'default';
+        const subcategoryContainer = document.getElementById('subcategoryFilterContainer');
+        const carBrandSection = document.getElementById('carBrandList');
+        const carBrandLabel = document.getElementById('filterCar');
+        const carSpecificFilters = document.getElementById('carSpecificFilters');
+        const propertySpecificFilters = document.getElementById('propertySpecificFilters');
+        const workSpecificFilters = document.getElementById('workSpecificFilters');
+        const resetFiltersBtn = document.getElementById('resetFiltersBtn');
 
-    // Toggle subcategory filter
-    if (subcategoryContainer) {
-        subcategoryContainer.style.display = category === 'Torget' ? 'block' : 'none';
+        // Toggle subcategory filter
+        if (subcategoryContainer) {
+            subcategoryContainer.style.display = category === 'Torget' ? 'block' : 'none';
+        }
+
+        // Toggle car brand filter and specific filters
+        if (carBrandSection && carBrandLabel && carSpecificFilters) {
+            const shouldShowCar = category === 'Bil';
+            carBrandSection.style.display = shouldShowCar ? 'block' : 'none';
+            carBrandLabel.style.display = shouldShowCar ? 'block' : 'none';
+            carSpecificFilters.style.display = shouldShowCar ? 'block' : 'none';
+        }
+
+        // Toggle property specific filters
+        if (propertySpecificFilters) {
+            propertySpecificFilters.style.display = category === 'Eiendom' ? 'block' : 'none';
+        }
+
+        // Toggle work specific filters
+        if (workSpecificFilters) {
+            workSpecificFilters.style.display = category === 'Jobb' ? 'block' : 'none';
+        }
+
+        // Show reset filters button for all valid categories
+        if (resetFiltersBtn) {
+            resetFiltersBtn.style.display = ['Torget', 'Bil', 'Jobb', 'Eiendom'].includes(category) ? 'flex' : 'none';
+        }
     }
-
-    // Toggle car brand filter
-    if (carBrandSection && carBrandLabel) {
-        const shouldShow = category === 'Bil';
-        carBrandSection.style.display = shouldShow ? 'block' : 'none';
-        carBrandLabel.style.display = shouldShow ? 'block' : 'none';
-    }
-}
 
         function initializeFilters() {
-            // Price and Date filters
-            document.getElementById('priceFilter').addEventListener('change', applyFilters);
-            document.getElementById('dateFilter').addEventListener('change', applyFilters);
-            
-            // Subcategory filter
-            const subCategoryFilter = document.getElementById('subCategoryFilter');
-            if (subCategoryFilter) {
-                subCategoryFilter.addEventListener('change', applyFilters);
-            }
+    // Price and Date filters
+    document.getElementById('priceFilter').addEventListener('change', applyFilters);
+    document.getElementById('dateFilter').addEventListener('change', applyFilters);
+    
+    // Subcategory filter
+    const subCategoryFilter = document.getElementById('subCategoryFilter');
+    if (subCategoryFilter) {
+        subCategoryFilter.addEventListener('change', applyFilters);
+    }
 
-            // Country checkboxes
-           document.querySelectorAll('.country-list input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', async function() {
-        const country = this.value;
-        const cityList = document.getElementById(`${this.id}-cities`);
-
-        if (this.checked) {
-            try {
-                // Fetch cities for the selected country
-                const response = await fetch(`/api/cities?country=${encodeURIComponent(country)}`);
-                const cities = await response.json();
-                
-                // Populate city list
-                cityList.innerHTML = cities.map(city => `
-                    <li>
-                        <input type="checkbox" id="${city.cityName}" 
-                               value="${city.cityName}">
-                        <label for="${city.cityName}">${city.cityName}</label>
-                    </li>
-                `).join('');
-                
-                // Add event listeners to new city checkboxes
-                cityList.querySelectorAll('input').forEach(cityCheckbox => {
-                    cityCheckbox.addEventListener('change', applyFilters);
-                });
-                
-                // Show the city list
-                cityList.style.display = 'block';
-
-                // Trigger filters for COUNTRY selection
-                applyFilters(); // 👈 Added this line
-
-            } catch (error) {
-                console.error("Error loading cities:", error);
-                cityList.innerHTML = '<li>Error loading cities</li>';
-            }
-        } else {
-            // Clear cities and hide the list
-            cityList.innerHTML = '';
-            cityList.style.display = 'none';
-            
-            // Remove cities from filters
-            currentFilters.selectedCities = currentFilters.selectedCities.filter(
-                city => !Array.from(cityList.querySelectorAll('input'))
-                              .map(cb => cb.value)
-                              .includes(city)
-            );
-
-            // Trigger filters for COUNTRY deselection
-            applyFilters(); // 👈 This already exists
-        }
-    });
-});
-
-            // Car brand checkboxes
-            document.querySelectorAll('.car-brand-list input[type="checkbox"]').forEach(checkbox => {
-                checkbox.addEventListener('change', applyFilters);
+    // Add event listeners for work filters
+    ['salaryFrom', 'salaryTo'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('change', applyFilters);
+            element.addEventListener('input', function() {
+                // Ensure the value doesn't exceed max length
+                if (this.value.length > 10) {
+                    this.value = this.value.slice(0, 10);
+                }
             });
         }
+    });
+
+    const deadlineDate = document.getElementById('deadlineDate');
+    if (deadlineDate) {
+        deadlineDate.addEventListener('change', applyFilters);
+        // Set min date to today
+        const today = new Date().toISOString().split('T')[0];
+        deadlineDate.min = today;
+    }
+
+    const employmentTypeFilter = document.getElementById('employmentTypeFilter');
+    if (employmentTypeFilter) {
+        employmentTypeFilter.addEventListener('change', applyFilters);
+    }
+
+    // Add event listeners for property filters
+    ['sizeFrom', 'sizeTo', 'roomsFrom', 'roomsTo', 'bathroomsFrom', 'bathroomsTo'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', applyFilters);
+            element.addEventListener('change', applyFilters);
+            element.addEventListener('input', function() {
+                // Ensure the value doesn't exceed max length
+                if (this.value.length > 7) {
+                    this.value = this.value.slice(0, 7);
+                }
+            });
+        }
+    });
+
+    ['propertyTypeFilter', 'energyClassFilter'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('change', applyFilters);
+        }
+    });
+
+    // Add event listeners for car filters
+    ['yearFrom', 'yearTo', 'mileageFrom', 'mileageTo'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('input', applyFilters);
+            element.addEventListener('change', applyFilters);
+            element.addEventListener('input', function() {
+                if (this.value.length > 7) {
+                    this.value = this.value.slice(0, 7);
+                }
+            });
+        }
+    });
+
+    ['fuelTypeFilter', 'transmissionFilter'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('change', applyFilters);
+        }
+    });
+
+    // Fetch countries and cities from the API
+    fetch('/api/utils/countries')
+        .then(response => response.json())
+        .then(countries => {
+            const countryList = document.querySelector('.country-list');
+            
+            countries.forEach(countryData => {
+                // Create country checkbox
+                const countryItem = document.createElement('li');
+                countryItem.innerHTML = `
+                    <div>
+                        <input type="checkbox" id="${countryData.country}" value="${countryData.country}">
+                        <label for="${countryData.country}">${countryData.country}</label>
+                    </div>
+                    <ul class="city-list" id="${countryData.country}-cities" style="display: none;"></ul>
+                `;
+                
+                // Populate cities for this country
+                const cityList = countryItem.querySelector('.city-list');
+                countryData.cities.forEach((cityName, index) => {
+                    const cityId = countryData.city_ids[index];
+                    cityList.innerHTML += `
+                        <li>
+                            <input type="checkbox" id="city_${cityId}" value="${cityId}">
+                            <label for="city_${cityId}">${cityName}</label>
+                        </li>
+                    `;
+                });
+
+             // Modify the country checkbox event listener to uncheck cities
+            document.querySelectorAll('.country-list input[type="checkbox"]').forEach(countryCheckbox => {
+                    countryCheckbox.addEventListener('change', function() {
+                        const countryItem = this.closest('li');
+                        const cityList = countryItem.querySelector('.city-list');
+                        const cityCheckboxes = cityList.querySelectorAll('input[type="checkbox"]');
+
+                        // Uncheck all cities when country is unchecked
+                        if (!this.checked) {
+                            cityCheckboxes.forEach(cityCB => {
+                                cityCB.checked = false;
+                            });
+                        }
+
+                        // Toggle city list visibility
+                        cityList.style.display = this.checked ? 'block' : 'none';
+                        applyFilters(); // Refresh results
+                    });
+                });
+
+                countryList.appendChild(countryItem);
+            });
+
+            // Add event listeners to city checkboxes after they are created
+            document.querySelectorAll('.city-list input').forEach(cityCheckbox => {
+                cityCheckbox.addEventListener('change', applyFilters);
+            });
+        })
+        .catch(error => {
+            console.error("Error loading countries and cities:", error);
+        });
+
+    loadCarBrands();
+}
+
+function loadCarBrands() {
+    fetch('/api/utils/car-brands')
+        .then(response => response.json())
+        .then(brands => {
+            const container = document.getElementById('carBrandList');
+            
+            brands.forEach(brand => {
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <div>
+                        <input type="checkbox" id="${brand.brand_id}" value="${brand.brand_id}">
+                        <label for="${brand.brand_id}">${brand.brand_name}</label>
+                    </div>
+                `;
+                container.appendChild(li);
+            });
+
+            // Add event listeners to the new checkboxes
+            document.querySelectorAll('#carBrandList input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', applyFilters);
+            });
+        })
+        .catch(error => console.error("Error loading car brands:", error));
+}
 
         function initializeFavorites() {
             fetch('/api/favorites')

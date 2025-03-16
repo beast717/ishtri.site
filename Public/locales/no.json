@@ -30,10 +30,12 @@
         "lag_konto": "Lag Konto",
         "email": "E-post",
         "har_allerede_konto_logg_inn": "Har allerede en konto? Logg Inn",
-        "forgot_password": "Glemt passord?",
-        "confirm_password": "Bekreft passord"
-
-
+        "forgot_password": "Glemt Passord",
+        "confirm_password": "Bekreft Passord",
+        "reset_password": "Tilbakestill Passord",
+        "back_to_login": "Tilbake til Innlogging",
+        "reset_your_password": "Tilbakestill Passordet Ditt",
+        "new_password": "Nytt Passord"
     },
 
     "form": {
@@ -43,13 +45,39 @@
         "description": "Beskrivelse",
         "category": "Kategori",
         "country": "Land",
+        "city": "By",
+        "select_city": "Velg By",
         "upload_images": "Last Opp Bilder",
         "submit": "Send Inn",
         "lag_nyannonse": "Lag Ny Annonse",
         "velg_kat": "Velg Kategori",
         "detaljer": "Produktdetaljer",
         "ingen": "Ingen",
-        "velg_fil": "Ingen Fil Valgt"
+        "velg_fil": "Ingen Fil Valgt",
+        "car_details": "Bildetaljer",
+        "brand": "Merke",
+        "model": "Modell",
+        "year": "Årsmodell",
+        "mileage": "Kilometerstand",
+        "fuel_type": "Drivstofftype",
+        "transmission": "Girkasse",
+        "select_brand": "Velg Merke",
+        "select_model": "Velg Modell Først",
+        "title": "Tittel",
+        "property_type": "Eiendomstype",
+        "velg": "Velg",
+        "job_title": "Stillingstittel",
+        "company_name": "Bedriftsnavn",
+        "employment_type": "Ansettelsesform",
+        "salary": "Lønnsspenn",
+        "job_description": "Stillingsbeskrivelse",
+        "deadline": "Søknadsfrist",
+        "contact_email": "Kontakt-e-post",
+        "application_link": "Søknadslenke (valgfri)",
+        "salary_placeholder": "F.eks: 450 000 - 550 000 kr/år",
+        "job_description_placeholder": "Beskriv stillingen og arbeidsoppgaver...",
+        "email_placeholder": "soknad@bedrift.no",
+        "url_placeholder": "https://"
     },
     "product_details": {
         "price": "Pris",
@@ -89,6 +117,85 @@
         "klikk": "Klikk for å Se Meldinger",
         "mark_asread": "Merk som Lest",
         "svar": "Svar",
-        "dine_meldinger": "Dine Meldinger"
+        "dine_meldinger": "Dine Meldinger",
+        "unread_count": "{{count}} uleste melding(er)"
+    },
+    "flight_search": {
+        "title": "Flysøk",
+        "from": "Fra",
+        "to": "Til",
+        "departure_date": "Avreisedato",
+        "return_date": "Returdato",
+        "passengers": "Antall passasjerer",
+        "search": "Søk etter flyvninger",
+        "one_way": "Enveis",
+        "round_trip": "Tur-retur",
+        "trip_type": "Reisetype",
+        "enter_city": "Skriv inn byer/flyplasser...",
+        "passenger_count": {
+            "one": "1 Passasjer",
+            "two": "2 Passasjerer",
+            "three": "3 Passasjerer",
+            "four": "4 Passasjerer"
+        }
+    },
+    "fuel": {
+        "petrol": "Bensin",
+        "diesel": "Diesel",
+        "electric": "Elektrisk",
+        "hybrid": "Hybrid"
+    },
+    "transmission": {
+        "manual": "Manuell",
+        "automatic": "Automatisk"
+    },
+    "employment": {
+        "full_time": "Fast Stilling",
+        "part_time": "Deltid",
+        "contract": "Kontrakt",
+        "temporary": "Vikariat",
+        "internship": "Lærling/Lønnstilskudd"
+    },
+    "property": {
+        "house": "Enebolig",
+        "apartment": "Leilighet",
+        "commercial": "Næringseiendom",
+        "vacation": "Fritidsbolig",
+        "land": "Tomt",
+        "details": "Eiendomsdetaljer",
+        "size": "Størrelse (m²)",
+        "rooms": "Antall Soverom",
+        "bathrooms": "Antall Bad",
+        "year_built": "Byggeår",
+        "energy_class": "Energiklasse"
+    },
+    "amenities": {
+        "balcony": "Balkong",
+        "fireplace": "Peis",
+        "parking": "Parkering",
+        "elevator": "Heis",
+        "smarthome": "Smarthus",
+        "title": "Fasiliteter"
+    },
+    "notifications": {
+        "no_notifications": "Ingen varsler ennå",
+        "mark_as_read": "Merk som Lest",
+        "new_message": "Ny melding fra {{user}}",
+        "new_offer": "Nytt tilbud på annonsen din: {{title}}",
+        "price_update": "Pris oppdatert for {{title}}",
+        "listing_sold": "Annonsen din {{title}} er markert som solgt",
+        "listing_expired": "Annonsen din {{title}} har utløpt",
+        "message_sent": "Melding sendt",
+        "message_received": "Du har mottatt en ny melding",
+        "offer_accepted": "Tilbudet ditt er akseptert",
+        "offer_rejected": "Tilbudet ditt er avvist"
+    },
+    "errors": {
+        "element_not_found": "Element '{{element}}' ikke funnet!",
+        "fetch_failed": "Feil ved henting av data: {{error}}",
+        "init_failed": "Feil ved initialisering av oversettelser: {{error}}",
+        "validation_failed": "Validering feilet: {{error}}",
+        "server_error": "Serverfeil: {{error}}",
+        "network_error": "Nettverksfeil: {{error}}"
     }
 }

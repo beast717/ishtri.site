@@ -139,20 +139,20 @@ font-weight: bold;
 margin-left: 5px;
 }
 
-/* Add styles for the favorite icon */
-        .favorite-icon {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            color: #ccc; /* Default color for non-favorited icons */
-            cursor: pointer;
-            font-size: 20px;
-            z-index: 1; /* Ensure the icon is above the image */
-        }
 
-        .favorite-icon.favorited {
-            color: #ff4757; /* Red color for favorited icons */
-        }
+.favorite-icon {
+position: absolute;
+top: 10px;
+right: 10px;
+color: #ccc; 
+cursor: pointer;
+font-size: 20px;
+z-index: 1; 
+}
+
+.favorite-icon.favorited {
+color: #ff4757; 
+}
 
 @media (max-width: 768px) {
 
@@ -270,18 +270,15 @@ margin-left: 5px;
     </div>
        <div id="randomProducts" style="display: flex; gap: 20px; padding: 10px; min-height: 100px; overflow-x: auto; justify-content: center;">
         <div>
-            <img src="path_to_image.jpg" alt="Product Name">
             <h4>Product Name</h4>
             <p>Price NOK</p>
         </div>
     </div>
     
-
-
         <script>
 
             function loadRandomProducts() {
-                fetch('/api/random-products')
+                fetch('/api/utils/random-products')
                     .then(response => {
                         if (!response.ok) {
                             throw new Error("Failed to fetch products");
@@ -407,71 +404,10 @@ margin-left: 5px;
             }
         });
             window.addEventListener('load', loadRandomProducts);
-        
-
-            document.addEventListener('DOMContentLoaded', () => {
-                i18next
-                    .use(i18nextHttpBackend)
-                    .use(i18nextBrowserLanguageDetector)
-                    .init({
-                        debug: true,
-                        fallbackLng: 'en', // Default language
-                        backend: {
-                            loadPath: '/locales/{{lng}}.json', // Path to translation files
-                        }
-                    }, (err, t) => {
-                        if (err) console.error(err);
-                        updateContent(); // Initial content update
-                    });
-
-                // Event listener for language change
-                document.getElementById('languageSelect').addEventListener('change', (e) => {
-                    const selectedLanguage = e.target.value;
-                    i18next.changeLanguage(selectedLanguage, (err, t) => {
-                        if (err) console.error(err);
-                        updateContent();
-                    });
-                });
-            });
-
-            // Update content dynamically
-            function updateContent() {
-                document.querySelectorAll('[data-i18n]').forEach(element => {
-                    const key = element.getAttribute('data-i18n');
-                    const translation = i18next.t(key);
-                    if (element.tagName === 'INPUT' && element.type === 'text') {
-                        element.placeholder = translation; // Update input placeholders
-                    } else {
-                        element.innerHTML = translation; // Update inner HTML for other elements
-                    }
-                });
-
-               
-            }
-
-            //Use the browser's localStorage to save the user's language preference
-            function setLanguage(language) {
-            // Save to localStorage
-            localStorage.setItem('selectedLanguage', language);
-
-            // Change the language using i18next
-            i18next.changeLanguage(language, (err, t) => {
-                if (err) console.error(err);
-                updateContent();
-            });
-        }
-
-        document.getElementById('languageSelect').addEventListener('change', (e) => {
-            setLanguage(e.target.value);
-        });
-
         window.onload = function () {
-    checkUnreadMessages(); // Check for unread messages
+    checkUnreadMessages(); 
 };
 
-
         </script>
-        
-        
 </body>
 </html>
