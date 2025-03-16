@@ -31,22 +31,56 @@ h1 {
     background-color: white;
     cursor: pointer;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 15px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .product:hover {
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
 
 .product img {
     max-width: 300px;
     height: auto;
     border-radius: 5px;
+    object-fit: cover;
 }
 
 .product h3 {
     margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.product p {
+    margin: 8px 0;
+    color: #666;
+    font-size: 0.95em;
+}
+
+.product strong {
+    color: #444;
+}
+
+.favorite-icon {
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.3s ease, transform 0.2s ease;
+    font-size: 1.2em;
+    margin-left: 10px;
+}
+
+.favorite-icon:hover {
+    transform: scale(1.1);
+}
+
+.favorite-icon.favorited {
+    color: #ff4757;
 }
 
 .no-products {
@@ -260,6 +294,7 @@ transform: translateY(0);
     color: #666;
     font-size: 1.2rem;
     font-weight: normal;
+    margin-top: 5px;
 }
 
 .filter-section {
@@ -355,12 +390,13 @@ select[multiple] option:checked {
         <div class="side-panel">
             <h3 data-i18n="filter.filter_land">Filter by Country</h3>
             <ul class="country-list">
-                <ul class="country-list">
+                <!-- Countries will be populated here -->
             </ul>
-        </ul>
     
-        <h3 id="filterCar">Filter Car</h3>
-            <ul class="car-brand-list" id="carBrandList"></ul>
+            <h3 id="filterCar">Filter Car</h3>
+            <ul class="car-brand-list" id="carBrandList">
+                <!-- Car brands will be populated here -->
+            </ul>
 
             <!-- Add Car Specific Filters -->
             <div id="carSpecificFilters" style="display: none;">
@@ -504,11 +540,10 @@ select[multiple] option:checked {
 </div>
 
     <script>
-    (function () {
+    document.addEventListener('DOMContentLoaded', () => {
         console.log("Initializing TorgetKat page...");
         let filterTimeout;
         const DEBOUNCE_DELAY = 300; // ms
-
 
         // Pagination variables
         let currentPage = 1;
@@ -538,12 +573,136 @@ select[multiple] option:checked {
             applicationDeadline: null
         };
 
+        // Initialize filters and UI once
+        initializeFilters();
+        handleCategoryVisibility();
+
+        // Wait for i18next to be ready before loading products
+        i18next.on('initialized', () => {
+            console.log("i18next initialized, loading products...");
+            fetchProducts();
+            initializeFavorites();
+        });
+
+        // Remove the window.onload event handler since we're using DOMContentLoaded
+        // This prevents duplicate initialization
+        
+        window.onload = null;
+
         function showLoading() {
             document.getElementById('loadingOverlay').style.display = 'flex';
         }
 
         function hideLoading() {
             document.getElementById('loadingOverlay').style.display = 'none';
+        }
+
+        function displayProducts(products, loadMore = false) {
+            const container = document.getElementById('productsContainer');
+            if (!loadMore) {
+                container.innerHTML = '';
+            }
+
+            if (!products || products.length === 0) {
+                if (!loadMore) {
+                    container.innerHTML = '<p class="no-products">No products found</p>';
+                }
+                return;
+            }
+
+            products.forEach(product => {
+                const productElement = createProductElement(product);
+                container.appendChild(productElement);
+            });
+        }
+
+        function createProductElement(product) {
+            const isJob = product.category === 'Jobb';
+            const isCar = product.category === 'Bil';
+            const isProperty = product.category === 'Eiendom';
+
+            const div = document.createElement('div');
+            div.className = 'product';
+
+            // Handle images
+            const images = product.Images ? product.Images.split(',') : [];
+            const firstImage = images.length > 0 ? images[0].trim() : null;
+            const imageUrl = firstImage ? `/uploads/${firstImage}` : '/uploads/default-placeholder.png';
+
+            div.innerHTML = `
+                <img src="${imageUrl}" alt="${isJob ? product.JobTitle : 
+                    isCar ? `${product.brand_name} ${product.model_name}` : 
+                    product.ProductName}">
+                <div>
+                    <h3>
+                        ${isJob ? product.JobTitle || 'No title' : 
+                        isCar ? 
+                            `${product.brand_name || 'Unknown brand'} ${product.model_name || ''}`.trim() : 
+                            product.ProductName || 'Unnamed product'}
+                        ${product.Sold ? `<span class="sold-label">(Sold)</span>` : ''}
+                        <i class="favorite-icon fas fa-heart" data-product-id="${product.ProductdID}"></i>
+                    </h3>
+                    ${isCar ? `<p class="custom-title">${product.ProductName}</p>` : ''}
+                    ${isJob ? `
+                        <p><strong>Bedrift:</strong> ${product.CompanyName || 'Not specified'}</p>
+                        <p><strong>Ansettelsesform:</strong> ${product.EmploymentType || 'Not specified'}</p>
+                    ` : ''}
+                    ${isCar ? `
+                        <p><strong>Årsmodell:</strong> ${product.Year || 'N/A'}</p>
+                        <p><strong>Kilometer:</strong> ${product.Mileage ? `${product.Mileage} km` : 'N/A'}</p>
+                        <p><strong>Drivstoff:</strong> ${product.FuelType || 'Not specified'}</p>
+                    ` : ''}
+                    ${isProperty ? `
+                        <p><strong>Pris:</strong> ${product.Price ? `${product.Price.toLocaleString('no-NO')} kr` : 'Pris på forespørsel'}</p>
+                        <p><strong>Type:</strong> ${product.PropertyType}</p>
+                        <p><strong>Størrelse:</strong> ${product.SizeSqm} m²</p>
+                    ` : ''}
+                    <p><strong>Sted:</strong> ${ 
+                        (product.cityName || product.Location || 'Not specified') + 
+                        (product.country ? `, ${product.country}` : '')
+                    }</p>
+                    ${!isJob && !isCar && !isProperty ? `<p><strong>Pris:</strong> ${product.Price ? `${product.Price} kr` : 'Contact for price'}</p>` : ''}
+                </div>
+            `;
+
+            // Add click event for the entire product
+            div.addEventListener('click', (e) => {
+                // Don't navigate if clicking the favorite icon
+                if (!e.target.classList.contains('favorite-icon')) {
+                    window.location.href = `/productDetails?productdID=${product.ProductdID}`;
+                }
+            });
+
+            // Add click event for the favorite icon
+            const favoriteIcon = div.querySelector('.favorite-icon');
+            if (favoriteIcon) {
+                favoriteIcon.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent product click event
+                    const productdID = e.target.getAttribute('data-product-id');
+                    const isFavorited = e.target.classList.contains('favorited');
+
+                    fetch('/api/favorites', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ productdID }),
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (isFavorited) {
+                            e.target.classList.remove('favorited');
+                            e.target.style.color = '#ccc';
+                        } else {
+                            e.target.classList.add('favorited');
+                            e.target.style.color = '#ff4757';
+                        }
+                    })
+                    .catch(error => console.error("Error toggling favorite:", error));
+                });
+            }
+
+            return div;
         }
 
         function fetchProducts(loadMore = false, cacheBuster = null) {
@@ -776,117 +935,6 @@ select[multiple] option:checked {
         window.resetFilters = resetFilters;
         window.fetchProducts = fetchProducts;
 
-        function displayProducts(products, append = false) {
-            const container = document.getElementById('productsContainer');
-            if (!container) return;
-
-            if (!append) {
-                container.innerHTML = '';
-                currentPage = 1;
-            }
-
-            if (products.length === 0 && !append) {
-                container.innerHTML = '<p class="no-products">No products found for this category.</p>';
-                return;
-            }
-
-            products.forEach(product => {
-                const isJob = product.category === 'Jobb';
-                const isCar = product.category === 'Bil';
-                const isProperty = product.category === 'Eiendom'; 
-                
-                const productDiv = document.createElement('div');
-                productDiv.className = 'product';
-
-                const images = product.Images ? product.Images.split(',') : [];
-                const firstImage = images.length > 0 ? `/uploads/${images[0].trim()}` : '/uploads/default-placeholder.png';
-
-                productDiv.innerHTML = `
-                    <img src="${firstImage}" alt="${isJob ? product.JobTitle : 
-                    isCar ? `${product.brand_name} ${product.model_name}` : 
-                    product.ProductName}">
-                    <div>
-                        <h3>
-                            ${isJob ? product.JobTitle || 'No title' : 
-                            isCar ? 
-                                `${product.brand_name || 'Unknown brand'} ${product.model_name || ''}`.trim() : 
-                                product.ProductName || 'Unnamed product'}
-                            ${product.Sold ? `<span class="sold-label">(Sold)</span>` : ''}
-                            <i class="favorite-icon fas fa-heart" data-product-id="${product.ProductdID}"></i> 
-                        </h3>
-                        ${isCar ? `<p class="custom-title">${product.ProductName}</p>` : ''}
-                        ${isJob ? `
-                            <p><strong>Bedrift:</strong> ${product.CompanyName || 'Not specified'}</p>
-                            <p><strong>Ansettelsesform:</strong> ${product.EmploymentType || 'Not specified'}</p>
-                        ` : ''}
-                        ${isCar ? `
-                            <p><strong>Årsmodell:</strong> ${product.Year || 'N/A'}</p>
-                            <p><strong>Kilometer:</strong> ${product.Mileage ? `${product.Mileage} km` : 'N/A'}</p>
-                            <p><strong>Drivstoff:</strong> ${product.FuelType || 'Not specified'}</p>
-                        ` : ''}
-                        ${isProperty ? `
-                            <p><strong>Pris:</strong> ${product.Price ? `${product.Price.toLocaleString('no-NO')} kr` : 'Pris på forespørsel'}</p>
-                            <p><strong>Type:</strong> ${product.PropertyType}</p>
-                            <p><strong>Størrelse:</strong> ${product.SizeSqm} m²</p>
-                        ` : ''}
-                        <p><strong>Sted:</strong> ${ 
-                            (product.cityName || product.Location || 'Not specified') + 
-                            (product.country ? `, ${product.country}` : '')
-                        }</p>
-                        ${!isJob && !isCar && !isProperty ? `<p><strong>Pris:</strong> ${product.Price ? `${product.Price} kr` : 'Contact for price'}</p>` : ''}
-                    </div>
-                `;
-
-                productDiv.addEventListener('click', () => {
-                    const favoriteIcon = productDiv.querySelector('.favorite-icon');
-                    const isFavorited = favoriteIcon.classList.contains('favorited');
-                    window.location.href = `/productDetails?productdID=${product.ProductdID}&favorited=${isFavorited}`;
-                });
-
-                container.appendChild(productDiv);
-            });
-
-            initializeFavorites();
-
-            document.querySelectorAll('.favorite-icon').forEach(icon => {
-            icon.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const productdID = icon.getAttribute('data-product-id');
-                const isFavorited = icon.classList.contains('favorited');
-
-                if (isFavorited) {
-                    fetch('/api/favorites', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ productdID }),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        icon.classList.remove('favorited');
-                        icon.style.color = '#ccc';
-                    })
-                    .catch(error => console.error("Error unfavoriting product:", error));
-                } else {
-                    fetch('/api/favorites', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ productdID }),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        icon.classList.add('favorited');
-                        icon.style.color = '#ff4757';
-                    })
-                    .catch(error => console.error("Error favoriting product:", error));
-                }
-            });
-        });
-    }
-
         function addLoadMoreButton() {
             const existingButton = document.getElementById('loadMoreButton');
             if (existingButton) return;
@@ -1031,175 +1079,158 @@ select[multiple] option:checked {
     }
 
         function initializeFilters() {
-    // Price and Date filters
-    document.getElementById('priceFilter').addEventListener('change', applyFilters);
-    document.getElementById('dateFilter').addEventListener('change', applyFilters);
-    
-    // Subcategory filter
-    const subCategoryFilter = document.getElementById('subCategoryFilter');
-    if (subCategoryFilter) {
-        subCategoryFilter.addEventListener('change', applyFilters);
-    }
+            // Add a flag to track if filters have been initialized
+            if (window.filtersInitialized) {
+                console.log("Filters already initialized, skipping...");
+                return;
+            }
+            window.filtersInitialized = true;
 
-    // Add event listeners for work filters
-    ['salaryFrom', 'salaryTo'].forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.addEventListener('change', applyFilters);
-            element.addEventListener('input', function() {
-                // Ensure the value doesn't exceed max length
-                if (this.value.length > 10) {
-                    this.value = this.value.slice(0, 10);
-                }
-            });
-        }
-    });
+            console.log("Initializing filters...");
 
-    const deadlineDate = document.getElementById('deadlineDate');
-    if (deadlineDate) {
-        deadlineDate.addEventListener('change', applyFilters);
-        // Set min date to today
-        const today = new Date().toISOString().split('T')[0];
-        deadlineDate.min = today;
-    }
-
-    const employmentTypeFilter = document.getElementById('employmentTypeFilter');
-    if (employmentTypeFilter) {
-        employmentTypeFilter.addEventListener('change', applyFilters);
-    }
-
-    // Add event listeners for property filters
-    ['sizeFrom', 'sizeTo', 'roomsFrom', 'roomsTo', 'bathroomsFrom', 'bathroomsTo'].forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.addEventListener('input', applyFilters);
-            element.addEventListener('change', applyFilters);
-            element.addEventListener('input', function() {
-                // Ensure the value doesn't exceed max length
-                if (this.value.length > 7) {
-                    this.value = this.value.slice(0, 7);
-                }
-            });
-        }
-    });
-
-    ['propertyTypeFilter', 'energyClassFilter'].forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.addEventListener('change', applyFilters);
-        }
-    });
-
-    // Add event listeners for car filters
-    ['yearFrom', 'yearTo', 'mileageFrom', 'mileageTo'].forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.addEventListener('input', applyFilters);
-            element.addEventListener('change', applyFilters);
-            element.addEventListener('input', function() {
-                if (this.value.length > 7) {
-                    this.value = this.value.slice(0, 7);
-                }
-            });
-        }
-    });
-
-    ['fuelTypeFilter', 'transmissionFilter'].forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.addEventListener('change', applyFilters);
-        }
-    });
-
-    // Fetch countries and cities from the API
-    fetch('/api/utils/countries')
-        .then(response => response.json())
-        .then(countries => {
-            const countryList = document.querySelector('.country-list');
+            // Price and Date filters
+            document.getElementById('priceFilter').addEventListener('change', applyFilters);
+            document.getElementById('dateFilter').addEventListener('change', applyFilters);
             
-            countries.forEach(countryData => {
-                // Create country checkbox
-                const countryItem = document.createElement('li');
-                countryItem.innerHTML = `
-                    <div>
-                        <input type="checkbox" id="${countryData.country}" value="${countryData.country}">
-                        <label for="${countryData.country}">${countryData.country}</label>
-                    </div>
-                    <ul class="city-list" id="${countryData.country}-cities" style="display: none;"></ul>
-                `;
-                
-                // Populate cities for this country
-                const cityList = countryItem.querySelector('.city-list');
-                countryData.cities && countryData.cities.forEach((cityName, index) => {
-                    const cityId = countryData.city_ids[index];
-                    cityList.innerHTML += `
-                        <li>
-                            <input type="checkbox" id="city_${cityId}" value="${cityId}">
-                            <label for="city_${cityId}">${cityName}</label>
-                        </li>
-                    `;
-                });
+            // Subcategory filter
+            const subCategoryFilter = document.getElementById('subCategoryFilter');
+            if (subCategoryFilter) {
+                subCategoryFilter.addEventListener('change', applyFilters);
+            }
 
-
-             // Modify the country checkbox event listener to uncheck cities
-            document.querySelectorAll('.country-list input[type="checkbox"]').forEach(countryCheckbox => {
-                    countryCheckbox.addEventListener('change', function() {
-                        const countryItem = this.closest('li');
-                        const cityList = countryItem.querySelector('.city-list');
-                        const cityCheckboxes = cityList.querySelectorAll('input[type="checkbox"]');
-
-                        // Uncheck all cities when country is unchecked
-                        if (!this.checked) {
-                            cityCheckboxes.forEach(cityCB => {
-                                cityCB.checked = false;
-                            });
+            // Add event listeners for work filters
+            ['salaryFrom', 'salaryTo'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('change', applyFilters);
+                    element.addEventListener('input', function() {
+                        if (this.value.length > 10) {
+                            this.value = this.value.slice(0, 10);
                         }
-
-                        // Toggle city list visibility
-                        cityList.style.display = this.checked ? 'block' : 'none';
-                        applyFilters(); // Refresh results
                     });
-                });
-
-                countryList.appendChild(countryItem);
+                }
             });
 
-            // Add event listeners to city checkboxes after they are created
-            document.querySelectorAll('.city-list input').forEach(cityCheckbox => {
-                cityCheckbox.addEventListener('change', applyFilters);
+            const deadlineDate = document.getElementById('deadlineDate');
+            if (deadlineDate) {
+                deadlineDate.addEventListener('change', applyFilters);
+                const today = new Date().toISOString().split('T')[0];
+                deadlineDate.min = today;
+            }
+
+            // Add event listeners for all filter elements
+            ['employmentTypeFilter', 'propertyTypeFilter', 'energyClassFilter', 'fuelTypeFilter', 'transmissionFilter'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('change', applyFilters);
+                }
             });
-        })
-        .catch(error => {
-            console.error("Error loading countries and cities:", error);
-        });
 
-    loadCarBrands();
-}
+            // Add event listeners for numeric inputs
+            ['sizeFrom', 'sizeTo', 'roomsFrom', 'roomsTo', 'bathroomsFrom', 'bathroomsTo', 'yearFrom', 'yearTo', 'mileageFrom', 'mileageTo'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('input', applyFilters);
+                    element.addEventListener('change', applyFilters);
+                    element.addEventListener('input', function() {
+                        if (this.value.length > 7) {
+                            this.value = this.value.slice(0, 7);
+                        }
+                    });
+                }
+            });
 
-function loadCarBrands() {
-    fetch('/api/utils/car-brands')
-        .then(response => response.json())
-        .then(brands => {
-            const container = document.getElementById('carBrandList');
+            // Initialize countries and cities
+            initializeCountries();
             
-            brands.forEach(brand => {
-                const li = document.createElement('li');
-                li.innerHTML = `
-                    <div>
-                        <input type="checkbox" id="${brand.brand_id}" value="${brand.brand_id}">
-                        <label for="${brand.brand_id}">${brand.brand_name}</label>
-                    </div>
-                `;
-                container.appendChild(li);
-            });
+            // Initialize car brands
+            initializeCarBrands();
+        }
 
-            // Add event listeners to the new checkboxes
-            document.querySelectorAll('#carBrandList input[type="checkbox"]').forEach(checkbox => {
-                checkbox.addEventListener('change', applyFilters);
-            });
-        })
-        .catch(error => console.error("Error loading car brands:", error));
-}
+        function initializeCountries() {
+            const countryList = document.querySelector('.country-list');
+            if (!countryList || countryList.children.length > 0) return;
+
+            fetch('/api/utils/countries')
+                .then(response => response.json())
+                .then(countries => {
+                    countries.forEach(countryData => {
+                        const countryItem = document.createElement('li');
+                        countryItem.innerHTML = `
+                            <div>
+                                <input type="checkbox" id="${countryData.country}" value="${countryData.country}">
+                                <label for="${countryData.country}">${countryData.country}</label>
+                            </div>
+                            <ul class="city-list" id="${countryData.country}-cities" style="display: none;"></ul>
+                        `;
+                        
+                        const cityList = countryItem.querySelector('.city-list');
+                        countryData.cities && countryData.cities.forEach((cityName, index) => {
+                            const cityId = countryData.city_ids[index];
+                            cityList.innerHTML += `
+                                <li>
+                                    <input type="checkbox" id="city_${cityId}" value="${cityId}">
+                                    <label for="city_${cityId}">${cityName}</label>
+                                </li>
+                            `;
+                        });
+
+                        const countryCheckbox = countryItem.querySelector('input[type="checkbox"]');
+                        countryCheckbox.addEventListener('change', function() {
+                            const cityList = countryItem.querySelector('.city-list');
+                            const cityCheckboxes = cityList.querySelectorAll('input[type="checkbox"]');
+                            if (!this.checked) {
+                                cityCheckboxes.forEach(cityCB => cityCB.checked = false);
+                            }
+                            cityList.style.display = this.checked ? 'block' : 'none';
+                            applyFilters();
+                        });
+
+                        countryList.appendChild(countryItem);
+                    });
+
+                    document.querySelectorAll('.city-list input').forEach(cityCheckbox => {
+                        cityCheckbox.addEventListener('change', applyFilters);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error loading countries and cities:", error);
+                    countryList.innerHTML = '<p>Error loading countries</p>';
+                });
+        }
+
+        function initializeCarBrands() {
+            const container = document.getElementById('carBrandList');
+            if (!container || container.children.length > 0) return;
+
+            fetch('/api/utils/car-brands')
+                .then(response => response.json())
+                .then(brands => {
+                    if (!brands || brands.length === 0) {
+                        console.log("No car brands received");
+                        return;
+                    }
+
+                    console.log("Loading car brands:", brands.length);
+                    brands.forEach(brand => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <div>
+                                <input type="checkbox" id="brand_${brand.brand_id}" value="${brand.brand_id}">
+                                <label for="brand_${brand.brand_id}">${brand.brand_name}</label>
+                            </div>
+                        `;
+                        container.appendChild(li);
+
+                        const checkbox = li.querySelector('input[type="checkbox"]');
+                        checkbox.addEventListener('change', applyFilters);
+                    });
+                })
+                .catch(error => {
+                    console.error("Error loading car brands:", error);
+                    container.innerHTML = '<p>Error loading car brands</p>';
+                });
+        }
 
         function initializeFavorites() {
             fetch('/api/favorites')
@@ -1214,17 +1245,7 @@ function loadCarBrands() {
                 })
                 .catch(error => console.error("Error checking favorites:", error));
         }
-
-        window.onload = function () {
-            fetchProducts();
-            checkUnreadMessages();
-            initializeFilters();
-            initializeFavorites();
-            applyFilters();
-            handleCategoryVisibility();
-            checkUnreadMessages();
-        };
-    })();
+    });
 </script>
 </body>
 </html>

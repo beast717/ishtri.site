@@ -231,7 +231,7 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
                 </div>
             </div>
             <img src="translate.svg" style="width: 30px; height: 25px;">
-            <select id="languageSelect" style="cursor: pointer;" onchange="changeLanguage()">
+            <select id="languageSelect" style="cursor: pointer;">
                 <option value="en">English</option>
                 <option value="ar">العربية</option>
                 <option value="no">Norsk</option>
@@ -240,8 +240,7 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
     </div>
 
 <script>
-
- (function () {
+document.addEventListener('DOMContentLoaded', () => {
     // Fetch username to toggle login/profile
     fetch('/api/auth/current-user')
         .then(response => response.json())
@@ -268,43 +267,12 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
         dropdownMenu.style.display = 'none';
     });
 
-
     // Logout functionality
     document.getElementById('logoutButton').addEventListener('click', () => {
         fetch('/api/auth/logout', { method: 'POST' })
             .then(response => {
                 if (response.ok) window.location.href = '/';
             });
-    });
-
-    window.onload = checkUnreadMessages;
-
-    // Language Initialization
-    document.addEventListener('DOMContentLoaded', () => {
-        const savedLanguage = localStorage.getItem('selectedLanguage') || 'no'; // Default to 'no'
-
-        i18next
-            .use(i18nextHttpBackend)
-            .use(i18nextBrowserLanguageDetector)
-            .init({
-                debug: true,
-                fallbackLng: savedLanguage,
-                backend: {
-                    loadPath: '/locales/{{lng}}.json', // Path to your translation JSON files
-                }
-            }, (err, t) => {
-                if (err) console.error(err);
-                updateContent(); // Update page content with translations
-            });
-
-        // Event listener for language change
-        document.getElementById('languageSelect').addEventListener('change', (e) => {
-            const selectedLanguage = e.target.value;
-            i18next.changeLanguage(selectedLanguage, (err, t) => {
-                if (err) console.error(err);
-                updateContent();
-            });
-        });
     });
 
     // Move this OUTSIDE the DOMContentLoaded listener
@@ -322,28 +290,13 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
     }
 
     // Initialize when DOM is ready
-    document.addEventListener('DOMContentLoaded', () => {
-        // Initial check
-        updateNotificationBadge();
-        
-        // Update every 60 seconds
-        setInterval(updateNotificationBadge, 60000);
-        
-        // Make available globally for testing
-        window.updateNotificationBadge = updateNotificationBadge;
-    });
-
-    // Update Translatable Content
-    function updateContent() {
-        document.querySelectorAll('[data-i18n]').forEach(element => {
-            const key = element.getAttribute('data-i18n');
-            const translation = i18next.t(key);
-            if (element.tagName === 'INPUT' && element.type === 'text') {
-                element.placeholder = translation; // Update input placeholders
-            } else {
-                element.innerHTML = translation; // Update other elements
-            }
-        });
-    }
-})();
+    // Initial check
+    updateNotificationBadge();
+    
+    // Update every 60 seconds
+    setInterval(updateNotificationBadge, 60000);
+    
+    // Make available globally for testing
+    window.updateNotificationBadge = updateNotificationBadge;
+});
 </script>
