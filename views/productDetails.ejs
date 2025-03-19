@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- i18next scripts -->
-    <script src="https://unpkg.com/i18next/dist/umd/i18next.min.js"></script>
-    <script src="https://unpkg.com/i18next-http-backend/i18nextHttpBackend.min.js"></script>
-    <script src="https://unpkg.com/i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
-    <!-- Load our i18n configuration -->
     <script src="/js/i18n-config.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Details</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/toast.js" defer></script>
+    <script src="/js/skeleton.js" defer></script>
+    <script src="/js/backToTop.js" defer></script>
+    <script src="/js/lazyLoad.js" defer></script>
     <style>
         
       
@@ -263,6 +263,104 @@ margin-top: 10px;
     margin-bottom: 15px;
     font-weight: normal;
 }
+
+/* Skeleton Loading Styles */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-image {
+    width: 100%;
+    height: 300px;
+    border-radius: 8px;
+}
+
+.skeleton-text {
+    height: 20px;
+    margin: 10px 0;
+    border-radius: 4px;
+}
+
+.skeleton-title {
+    width: 70%;
+    height: 32px;
+}
+
+.skeleton-price {
+    width: 40%;
+}
+
+.skeleton-location {
+    width: 60%;
+}
+
+.skeleton-description {
+    width: 100%;
+    height: 100px;
+}
+
+/* Toast Notification Styles */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.toast {
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    margin-bottom: 10px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+/* Back to Top Button Styles */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #007bff;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.back-to-top:hover {
+    background: #0056b3;
+    transform: translateY(-3px);
+}
     </style>
 </head>
 <body>
@@ -282,19 +380,27 @@ margin-top: 10px;
     <div id="overlay"></div>
 
     <div class="productDetailsContainer">
-        <div class="carousel" id="imageCarousel">
+        <div id="productSkeleton" class="skeleton-container">
+            <div class="skeleton-image skeleton"></div>
+            <div class="skeleton-title skeleton"></div>
+            <div class="skeleton-price skeleton"></div>
+            <div class="skeleton-location skeleton"></div>
+            <div class="skeleton-description skeleton"></div>
+        </div>
+
+        <div class="carousel" id="imageCarousel" style="display: none;">
             <!-- Images will be dynamically loaded -->
             <button class="prev" onclick="prevImage()">❮</button>
             <button class="next" onclick="nextImage()">❯</button>
         </div>
 
-        <h1 id="productTitle">Product Title</h1>
-        <p><strong>Price</strong> <span id="productPrice"></span></p>
-        <p><strong data-i18n="product_details.location">Sted:</strong> <span id="productLocation"></span></p>
-        <p id="productDescription">Product Description</p>
+        <h1 id="productTitle" style="display: none;">Product Title</h1>
+        <p style="display: none;"><strong>Price</strong> <span id="productPrice"></span></p>
+        <p style="display: none;"><strong data-i18n="product_details.location">Location:</strong> <span id="productLocation"></span></p>
+        <p id="productDescription" style="display: none;">Product Description</p>
 
-        <button class="sendMessage" id="contactOwner" data-i18n="product_details.contact_owner">Kontakt eier</button>
-        <button id="favoriteButton" class="sendMessage">Favorite</button>
+        <button class="sendMessage" id="contactOwner" style="display: none;" data-i18n="product_details.contact_owner">Contact owner</button>
+        <button id="favoriteButton" class="sendMessage" style="display: none;">Favorite</button>
     </div>
     <div id="loginModal">
     <h3>You need to log in to favorite this product</h3>
@@ -306,6 +412,11 @@ margin-top: 10px;
 </div>
 <div id="loginOverlay"></div>
 
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
     </div>
 
     <script>
@@ -366,14 +477,27 @@ margin-top: 10px;
                     favoriteButton.textContent = isFavorited ? 'Unfavorite' : 'Favorite';
                     favoriteButton.classList.toggle('unfavorite', isFavorited);
                 })
-                .catch(console.error);
+                .catch(error => {
+                    console.error("Error checking favorites:", error);
+                    window.toast.show('Failed to check favorite status', 'error');
+                });
         }
 
         document.getElementById('favoriteButton').addEventListener('click', () => {
             fetch('/api/auth/current-user')
                 .then(response => response.json())
-                .then(data => data.brukernavn ? toggleFavorite() : showLoginModal())
-                .catch(console.error);
+                .then(data => {
+                    if (data.brukernavn) {
+                        toggleFavorite();
+                    } else {
+                        window.toast.show('Please log in to add favorites', 'info');
+                        showLoginModal();
+                    }
+                })
+                .catch(error => {
+                    console.error("Error checking user session:", error);
+                    window.toast.show('Failed to check login status', 'error');
+                });
         });
 
         function toggleFavorite() {
@@ -390,10 +514,14 @@ margin-top: 10px;
                 const newState = data.message.includes('Added');
                 favoriteButton.textContent = newState ? 'Unfavorite' : 'Favorite';
                 favoriteButton.classList.toggle('unfavorite', newState);
+                window.toast.show(
+                    newState ? 'Product added to favorites' : 'Product removed from favorites',
+                    'success'
+                );
             })
             .catch(error => {
                 console.error("Favorite error:", error);
-                alert(`Failed to toggle favorite. Please try again.`);
+                window.toast.show('Failed to update favorites', 'error');
             });
         }
 
@@ -405,6 +533,14 @@ margin-top: 10px;
         fetch(`/api/products/${productdID}`)
         .then(response => response.json())
         .then(product => {
+            // Hide skeleton and show content
+            document.getElementById('productSkeleton').style.display = 'none';
+            document.getElementById('imageCarousel').style.display = 'block';
+            document.getElementById('productTitle').style.display = 'block';
+            document.querySelectorAll('.productDetailsContainer p').forEach(p => p.style.display = 'block');
+            document.getElementById('contactOwner').style.display = 'inline-block';
+            document.getElementById('favoriteButton').style.display = 'inline-block';
+
             const isJob = product.category === 'Jobb';
             const isCar = product.category === 'Bil';
             const isProperty = product.category === 'Eiendom';
@@ -489,13 +625,13 @@ margin-top: 10px;
             }
             // Handle job details
             else if (isJob) {
-                priceElement.innerHTML = `<strong data-i18n="form.employment_type">Ansettelsesform:</strong> ${product.EmploymentType}`;
+                priceElement.innerHTML = `<strong data-i18n="form.employment_type">Employment Type:</strong> ${product.EmploymentType}`;
 
                 descElement.innerHTML = `
-                    <p><strong data-i18n="form.company_name">Bedrift:</strong> ${product.CompanyName}</p>
-                    <p><strong data-i18n="form.salary">Lønn:</strong> ${product.Salary}</p>
-                    <p><strong data-i18n="form.deadline">Søknadsfrist:</strong> ${product.ApplicationDeadline}</p>
-                    <p><strong data-i18n="form.contact_email">Kontakt-e-post:</strong> ${product.ContactEmail}</p>
+                    <p><strong data-i18n="form.company_name">Company:</strong> ${product.CompanyName}</p>
+                    <p><strong data-i18n="form.salary">Salary:</strong> ${product.Salary}</p>
+                    <p><strong data-i18n="form.deadline">Application Deadline:</strong> ${product.ApplicationDeadline}</p>
+                    <p><strong data-i18n="form.contact_email">Contact Email:</strong> ${product.ContactEmail}</p>
                     ${product.JobDescription}
                 `;
             }
@@ -510,19 +646,32 @@ margin-top: 10px;
                       isCar ? `${product.Location}${product.country ? ', ' + product.country : ''}` 
                       : product.Location;
 
-            // Handle images
+            // Handle images with lazy loading
             const images = product.Images.split(',').filter(img => img.trim());
             const carousel = document.getElementById('imageCarousel');
             carousel.querySelectorAll('img').forEach(img => img.remove());
             
             images.forEach((imgSrc, index) => {
                 const img = document.createElement('img');
-                img.src = `/uploads/${imgSrc.trim()}`;
-                if (index === 0) img.classList.add('active');
+                img.setAttribute('data-src', `/uploads/${imgSrc.trim()}`);
+                if (index === 0) {
+                    img.classList.add('active');
+                    // Load first image immediately
+                    img.src = img.getAttribute('data-src');
+                }
                 carousel.appendChild(img);
             });
 
+            // Initialize lazy loading for carousel images
+            if (window.lazyLoader) {
+                window.lazyLoader.observe();
+            }
+
             updateCarouselButtons(images.length);
+        })
+        .catch(error => {
+            console.error("Error fetching product:", error);
+            window.toast.show('Failed to load product details', 'error');
         });
 
         // ========== CAROUSEL CONTROLS ========== //
@@ -546,18 +695,12 @@ margin-top: 10px;
             images[currentImageIndex].classList.add('active');
         }
 
-        // ========== INITIALIZE PAGE ========== //
-        window.addEventListener('load', () => {
-            initializeFavorites();
-            checkUnreadMessages(); // Assuming this is defined elsewhere
-        });
-
         // ========== MESSAGE SENDING ========== //
-         function sendMessage() {
+        function sendMessage() {
             const messageContent = messageInput.value.trim();
             
             if (!productdID || !messageContent) {
-                alert('Missing required information');
+                window.toast.show('Please enter a message', 'warning');
                 return;
             }
 
@@ -571,15 +714,42 @@ margin-top: 10px;
             })
             .then(response => {
                 if (!response.ok) throw new Error('Failed to send message');
-                alert('Message sent successfully!');
+                window.toast.show('Message sent successfully!', 'success');
                 hideMessageModal();
             })
             .catch(error => {
                 console.error('Message error:', error);
-                alert(error.message);
+                window.toast.show('Failed to send message', 'error');
             });
         }
 
+        // Initialize back to top button
+        const backToTopButton = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopButton.classList.add('visible');
+            } else {
+                backToTopButton.classList.remove('visible');
+            }
+        });
+
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // ========== INITIALIZE PAGE ========== //
+        window.addEventListener('load', () => {
+            initializeFavorites();
+            checkUnreadMessages();
+            
+            // Initialize lazy loading
+            if (window.lazyLoader) {
+                window.lazyLoader.observe();
+            }
+        });
     })();
 </script>
 </body>

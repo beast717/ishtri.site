@@ -1,200 +1,192 @@
 {
-    "navbar": {
-     "notifications": "الإشعارات",
-        "new_ad": "إعلان جديد",
-        "messages": "الرسائل",
-       "log_in": "تسجيل الدخول",
-        "log_out": "تسجيل الخروج",
-       "mine_annonser": "إعلاناتي"
-	
-    },
-    "search": {
-        "placeholder": "بحث..."
-    },
-    "categories": {
-     "torget": "السوق",
-        "bil": "سيارة",
-        "reise": "السفر",
-        "båt": "قارب",	
-        "mc": "دراجة نارية",
-     "pakkereise": "جولة شاملة",
-     "jobb" : "العمل",
-     "eiendom": "الملكية",
-     "ny-brukt elektronikk": "الالكترونيات المستعملة الجديدة"
-
-   },
-    "form": {
-     "product_name": "اسم المنتج",
-        "price": "السعر",
-        "location": "الموقع",
-        "description": "الوصف",
-        "category": "الفئة",
-        "country": "البلد",
-        "city": "المدينة",
-        "select_city": "اختر المدينة",
-        "upload_images": "تحميل الصور",
-        "submit": "إرسال",
-        "lag_nyannonse": "إنشاء إعلان جديد",
-        "velg_kat": "حدد الفئة",
-	"detaljer": "تفاصيل للمنتج",
-	"ingen" : "لا شيء",
-	"velg_fil": "لم يتم تحديد أي ملف",
-        "car_details": "تفاصيل السيارة",
-        "brand": "الماركة",
-        "model": "الموديل",
-        "year": "سنة الصنع",
-        "mileage": "عدد الكيلومترات",
-        "fuel_type": "نوع الوقود",
-        "transmission": "ناقل الحركة",
-        "select_brand": "اختر الماركة",
-        "select_model": "اختر الموديل أولاً",
-        "title": "العنوان",
-        "property_type": "نوع العقار",
-        "velg": "اختر",
-        "job_title": "المسمى الوظيفي",
-        "company_name": "اسم الشركة",
-        "employment_type": "نوع التوظيف",
-        "salary": "نطاق الراتب",
-        "job_description": "الوصف الوظيفي",
-        "deadline": "الموعد النهائي للتقديم",
-        "contact_email": "البريد الإلكتروني للتواصل",
-        "application_link": "رابط التقديم (اختياري)",
-        "salary_placeholder": "مثال: 450,000 - 550,000 في السنة",
-        "job_description_placeholder": "وصف المنصب والمسؤوليات...",
-        "email_placeholder": "applications@company.com",
-        "url_placeholder": "https://"
-    },
-    "product_details": {
-     "price": "السعر",
-        "location": "الموقع",
-        "contact_owner": "اتصل بالمالك",
-       "dato": "تاريخ",
-       "slett": "احذف",
-       "mark_sold": "وضع علامة على أنها بيعت",
-       "mark_unsold": "وضع علامة على أنها غير مباعة"
-	
-	
-
- },
-  "kategori": {
-  "torget": "السوق",
-    "bil": "سيارة",
-    "eiendom": "عقار",
-    "båt": "قارب",
-    "mc": "دراجة نارية"
-},
-  "subkategori": {
-  "klær": "ملابس",
-    "alle": "الجميع",
-    "elektronikk": "إلكترونيات",
-    "hvitvarer": "السلع البيضاء",
-    "møbler": "أثاث",
-    "annet": "آخر"
-},
-  "filter": {
-  "lavest_pris": "أدنى سعر",
-    "høyest_pris": "أعلى سعر",
-    "alle": "الجميع",
-    "nylige": "مؤخرًا",
-    "eldre": "قديم",
-    "filter_land": "بلد التصفية",
-    "sorter_etter": "فرز حسب",
-    "utgitt": "نشرت"
-
-},
-  
-    "logg_inn": {
-     "logg_inn": "تسجيل الدخول",
-        "brukernavn": "اسم المستخدم",
-        "passord": "كلمة المرور",
-        "lag_konto": "إنشاء حساب",
-        "email": "البريد الإلكتروني",
-        "har_allerede_konto_logg_inn": "هل لديك حساب بالفعل؟ تسجيل الدخول",
-        "forgot_password": "نسيت كلمة المرور",
-        "confirm_password": "تأكيد كلمة المرور",
-        "reset_password": "إعادة تعيين كلمة المرور",
-        "back_to_login": "العودة إلى تسجيل الدخول",
-        "reset_your_password": "إعادة تعيين كلمة المرور الخاصة بك",
-        "new_password": "كلمة المرور الجديدة"
-
-},
-
-  "meldinger": {
-  "klikk": "اضغط لعرض الرسائل",
-    "mark_asread": "وضع علامة للقراءة",
-    "svar": "إجابة",
-    "dine_meldinger": "رسائلك"
-	
-    },
-    "flight_search": {
-        "title": "البحث عن رحلات",
-        "from": "من",
-        "to": "إلى",
-        "departure_date": "تاريخ المغادرة",
-        "return_date": "تاريخ العودة",
-        "passengers": "عدد المسافرين",
-        "search": "بحث عن رحلات",
-        "one_way": "ذهاب فقط",
-        "round_trip": "ذهاب وعودة",
-        "trip_type": "نوع الرحلة",
-        "enter_city": "أدخل المدن/المطارات...",
-        "passenger_count": {
-            "one": "مسافر واحد",
-            "two": "مسافران",
-            "three": "3 مسافرين",
-            "four": "4 مسافرين"
+    "translation": {
+        "navbar": {
+            "notifications": "الإشعارات",
+            "new_ad": "إعلان جديد",
+            "messages": "الرسائل",
+            "log_in": "تسجيل الدخول",
+            "log_out": "تسجيل الخروج",
+            "mine_annonser": "إعلاناتي"
+        },
+        "search": {
+            "placeholder": "البحث في المحادثات..."
+        },
+        "categories": {
+            "torget": "السوق",
+            "bil": "سيارة",
+            "reise": "السفر",
+            "båt": "قارب",
+            "mc": "دراجة نارية",
+            "pakkereise": "جولة شاملة",
+            "jobb": "العمل",
+            "eiendom": "الملكية",
+            "ny-brukt elektronikk": "الالكترونيات المستعملة الجديدة"
+        },
+        "form": {
+            "product_name": "اسم المنتج",
+            "price": "السعر",
+            "location": "الموقع",
+            "description": "الوصف",
+            "category": "الفئة",
+            "country": "البلد",
+            "city": "المدينة",
+            "select_city": "اختر المدينة",
+            "upload_images": "تحميل الصور",
+            "submit": "إرسال",
+            "lag_nyannonse": "إنشاء إعلان جديد",
+            "velg_kat": "حدد الفئة",
+            "detaljer": "تفاصيل للمنتج",
+            "ingen": "لا شيء",
+            "velg_fil": "لم يتم تحديد أي ملف",
+            "car_details": "تفاصيل السيارة",
+            "brand": "الماركة",
+            "model": "الموديل",
+            "year": "سنة الصنع",
+            "mileage": "عدد الكيلومترات",
+            "fuel_type": "نوع الوقود",
+            "transmission": "ناقل الحركة",
+            "select_brand": "اختر الماركة",
+            "select_model": "اختر الموديل أولاً",
+            "title": "العنوان",
+            "property_type": "نوع العقار",
+            "velg": "اختر",
+            "job_title": "المسمى الوظيفي",
+            "company_name": "اسم الشركة",
+            "employment_type": "نوع التوظيف",
+            "salary": "نطاق الراتب",
+            "job_description": "الوصف الوظيفي",
+            "deadline": "الموعد النهائي للتقديم",
+            "contact_email": "البريد الإلكتروني للتواصل",
+            "application_link": "رابط التقديم (اختياري)",
+            "salary_placeholder": "مثال: 450,000 - 550,000 في السنة",
+            "job_description_placeholder": "وصف المنصب والمسؤوليات...",
+            "email_placeholder": "applications@company.com",
+            "url_placeholder": "https://"
+        },
+        "product_details": {
+            "price": "السعر",
+            "location": "الموقع",
+            "contact_owner": "اتصل بالمالك",
+            "dato": "تاريخ",
+            "slett": "احذف",
+            "mark_sold": "وضع علامة على أنها بيعت",
+            "mark_unsold": "وضع علامة على أنها غير مباعة"
+        },
+        "kategori": {
+            "torget": "السوق",
+            "bil": "سيارة",
+            "eiendom": "عقار",
+            "båt": "قارب",
+            "mc": "دراجة نارية"
+        },
+        "subkategori": {
+            "klær": "ملابس",
+            "alle": "الجميع",
+            "elektronikk": "إلكترونيات",
+            "hvitvarer": "السلع البيضاء",
+            "møbler": "أثاث",
+            "annet": "آخر"
+        },
+        "filter": {
+            "lavest_pris": "أدنى سعر",
+            "høyest_pris": "أعلى سعر",
+            "alle": "الجميع",
+            "nylige": "مؤخرًا",
+            "eldre": "قديم",
+            "filter_land": "بلد التصفية",
+            "sorter_etter": "فرز حسب",
+            "utgitt": "نشرت"
+        },
+        "logg_inn": {
+            "logg_inn": "تسجيل الدخول",
+            "brukernavn": "اسم المستخدم",
+            "passord": "كلمة المرور",
+            "lag_konto": "إنشاء حساب",
+            "email": "البريد الإلكتروني",
+            "har_allerede_konto_logg_inn": "هل لديك حساب بالفعل؟ تسجيل الدخول",
+            "forgot_password": "نسيت كلمة المرور",
+            "confirm_password": "تأكيد كلمة المرور",
+            "reset_password": "إعادة تعيين كلمة المرور",
+            "back_to_login": "العودة إلى تسجيل الدخول",
+            "reset_your_password": "إعادة تعيين كلمة المرور الخاصة بك",
+            "new_password": "كلمة المرور الجديدة"
+        },
+        "meldinger": {
+            "klikk": "اضغط لعرض الرسائل",
+            "mark_asread": "وضع علامة للقراءة",
+            "svar": "إجابة",
+            "dine_meldinger": "رسائلك",
+            "unread_count": "{{count}} رسالة غير مقروءة"
+        },
+        "flight_search": {
+            "title": "البحث عن رحلات",
+            "from": "من",
+            "to": "إلى",
+            "departure_date": "تاريخ المغادرة",
+            "return_date": "تاريخ العودة",
+            "passengers": "عدد المسافرين",
+            "search": "بحث عن رحلات",
+            "one_way": "ذهاب فقط",
+            "round_trip": "ذهاب وعودة",
+            "trip_type": "نوع الرحلة",
+            "enter_city": "أدخل المدن/المطارات...",
+            "passenger_count": {
+                "one": "مسافر واحد",
+                "two": "مسافران",
+                "three": "3 مسافرين",
+                "four": "4 مسافرين"
+            }
+        },
+        "fuel": {
+            "petrol": "بنزين",
+            "diesel": "ديزل",
+            "electric": "كهربائي",
+            "hybrid": "هجين"
+        },
+        "transmission": {
+            "manual": "يدوي",
+            "automatic": "أوتوماتيك"
+        },
+        "employment": {
+            "full_time": "دوام كامل",
+            "part_time": "دوام جزئي",
+            "contract": "عقد",
+            "temporary": "مؤقت",
+            "internship": "تدريب"
+        },
+        "property": {
+            "house": "منزل",
+            "apartment": "شقة",
+            "commercial": "عقار تجاري",
+            "vacation": "منزل عطلات",
+            "land": "قطعة أرض",
+            "details": "تفاصيل العقار",
+            "size": "المساحة (م²)",
+            "rooms": "عدد غرف النوم",
+            "bathrooms": "عدد الحمامات",
+            "year_built": "سنة البناء",
+            "energy_class": "فئة الطاقة"
+        },
+        "amenities": {
+            "balcony": "شرفة",
+            "fireplace": "مدفأة",
+            "parking": "موقف سيارات",
+            "elevator": "مصعد",
+            "smarthome": "منزل ذكي",
+            "title": "المرافق"
+        },
+        "notifications": {
+            "no_notifications": "لا توجد إشعارات حتى الآن",
+            "mark_as_read": "تحديد كمقروء",
+            "new_message": "رسالة جديدة من {{user}}",
+            "new_offer": "عرض جديد على إعلانك: {{title}}",
+            "price_update": "تم تحديث السعر لـ {{title}}",
+            "listing_sold": "تم تحديد إعلانك {{title}} كمباع",
+            "listing_expired": "انتهت صلاحية إعلانك {{title}}",
+            "message_sent": "تم إرسال الرسالة بنجاح",
+            "message_received": "لقد تلقيت رسالة جديدة",
+            "offer_accepted": "تم قبول عرضك",
+            "offer_rejected": "تم رفض عرضك"
         }
-    },
-    "fuel": {
-        "petrol": "بنزين",
-        "diesel": "ديزل",
-        "electric": "كهربائي",
-        "hybrid": "هجين"
-    },
-    "transmission": {
-        "manual": "يدوي",
-        "automatic": "أوتوماتيك"
-    },
-    "employment": {
-        "full_time": "دوام كامل",
-        "part_time": "دوام جزئي",
-        "contract": "عقد",
-        "temporary": "مؤقت",
-        "internship": "تدريب"
-    },
-    "property": {
-        "house": "منزل",
-        "apartment": "شقة",
-        "commercial": "عقار تجاري",
-        "vacation": "منزل عطلات",
-        "land": "قطعة أرض",
-        "details": "تفاصيل العقار",
-        "size": "المساحة (م²)",
-        "rooms": "عدد غرف النوم",
-        "bathrooms": "عدد الحمامات",
-        "year_built": "سنة البناء",
-        "energy_class": "فئة الطاقة"
-    },
-    "amenities": {
-        "balcony": "شرفة",
-        "fireplace": "مدفأة",
-        "parking": "موقف سيارات",
-        "elevator": "مصعد",
-        "smarthome": "منزل ذكي",
-        "title": "المرافق"
-    },
-    "notifications": {
-        "no_notifications": "لا توجد إشعارات حتى الآن",
-        "mark_as_read": "تحديد كمقروء",
-        "new_message": "رسالة جديدة من {{user}}",
-        "new_offer": "عرض جديد على إعلانك: {{title}}",
-        "price_update": "تم تحديث السعر لـ {{title}}",
-        "listing_sold": "تم تحديد إعلانك {{title}} كمباع",
-        "listing_expired": "انتهت صلاحية إعلانك {{title}}",
-        "message_sent": "تم إرسال الرسالة بنجاح",
-        "message_received": "لقد تلقيت رسالة جديدة",
-        "offer_accepted": "تم قبول عرضك",
-        "offer_rejected": "تم رفض عرضك"
     }
 }
-

@@ -18,8 +18,33 @@ router.post('/signup', async (req, res, next) => {
     try {
         const { brukernavn, email, passord, confirmPassword } = req.body;
         
+        // Validate input
+        if (!brukernavn || !email || !passord || !confirmPassword) {
+            return res.status(400).json({ message: 'All fields are required' });
+        }
+
         if (passord !== confirmPassword) {
-            throw new Error('Passwords do not match');
+            return res.status(400).json({ message: 'Passwords do not match' });
+        }
+
+        // Check if username already exists
+        const [existingUser] = await pool.promise().query(
+            'SELECT * FROM brukere WHERE brukernavn = ?',
+            [brukernavn]
+        );
+
+        if (existingUser.length > 0) {
+            return res.status(400).json({ message: 'Username already exists' });
+        }
+
+        // Check if email already exists
+        const [existingEmail] = await pool.promise().query(
+            'SELECT * FROM brukere WHERE email = ?',
+            [email]
+        );
+
+        if (existingEmail.length > 0) {
+            return res.status(400).json({ message: 'Email already registered' });
         }
 
         const hashedPassword = await bcrypt.hash(passord, 10);
@@ -29,7 +54,7 @@ router.post('/signup', async (req, res, next) => {
             [brukernavn, email, hashedPassword]
         );
         
-        res.redirect('/login');
+        res.status(201).json({ message: 'Account created successfully' });
     } catch (err) {
         next(err);
     }
@@ -39,20 +64,40 @@ router.post('/signup', async (req, res, next) => {
 router.post('/login', async (req, res, next) => {
     try {
         const { brukernavn, passord } = req.body;
+
+        // Validate input
+        if (!brukernavn || !passord) {
+            return res.status(400).json({ message: 'Username and password are required' });
+        }
+
         const [results] = await pool.promise().query(
             'SELECT * FROM brukere WHERE brukernavn = ?',
             [brukernavn]
         );
 
-        if (!results.length) throw new Error('Invalid credentials');
+        if (!results.length) {
+            return res.status(401).json({ message: 'Invalid username or password' });
+        }
         
         const user = results[0];
         const validPassword = await bcrypt.compare(passord, user.passord);
         
-        if (!validPassword) throw new Error('Invalid credentials');
+        if (!validPassword) {
+            return res.status(401).json({ message: 'Invalid username or password' });
+        }
 
+        // Store complete user object in session
+        req.session.user = {
+            brukerId: user.brukerId,
+            brukernavn: user.brukernavn,
+            email: user.email,
+            profilepic: user.profilepic
+        };
+        
+        // Also store brukerId directly in session for backward compatibility
         req.session.brukerId = user.brukerId;
         req.session.brukernavn = user.brukernavn;
+        
         res.json({ message: 'Login successful' });
     } catch (err) {
         next(err);

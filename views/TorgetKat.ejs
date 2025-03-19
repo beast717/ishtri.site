@@ -1,13 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="https://unpkg.com/i18next/dist/umd/i18next.min.js"></script>
-    <script src="https://unpkg.com/i18next-http-backend/i18nextHttpBackend.min.js"></script>
-    <script src="https://unpkg.com/i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Universe of Products</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/toast.js" defer></script>
+    <script src="/js/skeleton.js" defer></script>
+    <script src="/js/backToTop.js" defer></script>
+    <script src="/js/lazyLoad.js" defer></script>
+    
     <style>   
 
 h1 {
@@ -73,10 +76,20 @@ h1 {
     transition: color 0.3s ease, transform 0.2s ease;
     font-size: 1.2em;
     margin-left: 10px;
+    background: none;
+    border: none;
+    padding: 0;
+    outline: none;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .favorite-icon:hover {
     transform: scale(1.1);
+}
+
+.favorite-icon:focus {
+    outline: none;
+    box-shadow: none;
 }
 
 .favorite-icon.favorited {
@@ -348,6 +361,98 @@ select[multiple] option:checked {
     margin-bottom: 10px;
 }
 
+/* Skeleton Loading Styles */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-image {
+    width: 300px;
+    height: 200px;
+    border-radius: 5px;
+}
+
+.skeleton-text {
+    height: 20px;
+    margin: 10px 0;
+    border-radius: 4px;
+}
+
+.skeleton-title {
+    width: 70%;
+}
+
+.skeleton-price {
+    width: 40%;
+}
+
+.skeleton-location {
+    width: 60%;
+}
+
+/* Toast Notification Styles */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.toast {
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    margin-bottom: 10px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+/* Back to Top Button Styles */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #007bff;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.back-to-top:hover {
+    background: #0056b3;
+    transform: translateY(-3px);
+}
+
         
     </style>
 </head>
@@ -356,27 +461,27 @@ select[multiple] option:checked {
     <script src="/shared.js"></script>
 
     <div class="filter-container" style="margin-bottom: 20px;">
-        <label for="priceFilter" data-i18n="filter.sorter_etter">Sorter etter:</label>
+        <label for="priceFilter" data-i18n="filter.sorter_etter">Sort By:</label>
         <select id="priceFilter" onchange="applyFilters()">
-            <option value="asc" data-i18n="filter.lavest_pris">Lavest Pris</option>
-            <option value="desc" data-i18n="filter.høyest_pris">Høyest Pris</option>
-            <option value="" data-i18n="filter.alle">alle</option>
+            <option value="asc" data-i18n="filter.lavest_pris">Lowest Price</option>
+            <option value="desc" data-i18n="filter.høyest_pris">Highest Price</option>
+            <option value="" data-i18n="filter.alle">All</option>
         </select>
-        <label for="dateFilter" data-i18n="filter.utgitt">Utgitt:</label>
+        <label for="dateFilter" data-i18n="filter.utgitt">Date:</label>
         <select id="dateFilter" onchange="applyFilters()">
-            <option value="" data-i18n="filter.alle">alle</option>
-            <option value="desc" data-i18n="filter.nylige">Nylige</option>
-            <option value="asc" data-i18n="filter.eldre">Eldre</option>
+            <option value="" data-i18n="filter.alle">All</option>
+            <option value="desc" data-i18n="filter.nylige">New</option>
+            <option value="asc" data-i18n="filter.eldre">Old</option>
         </select>
         <div id="subcategoryFilterContainer" style="display: none;">
-            <label for="subCategoryFilter" data-i18n="form.category">Kategori:</label>
+            <label for="subCategoryFilter" data-i18n="form.category">Categori:</label>
             <select id="subCategoryFilter" onchange="applyFilters()">
-                <option value="" data-i18n="filter.alle">Alle</option>
-                <option value="Klær" data-i18n="subkategori.klær">Klær</option>
-                <option value="Elektronikk" data-i18n="subkategori.elektronikk">Elektronikk</option>
-                <option value="Hvitvarer" data-i18n="subkategori.hvitvarer">Hvitvarer</option>
-                <option value="Møbler" data-i18n="subkategori.møbler">Møbler</option>
-                <option value="Annet" data-i18n="subkategori.annet">Annet</option>
+                <option value="" data-i18n="filter.alle">All</option>
+                <option value="Klær" data-i18n="subkategori.klær">Clothes</option>
+                <option value="Elektronikk" data-i18n="subkategori.elektronikk">Electronics</option>
+                <option value="Hvitvarer" data-i18n="subkategori.hvitvarer">White Goods</option>
+                <option value="Møbler" data-i18n="subkategori.møbler">Furniture</option>
+                <option value="Annet" data-i18n="subkategori.annet">Else</option>
             </select>
         </div> 
     </div>  
@@ -393,7 +498,7 @@ select[multiple] option:checked {
                 <!-- Countries will be populated here -->
             </ul>
     
-            <h3 id="filterCar">Filter Car</h3>
+            <h3 id="filterCar">Filter by Car</h3>
             <ul class="car-brand-list" id="carBrandList">
                 <!-- Car brands will be populated here -->
             </ul>
@@ -402,31 +507,31 @@ select[multiple] option:checked {
             <div id="carSpecificFilters" style="display: none;">
                 <!-- Year Range Filter -->
                 <div class="filter-section">
-                    <h4>Year Range</h4>
+                    <h4 data-i18n="filter.year_range">Year Range</h4>
                     <div class="range-inputs">
-                        <input type="number" id="yearFrom" placeholder="From" min="1900" max="2024">
-                        <input type="number" id="yearTo" placeholder="To" min="1900" max="2024">
+                        <input type="number" id="yearFrom" data-i18n="[placeholder]filter.from" placeholder="From" min="1900" max="2024">
+                        <input type="number" id="yearTo" data-i18n="[placeholder]filter.to" placeholder="To" min="1900" max="2024">
                     </div>
                 </div>
 
                 <!-- Mileage Range Filter -->
                 <div class="filter-section">
-                    <h4>Mileage (km)</h4>
+                    <h4 data-i18n="filter.mileage_range">Mileage (km)</h4>
                     <div class="range-inputs">
-                        <input type="number" id="mileageFrom" placeholder="From" min="0">
-                        <input type="number" id="mileageTo" placeholder="To">
+                        <input type="number" id="mileageFrom" data-i18n="[placeholder]filter.from" placeholder="From" min="0">
+                        <input type="number" id="mileageTo" data-i18n="[placeholder]filter.to" placeholder="To">
                     </div>
                 </div>
 
                 <!-- Fuel Type Filter -->
                 <div class="filter-section">
-                    <h4>Fuel Type</h4>
+                    <h4 data-i18n="filter.fuel_type">Fuel Type</h4>
                     <select id="fuelTypeFilter" multiple>
-                        <option value="Bensin">Bensin</option>
-                        <option value="Diesel">Diesel</option>
-                        <option value="Hybrid">Hybrid</option>
-                        <option value="Electric">Electric</option>
-                        <option value="Other">Other</option>
+                        <option value="Petrol" data-i18n="fuel.petrol">Petrol</option>
+                        <option value="Diesel" data-i18n="fuel.diesel">Diesel</option>
+                        <option value="Hybrid" data-i18n="fuel.hybrid">Hybrid</option>
+                        <option value="Electric" data-i18n="fuel.electric">Electric</option>
+                        <option value="Other" data-i18n="filter.other">Other</option>
                     </select>
                 </div>
 
@@ -530,7 +635,7 @@ select[multiple] option:checked {
         </div>
 
         <div class="productsContainer" id="productsContainer">
-            <p>Loading products...</p>
+            <!-- Skeleton loading will be shown here -->
         </div>
     </div>
 
@@ -539,9 +644,83 @@ select[multiple] option:checked {
     <div class="loading-spinner"></div>
 </div>
 
+    <div class="toast-container" id="toastContainer"></div>
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
     <script>
     document.addEventListener('DOMContentLoaded', () => {
         console.log("Initializing TorgetKat page...");
+        
+        // Function to update all translatable content
+        function updatePageContent() {
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (!key) return;
+
+                try {
+                    const translation = i18next.t(key);
+                    if (element.tagName === 'INPUT') {
+                        if (element.type === 'text' || element.type === 'placeholder') {
+                            element.placeholder = translation;
+                        }
+                    } else if (element.tagName === 'OPTION') {
+                        element.textContent = translation;
+                    } else {
+                        element.textContent = translation;
+                    }
+                } catch (err) {
+                    console.warn(`Translation error for key "${key}":`, err);
+                }
+            });
+        }
+
+        // Initialize translations
+        if (window.i18nextInitialized) {
+            console.log("i18next already initialized, updating content...");
+            updatePageContent();
+            fetchProducts();
+            initializeFavorites();
+        } else {
+            console.log("Waiting for i18next initialization...");
+            window.addEventListener('i18nextInitialized', () => {
+                console.log("i18next initialized, updating content...");
+                updatePageContent();
+                fetchProducts();
+                initializeFavorites();
+            });
+        }
+
+        // Listen for language changes
+        window.addEventListener('languageChanged', () => {
+            console.log("Language changed, updating content...");
+            updatePageContent();
+        });
+
+        // Add debouncing utility
+        const debounce = (func, wait) => {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        };
+
+        // Debounced version of applyFilters
+        const debouncedApplyFilters = debounce(applyFilters, 300);
+
+        // Add event listeners to all filter inputs
+        const filterInputs = document.querySelectorAll('input[type="number"], input[type="date"], select');
+        filterInputs.forEach(input => {
+            input.addEventListener('input', debouncedApplyFilters);
+            input.addEventListener('change', debouncedApplyFilters);
+        });
+
         let filterTimeout;
         const DEBOUNCE_DELAY = 300; // ms
 
@@ -573,21 +752,65 @@ select[multiple] option:checked {
             applicationDeadline: null
         };
 
+        // Store event listeners for cleanup
+        const eventListeners = new Set();
+
+        // Function to safely add event listeners
+        const addSafeEventListener = (element, event, handler) => {
+            element.addEventListener(event, handler);
+            eventListeners.add({ element, event, handler });
+        };
+
+        // Cleanup function
+        function cleanup() {
+            // Remove all stored event listeners
+            eventListeners.forEach(({ element, event, handler }) => {
+                element.removeEventListener(event, handler);
+            });
+            eventListeners.clear();
+
+            // Cleanup lazy loader
+            if (window.lazyLoader && window.lazyLoader.observer) {
+                window.lazyLoader.observer.disconnect();
+            }
+
+            // Cleanup skeleton loader
+            if (window.skeletonLoader) {
+                window.skeletonLoader = null;
+            }
+
+            // Cleanup toast container
+            const toastContainer = document.getElementById('toast-container');
+            if (toastContainer) {
+                toastContainer.innerHTML = '';
+            }
+        }
+
+        // Add cleanup on page unload
+        window.addEventListener('beforeunload', cleanup);
+
+        // Update existing event listeners to use safe version
+        const backToTopButton = document.getElementById('backToTop');
+        if (backToTopButton) {
+            const handleScroll = () => {
+                if (window.scrollY > 300) {
+                    backToTopButton.classList.add('visible');
+                } else {
+                    backToTopButton.classList.remove('visible');
+                }
+            };
+            addSafeEventListener(window, 'scroll', handleScroll);
+            addSafeEventListener(backToTopButton, 'click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+        }
+
         // Initialize filters and UI once
         initializeFilters();
         handleCategoryVisibility();
-
-        // Wait for i18next to be ready before loading products
-        i18next.on('initialized', () => {
-            console.log("i18next initialized, loading products...");
-            fetchProducts();
-            initializeFavorites();
-        });
-
-        // Remove the window.onload event handler since we're using DOMContentLoaded
-        // This prevents duplicate initialization
-        
-        window.onload = null;
 
         function showLoading() {
             document.getElementById('loadingOverlay').style.display = 'flex';
@@ -623,51 +846,72 @@ select[multiple] option:checked {
 
             const div = document.createElement('div');
             div.className = 'product';
+            div.setAttribute('role', 'article');
+            div.setAttribute('aria-label', isJob ? product.JobTitle : 
+                isCar ? `${product.brand_name} ${product.model_name}` : 
+                product.ProductName);
+            div.setAttribute('tabindex', '0');
 
             // Handle images
             const images = product.Images ? product.Images.split(',') : [];
             const firstImage = images.length > 0 ? images[0].trim() : null;
-            const imageUrl = firstImage ? `/uploads/${firstImage}` : '/uploads/default-placeholder.png';
+            const imageUrl = firstImage ? `/uploads/${firstImage}` : '/images/default-product.png';
 
             div.innerHTML = `
-                <img src="${imageUrl}" alt="${isJob ? product.JobTitle : 
-                    isCar ? `${product.brand_name} ${product.model_name}` : 
-                    product.ProductName}">
+                <img src="${imageUrl}" 
+                     alt="${isJob ? product.JobTitle : 
+                        isCar ? `${product.brand_name} ${product.model_name}` : 
+                        product.ProductName}" 
+                     class="product-image" 
+                     onerror="this.src='/images/default-product.png'"
+                     loading="lazy"
+                     aria-hidden="true">
                 <div>
                     <h3>
                         ${isJob ? product.JobTitle || 'No title' : 
                         isCar ? 
                             `${product.brand_name || 'Unknown brand'} ${product.model_name || ''}`.trim() : 
                             product.ProductName || 'Unnamed product'}
-                        ${product.Sold ? `<span class="sold-label">(Sold)</span>` : ''}
-                        <i class="favorite-icon fas fa-heart" data-product-id="${product.ProductdID}"></i>
+                        ${product.Sold ? `<span class="sold-label" data-i18n="product_details.sold">(Sold)</span>` : ''}
+                        <button class="favorite-icon fas fa-heart" 
+                                data-product-id="${product.ProductdID}"
+                                aria-label="${product.isFavorited ? 'Remove from favorites' : 'Add to favorites'}"
+                                aria-pressed="${product.isFavorited ? 'true' : 'false'}">
+                        </button>
                     </h3>
                     ${isCar ? `<p class="custom-title">${product.ProductName}</p>` : ''}
                     ${isJob ? `
-                        <p><strong>Bedrift:</strong> ${product.CompanyName || 'Not specified'}</p>
-                        <p><strong>Ansettelsesform:</strong> ${product.EmploymentType || 'Not specified'}</p>
+                        <p><strong data-i18n="form.company_name">Company:</strong> ${product.CompanyName || 'Not specified'}</p>
+                        <p><strong data-i18n="form.employment_type">Employment Type:</strong> ${product.EmploymentType || 'Not specified'}</p>
                     ` : ''}
                     ${isCar ? `
-                        <p><strong>Årsmodell:</strong> ${product.Year || 'N/A'}</p>
-                        <p><strong>Kilometer:</strong> ${product.Mileage ? `${product.Mileage} km` : 'N/A'}</p>
-                        <p><strong>Drivstoff:</strong> ${product.FuelType || 'Not specified'}</p>
+                        <p><strong data-i18n="form.year">Year:</strong> ${product.Year || 'N/A'}</p>
+                        <p><strong data-i18n="form.mileage">Mileage:</strong> ${product.Mileage ? `${product.Mileage} km` : 'N/A'}</p>
+                        <p><strong data-i18n="form.fuel_type">Fuel Type:</strong> ${product.FuelType || 'Not specified'}</p>
                     ` : ''}
                     ${isProperty ? `
-                        <p><strong>Pris:</strong> ${product.Price ? `${product.Price.toLocaleString('no-NO')} kr` : 'Pris på forespørsel'}</p>
-                        <p><strong>Type:</strong> ${product.PropertyType}</p>
-                        <p><strong>Størrelse:</strong> ${product.SizeSqm} m²</p>
+                        <p><strong data-i18n="form.price">Price:</strong> ${product.Price ? `${product.Price.toLocaleString('no-NO')} kr` : i18next.t('form.price_on_request')}</p>
+                        <p><strong data-i18n="form.property_type">Type:</strong> ${product.PropertyType}</p>
+                        <p><strong data-i18n="property.size">Size:</strong> ${product.SizeSqm} m²</p>
                     ` : ''}
-                    <p><strong>Sted:</strong> ${ 
-                        (product.cityName || product.Location || 'Not specified') + 
+                    <p><strong data-i18n="form.location">Location:</strong> ${ 
+                        (product.cityName || product.Location || i18next.t('form.not_specified')) + 
                         (product.country ? `, ${product.country}` : '')
                     }</p>
-                    ${!isJob && !isCar && !isProperty ? `<p><strong>Pris:</strong> ${product.Price ? `${product.Price} kr` : 'Contact for price'}</p>` : ''}
+                    ${!isJob && !isCar && !isProperty ? `<p><strong data-i18n="form.price">Price:</strong> ${product.Price ? `${product.Price.toLocaleString('no-NO')} kr` : i18next.t('form.contact_for_price')}</p>` : ''}
                 </div>
             `;
 
+            // Add keyboard navigation
+            div.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    window.location.href = `/productDetails?productdID=${product.ProductdID}`;
+                }
+            });
+
             // Add click event for the entire product
             div.addEventListener('click', (e) => {
-                // Don't navigate if clicking the favorite icon
                 if (!e.target.classList.contains('favorite-icon')) {
                     window.location.href = `/productDetails?productdID=${product.ProductdID}`;
                 }
@@ -676,29 +920,35 @@ select[multiple] option:checked {
             // Add click event for the favorite icon
             const favoriteIcon = div.querySelector('.favorite-icon');
             if (favoriteIcon) {
-                favoriteIcon.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent product click event
+                favoriteIcon.addEventListener('click', async (e) => {
+                    e.stopPropagation();
                     const productdID = e.target.getAttribute('data-product-id');
                     const isFavorited = e.target.classList.contains('favorited');
 
-                    fetch('/api/favorites', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ productdID }),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (isFavorited) {
-                            e.target.classList.remove('favorited');
-                            e.target.style.color = '#ccc';
+                    try {
+                        const response = await fetch('/api/favorites', {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ productdID }),
+                        });
+
+                        if (response.ok) {
+                            e.target.classList.toggle('favorited');
+                            e.target.style.color = isFavorited ? '#ccc' : '#ff4757';
+                            window.toast.show(
+                                isFavorited ? 'Product removed from favorites' : 'Product added to favorites',
+                                'success'
+                            );
                         } else {
-                            e.target.classList.add('favorited');
-                            e.target.style.color = '#ff4757';
+                            window.toast.show('Failed to update favorites', 'error');
                         }
-                    })
-                    .catch(error => console.error("Error toggling favorite:", error));
+                    } catch (error) {
+                        console.error("Error handling favorite:", error);
+                        window.toast.show('An error occurred', 'error');
+                    }
                 });
             }
 
@@ -711,13 +961,16 @@ select[multiple] option:checked {
             showLoading();
             isLoading = true;
 
+            if (!loadMore) {
+                showSkeletonLoading();
+            }
+
             const offset = (currentPage - 1) * limit;
             const urlParams = new URLSearchParams(window.location.search);
             const category = urlParams.get('category') || 'default';
 
             // Build API URL with current filters
             let apiUrl = `/api/products?category=${category}&limit=${limit}&offset=${offset}`;
-                    // Add cache busting
             if (cacheBuster) {
                 apiUrl += `&_=${cacheBuster}`;
             }
@@ -808,12 +1061,22 @@ select[multiple] option:checked {
             }
 
             fetch(apiUrl)
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     hasMore = (currentPage * limit) < data.total;
                     displayProducts(data.products, loadMore);
                     currentPage++;
                     isLoading = false;
+
+                    // Initialize lazy loading for new images
+                    if (window.lazyLoader) {
+                        window.lazyLoader.observe();
+                    }
 
                     // Update load more button
                     if (loadButton) {
@@ -823,7 +1086,6 @@ select[multiple] option:checked {
                     } else if (hasMore) {
                         addLoadMoreButton();
                     }
-                     hideLoading();
                 })
                 .catch(error => {
                     console.error("Error fetching products:", error);
@@ -832,14 +1094,13 @@ select[multiple] option:checked {
                     container.innerHTML = `
                         <div class="error-message">
                             <p>Error loading products. Please try again.</p>
-                            <button onclick="fetchProducts()">Retry</button>
+                            <button onclick="fetchProducts()" class="retry-button">Retry</button>
                         </div>
                     `;
+                    window.toast.show('Error loading products. Please try again.', 'error');
+                })
+                .finally(() => {
                     hideLoading();
-                    if (loadButton) {
-                        loadButton.disabled = false;
-                        loadButton.textContent = 'Load More';
-                    }
                 });
         }
 
@@ -1249,6 +1510,39 @@ select[multiple] option:checked {
                 })
                 .catch(error => console.error("Error checking favorites:", error));
         }
+
+        function showSkeletonLoading() {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = '';
+            for (let i = 0; i < 8; i++) {
+                const skeleton = document.createElement('div');
+                skeleton.className = 'product skeleton';
+                skeleton.innerHTML = `
+                    <div class="skeleton-image skeleton"></div>
+                    <div>
+                        <div class="skeleton-text skeleton-title skeleton"></div>
+                        <div class="skeleton-text skeleton-price skeleton"></div>
+                        <div class="skeleton-text skeleton-location skeleton"></div>
+                    </div>
+                `;
+                container.appendChild(skeleton);
+            }
+        }
+
+        window.onload = function () {
+            fetchProducts();
+            checkUnreadMessages();
+            initializeFilters();
+            initializeFavorites();
+            applyFilters();
+            handleCategoryVisibility();
+            checkUnreadMessages();
+            
+            // Initialize lazy loading
+            if (window.lazyLoader) {
+                window.lazyLoader.observe();
+            }
+        };
     });
 </script>
 </body>

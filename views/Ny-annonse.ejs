@@ -1,16 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- i18next scripts -->
-    <script src="https://unpkg.com/i18next/dist/umd/i18next.min.js"></script>
-    <script src="https://unpkg.com/i18next-http-backend/i18nextHttpBackend.min.js"></script>
-    <script src="https://unpkg.com/i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
-    <!-- Load our i18n configuration -->
-    <script src="/js/i18n-config.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>New ad</title>
+    <title data-i18n="form.lag_nyannonse">New ad</title>
     <style>
 /* Container for the entire page content */
 .page-container {
@@ -207,27 +201,27 @@ padding: 20px;
     <div class="page-container">
         <!-- Heading -->
         <div class="overskrift">
-            <h1 data-i18n="form.lag_nyannonse">Lag ny annonse</h1>
-            <h2 data-i18n="form.velg_kat">Velg kategori</h2>
+            <h1 data-i18n="form.lag_nyannonse">List a new ad</h1>
+            <h2 data-i18n="form.velg_kat">Set category</h2>
         </div>
 
         <!-- Category Selection -->
         <div class="kategorierContainer">
             <div class="kategori" onclick="setCategory('Torget')">
                 <i class="fas fa-chair"></i>
-                <span data-i18n="kategori.torget">Torget</span>
+                <span data-i18n="kategori.torget">Marked</span>
             </div>
             <div class="kategori" onclick="setCategory('Bil')">
                 <i class="fas fa-car"></i>
-                <span data-i18n="kategori.bil">Bil</span>
+                <span data-i18n="kategori.bil">Car</span>
             </div>
             <div class="kategori" onclick="setCategory('Eiendom')">
                 <i class="fas fa-home"></i>
-                <span data-i18n="kategori.eiendom">Eiendom</span>
+                <span data-i18n="kategori.eiendom">Property</span>
             </div>
             <div class="kategori" onclick="setCategory('Båt')">
                 <i class="fas fa-ship"></i>
-                <span data-i18n="kategori.båt">Båt</span>
+                <span data-i18n="kategori.båt">Boat</span>
             </div>
             <div class="kategori" onclick="setCategory('MC')">
                 <i class="fas fa-motorcycle"></i>
@@ -235,13 +229,13 @@ padding: 20px;
             </div>
             <div class="kategori" onclick="setCategory('Jobb')">
                 <i class="fas fa-briefcase"></i>
-                <span data-i18n="categories.jobb">Jobb</span>
+                <span data-i18n="categories.jobb">Job</span>
             </div>
         </div>
 
         <!-- Form Container -->
         <div class="formContainer" id="productFormContainer">
-            <h3 data-i18n="form.detaljer">Detaljer for produktet</h3>
+            <h3 data-i18n="form.detaljer">Details for the product</h3>
                 <form id="productForm" action="/api/products" method="POST" enctype="multipart/form-data" novalidate>
 
                 <div id="productFields" style="display: none;">
@@ -454,112 +448,163 @@ padding: 20px;
     </div>
 
     <script>
+        // Initialize translations and page content
+        function initializePage() {
+            // Wait for i18next to be ready
+            if (!i18next.isInitialized) {
+                i18next.on('initialized', function() {
+                    updateContent();
+                    loadCountries();
+                    loadCarBrands();
+                });
+                return;
+            }
+
+            // Update all translatable elements
+            updateContent();
+            
+            // Load countries and car brands
+            loadCountries();
+            loadCarBrands();
+        }
+
+        // Function to handle page initialization
+        function handlePageInit() {
+            if (window.i18nextInitialized) {
+                initializePage();
+            } else {
+                window.addEventListener('i18nextInitialized', initializePage);
+            }
+        }
+
+        // Listen for various events that might trigger initialization
+        document.addEventListener('DOMContentLoaded', handlePageInit);
+        window.addEventListener('load', handlePageInit);
+        window.addEventListener('pageshow', handlePageInit);
+        window.addEventListener('languageChanged', initializePage);
+
+        // Also initialize immediately if i18next is already initialized
+        if (window.i18nextInitialized) {
+            handlePageInit();
+        }
+
         let selectedCategory = '';
 
         function setCategory(category) {
-    selectedCategory = category;
-    document.getElementById('Category').value = category;
+            selectedCategory = category;
+            document.getElementById('Category').value = category;
 
-    // Get all sections and the form container
-    const sections = {
-        product: document.getElementById('productFields'),
-        job: document.getElementById('jobFields'),
-        property: document.getElementById('propertyFields'),
-        car: document.getElementById('carFields'),
-        formContainer: document.getElementById('productFormContainer')
-    };
+            // Get all sections and the form container
+            const sections = {
+                product: document.getElementById('productFields'),
+                job: document.getElementById('jobFields'),
+                property: document.getElementById('propertyFields'),
+                car: document.getElementById('carFields'),
+                formContainer: document.getElementById('productFormContainer')
+            };
 
-    // Hide all sections first
-    Object.values(sections).forEach(section => {
-        if (section) section.classList.remove('active');
-    });
-
-    // Show form container
-    sections.formContainer.classList.add('active');
-
-    // Clear all required attributes first
-    const allRequired = document.querySelectorAll('[required]');
-    allRequired.forEach(field => field.removeAttribute('required'));
-
-    // Show and handle specific category
-    switch(category) {
-        case 'Torget':
-            sections.product.classList.add('active');
-            ['ProductName', 'Price', 'Location', 'Description'].forEach(field => {
-                document.getElementById(field)?.setAttribute('required', 'true');
-            });
-            break;
-
-        case 'Jobb':
-            sections.job.classList.add('active');
-            ['JobTitle', 'CompanyName', 'EmploymentType', 'ApplicationDeadline'].forEach(field => {
-                document.getElementById(field)?.setAttribute('required', 'true');
-            });
-            break;
-
-        case 'Eiendom':
-              sections.property.classList.add('active');
-              ['PropertyType', 'SizeSqm', 'NumRooms', 'NumBathrooms'].forEach(field => {
-                document.getElementById(field)?.setAttribute('required', 'true');
-              });
-              break;
-
-        case 'Bil':
-            sections.car.classList.add('active');
-            ['CarBrand', 'CarModel', 'Year', 'Mileage', 'FuelType', 
-             'Price', 'ProductName', 'Location', 'Description'].forEach(field => {
-                document.getElementById(field)?.setAttribute('required', 'true');
+            // Hide all sections first
+            Object.values(sections).forEach(section => {
+                if (section) section.classList.remove('active');
             });
 
-             // When activating car fields:
-            document.getElementById('ProductName').disabled = true;
-            document.getElementById('Description').disabled = true;
-            // And enable the car-specific fields:
-            document.getElementById('car-ProductName').disabled = false;
-            document.getElementById('car-Description').disabled = false;
-            break;
-    }
-}
+            // Show form container
+            sections.formContainer.classList.add('active');
 
+            // Clear all required attributes first
+            const allRequired = document.querySelectorAll('[required]');
+            allRequired.forEach(field => field.removeAttribute('required'));
 
-    // Update form validation
-    document.getElementById('productForm').onsubmit = function(event) {
-        if (!selectedCategory) {
-            event.preventDefault();
-            alert('Vennligst velg en kategori!');
-            return;
-        }
+            // Show and handle specific category
+            switch(category) {
+                case 'Torget':
+                    sections.product.classList.add('active');
+                    ['ProductName', 'Price', 'Location', 'Description'].forEach(field => {
+                        document.getElementById(field)?.setAttribute('required', 'true');
+                    });
+                    break;
 
-        if (selectedCategory === 'Jobb') {
-            const jobTitle = document.getElementById('JobTitle').value;
-            const companyName = document.getElementById('CompanyName').value;
-            const salary = document.getElementById('Salary').value;
-            const deadline = document.getElementById('ApplicationDeadline').value;
-            
-            if (!jobTitle || !companyName || !deadline) {
-                event.preventDefault();
-                alert('Vennligst fyll ut alle obligatoriske felt!');
+                case 'Jobb':
+                    sections.job.classList.add('active');
+                    ['JobTitle', 'CompanyName', 'EmploymentType', 'ApplicationDeadline'].forEach(field => {
+                        document.getElementById(field)?.setAttribute('required', 'true');
+                    });
+                    break;
+
+                case 'Eiendom':
+                    sections.property.classList.add('active');
+                    ['PropertyType', 'SizeSqm', 'NumRooms', 'NumBathrooms'].forEach(field => {
+                        document.getElementById(field)?.setAttribute('required', 'true');
+                    });
+                    break;
+
+                case 'Bil':
+                    sections.car.classList.add('active');
+                    ['CarBrand', 'CarModel', 'Year', 'Mileage', 'FuelType', 
+                     'Price', 'ProductName', 'Location', 'Description'].forEach(field => {
+                        document.getElementById(field)?.setAttribute('required', 'true');
+                    });
+
+                    // When activating car fields:
+                    document.getElementById('ProductName').disabled = true;
+                    document.getElementById('Description').disabled = true;
+                    // And enable the car-specific fields:
+                    document.getElementById('car-ProductName').disabled = false;
+                    document.getElementById('car-Description').disabled = false;
+                    break;
             }
         }
-    };
 
-    // Add this to load countries when page loads
-document.addEventListener('DOMContentLoaded', () => {
-    // Load countries
-    fetch('/api/utils/countriess')
-        .then(response => response.json())
-        .then(countries => {
-            const countrySelect = document.getElementById('Country');
-            countries.forEach(country => {
-                const option = document.createElement('option');
-                option.value = country;
-                option.textContent = country;
-                countrySelect.appendChild(option);
-            });
-        })
-        .catch(error => console.error('Error loading countries:', error));
-        });
+        function loadCountries() {
+            fetch('/api/utils/countries')
+                .then(response => response.json())
+                .then(countries => {
+                    const countrySelect = document.getElementById('Country');
+                    countries.forEach(country => {
+                        const option = document.createElement('option');
+                        option.value = country;
+                        option.textContent = country;
+                        countrySelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error loading countries:', error));
+        }
 
+        function loadCarBrands() {
+            fetch('/api/utils/car-brands')
+                .then(response => response.json())
+                .then(brands => {
+                    const brandSelect = document.getElementById('CarBrand');
+                    brands.forEach(brand => {
+                        const option = document.createElement('option');
+                        option.value = brand.brand_id;
+                        option.textContent = brand.brand_name;
+                        brandSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error loading car brands:', error));
+        }
+
+        // Update form validation
+        document.getElementById('productForm').onsubmit = function(event) {
+            if (!selectedCategory) {
+                event.preventDefault();
+                alert(i18next.t('form.select_category'));
+                return;
+            }
+
+            if (selectedCategory === 'Jobb') {
+                const jobTitle = document.getElementById('JobTitle').value;
+                const companyName = document.getElementById('CompanyName').value;
+                const salary = document.getElementById('Salary').value;
+                const deadline = document.getElementById('ApplicationDeadline').value;
+                
+                if (!jobTitle || !companyName || !deadline) {
+                    event.preventDefault();
+                    alert(i18next.t('form.fill_required_fields'));
+                }
+            }
+        };
 
         document.getElementById('Country').addEventListener('change', function() {
             const selectedCountry = this.value;
@@ -570,7 +615,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 fetch(`/api/utils/cities/${selectedCountry}`)
                     .then(response => response.json())
                     .then(cities => {
-                        cityDropdown.innerHTML = '<option value="">Select City</option>';
+                        cityDropdown.innerHTML = `<option value="">${i18next.t('form.select_city')}</option>`;
                         cities.forEach(city => {
                             const option = document.createElement('option');
                             option.value = city;
@@ -587,53 +632,34 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
 
-        // Load car brands on page load
-document.addEventListener('DOMContentLoaded', () => {
-    fetch('/api/utils/car-brands')
-        .then(response => response.json())
-        .then(brands => {
-            const brandSelect = document.getElementById('CarBrand');
-            brands.forEach(brand => {
-                const option = document.createElement('option');
-                option.value = brand.brand_id;
-                option.textContent = brand.brand_name;
-                brandSelect.appendChild(option);
-            });
-        })
-        .catch(error => {
-            console.error('Error loading car brands:', error);
-            // Show error message to user
-        });
-});
+        // Load models when brand changes
+        document.getElementById('CarBrand').addEventListener('change', function() {
+            const brandId = this.value;
+            const modelSelect = document.getElementById('CarModel');
+            document.getElementById('CarModel').disabled = false;
+            
+            if (!brandId) {
+                modelSelect.disabled = true;
+                return;
+            }
 
-// Load models when brand changes
-document.getElementById('CarBrand').addEventListener('change', function() {
-    const brandId = this.value;
-    const modelSelect = document.getElementById('CarModel');
-    document.getElementById('CarModel').disabled = false;
-    
-    if (!brandId) {
-        modelSelect.disabled = true;
-        return;
-    }
-
-    fetch(`/api/utils/car-models/${brandId}`)
-        .then(response => response.json())
-        .then(models => {
-            modelSelect.innerHTML = '<option value="" data-i18n="form.velg_modell">Velg modell</option>';
-            models.forEach(model => {
-                const option = document.createElement('option');
-                option.value = model.model_id;
-                option.textContent = model.model_name;
-                modelSelect.appendChild(option);
-            });
-            modelSelect.disabled = false;
-        })
-        .catch(error => {
-            console.error('Error loading models:', error);
-            modelSelect.disabled = true;
+            fetch(`/api/utils/car-models/${brandId}`)
+                .then(response => response.json())
+                .then(models => {
+                    modelSelect.innerHTML = `<option value="">${i18next.t('form.select_model')}</option>`;
+                    models.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model.model_id;
+                        option.textContent = model.model_name;
+                        modelSelect.appendChild(option);
+                    });
+                    modelSelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error loading models:', error);
+                    modelSelect.disabled = true;
+                });
         });
-});
     </script>
 </body>
 </html>

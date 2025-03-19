@@ -34,7 +34,7 @@ router.get('/torgetkat', (req, res) => {
 
 // Messages page
 router.get('/messages', isAuthenticated, (req, res) => {
-    res.render('messages'); 
+    res.render('messages', { user: req.session.user }); 
 });
 
 // search page

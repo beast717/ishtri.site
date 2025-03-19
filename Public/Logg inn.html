@@ -1,10 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="https://unpkg.com/i18next/dist/umd/i18next.min.js"></script>
-    <script src="https://unpkg.com/i18next-http-backend/i18nextHttpBackend.min.js"></script>
-    <script src="https://unpkg.com/i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
-
+  
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login or Sign Up</title>
@@ -71,30 +68,30 @@
 <div class="container">
     <!-- Login Form -->
     <div id="loginForm">
-        <h2 data-i18n="logg_inn.logg_inn">Logg Inn</h2>
+        <h2 data-i18n="logg_inn.logg_inn">Log In</h2>
         <!-- Error message container -->
         <div id="errorMessage" style="color: red; margin-bottom: 15px; display: none;"></div>
         <div class="form-group">
             <form id="loginFormElement" action="/api/auth/login" method="POST">
-                <label for="loginUsername" data-i18n="logg_inn.brukernavn">Brukernavn:</label>
+                <label for="loginUsername" data-i18n="logg_inn.brukernavn">Username:</label>
                 <input type="text" id="loginUsername" name="brukernavn" required>
         </div>
         <div class="form-group">
             <label for="loginPassword" data-i18n="logg_inn.passord">Password:</label>
             <input type="password" id="loginPassword" name="passord" required>
         </div>
-        <button type="submit" data-i18n="logg_inn.logg_inn">Logg Inn</button>
+        <button type="submit" data-i18n="logg_inn.logg_inn">Log In</button>
         <a href=ForgotPassword.html class="toggle-link" data-i18n="logg_inn.forgot_password">Forgot Password?</a>
-        <span class="toggle-link" onclick="toggleForms()" data-i18n="logg_inn.lag_konto">Lag en konto</span>
+        <span class="toggle-link" onclick="toggleForms()" data-i18n="logg_inn.lag_konto">Create An Account</span>
         </form>
     </div>
 
     <!-- Sign Up Form -->
     <div id="signupForm" style="display: none;">
-        <h2 data-i18n="logg_inn.lag_konto">Lag konto</h2>
+        <h2 data-i18n="logg_inn.lag_konto">Create Account</h2>
         <div class="form-group">
             <form action="/api/auth/signup" method="POST">
-                <label for="signupUsername" data-i18n="logg_inn.brukernavn">Brukernavn:</label>
+                <label for="signupUsername" data-i18n="logg_inn.brukernavn">Username:</label>
                 <input type="text" id="signupUsername" name="brukernavn" required>
             </div>
             <div class="form-group">
@@ -109,8 +106,8 @@
                 <label for="confirmPassword" data-i18n="logg_inn.confirm_password">Confirm Password:</label>
                 <input type="password" id="confirmPassword" name="confirmPassword" required>
             </div>
-            <button type="submit" data-i18n="logg_inn.lag_konto">Lag konto</button>
-            <span class="toggle-link" onclick="toggleForms()" data-i18n="logg_inn.har_allerede_konto_logg_inn">Har allerede en konto? Logg Inn</span>
+            <button type="submit" data-i18n="logg_inn.lag_konto">Create Account</button>
+            <span class="toggle-link" onclick="toggleForms()" data-i18n="logg_inn.har_allerede_konto_logg_inn">Already have an account? Log In</span>
     </form>
     </div>
 </div>
@@ -122,10 +119,12 @@ function attachLoginFormListener() {
     const loginForm = document.getElementById('loginFormElement');
     if (loginForm) {
         loginForm.addEventListener('submit', async function (event) {
-            event.preventDefault(); // Prevent the default form submission
+            event.preventDefault();
 
-            const formData = new FormData(this); // Get form data
-            const data = Object.fromEntries(formData.entries()); // Convert to JSON
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.style.display = 'none'; // Hide any previous error messages
 
             try {
                 const response = await fetch('/api/auth/login', {
@@ -133,30 +132,117 @@ function attachLoginFormListener() {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(data), // Send form data as JSON
+                    body: JSON.stringify(data),
                 });
 
+                const responseData = await response.json();
+
                 if (response.ok) {
-                    // Redirect to the homepage or another page on successful login
                     window.location.href = '/';
                 } else {
-                    // Display error message if login fails
-                    const errorData = await response.json();
-                    const errorMessage = document.getElementById('errorMessage');
-                    errorMessage.textContent = errorData.message || 'Invalid credentials. Please try again.';
-                    errorMessage.style.display = 'block'; // Show the error message
-
-                    // Re-attach the form submission handler after displaying the error
-                    attachLoginFormListener();
+                    // Display specific error message from the server
+                    errorMessage.textContent = responseData.message || 'Invalid credentials. Please try again.';
+                    errorMessage.style.display = 'block';
+                    errorMessage.style.color = '#dc3545';
+                    errorMessage.style.padding = '10px';
+                    errorMessage.style.marginBottom = '15px';
+                    errorMessage.style.borderRadius = '4px';
+                    errorMessage.style.backgroundColor = '#f8d7da';
+                    errorMessage.style.border = '1px solid #f5c6cb';
                 }
             } catch (error) {
                 console.error('Error during login:', error);
-                const errorMessage = document.getElementById('errorMessage');
                 errorMessage.textContent = 'An error occurred. Please try again later.';
-                errorMessage.style.display = 'block'; // Show the error message
+                errorMessage.style.display = 'block';
+                errorMessage.style.color = '#dc3545';
+                errorMessage.style.padding = '10px';
+                errorMessage.style.marginBottom = '15px';
+                errorMessage.style.borderRadius = '4px';
+                errorMessage.style.backgroundColor = '#f8d7da';
+                errorMessage.style.border = '1px solid #f5c6cb';
+            }
+        });
+    }
+}
 
-                // Re-attach the form submission handler after displaying the error
-                attachLoginFormListener();
+// Add signup form submission handler
+function attachSignupFormListener() {
+    const signupForm = document.querySelector('#signupForm form');
+    if (signupForm) {
+        signupForm.addEventListener('submit', async function (event) {
+            event.preventDefault();
+
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            
+            // Create error message container if it doesn't exist
+            let errorMessage = document.querySelector('#signupForm #errorMessage');
+            if (!errorMessage) {
+                errorMessage = document.createElement('div');
+                errorMessage.id = 'errorMessage';
+                signupForm.insertBefore(errorMessage, signupForm.firstChild);
+            }
+            errorMessage.style.display = 'none';
+
+            // Validate passwords match
+            if (data.passord !== data.confirmPassword) {
+                errorMessage.textContent = 'Passwords do not match. Please try again.';
+                errorMessage.style.display = 'block';
+                errorMessage.style.color = '#dc3545';
+                errorMessage.style.padding = '10px';
+                errorMessage.style.marginBottom = '15px';
+                errorMessage.style.borderRadius = '4px';
+                errorMessage.style.backgroundColor = '#f8d7da';
+                errorMessage.style.border = '1px solid #f5c6cb';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                const responseData = await response.json();
+
+                if (response.ok) {
+                    // Show success message
+                    errorMessage.textContent = 'Account created successfully! Please log in.';
+                    errorMessage.style.display = 'block';
+                    errorMessage.style.color = '#28a745';
+                    errorMessage.style.padding = '10px';
+                    errorMessage.style.marginBottom = '15px';
+                    errorMessage.style.borderRadius = '4px';
+                    errorMessage.style.backgroundColor = '#d4edda';
+                    errorMessage.style.border = '1px solid #c3e6cb';
+                    
+                    // Switch to login form after 2 seconds
+                    setTimeout(() => {
+                        toggleForms();
+                    }, 2000);
+                } else {
+                    errorMessage.textContent = responseData.message || 'Error creating account. Please try again.';
+                    errorMessage.style.display = 'block';
+                    errorMessage.style.color = '#dc3545';
+                    errorMessage.style.padding = '10px';
+                    errorMessage.style.marginBottom = '15px';
+                    errorMessage.style.borderRadius = '4px';
+                    errorMessage.style.backgroundColor = '#f8d7da';
+                    errorMessage.style.border = '1px solid #f5c6cb';
+                }
+            } catch (error) {
+                console.error('Error during signup:', error);
+                errorMessage.textContent = 'An error occurred. Please try again later.';
+                errorMessage.style.display = 'block';
+                errorMessage.style.color = '#dc3545';
+                errorMessage.style.padding = '10px';
+                errorMessage.style.marginBottom = '15px';
+                errorMessage.style.borderRadius = '4px';
+                errorMessage.style.backgroundColor = '#f8d7da';
+                errorMessage.style.border = '1px solid #f5c6cb';
             }
         });
     }
@@ -175,13 +261,15 @@ function toggleForms() {
         signupForm.style.display = 'block';
     }
 
-    // Re-attach the login form submission handler after toggling forms
+    // Re-attach both form submission handlers
     attachLoginFormListener();
+    attachSignupFormListener();
 }
 
-// Attach the login form submission handler when the page loads
+// Attach both form submission handlers when the page loads
 document.addEventListener('DOMContentLoaded', () => {
     attachLoginFormListener();
+    attachSignupFormListener();
 });
 
      // Language Initialization

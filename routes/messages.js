@@ -6,6 +6,13 @@ const pool = require('../config/db');
 // Get all messages for logged-in user
 router.get('/', async (req, res, next) => {
     try {
+        // Get user ID from either session storage method
+        const userId = req.session.user?.brukerId || req.session.brukerId;
+        
+        if (!userId) {
+            return res.status(401).json({ error: 'User not authenticated' });
+        }
+
         const [messages] = await pool.promise().query(
             `SELECT m.messageId, m.messageContent, m.timestamp, m.readd,
                     p.ProductName, p.productdID,
@@ -13,9 +20,9 @@ router.get('/', async (req, res, next) => {
              FROM messages m
              JOIN products p ON m.productdID = p.productdID
              JOIN brukere u ON m.senderId = u.brukerId
-             WHERE m.receiverId = ?
+             WHERE m.receiverId = ? OR m.senderId = ?
              ORDER BY m.timestamp DESC`,
-            [req.session.brukerId]
+            [userId, userId]
         );
         
         res.json(messages);
@@ -27,27 +34,15 @@ router.get('/', async (req, res, next) => {
 // Send new message
 router.post('/', async (req, res, next) => {
     try {
-        const { productdID, messageContent } = req.body;
-        const senderId = req.session.brukerId;
+        const { productdID, messageContent, receiverId } = req.body;
+        const senderId = req.session.user?.brukerId || req.session.brukerId;
 
-        if (!productdID || !messageContent) {
+        if (!senderId) {
+            return res.status(401).json({ error: 'User not authenticated' });
+        }
+
+        if (!productdID || !messageContent || !receiverId) {
             return res.status(400).json({ error: 'Missing required fields' });
-        }
-
-        // Get product owner
-        const [product] = await pool.promise().query(
-            'SELECT brukerId FROM products WHERE productdID = ?',
-            [productdID]
-        );
-
-        if (!product.length) {
-            return res.status(404).json({ error: 'Product not found' });
-        }
-
-        const receiverId = product[0].brukerId;
-
-        if (senderId === receiverId) {
-            return res.status(400).json({ error: 'Cannot message yourself' });
         }
 
         // Verify users exist
@@ -61,14 +56,30 @@ router.post('/', async (req, res, next) => {
         }
 
         // Insert message
-        await pool.promise().query(
+        const [result] = await pool.promise().query(
             `INSERT INTO messages 
              (senderId, receiverId, productdID, messageContent, timestamp)
              VALUES (?, ?, ?, ?, NOW())`,
             [senderId, receiverId, productdID, messageContent]
         );
 
-        res.status(201).json({ message: 'Message sent successfully' });
+        // Get the inserted message with user details
+        const [newMessage] = await pool.promise().query(
+            `SELECT m.*, u.brukernavn AS senderName, p.ProductName
+             FROM messages m
+             JOIN brukere u ON m.senderId = u.brukerId
+             JOIN products p ON m.productdID = p.productdID
+             WHERE m.messageId = ?`,
+            [result.insertId]
+        );
+
+        // Get the io instance from the app
+        const io = req.app.get('io');
+        if (io) {
+            io.to(receiverId.toString()).emit('messageReceived', newMessage[0]);
+        }
+
+        res.status(201).json(newMessage[0]);
     } catch (err) {
         next(err);
     }
@@ -77,9 +88,15 @@ router.post('/', async (req, res, next) => {
 // Get unread count
 router.get('/unread-count', async (req, res, next) => {
     try {
+        const userId = req.session.user?.brukerId || req.session.brukerId;
+        
+        if (!userId) {
+            return res.status(401).json({ error: 'User not authenticated' });
+        }
+
         const [result] = await pool.promise().query(
             'SELECT COUNT(*) AS unreadCount FROM messages WHERE receiverId = ? AND readd = FALSE',
-            [req.session.brukerId]
+            [userId]
         );
         
         res.json({ unreadCount: result[0].unreadCount });
@@ -92,7 +109,11 @@ router.get('/unread-count', async (req, res, next) => {
 router.post('/mark-read', async (req, res, next) => {
     try {
         const { messageId } = req.body;
-        const userId = req.session.brukerId;
+        const userId = req.session.user?.brukerId || req.session.brukerId;
+
+        if (!userId) {
+            return res.status(401).json({ error: 'User not authenticated' });
+        }
 
         if (!messageId) {
             return res.status(400).json({ error: 'messageId is required' });
@@ -113,10 +134,14 @@ router.post('/mark-read', async (req, res, next) => {
 router.get('/conversation', async (req, res, next) => {
     try {
         const { productdID } = req.query;
-        const userId = req.session.brukerId;
+        const userId = req.session.user?.brukerId || req.session.brukerId;
 
         if (!productdID) {
             return res.status(400).json({ error: 'productdID is required' });
+        }
+
+        if (!userId) {
+            return res.status(401).json({ error: 'User not authenticated' });
         }
 
         const [messages] = await pool.promise().query(
@@ -130,30 +155,44 @@ router.get('/conversation', async (req, res, next) => {
             [productdID, userId, userId]
         );
 
+        // Mark messages as read
+        await pool.promise().query(
+            `UPDATE messages 
+             SET readd = TRUE 
+             WHERE productdID = ? 
+             AND receiverId = ? 
+             AND readd = FALSE`,
+            [productdID, userId]
+        );
+
         res.json(messages);
     } catch (err) {
         next(err);
     }
 });
 
-// Send reply
-router.post('/reply', async (req, res, next) => {
+// Search messages
+router.get('/search', async (req, res, next) => {
     try {
-        const { originalSenderId, productdID, messageContent } = req.body;
-        const senderId = req.session.brukerId;
+        const { query } = req.query;
+        const userId = req.session.user.brukerId;
 
-        if (!originalSenderId || !productdID || !messageContent) {
-            return res.status(400).json({ error: 'Missing required fields' });
+        if (!query) {
+            return res.status(400).json({ error: 'Search query is required' });
         }
 
-        await pool.promise().query(
-            `INSERT INTO messages 
-             (senderId, receiverId, productdID, messageContent, timestamp)
-             VALUES (?, ?, ?, ?, NOW())`,
-            [senderId, originalSenderId, productdID, messageContent]
+        const [messages] = await pool.promise().query(
+            `SELECT m.*, u.brukernavn AS senderName, p.ProductName
+             FROM messages m
+             JOIN brukere u ON m.senderId = u.brukerId
+             JOIN products p ON m.productdID = p.productdID
+             WHERE (m.senderId = ? OR m.receiverId = ?)
+             AND m.messageContent LIKE ?
+             ORDER BY m.timestamp DESC`,
+            [userId, userId, `%${query}%`]
         );
 
-        res.status(201).json({ message: 'Reply sent successfully' });
+        res.json(messages);
     } catch (err) {
         next(err);
     }

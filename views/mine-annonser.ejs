@@ -3,14 +3,15 @@
 <head>
     <link rel="icon" href="logo.png" type="image/png">
 
-    <script src="https://unpkg.com/i18next/dist/umd/i18next.min.js"></script>
-    <script src="https://unpkg.com/i18next-http-backend/i18nextHttpBackend.min.js"></script>
-    <script src="https://unpkg.com/i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mine Annonser</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/toast.js" defer></script>
+    <script src="/js/skeleton.js" defer></script>
+    <script src="/js/backToTop.js" defer></script>
+    <script src="/js/lazyLoad.js" defer></script>
     <style>
 
 
@@ -149,14 +150,145 @@ button:disabled {
             font-family: Arial, Helvetica, sans-serif;
         }
 
+    /* Skeleton Loading Styles */
+    .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+    }
+
+    @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+
+    .skeleton-product {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: white;
+    }
+
+    .skeleton-image {
+        width: 300px;
+        height: 200px;
+        border-radius: 5px;
+    }
+
+    .skeleton-text {
+        height: 20px;
+        margin: 10px 0;
+        border-radius: 4px;
+    }
+
+    .skeleton-title {
+        width: 70%;
+    }
+
+    .skeleton-price {
+        width: 40%;
+    }
+
+    .skeleton-location {
+        width: 60%;
+    }
+
+    .skeleton-date {
+        width: 50%;
+    }
+
+    /* Toast Notification Styles */
+    .toast-container {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 1000;
+    }
+
+    .toast {
+        background: white;
+        border-radius: 4px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        margin-bottom: 10px;
+        padding: 15px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+        from { transform: translateX(100%); }
+        to { transform: translateX(0); }
+    }
+
+    /* Back to Top Button Styles */
+    .back-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        background: #007bff;
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        z-index: 1000;
+    }
+
+    .back-to-top.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .back-to-top:hover {
+        background: #0056b3;
+        transform: translateY(-3px);
+    }
     </style>
 </head>
 <body>
      <%- include('partials/navbar') %>
 
-    <h1 data-i18n="navbar.mine_annonser">Mine Annonser</h1>
+    <h1 data-i18n="navbar.mine_annonser">My Ads</h1>
     <div id="productsContainer">
-        <p>Loading your products...</p>
+        <!-- Skeleton loading -->
+        <div id="skeletonContainer">
+            <div class="skeleton-product">
+                <div class="skeleton-image skeleton"></div>
+                <div>
+                    <div class="skeleton-text skeleton-title skeleton"></div>
+                    <div class="skeleton-text skeleton-price skeleton"></div>
+                    <div class="skeleton-text skeleton-location skeleton"></div>
+                    <div class="skeleton-text skeleton-date skeleton"></div>
+                </div>
+            </div>
+            <div class="skeleton-product">
+                <div class="skeleton-image skeleton"></div>
+                <div>
+                    <div class="skeleton-text skeleton-title skeleton"></div>
+                    <div class="skeleton-text skeleton-price skeleton"></div>
+                    <div class="skeleton-text skeleton-location skeleton"></div>
+                    <div class="skeleton-text skeleton-date skeleton"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
     </div>
 
     <script>
@@ -165,6 +297,8 @@ button:disabled {
             .then(response => response.json())
             .then(products => {
                 const container = document.getElementById('productsContainer');
+                const skeletonContainer = document.getElementById('skeletonContainer');
+                skeletonContainer.style.display = 'none';
                 container.innerHTML = ''; // Clear loading message
 
                 if (products.length === 0) {
@@ -176,25 +310,29 @@ button:disabled {
                     const productDiv = document.createElement('div');
                     productDiv.className = 'product';
 
-                    const firstImage = product.Images 
-                      ? `/uploads/${product.Images.split(',')[0].trim()}` 
-                      : '/uploads/default.jpg'; // default image
+                    // Handle image with proper error handling and default image
+                    const firstImage = product.Images && product.Images !== 'default.jpg' 
+                        ? `/uploads/${product.Images.split(',')[0].trim()}` 
+                        : '/uploads/default.jpg';
 
                     productDiv.innerHTML = `
-                      <img src="${firstImage}" alt="${product.ProductName}">
+                      <img src="${firstImage}" 
+                           alt="${product.ProductName}" 
+                           class="product-image"
+                           onerror="this.src='/uploads/default.jpg'">
                         <div>
                             <h3>
                                 ${product.ProductName} 
-                                ${product.Sold ? `<span class="sold-label">(Sold)</span>` : ''}
+                                ${product.Sold ? `<span class="sold-label" data-i18n="product_details.sold">(Sold)</span>` : ''}
                             </h3>
-                            <p><strong data-i18n="product_details.price">Pris:</strong> ${product.Price} $</p>
-                            <p><strong data-i18n="product_details.location">Sted:</strong> ${product.Location}</p>
-                            <p><strong data-i18n="product_details.dato">Dato:</strong> ${product.Date}</p>
+                            <p><strong data-i18n="product_details.price">Price:</strong> ${product.Price} $</p>
+                            <p><strong data-i18n="product_details.location">Location:</strong> ${product.Location}</p>
+                            <p><strong data-i18n="product_details.dato">Date:</strong> ${product.Date}</p>
                             <div class="button-container">
-                            <button class="delete-button" data-id="${product.ProductdID}" data-i18n="product_details.slett">Slett</button>
+                            <button class="delete-button" data-id="${product.ProductdID}" data-i18n="product_details.slett">Delete</button>
                             ${product.Sold 
                                 ? `<button class="unsold-button" data-id="${product.ProductdID}" data-i18n="product_details.mark_unsold">Mark as Unsold</button>`
-                                : `<button class="sold-button" data-id="${product.ProductdID}"data-i18n="product_details.mark_sold" >Mark as Sold</button>`
+                                : `<button class="sold-button" data-id="${product.ProductdID}" data-i18n="product_details.mark_sold">Mark as Sold</button>`
                             }
                             </div>
                         </div>
@@ -208,7 +346,10 @@ button:disabled {
                     container.appendChild(productDiv);
                 });
 
-
+                // Initialize lazy loading for images
+                if (window.lazyLoader) {
+                    window.lazyLoader.observe();
+                }
 
                 // Attach "Mark as Sold" event listeners
                 document.querySelectorAll('.sold-button').forEach(button => {
@@ -219,18 +360,18 @@ button:disabled {
                             fetch(`/api/products/sold/${ProductdID}`, { method: 'PUT' })
                                 .then(response => response.json())
                                 .then(result => {
-                                    alert(result.message || 'Product marked as sold.');
+                                    window.toast.show(result.message || 'Product marked as sold.', 'success');
                                     location.reload(); // Reload the page to show the updated status
                                 })
                                 .catch(error => {
                                     console.error('Error marking product as sold:', error);
-                                    alert('Failed to mark the product as sold.');
+                                    window.toast.show('Failed to mark the product as sold.', 'error');
                                 });
                         }
                     });
                 });
             
-               // Attach "Mark as Unsold" event listeners
+                // Attach "Mark as Unsold" event listeners
                 document.querySelectorAll('.unsold-button').forEach(button => {
                     button.addEventListener('click', (event) => {
                         event.stopPropagation(); 
@@ -239,12 +380,12 @@ button:disabled {
                             fetch(`/api/products/unsold/${ProductdID}`, { method: 'PUT' })
                                 .then(response => response.json())
                                 .then(result => {
-                                    alert(result.message || 'Product marked as unsold.');
+                                    window.toast.show(result.message || 'Product marked as unsold.', 'success');
                                     location.reload(); 
                                 })
                                 .catch(error => {
                                     console.error('Error marking product as unsold:', error);
-                                    alert('Failed to mark the product as unsold.');
+                                    window.toast.show('Failed to mark the product as unsold.', 'error');
                                 });
                         }
                     });
@@ -259,12 +400,12 @@ button:disabled {
                             fetch(`/api/products/delete-product/${ProductdID}`, { method: 'DELETE' })
                                 .then(response => response.json())
                                 .then(result => {
-                                    alert(result.message || 'Product deleted.');
+                                    window.toast.show(result.message || 'Product deleted.', 'success');
                                     button.closest('.product').remove();
                                 })
                                 .catch(error => {
                                     console.error('Error deleting product:', error);
-                                    alert('Failed to delete the product.');
+                                    window.toast.show('Failed to delete the product.', 'error');
                                 });
                         }
                     });
@@ -274,9 +415,30 @@ button:disabled {
                 console.error('Error fetching products:', error);
                 const container = document.getElementById('productsContainer');
                 container.innerHTML = `<p>Error loading your products: ${error.message}</p>`;
+                window.toast.show('Failed to load your products.', 'error');
             });
 
+        // Initialize back to top button
+        const backToTopButton = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopButton.classList.add('visible');
+            } else {
+                backToTopButton.classList.remove('visible');
+            }
+        });
 
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Initialize lazy loading
+        if (window.lazyLoader) {
+            window.lazyLoader.observe();
+        }
     </script>
 </body>
 </html>

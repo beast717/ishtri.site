@@ -2,10 +2,7 @@
 <html lang="en">
 <head>
     <link rel="icon" href="ishtri1.png" sizes="16x16 32x32" type="image/png">
-    <script src="https://unpkg.com/i18next/dist/umd/i18next.min.js"></script>
-    <script src="https://unpkg.com/i18next-http-backend/i18nextHttpBackend.min.js"></script>
-    <script src="https://unpkg.com/i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
-    <script src="/js/i18n-config.js"></script>
+    <script src="/js/toast.js" defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -97,7 +94,8 @@ padding: 20px;
 margin-top: 20px;
 }
 
-#randomProducts div {
+.product-card {
+position: relative;
 background-color: white;
 border: 1px solid #ccc;
 border-radius: 8px;
@@ -106,13 +104,14 @@ text-align: center;
 width: 200px;
 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 transition: transform 0.2s ease-in-out;
+cursor: pointer;
 }
 
-#randomProducts div:hover {
+.product-card:hover {
 transform: scale(1.05);
 }
 
-#randomProducts img {
+.product-card img {
 width: 100%;
 height: 150px;
 object-fit: cover;
@@ -120,14 +119,31 @@ border-radius: 4px;
 margin-bottom: 10px;
 }
 
-#randomProducts h4 {
-font-size: 18px;
+.product-card h4 {
+font-size: 16px;
 margin: 10px 0;
+color: #333;
 }
 
-#randomProducts p {
+.product-card p {
 font-size: 16px;
 color: #007bff;
+margin: 5px 0;
+}
+
+.favorite-icon {
+position: absolute;
+top: 10px;
+right: 10px;
+color: #ccc;
+cursor: pointer;
+font-size: 20px;
+z-index: 1;
+transition: color 0.3s ease;
+}
+
+.favorite-icon.favorited {
+color: #ff4757;
 }
 
 .sold-label {
@@ -140,19 +156,36 @@ font-weight: bold;
 margin-left: 5px;
 }
 
-
-.favorite-icon {
-position: absolute;
-top: 10px;
-right: 10px;
-color: #ccc; 
-cursor: pointer;
-font-size: 20px;
-z-index: 1; 
+/* Skeleton Loading Styles */
+.skeleton {
+background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+background-size: 200% 100%;
+animation: loading 1.5s infinite;
 }
 
-.favorite-icon.favorited {
-color: #ff4757; 
+@keyframes loading {
+0% { background-position: 200% 0; }
+100% { background-position: -200% 0; }
+}
+
+.skeleton-image {
+width: 100%;
+height: 150px;
+border-radius: 4px;
+}
+
+.skeleton-text {
+height: 20px;
+margin: 10px 0;
+border-radius: 4px;
+}
+
+.skeleton-title {
+width: 70%;
+}
+
+.skeleton-price {
+width: 40%;
 }
 
 @media (max-width: 768px) {
@@ -189,7 +222,7 @@ color: #ff4757;
         align-items: center; /* Center products */
     }
 
-    #randomProducts div {
+    .product-card {
         width: 90%; /* Full width on mobile */
     }
 }
@@ -213,25 +246,25 @@ color: #ff4757;
         <div class="kategori">
             <a href="/torgetkat?category=Torget">
                 <i class="fas fa-chair"></i>
-                <span data-i18n="categories.torget">Torget</span>
+                <span data-i18n="categories.torget">Marked</span>
             </a>
         </div>
         <div class="kategori">
             <a href="/torgetkat?category=Bil">
                 <i class="fas fa-car"></i>
-                <span data-i18n="categories.bil">Bil</span>
+                <span data-i18n="categories.bil">Car</span>
             </a>
         </div>
         <div class="kategori">
             <a href="/reise">
                 <i class="fas fa-plane"></i>
-                <span data-i18n="categories.reise">Reise</span>
+                <span data-i18n="categories.reise">Travel</span>
             </a>
         </div>
         <div class="kategori">
             <a href="/torgetkat?category=Båt">
                 <i class="fas fa-ship"></i>
-                <span data-i18n="categories.båt">Båt</span>
+                <span data-i18n="categories.båt">Boat</span>
             </a>
         </div>
         <div class="kategori">
@@ -246,108 +279,106 @@ color: #ff4757;
         <div class="kategori2">
             <a href="">
                 <i class="fas fa-suitcase-rolling"></i>
-                <span data-i18n="categories.pakkereise">Pakkereise</span>
+                <span data-i18n="categories.pakkereise">Package-deal</span>
             </a>
         </div>
         <div class="kategori2">
             <a href="/torgetkat?category=Jobb">
                 <i class="fas fa-briefcase"></i>
-                <span data-i18n="categories.jobb">Jobb</span>
+                <span data-i18n="categories.jobb">Job</span>
             </a>
         </div>
         <div class="kategori2">
             <a href="/torgetkat?category=Eiendom">
                 <i class="fas fa-home"></i>
-                <span data-i18n="categories.eiendom">Eiendom</span>
+                <span data-i18n="categories.eiendom">Property</span>
             </a>
         </div>
         <div class="kategori2">
             <a href="">
                 <i class="fas fa-laptop"></i>
-                <span data-i18n="categories.ny-brukt elektronikk">Ny-brukt elektronikk</span>
+                <span data-i18n="categories.ny-brukt elektronikk">New-used electronics</span>
             </a>
         </div>
     </div>
     </div>
        <div id="randomProducts" style="display: flex; gap: 20px; padding: 10px; min-height: 100px; overflow-x: auto; justify-content: center;">
-        <div>
-            <h4>Product Name</h4>
-            <p>Price NOK</p>
-        </div>
+        <!-- Products will be loaded here -->
     </div>
     
         <script>
-
             function loadRandomProducts() {
+                const randomProductsContainer = document.getElementById('randomProducts');
+                
+                // Show skeleton loading
+                randomProductsContainer.innerHTML = '';
+                for (let i = 0; i < 5; i++) {
+                    const skeleton = document.createElement('div');
+                    skeleton.className = 'product-card skeleton';
+                    skeleton.innerHTML = `
+                        <div class="skeleton-image skeleton"></div>
+                        <div class="skeleton-text skeleton-title skeleton"></div>
+                        <div class="skeleton-text skeleton-price skeleton"></div>
+                    `;
+                    randomProductsContainer.appendChild(skeleton);
+                }
+
                 fetch('/api/utils/random-products')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error("Failed to fetch products");
-                        }
-                        return response.json();
-                    })
+                    .then(response => response.json())
                     .then(products => {
-                        const randomProductsContainer = document.getElementById('randomProducts');
-                        randomProductsContainer.innerHTML = ''; // Clear previous content
-                        if (products.length === 0) {
-                            randomProductsContainer.innerHTML = '<p>No products available.</p>';
-                            return;
-                        }
+                        randomProductsContainer.innerHTML = '';
+                        
                         products.forEach(product => {
-
-                           // Check if Images field is defined and not empty
-                        const images = product.Images ? product.Images.split(',') : [];
-                        const firstImage = images.length > 0 ? images[0].trim() : null;
-
-                        if (!firstImage) {
-                            console.log("No image available for product:", product.ProductName);
-                        }
-
-                        const imageUrl = firstImage ? `/uploads/${firstImage}` : '/uploads/default-placeholder.png'; // Use placeholder if no image
-
-                        console.log("Image URL:", imageUrl); // Log the image URL for debugging
-
-
                             const productDiv = document.createElement('div');
-                            productDiv.style.border = '1px solid #ccc';
-                            productDiv.style.borderRadius = '8px';
-                            productDiv.style.padding = '15px';
-                            productDiv.style.textAlign = 'center';
-                            productDiv.style.minWidth = '150px';
-                            productDiv.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
-                            productDiv.style.backgroundColor = '#f9f9f9';
-                            productDiv.style.flexShrink = '0'; // Prevent resizing in flex container 
-
-                            // Add image to the product card
+                            productDiv.className = 'product-card';
+                            
+                            // Handle images
+                            const images = product.Images ? product.Images.split(',') : [];
+                            const firstImage = images.length > 0 ? images[0].trim() : null;
+                            const imageUrl = firstImage ? `/uploads/${firstImage}` : '/images/default-product.png';
+                            
                             productDiv.innerHTML = `
-                               <img src="${imageUrl}" alt="${product.ProductName}" >
+                                <img src="${imageUrl}" alt="${product.ProductName}" class="product-image" onerror="this.src='/images/default-product.png'">
                                 <i class="fas fa-heart favorite-icon" data-product-id="${product.ProductdID}"></i>
                                 <h4>
-                                ${product.ProductName} 
-                                ${product.Sold ? `<span class="sold-label">(Sold)</span>` : ''}
-                            </h4>
-                                <p>${product.Price} $</p>
+                                    ${product.ProductName} 
+                                    ${product.Sold ? `<span class="sold-label">(Sold)</span>` : ''}
+                                </h4>
+                                <p>${product.Price ? `${product.Price.toLocaleString('no-NO')} kr` : 'Contact for price'}</p>
                             `;
-                  
                             
                             productDiv.addEventListener('click', (e) => {
-                            // Check if the click target is the heart icon
-                            if (!e.target.classList.contains('favorite-icon')) {
-                                window.location.href = `/productDetails?productdID=${product.ProductdID}`;
-                            }
-                        });
+                                if (!e.target.classList.contains('favorite-icon')) {
+                                    window.location.href = `/productDetails?productdID=${product.ProductdID}`;
+                                }
+                            });
+                            
                             randomProductsContainer.appendChild(productDiv);
                         });
-                         initializeFavorites();
+                        
+                        initializeFavorites();
                     })
-                    .catch(err => console.error("Error loading products:", err));
+                    .catch(err => {
+                        console.error("Error loading products:", err);
+                        randomProductsContainer.innerHTML = '<p>Error loading products. Please try again.</p>';
+                        window.toast.show('Error loading products. Please try again.', 'error');
+                    });
             }
 
              // Function to initialize favorite icons
-        function initializeFavorites() {
-            fetch('/api/favorites')
-                .then(response => response.json())
-                .then(favorites => {
+            function initializeFavorites() {
+                fetch('/api/favorites', { credentials: 'include' })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Authentication required');
+                        }
+                        const contentType = response.headers.get('content-type');
+                        if (!contentType || !contentType.includes('application/json')) {
+                            throw new Error('Invalid response format');
+                        }
+                        return response.json();
+                    })
+                    .then(favorites => {
                     document.querySelectorAll('.favorite-icon').forEach(icon => {
                         const productdID = icon.getAttribute('data-product-id');
                         const isFavorited = favorites.some(product => product.ProductdID === Number(productdID));
@@ -361,47 +392,65 @@ color: #ff4757;
                         }
                     });
                 })
-                .catch(error => console.error("Error checking favorites:", error));
-        }
+                 .catch(error => {
+                console.error("Error checking favorites:", error);
+                // Clear favorite states on error
+                document.querySelectorAll('.favorite-icon').forEach(icon => {
+                    icon.classList.remove('favorited');
+                    icon.style.color = '#ccc';
+                });
+            });
+    }
 
         // Handle favorite icon clicks
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('favorite-icon')) {
-                e.preventDefault(); // Prevent default behavior
-                e.stopPropagation(); // Stop event from bubbling up to the parent container
+                e.preventDefault();
+                e.stopPropagation();
 
                 const productdID = e.target.getAttribute('data-product-id');
                 const isFavorited = e.target.classList.contains('favorited');
 
-                if (isFavorited) {
-                    fetch('/api/unfavorite', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ productdID }),
-                    })
+                fetch('/api/auth/current-user', { credentials: 'include' })
                     .then(response => response.json())
                     .then(data => {
-                        e.target.classList.remove('favorited');
-                        e.target.style.color = '#ccc';
+                        if (!data.brukernavn) {
+                            window.toast.show('Please <a href="/Logg inn.html">log in</a> to add favorites', 'info');
+                            return;
+                        }
+
+                        // Use the same endpoint for both adding and removing favorites
+                        fetch('/api/favorites', {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ productdID }),
+                        })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            e.target.classList.toggle('favorited');
+                            e.target.style.color = isFavorited ? '#ccc' : '#ff4757';
+                            window.toast.show(
+                                isFavorited ? 'Product removed from favorites' : 'Product added to favorites',
+                                'success'
+                            );
+                        })
+                        .catch(error => {
+                            console.error("Error handling favorite:", error);
+                            window.toast.show('Error updating favorites. Please try again.', 'error');
+                        });
                     })
-                    .catch(error => console.error("Error unfavoriting product:", error));
-                } else {
-                    fetch('/api/favorite', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ productdID }),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        e.target.classList.add('favorited');
-                        e.target.style.color = '#ff4757';
-                    })
-                    .catch(error => console.error("Error favoriting product:", error));
-                }
+                    .catch(error => {
+                        console.error("Error checking user session:", error);
+                        window.toast.show('Error checking authentication. Please try again.', 'error');
+                    });
             }
         });
             window.addEventListener('load', loadRandomProducts);

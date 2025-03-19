@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ishtri - Your Marketplace</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Add new component scripts -->
+    <script src="/js/toast.js" defer></script>
+    <script src="/js/skeleton.js" defer></script>
+    <script src="/js/backToTop.js" defer></script>
+    <script src="/js/lazyLoad.js" defer></script>
+</head>
+<body>
+    <%- include('../partials/header') %>
+    
+    <main>
+        <%- body %>
+    </main>
+
+    <%- include('../partials/footer') %>
+
+    <!-- Add scripts -->
+    <script src="/js/main.js"></script>
+    <script>
+        // Initialize components
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize lazy loading
+            if (window.lazyLoader) {
+                window.lazyLoader.observe();
+            }
+
+            // Initialize back to top button
+            if (window.backToTop) {
+                window.backToTop.toggleButton();
+            }
+        });
+    </script>
+</body>
+</html> 

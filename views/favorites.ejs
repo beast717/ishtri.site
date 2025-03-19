@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Favorited Products</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/toast.js" defer></script>
+    <script src="/js/skeleton.js" defer></script>
+    <script src="/js/backToTop.js" defer></script>
+    <script src="/js/lazyLoad.js" defer></script>
     <style>
         .favorites-container {
             padding: 20px;
@@ -38,6 +43,109 @@
             font-size: 18px;
             margin-top: 20px;
         }
+
+        /* Skeleton Loading Styles */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-product {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
+
+        .skeleton-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 5px;
+        }
+
+        .skeleton-text {
+            height: 20px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .skeleton-title {
+            width: 70%;
+        }
+
+        .skeleton-price {
+            width: 40%;
+        }
+
+        .skeleton-location {
+            width: 60%;
+        }
+
+        /* Toast Notification Styles */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .toast {
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+
+        /* Back to Top Button Styles */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #007bff;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            background: #0056b3;
+            transform: translateY(-3px);
+        }
     </style>
 </head>
 <body>
@@ -47,8 +155,39 @@
     <div class="favorites-container">
         <h1>Favorited Products</h1>
         <div id="favoritesList">
-            <p>Loading favorited products...</p>
+            <!-- Skeleton loading -->
+            <div id="skeletonContainer">
+                <div class="skeleton-product">
+                    <div class="skeleton-image skeleton"></div>
+                    <div>
+                        <div class="skeleton-text skeleton-title skeleton"></div>
+                        <div class="skeleton-text skeleton-price skeleton"></div>
+                        <div class="skeleton-text skeleton-location skeleton"></div>
+                    </div>
+                </div>
+                <div class="skeleton-product">
+                    <div class="skeleton-image skeleton"></div>
+                    <div>
+                        <div class="skeleton-text skeleton-title skeleton"></div>
+                        <div class="skeleton-text skeleton-price skeleton"></div>
+                        <div class="skeleton-text skeleton-location skeleton"></div>
+                    </div>
+                </div>
+                <div class="skeleton-product">
+                    <div class="skeleton-image skeleton"></div>
+                    <div>
+                        <div class="skeleton-text skeleton-title skeleton"></div>
+                        <div class="skeleton-text skeleton-price skeleton"></div>
+                        <div class="skeleton-text skeleton-location skeleton"></div>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
     </div>
 
     <script>
@@ -58,6 +197,8 @@
                 .then(response => response.json())
                 .then(products => {
                     const favoritesList = document.getElementById('favoritesList');
+                    const skeletonContainer = document.getElementById('skeletonContainer');
+                    skeletonContainer.style.display = 'none';
                     favoritesList.innerHTML = ''; // Clear loading message
 
                     if (products.length === 0) {
@@ -69,15 +210,19 @@
                         const productDiv = document.createElement('div');
                         productDiv.className = 'product';
 
-                        const images = product.Images ? product.Images.split(',') : [];
-                        const firstImage = images.length > 0 ? `/uploads/${images[0].trim()}` : '/uploads/default-placeholder.png';
+                        // Use default product image if no images are uploaded
+                        const imageUrl = product.Images && product.Images !== 'default.jpg' 
+                            ? `/uploads/${product.Images.split(',')[0].trim()}` 
+                            : '/uploads/default.jpg';
 
                         productDiv.innerHTML = `
-                            <img src="${firstImage}" alt="${product.ProductName}">
+                            <img src="${imageUrl}" 
+                                 alt="${product.ProductName}" 
+                                 class="product-image">
                             <div>
                                 <h3>${product.ProductName}</h3>
-                                <p><strong>Price:</strong> ${product.Price} $</p>
-                                <p><strong>Location:</strong> ${product.Location}</p>
+                                <p><strong>Price:</strong> ${product.Price ? `${product.Price.toLocaleString('no-NO')} kr` : 'Contact for price'}</p>
+                                <p><strong>Location:</strong> ${product.Location || 'Location not specified'}</p>
                             </div>
                         `;
 
@@ -87,16 +232,46 @@
 
                         favoritesList.appendChild(productDiv);
                     });
+
+                    // Initialize lazy loading for images
+                    if (window.lazyLoader) {
+                        window.lazyLoader.observe();
+                    }
                 })
                 .catch(error => {
                     console.error("Error loading favorited products:", error);
                     const favoritesList = document.getElementById('favoritesList');
                     favoritesList.innerHTML = '<p class="no-products">Error loading favorited products.</p>';
+                    window.toast.show('Failed to load favorited products.', 'error');
                 });
         }
 
+        // Initialize back to top button
+        const backToTopButton = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopButton.classList.add('visible');
+            } else {
+                backToTopButton.classList.remove('visible');
+            }
+        });
+
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
         // Load favorited products when the page loads
-        window.addEventListener('load', loadFavorites);
+        window.addEventListener('load', () => {
+            loadFavorites();
+            
+            // Initialize lazy loading
+            if (window.lazyLoader) {
+                window.lazyLoader.observe();
+            }
+        });
     </script>
 </body>
 </html>

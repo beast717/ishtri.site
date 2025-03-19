@@ -1,14 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <script src="https://unpkg.com/i18next/dist/umd/i18next.min.js"></script>
-    <script src="https://unpkg.com/i18next-http-backend/i18nextHttpBackend.min.js"></script>
-    <script src="https://unpkg.com/i18next-browser-languagedetector/i18nextBrowserLanguageDetector.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search results</title>
-
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/toast.js" defer></script>
+    <script src="/js/skeleton.js" defer></script>
+    <script src="/js/backToTop.js" defer></script>
+    <script src="/js/lazyLoad.js" defer></script>
     
     <style>
 h1 {
@@ -257,6 +258,97 @@ box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
 transform: translateY(0);
 }
 
+/* Skeleton Loading Styles */
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+.skeleton-image {
+    width: 300px;
+    height: 200px;
+    border-radius: 5px;
+}
+
+.skeleton-text {
+    height: 20px;
+    margin: 10px 0;
+    border-radius: 4px;
+}
+
+.skeleton-title {
+    width: 70%;
+}
+
+.skeleton-price {
+    width: 40%;
+}
+
+.skeleton-location {
+    width: 60%;
+}
+
+/* Toast Notification Styles */
+.toast-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.toast {
+    background: white;
+    border-radius: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    margin-bottom: 10px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+
+/* Back to Top Button Styles */
+.back-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: #007bff;
+    color: white;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+}
+
+.back-to-top.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+.back-to-top:hover {
+    background: #0056b3;
+    transform: translateY(-3px);
+}
         
     </style>
 </head>
@@ -264,27 +356,27 @@ transform: translateY(0);
     <%- include('partials/navbar') %>
 
    <div class="filter-container" style="margin-bottom: 20px;">
-        <label for="priceFilter" data-i18n="filter.sorter_etter">Sorter etter:</label>
+        <label for="priceFilter" data-i18n="filter.sorter_etter">Sort By:</label>
         <select id="priceFilter" onchange="applyFilters()">
-            <option value="asc" data-i18n="filter.lavest_pris">Lavest Pris</option>
-            <option value="desc" data-i18n="filter.høyest_pris">Høyest Pris</option>
-            <option value="" data-i18n="filter.alle">alle</option>
+            <option value="asc" data-i18n="filter.lavest_pris">Heighest Price</option>
+            <option value="desc" data-i18n="filter.høyest_pris">Lowest Price</option>
+            <option value="" data-i18n="filter.alle">All</option>
         </select>
-        <label for="dateFilter" data-i18n="filter.utgitt">Utgitt:</label>
+        <label for="dateFilter" data-i18n="filter.utgitt">Date:</label>
         <select id="dateFilter" onchange="applyFilters()">
-            <option value="" data-i18n="filter.alle">alle</option>
-            <option value="desc" data-i18n="filter.nylige">Nylige</option>
-            <option value="asc" data-i18n="filter.eldre">Eldre</option>
+            <option value="" data-i18n="filter.alle">All</option>
+            <option value="desc" data-i18n="filter.nylige">New</option>
+            <option value="asc" data-i18n="filter.eldre">Old</option>
         </select>
         <div id="subcategoryFilterContainer" style="display: none;">
-            <label for="subCategoryFilter" data-i18n="form.category">Kategori:</label>
+            <label for="subCategoryFilter" data-i18n="form.category">Category:</label>
             <select id="subCategoryFilter" onchange="applyFilters()">
-                <option value="" data-i18n="filter.alle">Alle</option>
-                <option value="Klær" data-i18n="subkategori.klær">Klær</option>
-                <option value="Elektronikk" data-i18n="subkategori.elektronikk">Elektronikk</option>
-                <option value="Hvitvarer" data-i18n="subkategori.hvitvarer">Hvitvarer</option>
-                <option value="Møbler" data-i18n="subkategori.møbler">Møbler</option>
-                <option value="Annet" data-i18n="subkategori.annet">Annet</option>
+                <option value="" data-i18n="filter.alle">All</option>
+                <option value="Klær" data-i18n="subkategori.klær">Clothes</option>
+                <option value="Elektronikk" data-i18n="subkategori.elektronikk">Electronics</option>
+                <option value="Hvitvarer" data-i18n="subkategori.hvitvarer">White Goods</option>
+                <option value="Møbler" data-i18n="subkategori.møbler">Furniture</option>
+                <option value="Annet" data-i18n="subkategori.annet">Other</option>
             </select>
             <button onclick="resetFilters()" class="reset-filters-btn">
     ⟳ Reset Filters
@@ -303,12 +395,17 @@ transform: translateY(0);
 
 
         <div class="productsContainer" id="productsContainer">
-            <p>Loading products...</p>
+            <!-- Skeleton loading will be shown here -->
         </div>
     </div>
     <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner"></div>
 </div>
+
+    <div class="toast-container" id="toastContainer"></div>
+    <div class="back-to-top" id="backToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
 
    <script>
 
@@ -341,11 +438,33 @@ transform: translateY(0);
             document.getElementById('loadingOverlay').style.display = 'none';
         }
 
+        function showSkeletonLoading() {
+            const container = document.getElementById('productsContainer');
+            container.innerHTML = '';
+            for (let i = 0; i < 8; i++) {
+                const skeleton = document.createElement('div');
+                skeleton.className = 'product skeleton';
+                skeleton.innerHTML = `
+                    <div class="skeleton-image skeleton"></div>
+                    <div>
+                        <div class="skeleton-text skeleton-title skeleton"></div>
+                        <div class="skeleton-text skeleton-price skeleton"></div>
+                        <div class="skeleton-text skeleton-location skeleton"></div>
+                    </div>
+                `;
+                container.appendChild(skeleton);
+            }
+        }
+
         function fetchProducts(loadMore = false, cacheBuster = null) {
             if (isLoading || (!loadMore && !hasMore)) return;
             
             showLoading();
             isLoading = true;
+
+            if (!loadMore) {
+                showSkeletonLoading();
+            }
 
             const offset = (currentPage - 1) * limit;
             const urlParams = new URLSearchParams(window.location.search);
@@ -383,6 +502,11 @@ transform: translateY(0);
                         isLoading = false;
                         hideLoading();
 
+                    // Initialize lazy loading for new images
+                    if (window.lazyLoader) {
+                        window.lazyLoader.observe();
+                    }
+
                     // Update load more button
                     if (loadButton) {
                         loadButton.disabled = false;
@@ -404,6 +528,7 @@ transform: translateY(0);
                             <button onclick="fetchProducts()">Retry</button>
                         </div>
                     `;
+                    window.toast.show('Error loading products. Please try again.', 'error');
                     hideLoading();
                     if (loadButton) {
                         loadButton.disabled = false;
@@ -485,7 +610,7 @@ function displayProducts(products, append = false) {
 
     // 2. Use firstImage in template
     productDiv.innerHTML = `
-        <img src="${firstImage}" alt="${product.ProductName}">
+        <img data-src="${firstImage}" alt="${product.ProductName}" class="product-image">
         <i class="fas fa-heart favorite-icon" data-product-id="${product.ProductdID}"></i>
         <div>
             <h3>
@@ -507,39 +632,42 @@ function displayProducts(products, append = false) {
     initializeFavorites();      
 
             document.querySelectorAll('.favorite-icon').forEach(icon => {
-            icon.addEventListener('click', (e) => {
+            icon.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 const productdID = icon.getAttribute('data-product-id');
                 const isFavorited = icon.classList.contains('favorited');
 
-                if (isFavorited) {
-                    fetch('/api/unfavorite', {
+                try {
+                    const userResponse = await fetch('/api/auth/current-user');
+                    const userData = await userResponse.json();
+                    
+                    if (!userData.brukernavn) {
+                        window.toast.show('Please log in to add favorites', 'info');
+                        return;
+                    }
+
+                    const endpoint = isFavorited ? '/api/unfavorite' : '/api/favorite';
+                    const response = await fetch(endpoint, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({ productdID }),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        icon.classList.remove('favorited');
-                        icon.style.color = '#ccc';
-                    })
-                    .catch(error => console.error("Error unfavoriting product:", error));
-                } else {
-                    fetch('/api/favorite', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ productdID }),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        icon.classList.add('favorited');
-                        icon.style.color = '#ff4757';
-                    })
-                    .catch(error => console.error("Error favoriting product:", error));
+                    });
+
+                    if (response.ok) {
+                        icon.classList.toggle('favorited');
+                        icon.style.color = isFavorited ? '#ccc' : '#ff4757';
+                        window.toast.show(
+                            isFavorited ? 'Product removed from favorites' : 'Product added to favorites',
+                            'success'
+                        );
+                    } else {
+                        window.toast.show('Failed to update favorites', 'error');
+                    }
+                } catch (error) {
+                    console.error("Error handling favorite:", error);
+                    window.toast.show('An error occurred', 'error');
                 }
             });
         });
@@ -689,6 +817,23 @@ function handleCategoryVisibility() {
                 .catch(error => console.error("Error checking favorites:", error));
         }
 
+        // Initialize back to top button
+        const backToTopButton = document.getElementById('backToTop');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTopButton.classList.add('visible');
+            } else {
+                backToTopButton.classList.remove('visible');
+            }
+        });
+
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
         window.onload = function () {
             fetchProducts();
             checkUnreadMessages();
@@ -697,6 +842,11 @@ function handleCategoryVisibility() {
             applyFilters();
             handleCategoryVisibility();
             checkUnreadMessages();
+            
+            // Initialize lazy loading
+            if (window.lazyLoader) {
+                window.lazyLoader.observe();
+            }
         };
     })();
 </script>

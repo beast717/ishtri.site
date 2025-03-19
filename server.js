@@ -8,17 +8,27 @@ const mysql = require('mysql2');
 const path = require('path');
 const dotenv = require('dotenv');
 const nodemailer = require('nodemailer');
+const http = require('http');
 dotenv.config();
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(require('cors')());
+const server = http.createServer(app);
 
 // Import configs
 const pool = require('./config/db');
 const { transporter } = require('./config/email');
 const upload = require('./config/upload');
+const initializeSocket = require('./config/socket');
+
+// Initialize Socket.IO
+const io = initializeSocket(server);
+
+// Make io accessible to routes
+app.set('io', io);
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(require('cors')());
 
 // Session configuration
 const sessionStore = new MySQLStore({}, pool);
@@ -62,7 +72,6 @@ app.get('/forgot-password', (req, res) => res.sendFile(path.join(__dirname, 'Pub
 app.get('/torget', (req, res) => res.render('Torget'));
 app.get('/reise', (req, res) => res.render('reise'));
 
-
 const viewRoutes = require('./routes/views');
 app.use('/', viewRoutes);
 
@@ -100,4 +109,4 @@ app.use('/api/auth', authRoutes);
 
 // Server initialization
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
