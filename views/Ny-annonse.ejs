@@ -425,7 +425,7 @@ padding: 20px;
 
                 <label for="Country" data-i18n="form.country">Country</label>
                 <select id="Country" name="Country">
-                    <option value="" data-i18n="form.ingen">None selected</option>
+                    <option value="" >None selected</option>
                 </select>
 
                 <label for="City" id="cityLabel" style="display: none;" data-i18n="form.city">City</label>
@@ -448,45 +448,6 @@ padding: 20px;
     </div>
 
     <script>
-        // Initialize translations and page content
-        function initializePage() {
-            // Wait for i18next to be ready
-            if (!i18next.isInitialized) {
-                i18next.on('initialized', function() {
-                    updateContent();
-                    loadCountries();
-                    loadCarBrands();
-                });
-                return;
-            }
-
-            // Update all translatable elements
-            updateContent();
-            
-            // Load countries and car brands
-            loadCountries();
-            loadCarBrands();
-        }
-
-        // Function to handle page initialization
-        function handlePageInit() {
-            if (window.i18nextInitialized) {
-                initializePage();
-            } else {
-                window.addEventListener('i18nextInitialized', initializePage);
-            }
-        }
-
-        // Listen for various events that might trigger initialization
-        document.addEventListener('DOMContentLoaded', handlePageInit);
-        window.addEventListener('load', handlePageInit);
-        window.addEventListener('pageshow', handlePageInit);
-        window.addEventListener('languageChanged', initializePage);
-
-        // Also initialize immediately if i18next is already initialized
-        if (window.i18nextInitialized) {
-            handlePageInit();
-        }
 
         let selectedCategory = '';
 
@@ -556,7 +517,7 @@ padding: 20px;
         }
 
         function loadCountries() {
-            fetch('/api/utils/countries')
+            fetch('/api/utils/countriess')
                 .then(response => response.json())
                 .then(countries => {
                     const countrySelect = document.getElementById('Country');
@@ -601,7 +562,7 @@ padding: 20px;
                 
                 if (!jobTitle || !companyName || !deadline) {
                     event.preventDefault();
-                    alert(i18next.t('form.fill_required_fields'));
+                    alert("Fill requiered fields");
                 }
             }
         };
@@ -615,7 +576,7 @@ padding: 20px;
                 fetch(`/api/utils/cities/${selectedCountry}`)
                     .then(response => response.json())
                     .then(cities => {
-                        cityDropdown.innerHTML = `<option value="">${i18next.t('form.select_city')}</option>`;
+                        cityDropdown.innerHTML = `<option value="">Select city</option>`;
                         cities.forEach(city => {
                             const option = document.createElement('option');
                             option.value = city;
@@ -646,7 +607,7 @@ padding: 20px;
             fetch(`/api/utils/car-models/${brandId}`)
                 .then(response => response.json())
                 .then(models => {
-                    modelSelect.innerHTML = `<option value="">${i18next.t('form.select_model')}</option>`;
+                    modelSelect.innerHTML = `<option value="">Select model</option>`;
                     models.forEach(model => {
                         const option = document.createElement('option');
                         option.value = model.model_id;
@@ -660,6 +621,12 @@ padding: 20px;
                     modelSelect.disabled = true;
                 });
         });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadCountries();
+            loadCarBrands();
+        });
+
     </script>
 </body>
 </html>
