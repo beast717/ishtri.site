@@ -99,7 +99,11 @@ router.get('/unread-count', async (req, res, next) => {
         }
 
         const [result] = await pool.promise().query(
-            'SELECT COUNT(*) AS unreadCount FROM messages WHERE receiverId = ? AND readd = FALSE',
+            `SELECT COUNT(*) AS unreadCount 
+             FROM messages 
+             WHERE receiverId = ? 
+             AND readd = FALSE 
+             AND senderId != receiverId`, // Add this line
             [userId]
         );
         

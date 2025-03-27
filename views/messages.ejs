@@ -322,14 +322,15 @@
             socket.emit('authenticate', '<%= user?.brukerId || user.brukerId %>');
 
             // Handle new message
-            socket.on('messageReceived', (message) => {
-                if (currentConversation && currentConversation.productdID === message.productdID) {
-                    appendMessage(message);
-                }
-                // Add this check to prevent over-fetching
-                if (!document.hidden) {
-                    setTimeout(updateConversationsList, 300);
-                }
+            socket.on('messageReceived', (message) => {  // For RECEIVER only
+                appendMessage(message);
+                checkUnreadMessages(); // Only receiver should check unread count
+                updateConversationsList();
+            });
+
+            socket.on('messageSent', (message) => {  // For SENDER only
+                appendMessage(message);
+                updateConversationsList();  // But DON'T check unread count
             });
 
             // Handle typing status

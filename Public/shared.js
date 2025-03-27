@@ -1,6 +1,8 @@
 // shared.js
 function checkUnreadMessages() {
     fetch('/api/messages/unread-count', { credentials: 'include' })
+     if (!document.getElementById('messagesPage')) { // Only run outside messages page
+        fetch('/api/messages/unread-count')
         .then(response => response.json())
         .then(data => {
             const badge = document.getElementById('unreadBadge');

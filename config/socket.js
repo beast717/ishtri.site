@@ -19,7 +19,8 @@ function initializeSocket(server) {
         socket.on('newMessage', (message) => {
             const receiverSocketId = activeUsers.get(message.receiverId);
             if (receiverSocketId) {
-                io.to(receiverSocketId).emit('messageReceived', message);
+                io.to(receiverSocketId).emit('messageReceived', newMessage[0]);
+                io.to(senderSocketId).emit('messageSent', newMessage[0]);
             }
         });
 
