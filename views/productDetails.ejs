@@ -530,10 +530,12 @@ margin-top: 10px;
         document.getElementById('cancelLoginButton').addEventListener('click', hideLoginModal);
 
         // ========== PRODUCT INITIALIZATION ========== //
+        let productOwnerId = null;
         fetch(`/api/products/${productdID}`)
         .then(response => response.json())
         .then(product => {
             // Hide skeleton and show content
+            productOwnerId = product.brukerId;
             document.getElementById('productSkeleton').style.display = 'none';
             document.getElementById('imageCarousel').style.display = 'block';
             document.getElementById('productTitle').style.display = 'block';
@@ -698,8 +700,9 @@ margin-top: 10px;
         // ========== MESSAGE SENDING ========== //
         function sendMessage() {
             const messageContent = messageInput.value.trim();
+            const senderId = '<%= user ? user.brukerId : "" %>';
             
-            if (!productdID || !messageContent) {
+            if (!productdID || !messageContent || !productOwnerId) {
                 window.toast.show('Please enter a message', 'warning');
                 return;
             }
@@ -709,7 +712,8 @@ margin-top: 10px;
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({ 
                     productdID: productdID, 
-                    messageContent: messageContent 
+                    messageContent: messageContent,
+                    receiverId: productOwnerId 
                 })
             })
             .then(response => {

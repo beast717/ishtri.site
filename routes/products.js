@@ -256,7 +256,7 @@ router.get('/', async (req, res, next) => {
 router.get('/:productId', async (req, res, next) => {
     try {
         const [results] = await pool.promise().query(
-            `SELECT p.*, j.*, c.*, pr.*, cb.brand_name, cm.model_name, p.Price,  p.Description
+            `SELECT p.*, j.*, c.*, pr.*, cb.brand_name, cm.model_name, p.Price,  p.Description, p.brukerId
              FROM products p
              LEFT JOIN jobs j ON p.productdID = j.productdID
              LEFT JOIN cars c ON p.productdID = c.productdID

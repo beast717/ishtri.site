@@ -14,7 +14,9 @@ router.get('/mine-annonser', isAuthenticated, (req, res) => {
 
 // Product details page
 router.get('/productDetails', (req, res) => {
-    res.render('productDetails');
+    res.render('productDetails', {
+        user: req.session.user || null 
+    });
 });
 
 // Favorites page
