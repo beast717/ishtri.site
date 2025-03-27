@@ -1,19 +1,21 @@
-// shared.js
+// shared.js (corrected)
 function checkUnreadMessages() {
-    fetch('/api/messages/unread-count', { credentials: 'include' })
-     if (!document.getElementById('messagesPage')) { // Only run outside messages page
+    if (!document.getElementById('messagesPage')) {
         fetch('/api/messages/unread-count')
-        .then(response => response.json())
-        .then(data => {
-            const badge = document.getElementById('unreadBadge');
-            if (badge) {
-                badge.style.display = data.unreadCount > 0 ? 'inline-block' : 'none';
-                if (data.unreadCount > 0) {
-                    badge.setAttribute('title', i18next.t('meldinger.unread_count', { count: data.unreadCount }));
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(data => {
+                const badge = document.getElementById('unreadBadge');
+                if (badge) {
+                    badge.style.display = data.unreadCount > 0 ? 'inline-block' : 'none';
+                    badge.textContent = data.unreadCount > 0 ? data.unreadCount : '';
                 }
-            } else {
-                console.error(i18next.t('errors.element_not_found', { element: 'unreadBadge' }));
-            }
-        })
-        .catch(error => console.error(i18next.t('errors.fetch_failed', { error: error.message })));
+            })
+            .catch(error => console.error('Error checking messages:', error));
+    }
 }
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', checkUnreadMessages);

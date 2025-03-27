@@ -1,3 +1,4 @@
+<script src="/shared.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
 
@@ -193,8 +194,6 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
    
 </style>
 
-<script src="/shared.js"></script>
-
 <!-- Add your HTML here -->
 <div class="navBar">
         <div class="logoOgTittel">
@@ -241,6 +240,7 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+checkUnreadMessages();
     // Fetch username to toggle login/profile
     fetch('/api/auth/current-user')
         .then(response => response.json())
