@@ -1057,7 +1057,7 @@ select[multiple] option:checked {
                     return response.json();
                 })
                 .then(data => {
-                     hasMore = (currentPage * limit) < data.total;
+                     hasMore = data.products.length >= limit;
                      displayProducts(data.products, loadMore);
 
                      // Reposition the load more button to the bottom of the container

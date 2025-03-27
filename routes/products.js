@@ -225,11 +225,19 @@ router.get('/', async (req, res, next) => {
               LEFT JOIN car_brands cb ON c.brand_id = cb.brand_id
               LEFT JOIN car_models cm ON c.model_id = cm.model_id
               LEFT JOIN cities ci ON p.city_id = ci.cityid
-              ${query.split('WHERE')[1] ? 'WHERE ' + query.split('WHERE')[1].split('ORDER BY')[0].split('LIMIT')[0] : ''}
-            `;
+              ${query.includes('WHERE') ? 
+                query.split('WHERE')[1]
+                  .split('ORDER BY')[0]  // Remove sorting
+                  .split('LIMIT')[0]     // Remove pagination
+                : ''
+              }
+            `.replace('1=1', ''); // Remove redundant 1=1 if present
 
-            // Execute with the same parameters
-            const [totalResult] = await pool.promise().query(countQuery, params);
+            // Execute with original params
+            const [totalResult] = await pool.promise().query(
+              `SELECT COUNT(*) AS total FROM (${countQuery}) AS subquery`, 
+              params
+            );
         
         res.json({
             total: totalResult[0].total,
