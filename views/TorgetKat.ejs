@@ -237,22 +237,29 @@ color: #007bff;
 }
 
 .load-more-btn {
-display: block;
-margin: 30px auto;
-padding: 12px 24px;
-background: #007bff;
-color: white;
-border: none;
-border-radius: 25px;
-cursor: pointer;
-transition: all 0.3s ease;
-font-size: 16px;
+    position: relative; 
+    margin: 20px auto; 
+    padding: 12px 24px;
+    width: fit-content;
+    max-width: 200px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 16px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: none;
 }
 
+
 .load-more-btn:hover {
-background: #0056b3;
-transform: translateY(-2px);
-box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  background: #0056b3;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
 .load-more-btn:disabled {
@@ -676,28 +683,6 @@ select[multiple] option:checked {
             });
         }
 
-        // Initialize translations
-        if (window.i18nextInitialized) {
-            console.log("i18next already initialized, updating content...");
-            updatePageContent();
-            fetchProducts();
-            initializeFavorites();
-        } else {
-            console.log("Waiting for i18next initialization...");
-            window.addEventListener('i18nextInitialized', () => {
-                console.log("i18next initialized, updating content...");
-                updatePageContent();
-                fetchProducts();
-                initializeFavorites();
-            });
-        }
-
-        // Listen for language changes
-        window.addEventListener('languageChanged', () => {
-            console.log("Language changed, updating content...");
-            updatePageContent();
-        });
-
         // Add debouncing utility
         const debounce = (func, wait) => {
             let timeout;
@@ -965,9 +950,13 @@ select[multiple] option:checked {
                 showSkeletonLoading();
             }
 
-            const offset = (currentPage - 1) * limit;
+            // Calculate the page and offset
+            const newPage = loadMore ? currentPage + 1 : 1;
+            const offset = (newPage - 1) * limit;
+
             const urlParams = new URLSearchParams(window.location.search);
             const category = urlParams.get('category') || 'default';
+
 
             // Build API URL with current filters
             let apiUrl = `/api/products?category=${category}&limit=${limit}&offset=${offset}`;
@@ -1068,25 +1057,32 @@ select[multiple] option:checked {
                     return response.json();
                 })
                 .then(data => {
-                    hasMore = (currentPage * limit) < data.total;
-                    displayProducts(data.products, loadMore);
-                    currentPage++;
+                     hasMore = (currentPage * limit) < data.total;
+                     displayProducts(data.products, loadMore);
+
+                     // Reposition the load more button to the bottom of the container
+                     const loadButton = document.getElementById('loadMoreButton');
+                     if (loadButton) {
+                         const buttonWrapper = loadButton.parentElement;
+                         document.getElementById('productsContainer').appendChild(buttonWrapper);
+                     }
+
+                     // Update currentPage after successful fetch
+                    currentPage = newPage;
                     isLoading = false;
 
                     // Initialize lazy loading for new images
-                    if (window.lazyLoader) {
-                        window.lazyLoader.observe();
-                    }
+                    if (window.lazyLoader) window.lazyLoader.observe();
 
-                    // Update load more button
-                    if (loadButton) {
-                        loadButton.disabled = false;
-                        loadButton.textContent = 'Load More';
-                        if (!hasMore) loadButton.remove();
-                    } else if (hasMore) {
-                        addLoadMoreButton();
-                    }
-                })
+                    // Update load more button visibility and state
+                    if (document.getElementById('loadMoreButton')) {
+                     document.getElementById('loadMoreButton').style.display = hasMore ? 'block' : 'none';
+                     document.getElementById('loadMoreButton').disabled = false;
+                     document.getElementById('loadMoreButton').textContent = 'Load More';
+                 } else {
+                     addLoadMoreButton();
+                 }
+            })
                 .catch(error => {
                     console.error("Error fetching products:", error);
                     isLoading = false;
@@ -1204,10 +1200,17 @@ select[multiple] option:checked {
             button.id = 'loadMoreButton';
             button.className = 'load-more-btn';
             button.textContent = 'Load More';
-            button.addEventListener('click', () => fetchProducts(true));
+            button.style.display = hasMore ? 'block' : 'none';
+             button.addEventListener('click', () => {
+                fetchProducts(true);
+            });
             
             const container = document.getElementById('productsContainer');
-            container.appendChild(button);
+            const buttonWrapper = document.createElement('div');
+            buttonWrapper.style.textAlign = 'center';
+            buttonWrapper.style.width = '100%';
+            buttonWrapper.appendChild(button);
+            container.appendChild(buttonWrapper);
         }
 
         function applyFilters() {

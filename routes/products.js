@@ -212,11 +212,26 @@ router.get('/', async (req, res, next) => {
         const [products] = await pool.promise().query(query, params);
         
         // Get total count
-        const countQuery = query
-            .replace(/SELECT[\s\S]+FROM/, 'SELECT COUNT(*) AS total FROM')
-            .replace(/ORDER BY[\s\S]+LIMIT[\s\S]+/, '');
+        const whereClause = query.includes('WHERE') 
+        ? query.split('WHERE')[1].split('ORDER BY')[0].split('LIMIT')[0] 
+        : '';
+
+        const countQuery = `
+            SELECT COUNT(DISTINCT p.productdID) AS total 
+            FROM products p
+            LEFT JOIN properties pr ON p.productdID = pr.productdID
+            LEFT JOIN jobs j ON p.productdID = j.productdID
+            LEFT JOIN cars c ON p.productdID = c.productdID
+            LEFT JOIN car_brands cb ON c.brand_id = cb.brand_id
+            LEFT JOIN car_models cm ON c.model_id = cm.model_id
+            LEFT JOIN cities ci ON p.city_id = ci.cityid
+            ${whereClause ? 'WHERE ' + whereClause : ''}
+        `;
             
-        const [totalResult] = await pool.promise().query(countQuery, params);
+        const [totalResult] = await pool.promise().query(
+            countQuery, 
+            params // Make sure to pass the same parameters
+        );
         
         res.json({
             total: totalResult[0].total,
