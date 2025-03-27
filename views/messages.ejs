@@ -25,6 +25,11 @@
         }
 
         .conversations-list {
+            will-change: contents;
+            contain: content;
+        }
+
+        .conversations-list {
             width: 300px;
             border-right: 1px solid #eee;
             display: flex;
@@ -321,7 +326,10 @@
                 if (currentConversation && currentConversation.productdID === message.productdID) {
                     appendMessage(message);
                 }
-                updateConversationsList();
+                // Add this check to prevent over-fetching
+                if (!document.hidden) {
+                    setTimeout(updateConversationsList, 300);
+                }
             });
 
             // Handle typing status
@@ -414,7 +422,9 @@
                         }
 
                         // Determine the receiver ID based on the conversation
-                        const receiverId = currentConversation.receiverId;
+                        const receiverId = currentConversation.lastMessage.senderId === currentUserId 
+                         ? currentConversation.lastMessage.receiverId 
+                         : currentConversation.lastMessage.senderId;
 
                         const response = await fetch('/api/messages', {
                             method: 'POST',
@@ -455,6 +465,29 @@
                     console.error('Error loading conversations:', error);
                 }
             }
+
+            async function updateConversationsList() {
+            try {
+                const response = await fetch('/api/messages');
+                const messages = await response.json();
+                const grouped = groupMessagesByProduct(messages);
+                
+                // Smart update instead of full refresh
+                const existingIds = new Set(
+                    Array.from(document.querySelectorAll('.conversation-item'))
+                        .map(el => el.dataset.productId)
+                );
+
+                grouped.forEach(group => {
+                    if (!existingIds.has(group.productdID.toString())) {
+                        const newElement = createConversationElement(group);
+                        document.getElementById('conversationsList').prepend(newElement);
+                    }
+                });
+            } catch (error) {
+                console.error('Update failed:', error);
+            }
+        }
 
             // Display conversations
             function displayConversations(messages) {

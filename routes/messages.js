@@ -47,11 +47,15 @@ router.post('/', async (req, res, next) => {
 
         // Verify users exist
         const [users] = await pool.promise().query(
-            'SELECT brukerId FROM brukere WHERE brukerId IN (?, ?)',
+            'SELECT brukerId FROM brukere WHERE brukerId = ? OR brukerId = ?',
             [senderId, receiverId]
         );
 
-        if (users.length !== 2) {
+        // Check if both users exist (allows same user if you want self-messaging)
+        const senderExists = users.some(u => u.brukerId === senderId);
+        const receiverExists = users.some(u => u.brukerId === receiverId);
+
+        if (!senderExists || !receiverExists) {
             return res.status(400).json({ error: 'Invalid user detected' });
         }
 
