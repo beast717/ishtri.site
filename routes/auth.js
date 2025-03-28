@@ -110,8 +110,6 @@ router.post('/login', async (req, res, next) => {
 router.post('/google', async (req, res, next) => {
     try {
         const { credential } = req.body;
-        
-        // Verify Google token
         const ticket = await client.verifyIdToken({
             idToken: credential,
             audience: process.env.GOOGLE_CLIENT_ID
@@ -127,35 +125,47 @@ router.post('/google', async (req, res, next) => {
 
         let user;
         if (existingUser.length > 0) {
-            // Existing user
             user = existingUser[0];
         } else {
-            // Create new user
+            // Generate unique username
+            let baseUsername = (payload.name?.trim() || payload.email.split('@')[0] || 'user').replace(/\s+/g, '_');
+            let username = baseUsername;
+            let counter = 1;
+
+            // Check for existing username
+            while (true) {
+                const [existing] = await pool.promise().query(
+                    'SELECT * FROM brukere WHERE brukernavn = ?',
+                    [username]
+                );
+                
+                if (existing.length === 0) break;
+                
+                username = `${baseUsername}_${Math.floor(Math.random() * 1000)}`;
+                if (counter++ > 10) break;
+            }
+
+            // Insert new user
             const [result] = await pool.promise().query(
-                'INSERT INTO brukere (brukernavn, email, google_id) VALUES (?, ?, ?)',
-                [
-                    payload.name?.trim() || payload.email.split('@')[0], // Handle missing names
-                    payload.email,
-                    payload.sub
-                ]
+                'INSERT INTO brukere (brukernavn, email, google_id, profilepic) VALUES (?, ?, ?, ?)',
+                [username, payload.email, payload.sub, payload.picture]
             );
-            
+
             user = {
                 brukerId: result.insertId,
-                brukernavn: payload.name?.trim() || payload.email.split('@')[0],
+                brukernavn: username,
                 email: payload.email,
-                profilepic: payload.picture // Add Google profile picture
+                profilepic: payload.picture
             };
         }
 
         // Set session
-         req.session.user = {
+        req.session.user = {
             brukerId: user.brukerId,
             brukernavn: user.brukernavn,
             email: user.email,
             profilepic: user.profilepic
         };
-
         req.session.brukernavn = user.brukernavn;
         req.session.brukerId = user.brukerId;
 
