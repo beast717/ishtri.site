@@ -88,11 +88,11 @@ router.get('/', async (req, res, next) => {
 
             // Size range filter
             if (sizeSqmFrom) {
-                query += ' AND pr.SizeSqm >= ?';
+                query += ' AND COALESCE(pr.SizeSqm, 0) >= ?';
                 params.push(sizeSqmFrom);
             }
             if (sizeSqmTo) {
-                query += ' AND pr.SizeSqm <= ?';
+                query += ' AND COALESCE(pr.SizeSqm, 0) <= ?';
                 params.push(sizeSqmTo);
             }
 
@@ -217,21 +217,21 @@ router.get('/', async (req, res, next) => {
         : '';
 
         const countQuery = `
-             SELECT COUNT(DISTINCT p.productdID) AS total 
-              FROM products p
-              LEFT JOIN properties pr ON p.productdID = pr.productdID
-              LEFT JOIN jobs j ON p.productdID = j.productdID
-              LEFT JOIN cars c ON p.productdID = c.productdID
-              LEFT JOIN car_brands cb ON c.brand_id = cb.brand_id
-              LEFT JOIN car_models cm ON c.model_id = cm.model_id
-              LEFT JOIN cities ci ON p.city_id = ci.cityid
-              ${query.includes('WHERE') ? 
+            SELECT COUNT(DISTINCT p.productdID) AS total 
+            FROM products p
+            LEFT JOIN properties pr ON p.productdID = pr.productdID
+            LEFT JOIN jobs j ON p.productdID = j.productdID
+            LEFT JOIN cars c ON p.productdID = c.productdID
+            LEFT JOIN car_brands cb ON c.brand_id = cb.brand_id
+            LEFT JOIN car_models cm ON c.model_id = cm.model_id
+            LEFT JOIN cities ci ON p.city_id = ci.cityid
+            ${query.includes('WHERE') ? 
                 query.split('WHERE')[1]
-                  .split('ORDER BY')[0]  // Remove sorting
-                  .split('LIMIT')[0]     // Remove pagination
+                    .split('ORDER BY')[0]  
+                    .split('LIMIT')[0]     
                 : ''
-              }
-            `.replace('1=1', ''); // Remove redundant 1=1 if present
+            }
+        `.replace('1=1', '');
 
             // Execute with original params
             const [totalResult] = await pool.promise().query(

@@ -1,4 +1,3 @@
-// shared.js (corrected)
 function checkUnreadMessages() {
     if (!document.getElementById('messagesPage')) {
         fetch('/api/messages/unread-count')
@@ -17,5 +16,4 @@ function checkUnreadMessages() {
     }
 }
 
-// Initialize on load
 document.addEventListener('DOMContentLoaded', checkUnreadMessages);
