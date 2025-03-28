@@ -144,14 +144,17 @@ router.post('/google', async (req, res, next) => {
         }
 
         // Set session
-        req.session.user = {
+         req.session.user = {
             brukerId: user.brukerId,
             brukernavn: user.brukernavn,
             email: user.email,
             profilepic: user.profilepic
         };
 
-        res.json({ message: 'Google login successful' });
+        req.session.save(err => {
+            if (err) return next(err);
+            res.json({ message: 'Google login successful' });
+        });
     } catch (err) {
         next(err);
     }
