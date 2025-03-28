@@ -242,7 +242,9 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
 document.addEventListener('DOMContentLoaded', () => {
 checkUnreadMessages();
     // Fetch username to toggle login/profile
-    fetch('/api/auth/current-user')
+    fetch('/api/auth/current-user', { 
+    credentials: 'include' // This is crucial for session cookies
+})
         .then(response => response.json())
         .then(data => {
             if (data.brukernavn) {
