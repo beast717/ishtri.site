@@ -133,15 +133,19 @@ router.post('/google', async (req, res, next) => {
             // Create new user
             const [result] = await pool.promise().query(
                 'INSERT INTO brukere (brukernavn, email, google_id) VALUES (?, ?, ?)',
-                [payload.name || payload.email.split('@')[0], payload.email, payload.sub]
+                [
+                    payload.name?.trim() || payload.email.split('@')[0], // Handle missing names
+                    payload.email,
+                    payload.sub
+                ]
             );
             
             user = {
                 brukerId: result.insertId,
-                brukernavn: payload.name || payload.email.split('@')[0],
-                email: payload.email
+                brukernavn: payload.name?.trim() || payload.email.split('@')[0],
+                email: payload.email,
+                profilepic: payload.picture // Add Google profile picture
             };
-        }
 
         // Set session
          req.session.user = {

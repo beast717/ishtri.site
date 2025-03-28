@@ -425,7 +425,10 @@ async function handleGoogleResponse(response) {
         const data = await res.json();
         
         if (res.ok) {
-            window.location.href = '/'; // Redirect on success
+        // Force reload all auth-related elements
+        window.location.href = '/';
+        setTimeout(() => window.location.reload(true), 500); // Hard reload
+
         } else {
             showErrorMessage(errorMessage, data.error || 'Google login failed');
         }
