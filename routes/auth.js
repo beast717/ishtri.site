@@ -146,6 +146,7 @@ router.post('/google', async (req, res, next) => {
                 email: payload.email,
                 profilepic: payload.picture // Add Google profile picture
             };
+        }
 
         // Set session
          req.session.user = {
