@@ -156,6 +156,9 @@ router.post('/google', async (req, res, next) => {
             profilepic: user.profilepic
         };
 
+        req.session.brukernavn = user.brukernavn;
+        req.session.brukerId = user.brukerId;
+
         req.session.save(err => {
             if (err) return next(err);
             res.json({ message: 'Google login successful' });
