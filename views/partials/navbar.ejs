@@ -242,36 +242,19 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
 document.addEventListener('DOMContentLoaded', () => {
 checkUnreadMessages();
     // Fetch username to toggle login/profile
-    function checkAuthStatus() {
     fetch('/api/auth/current-user', { 
-        credentials: 'include' // Crucial for session cookies
-    })
-    .then(response => {
-        if (!response.ok) throw new Error('Not authenticated');
-        return response.json();
-    })
-    .then(data => {
-        if (data.brukernavn) {
-            document.getElementById('loginButton').style.display = 'none';
-            const profileContainer = document.getElementById('profileContainer');
-            profileContainer.style.display = 'flex';
-            document.getElementById('profileUsername').textContent = data.brukernavn;
-            
-            // Add profile picture handling
-            if (data.profilepic) {
-                document.getElementById('profileIcon').src = 
-                    data.profilepic.startsWith('http') ? 
-                    data.profilepic : 
-                    `/uploads/${data.profilepic}`;
+    credentials: 'include' // This is crucial for session cookies
+})
+        .then(response => response.json())
+        .then(data => {
+            if (data.brukernavn) {
+                document.getElementById('loginButton').style.display = 'none';
+                const profileContainer = document.getElementById('profileContainer');
+                profileContainer.style.display = 'flex';
+                document.getElementById('profileUsername').textContent = data.brukernavn;
+                document.getElementById('profileIcon').src = data.profileIconUrl || 'prrofilepic.svg';
             }
-        }
-    })
-    .catch(error => console.debug('Auth check:', error));
-}
-
-// Run on initial load and after login
-document.addEventListener('DOMContentLoaded', checkAuthStatus);
-window.addEventListener('focus', checkAuthStatus); // Check again when returning to tab
+        });
 
     document.getElementById('profileContainer').addEventListener('click', function (event) {
         const dropdownMenu = document.getElementById('dropdownMenu');
