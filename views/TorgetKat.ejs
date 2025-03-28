@@ -875,7 +875,7 @@ select[multiple] option:checked {
                         <p><strong data-i18n="form.fuel_type">Fuel Type:</strong> ${product.FuelType || 'Not specified'}</p>
                     ` : ''}
                     ${isProperty ? `
-                        <p><strong data-i18n="form.price">Price:</strong> ${product.Price ? `${product.Price.toLocaleString('no-NO')} kr` : i18next.t('form.price_on_request')}</p>
+                        <p><strong data-i18n="form.price">Price:</strong> ${product.Price ? `$${product.Price.toLocaleString('en-US')}` : i18next.t('form.contact_for_price')}</p>
                         <p><strong data-i18n="form.property_type">Type:</strong> ${product.PropertyType}</p>
                         <p><strong data-i18n="property.size">Size:</strong> ${product.SizeSqm} m²</p>
                     ` : ''}
@@ -883,7 +883,7 @@ select[multiple] option:checked {
                         (product.cityName || product.Location || i18next.t('form.not_specified')) + 
                         (product.country ? `, ${product.country}` : '')
                     }</p>
-                    ${!isJob && !isCar && !isProperty ? `<p><strong data-i18n="form.price">Price:</strong> ${product.Price ? `${product.Price.toLocaleString('no-NO')} kr` : i18next.t('form.contact_for_price')}</p>` : ''}
+                    ${!isJob && !isCar && !isProperty ? `<p><strong data-i18n="form.price">Price:</strong> ${product.Price ? `${product.Price.toLocaleString('en-US')} $` : i18next.t('form.contact_for_price')}</p>` : ''}
                 </div>
             `;
 

@@ -344,7 +344,7 @@ width: 40%;
                                     ${product.ProductName} 
                                     ${product.Sold ? `<span class="sold-label">(Sold)</span>` : ''}
                                 </h4>
-                                <p>${product.Price ? `${product.Price.toLocaleString('no-NO')} kr` : 'Contact for price'}</p>
+                                <p>${product.Price ? `$${product.Price.toLocaleString('en-US')}` : 'Contact for price'}</p>
                             `;
                             
                             productDiv.addEventListener('click', (e) => {

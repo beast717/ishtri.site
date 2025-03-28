@@ -582,7 +582,7 @@ margin-top: 10px;
             if (isProperty) {
                 // Price display
                 priceElement.innerHTML = `
-                    ${product.Price} kr<br>
+                    ${product.Price} $<br>
                     <strong>Type:</strong> ${product.PropertyType}<br>
                     <strong>Size:</strong> ${product.SizeSqm} m²
                 `;
@@ -612,7 +612,7 @@ margin-top: 10px;
                 titleElement.insertAdjacentElement('afterend', customTitleElement);
 
                 priceElement.innerHTML = `
-                    ${product.Price} kr<br>
+                    ${product.Price} $<br>
                     <strong data-i18n="form.brand">Brand:</strong> ${product.brand_name}<br>
                     <strong data-i18n="form.model">Model:</strong> ${product.model_name}<br>
                     <strong data-i18n="form.year">Year:</strong> ${product.Year}<br>
@@ -639,7 +639,7 @@ margin-top: 10px;
             }
             // Default case
             else {
-                priceElement.textContent = `${product.Price} kr`;
+                priceElement.textContent = `${product.Price} $`;
                 descElement.textContent = product.Description;
             }
 

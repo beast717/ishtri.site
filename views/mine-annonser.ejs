@@ -325,7 +325,7 @@ button:disabled {
                                 ${product.ProductName} 
                                 ${product.Sold ? `<span class="sold-label" data-i18n="product_details.sold">(Sold)</span>` : ''}
                             </h3>
-                            <p><strong data-i18n="product_details.price">Price:</strong> ${product.Price} $</p>
+                            <p><strong data-i18n="product_details.price">Price:</strong> ${product.Price ? `$${product.Price.toLocaleString('en-US')}` : 'Contact for price'}</p>
                             <p><strong data-i18n="product_details.location">Location:</strong> ${product.Location}</p>
                             <p><strong data-i18n="product_details.dato">Date:</strong> ${product.Date}</p>
                             <div class="button-container">
