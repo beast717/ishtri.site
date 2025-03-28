@@ -201,7 +201,12 @@ router.get('/', async (req, res, next) => {
         const order = [];
         if (sortPrice) order.push(`p.Price ${sortPrice.toUpperCase()}`);
         if (sortDate) order.push(`p.Date ${sortDate.toUpperCase()}`);
-        if (order.length) query += ` ORDER BY ${order.join(', ')}`;
+        if (order.length) {
+            query += ` ORDER BY ${order.join(', ')}`;
+        } else if (category === 'Eiendom') {
+            // Default sorting for Eiendom if none selected
+            query += ' ORDER BY p.Date DESC, p.Price ASC';
+        }
 
         // Pagination
         const validLimit = parseInt(limit) || 20;
