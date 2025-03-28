@@ -1,308 +1,443 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login or Sign Up</title>
     <style>
-        /* Basic styling for layout */
+        /* Modern styling */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
-        }
-        
-        .container {
-            width: 300px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        
-        h2 {
-            margin-bottom: 20px;
-        }
-        
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        
-        input[type="text"], input[type="password"], input[type="email"] {
-            width: 100%;
-            padding: 8px;
-            margin: 5px 0;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-        
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #0a0a0a;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         }
 
-        /* Link styling */
+        .social-login {
+  margin: 1.5rem 0;
+}
+
+.google-btn {
+  margin: 0 auto;
+  width: 240px;
+}
+
+.separator {
+  display: flex;
+  align-items: center;
+  margin: 1.5rem 0;
+}
+
+.line {
+  flex: 1;
+  height: 1px;
+  background: #ddd;
+}
+
+.separator .text {
+  padding: 0 1rem;
+  color: #636e72;
+  font-size: 0.9rem;
+}
+
+        .container {
+            width: 400px;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            position: relative;
+        }
+
+        .brand {
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2d3436;
+        }
+
+        h2 {
+            margin: 0 0 1rem 0;
+            font-weight: 600;
+            color: #2d3436;
+        }
+
+        .subtitle {
+            color: #636e72;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+            line-height: 1.4;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"] {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #6c5ce7;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 0.875rem;
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #5b4bc4;
+        }
+
+        .alert {
+            padding: 0.875rem;
+            margin-bottom: 1.5rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .alert-error {
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #dc2626;
+        }
+
+        .alert-success {
+            background: #dcfce7;
+            border: 1px solid #86efac;
+            color: #16a34a;
+        }
+
         .toggle-link {
             display: block;
-            margin-top: 15px;
-            color: #007BFF;
+            margin-top: 1rem;
+            color: #6c5ce7;
+            text-decoration: none;
+            font-weight: 500;
             cursor: pointer;
-            text-decoration: underline;
+            transition: color 0.2s ease;
+        }
+
+        .toggle-link:hover {
+            color: #5b4bc4;
+        }
+
+        .password-toggle {
+            position: relative;
+        }
+
+        .password-toggle-icon {
+            position: absolute;
+            right: 10px;
+            top: 35px;
+            cursor: pointer;
+            color: #636e72;
+        }
+
+        .legal-text {
+            margin-top: 2rem;
+            font-size: 0.8rem;
+            color: #636e72;
+        }
+
+        .legal-text a {
+            color: #6c5ce7;
+            text-decoration: none;
+            font-weight: 500;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <div class="brand">Ishtri</div>
+    
     <!-- Login Form -->
     <div id="loginForm">
-        <h2 data-i18n="logg_inn.logg_inn">Log In</h2>
-        <!-- Error message container -->
-        <div id="errorMessage" style="color: red; margin-bottom: 15px; display: none;"></div>
-        <div class="form-group">
-            <form id="loginFormElement" action="/api/auth/login" method="POST">
-                <label for="loginUsername" data-i18n="logg_inn.brukernavn">Username:</label>
+        <h2 data-i18n="logg_inn.logg_inn">Welcome Back</h2>
+        <p class="subtitle" data-i18n="logg_inn.subtitle">Log in to contact sellers, save favorites, list ads, and access exclusive features.</p>
+        <div id="errorMessage" class="alert alert-error" style="display: none;"></div>
+        <form id="loginFormElement" action="/api/auth/login" method="POST">
+            <div class="social-login">
+              <div id="googleSignIn" class="google-btn"></div>
+              <div class="separator">
+                <span class="line"></span>
+                <span class="text">or</span>
+                <span class="line"></span>
+              </div>
+            </div>
+            <div class="form-group">
+                <label for="loginUsername" data-i18n="logg_inn.brukernavn">Username or Email</label>
                 <input type="text" id="loginUsername" name="brukernavn" required>
-        </div>
-        <div class="form-group">
-            <label for="loginPassword" data-i18n="logg_inn.passord">Password:</label>
-            <input type="password" id="loginPassword" name="passord" required>
-        </div>
-        <button type="submit" data-i18n="logg_inn.logg_inn">Log In</button>
-        <a href=ForgotPassword.html class="toggle-link" data-i18n="logg_inn.forgot_password">Forgot Password?</a>
-        <span class="toggle-link" onclick="toggleForms()" data-i18n="logg_inn.lag_konto">Create An Account</span>
+            </div>
+            <div class="form-group password-toggle">
+                <label for="loginPassword" data-i18n="logg_inn.passord">Password</label>
+                <input type="password" id="loginPassword" name="passord" required>
+                <span class="password-toggle-icon">👁️</span>
+            </div>
+            <button type="submit" data-i18n="logg_inn.logg_inn">Continue →</button>
+            <a href="ForgotPassword.html" class="toggle-link" data-i18n="logg_inn.forgot_password">Forgot Password?</a>
+            <span class="toggle-link" onclick="toggleForms()" data-i18n="logg_inn.lag_konto">Create Account</span>
         </form>
     </div>
 
     <!-- Sign Up Form -->
     <div id="signupForm" style="display: none;">
-        <h2 data-i18n="logg_inn.lag_konto">Create Account</h2>
-        <div class="form-group">
-            <form action="/api/auth/signup" method="POST">
-                <label for="signupUsername" data-i18n="logg_inn.brukernavn">Username:</label>
+        <h2 data-i18n="logg_inn.lag_konto">Get Started</h2>
+        <p class="subtitle" data-i18n="logg_inn.signup_subtitle">Create your free account to unlock all features.</p>
+        <form action="/api/auth/signup" method="POST">
+            <div class="form-group">
+                <label for="signupUsername" data-i18n="logg_inn.brukernavn">Username</label>
                 <input type="text" id="signupUsername" name="brukernavn" required>
             </div>
             <div class="form-group">
-                <label for="signupEmail" data-i18n="logg_inn.email">Email:</label>
+                <label for="signupEmail" data-i18n="logg_inn.email">Email</label>
                 <input type="email" id="signupEmail" name="email" required>
             </div>
-            <div class="form-group">
-                <label for="signupPassword" data-i18n="logg_inn.passord">Password:</label>
+            <div class="form-group password-toggle">
+                <label for="signupPassword" data-i18n="logg_inn.passord">Password</label>
                 <input type="password" id="signupPassword" name="passord" required>
+                <span class="password-toggle-icon">👁️</span>
             </div>
-            <div class="form-group">
-                <label for="confirmPassword" data-i18n="logg_inn.confirm_password">Confirm Password:</label>
+            <div class="form-group password-toggle">
+                <label for="confirmPassword" data-i18n="logg_inn.confirm_password">Confirm Password</label>
                 <input type="password" id="confirmPassword" name="confirmPassword" required>
+                <span class="password-toggle-icon">👁️</span>
             </div>
             <button type="submit" data-i18n="logg_inn.lag_konto">Create Account</button>
             <span class="toggle-link" onclick="toggleForms()" data-i18n="logg_inn.har_allerede_konto_logg_inn">Already have an account? Log In</span>
-    </form>
+        </form>
+    </div>
+
+    <div class="legal-text">
+        <span data-i18n="logg_inn.terms_text">By continuing, you agree to our</span> 
+        <a href="/terms" data-i18n="logg_inn.terms">Terms of Service</a> 
+        <span data-i18n="logg_inn.and">and</span> 
+        <a href="/privacy" data-i18n="logg_inn.privacy">Privacy Policy</a>
     </div>
 </div>
 
-
 <script>
-     // Function to attach the login form submission handler
-function attachLoginFormListener() {
-    const loginForm = document.getElementById('loginFormElement');
-    if (loginForm) {
-        loginForm.addEventListener('submit', async function (event) {
-            event.preventDefault();
+    // Initialize when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        initializePasswordToggles();
+        attachFormHandlers();
+        initializei18n();
+    });
 
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData.entries());
+    // Password visibility toggle
+    function initializePasswordToggles() {
+        document.querySelectorAll('.password-toggle-icon').forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                const input = e.target.closest('.password-toggle').querySelector('input');
+                input.type = input.type === 'password' ? 'text' : 'password';
+            });
+        });
+    }
+
+    // Form handling
+    function attachFormHandlers() {
+        attachLoginHandler();
+        attachSignupHandler();
+    }
+
+    // Login form submission
+    function attachLoginHandler() {
+        const loginForm = document.getElementById('loginFormElement');
+        if (!loginForm) return;
+
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const button = loginForm.querySelector('button');
             const errorMessage = document.getElementById('errorMessage');
-            errorMessage.style.display = 'none'; // Hide any previous error messages
+            
+            button.innerHTML = 'Processing...';
+            button.disabled = true;
+            errorMessage.style.display = 'none';
 
             try {
+                const formData = new FormData(loginForm);
+                const data = Object.fromEntries(formData.entries());
+                
                 const response = await fetch('/api/auth/login', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
                 });
 
                 const responseData = await response.json();
-
+                
                 if (response.ok) {
                     window.location.href = '/';
                 } else {
-                    // Display specific error message from the server
-                    errorMessage.textContent = responseData.message || 'Invalid credentials. Please try again.';
-                    errorMessage.style.display = 'block';
-                    errorMessage.style.color = '#dc3545';
-                    errorMessage.style.padding = '10px';
-                    errorMessage.style.marginBottom = '15px';
-                    errorMessage.style.borderRadius = '4px';
-                    errorMessage.style.backgroundColor = '#f8d7da';
-                    errorMessage.style.border = '1px solid #f5c6cb';
+                    showErrorMessage(errorMessage, responseData.message || 'Invalid credentials');
+                    resetButton(button, 'Continue →');
                 }
             } catch (error) {
-                console.error('Error during login:', error);
-                errorMessage.textContent = 'An error occurred. Please try again later.';
-                errorMessage.style.display = 'block';
-                errorMessage.style.color = '#dc3545';
-                errorMessage.style.padding = '10px';
-                errorMessage.style.marginBottom = '15px';
-                errorMessage.style.borderRadius = '4px';
-                errorMessage.style.backgroundColor = '#f8d7da';
-                errorMessage.style.border = '1px solid #f5c6cb';
+                console.error('Login error:', error);
+                showErrorMessage(errorMessage, 'Connection error. Please try again later');
+                resetButton(button, 'Continue →');
             }
         });
     }
-}
 
-// Add signup form submission handler
-function attachSignupFormListener() {
-    const signupForm = document.querySelector('#signupForm form');
-    if (signupForm) {
-        signupForm.addEventListener('submit', async function (event) {
+    // Signup form submission
+    function attachSignupHandler() {
+        const signupForm = document.querySelector('#signupForm form');
+        if (!signupForm) return;
+
+        signupForm.addEventListener('submit', async (event) => {
             event.preventDefault();
-
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData.entries());
+            const button = signupForm.querySelector('button');
+            const errorMessage = signupForm.querySelector('#errorMessage') || createSignupErrorMessage(signupForm);
             
-            // Create error message container if it doesn't exist
-            let errorMessage = document.querySelector('#signupForm #errorMessage');
-            if (!errorMessage) {
-                errorMessage = document.createElement('div');
-                errorMessage.id = 'errorMessage';
-                signupForm.insertBefore(errorMessage, signupForm.firstChild);
-            }
+            button.innerHTML = 'Processing...';
+            button.disabled = true;
             errorMessage.style.display = 'none';
 
-            // Validate passwords match
-            if (data.passord !== data.confirmPassword) {
-                errorMessage.textContent = 'Passwords do not match. Please try again.';
-                errorMessage.style.display = 'block';
-                errorMessage.style.color = '#dc3545';
-                errorMessage.style.padding = '10px';
-                errorMessage.style.marginBottom = '15px';
-                errorMessage.style.borderRadius = '4px';
-                errorMessage.style.backgroundColor = '#f8d7da';
-                errorMessage.style.border = '1px solid #f5c6cb';
-                return;
-            }
-
             try {
+                const formData = new FormData(signupForm);
+                const data = Object.fromEntries(formData.entries());
+
+                // Password validation
+                if (data.passord !== data.confirmPassword) {
+                    showErrorMessage(errorMessage, 'Passwords do not match');
+                    resetButton(button, 'Create Account');
+                    return;
+                }
+
                 const response = await fetch('/api/auth/signup', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
                 });
 
                 const responseData = await response.json();
-
+                
                 if (response.ok) {
-                    // Show success message
-                    errorMessage.textContent = 'Account created successfully! Please log in.';
-                    errorMessage.style.display = 'block';
-                    errorMessage.style.color = '#28a745';
-                    errorMessage.style.padding = '10px';
-                    errorMessage.style.marginBottom = '15px';
-                    errorMessage.style.borderRadius = '4px';
-                    errorMessage.style.backgroundColor = '#d4edda';
-                    errorMessage.style.border = '1px solid #c3e6cb';
-                    
-                    // Switch to login form after 2 seconds
-                    setTimeout(() => {
-                        toggleForms();
-                    }, 2000);
+                    showSuccessMessage(errorMessage, 'Account created successfully! Redirecting...');
+                    resetButton(button, 'Create Account');
+                    setTimeout(() => toggleForms(), 1500);
                 } else {
-                    errorMessage.textContent = responseData.message || 'Error creating account. Please try again.';
-                    errorMessage.style.display = 'block';
-                    errorMessage.style.color = '#dc3545';
-                    errorMessage.style.padding = '10px';
-                    errorMessage.style.marginBottom = '15px';
-                    errorMessage.style.borderRadius = '4px';
-                    errorMessage.style.backgroundColor = '#f8d7da';
-                    errorMessage.style.border = '1px solid #f5c6cb';
+                    showErrorMessage(errorMessage, responseData.message || 'Error creating account');
+                    resetButton(button, 'Create Account');
                 }
             } catch (error) {
-                console.error('Error during signup:', error);
-                errorMessage.textContent = 'An error occurred. Please try again later.';
-                errorMessage.style.display = 'block';
-                errorMessage.style.color = '#dc3545';
-                errorMessage.style.padding = '10px';
-                errorMessage.style.marginBottom = '15px';
-                errorMessage.style.borderRadius = '4px';
-                errorMessage.style.backgroundColor = '#f8d7da';
-                errorMessage.style.border = '1px solid #f5c6cb';
+                console.error('Signup error:', error);
+                showErrorMessage(errorMessage, 'Connection error. Please try again later');
+                resetButton(button, 'Create Account');
             }
         });
     }
-}
 
-// Toggle between login and signup forms
-function toggleForms() {
-    const loginForm = document.getElementById('loginForm');
-    const signupForm = document.getElementById('signupForm');
-
-    if (loginForm.style.display === 'none') {
-        loginForm.style.display = 'block';
-        signupForm.style.display = 'none';
-    } else {
-        loginForm.style.display = 'none';
-        signupForm.style.display = 'block';
+    // Form toggle functionality
+    function toggleForms() {
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        [loginForm, signupForm].forEach(form => {
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+        });
+        document.querySelectorAll('.alert').forEach(alert => alert.style.display = 'none');
     }
 
-    // Re-attach both form submission handlers
-    attachLoginFormListener();
-    attachSignupFormListener();
-}
+    // Error/Success message handling
+    function showErrorMessage(element, message) {
+        element.textContent = message;
+        element.classList.add('alert', 'alert-error');
+        element.style.display = 'block';
+    }
 
-// Attach both form submission handlers when the page loads
+    function showSuccessMessage(element, message) {
+        element.textContent = message;
+        element.classList.add('alert', 'alert-success');
+        element.style.display = 'block';
+    }
+
+    function createSignupErrorMessage(form) {
+        const errorMessage = document.createElement('div');
+        errorMessage.id = 'errorMessage';
+        form.insertBefore(errorMessage, form.firstChild);
+        return errorMessage;
+    }
+
+    function resetButton(button, text) {
+        button.innerHTML = text;
+        button.disabled = false;
+    }
+
+    // Initialize when DOM loads
 document.addEventListener('DOMContentLoaded', () => {
-    attachLoginFormListener();
-    attachSignupFormListener();
+    initializeGoogleAuth();
 });
 
-     // Language Initialization
-        document.addEventListener('DOMContentLoaded', () => {
-            const savedLanguage = localStorage.getItem('selectedLanguage') || 'no'; // Default to 'no'
+// Google Auth Initialization
+function initializeGoogleAuth() {
+    if (typeof google !== 'undefined') {
+        google.accounts.id.initialize({
+            client_id: '502881498259-u0g6k4se00su93ocksenfrh96jv8j9bn.apps.googleusercontent.com', 
+            callback: handleGoogleResponse,
+            auto_select: false,
+            context: 'signin'
+        });
+        
+        google.accounts.id.renderButton(
+            document.getElementById('googleSignIn'),
+            {
+                type: 'standard',
+                theme: 'outline',
+                size: 'large',
+                width: '240',
+                logo_alignment: 'center'
+            }
+        );
+    }
+}
 
-            i18next
-                .use(i18nextHttpBackend)
-                .use(i18nextBrowserLanguageDetector)
-                .init({
-                    debug: true,
-                    fallbackLng: savedLanguage,
-                    backend: {
-                        loadPath: '/locales/{{lng}}.json', // Path to your translation JSON files
-                    }
-                }, (err, t) => {
-                    if (err) console.error(err);
-                    updateContent(); // Update page content with translations
-                });
+// Handle Google Response
+async function handleGoogleResponse(response) {
+    const errorMessage = document.getElementById('errorMessage');
+    try {
+        const res = await fetch('/api/auth/google', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ credential: response.credential })
         });
 
-        // Update Translatable Content
-        function updateContent() {
-            document.querySelectorAll('[data-i18n]').forEach(element => {
-                const key = element.getAttribute('data-i18n');
-                const translation = i18next.t(key);
-                if (element.tagName === 'INPUT' && element.type === 'text') {
-                    element.placeholder = translation; // Update input placeholders
-                } else {
-                    element.innerHTML = translation; // Update other elements
-                }
-            });
+        const data = await res.json();
+        
+        if (res.ok) {
+            window.location.href = '/dashboard'; // Redirect on success
+        } else {
+            showErrorMessage(errorMessage, data.error || 'Google login failed');
         }
+    } catch (error) {
+        showErrorMessage(errorMessage, 'Connection error. Please try again');
+    }
+}
+
 </script>
 
 </body>

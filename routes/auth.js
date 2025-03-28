@@ -6,6 +6,8 @@ const pool = require('../config/db');
 const { transporter } = require('../config/email');
 const fs = require('fs');
 const path = require('path');
+const { OAuth2Client } = require('google-auth-library');
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 // Authentication middleware
 const isAuthenticated = (req, res, next) => {
@@ -104,6 +106,57 @@ router.post('/login', async (req, res, next) => {
     }
 });
 
+// Google login
+router.post('/google', async (req, res, next) => {
+    try {
+        const { credential } = req.body;
+        
+        // Verify Google token
+        const ticket = await client.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID
+        });
+
+        const payload = ticket.getPayload();
+        
+        // Check if user exists
+        const [existingUser] = await pool.promise().query(
+            'SELECT * FROM brukere WHERE email = ? OR google_id = ?',
+            [payload.email, payload.sub]
+        );
+
+        let user;
+        if (existingUser.length > 0) {
+            // Existing user
+            user = existingUser[0];
+        } else {
+            // Create new user
+            const [result] = await pool.promise().query(
+                'INSERT INTO brukere (brukernavn, email, google_id) VALUES (?, ?, ?)',
+                [payload.name || payload.email.split('@')[0], payload.email, payload.sub]
+            );
+            
+            user = {
+                brukerId: result.insertId,
+                brukernavn: payload.name || payload.email.split('@')[0],
+                email: payload.email
+            };
+        }
+
+        // Set session
+        req.session.user = {
+            brukerId: user.brukerId,
+            brukernavn: user.brukernavn,
+            email: user.email,
+            profilepic: user.profilepic
+        };
+
+        res.json({ message: 'Google login successful' });
+    } catch (err) {
+        next(err);
+    }
+});
+
 // Password reset handling
 router.post('/forgot-password', async (req, res, next) => {
     try {
@@ -116,7 +169,7 @@ router.post('/forgot-password', async (req, res, next) => {
         if (!results.length) throw new Error('User not found');
         
         const user = results[0];
-        const resetLink = `http://yourdomain.com/reset-password?email=${email}`;
+        const resetLink = `http://ishtri.site/reset-password?email=${email}`;
         
         await transporter.sendMail({
             from: process.env.GMAIL_USER,
