@@ -388,32 +388,28 @@
         button.disabled = false;
     }
 
-    // Initialize when DOM loads
-document.addEventListener('DOMContentLoaded', () => {
+   document.addEventListener('DOMContentLoaded', () => {
     initializeGoogleAuth();
 });
 
-// Google Auth Initialization
 function initializeGoogleAuth() {
-    if (typeof google !== 'undefined') {
-        google.accounts.id.initialize({
-            client_id: '502881498259-u0g6k4se00su93ocksenfrh96jv8j9bn.apps.googleusercontent.com', 
-            callback: handleGoogleResponse,
-            auto_select: false,
-            context: 'signin'
-        });
-        
-        google.accounts.id.renderButton(
-            document.getElementById('googleSignIn'),
-            {
-                type: 'standard',
-                theme: 'outline',
-                size: 'large',
-                width: '240',
-                logo_alignment: 'center'
-            }
-        );
+    if (typeof google === 'undefined') {
+        // Retry every 100ms until Google lib loads
+        setTimeout(initializeGoogleAuth, 100);
+        return;
     }
+    
+    google.accounts.id.initialize({
+        client_id: '502881498259-u0g6k4se00su93ocksenfrh96jv8j9bn.apps.googleusercontent.com',
+        callback: handleGoogleResponse,
+        auto_select: false,
+        context: 'signin'
+    });
+    
+    google.accounts.id.renderButton(
+        document.getElementById('googleSignIn'),
+        { type: 'standard', theme: 'outline', size: 'large', width: '240' }
+    );
 }
 
 // Handle Google Response
@@ -429,7 +425,7 @@ async function handleGoogleResponse(response) {
         const data = await res.json();
         
         if (res.ok) {
-            window.location.href = '/dashboard'; // Redirect on success
+            window.location.href = '/'; // Redirect on success
         } else {
             showErrorMessage(errorMessage, data.error || 'Google login failed');
         }
