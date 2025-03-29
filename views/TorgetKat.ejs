@@ -804,30 +804,7 @@ select[multiple] option:checked {
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
-        console.log("Initializing TorgetKat page...");
-        
-        // Function to update all translatable content
-        function updatePageContent() {
-            document.querySelectorAll('[data-i18n]').forEach(element => {
-                const key = element.getAttribute('data-i18n');
-                if (!key) return;
-
-                try {
-                    const translation = i18next.t(key);
-                    if (element.tagName === 'INPUT') {
-                        if (element.type === 'text' || element.type === 'placeholder') {
-                            element.placeholder = translation;
-                        }
-                    } else if (element.tagName === 'OPTION') {
-                        element.textContent = translation;
-                    } else {
-                        element.textContent = translation;
-                    }
-                } catch (err) {
-                    console.warn(`Translation error for key "${key}":`, err);
-                }
-            });
-        }
+        console.log("Initializing TorgetKat page...");      
 
         // Add debouncing utility
         const debounce = (func, wait) => {
@@ -1021,15 +998,15 @@ select[multiple] option:checked {
                         <p><strong data-i18n="form.fuel_type">Fuel Type:</strong> ${product.FuelType || 'Not specified'}</p>
                     ` : ''}
                     ${isProperty ? `
-                        <p><strong data-i18n="form.price">Price:</strong> ${product.Price ? `$${product.Price.toLocaleString('en-US')}` : i18next.t('form.contact_for_price')}</p>
+                        <p><strong data-i18n="form.price">Price:</strong> ${product.Price ? `$${product.Price.toLocaleString('en-US')}` : 'Contact for price'}</p>
                         <p><strong data-i18n="form.property_type">Type:</strong> ${product.PropertyType}</p>
                         <p><strong data-i18n="property.size">Size:</strong> ${product.SizeSqm} m²</p>
                     ` : ''}
                     <p><strong data-i18n="form.location">Location:</strong> ${ 
-                        (product.cityName || product.Location || i18next.t('form.not_specified')) + 
+                        (product.cityName || product.Location || 'Not specified') + 
                         (product.country ? `, ${product.country}` : '')
                     }</p>
-                    ${!isJob && !isCar && !isProperty ? `<p><strong data-i18n="form.price">Price:</strong> ${product.Price ? `${product.Price.toLocaleString('en-US')} $` : i18next.t('form.contact_for_price')}</p>` : ''}
+                    ${!isJob && !isCar && !isProperty ? `<p><strong data-i18n="form.price">Price:</strong> ${product.Price ? `${product.Price.toLocaleString('en-US')} $` : 'Contact for price'}</p>` : ''}
                 </div>
             `;
 

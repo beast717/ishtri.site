@@ -311,11 +311,11 @@ router.post('/', upload.array('images', 5), async (req, res, next) => {
             // 2. Build product data with city_id
             const productData = {
               category: body.Category,
-              ProductName: sanitizeSQL(body.ProductName) || 'Unnamed Vehicle',
-              Price: parseFloat(String(body.Price).replace(/,/g, '')) || null,
-              Location: sanitizeSQL(body.Location) || 'Location not specified',
+              ProductName: sanitizeSQL(body.ProductName) || 'Untitled Listing',
+              Price: body[`${body.Category}Price`] ? parseFloat(body[`${body.Category}Price`]) : null,
+              Location: sanitizeSQL(body.Location) || null,
               city_id: city_id,
-              Description: sanitizeSQL(body.Description) || 'No description provided',
+              Description: sanitizeSQL(body.Description) || null,
               Images: files.length > 0 
                 ? files.map(f => f.filename).join(',') 
                 : 'default.jpg',
@@ -329,59 +329,6 @@ router.post('/', upload.array('images', 5), async (req, res, next) => {
               return res.status(400).send("Remove apostrophes from product name");
             }
 
-            if (productData.Location.length < 2) {
-              await connection.rollback();
-              return res.status(400).send("Location must be at least 2 characters");
-            }
-
-            // Inside the POST route handler (products.js):
-            if (body.Category !== 'Jobb') { 
-              let priceInput;
-              switch (body.Category) {
-                case 'Torget':
-                  priceInput = body.TorgetPrice;
-                  break;
-                case 'Eiendom':
-                  priceInput = body.PropertyPrice;
-                  break;
-                case 'Bil':
-                  priceInput = body.CarPrice;
-                  break;
-                default:
-                  priceInput = body.Price;
-              }
-
-              // Debugging: Log the received price input
-              console.log('Price Input:', priceInput);
-
-              if (!priceInput) {
-                await connection.rollback();
-                return res.status(400).send('Price field is required');
-              }
-
-              let parsedPrice;
-              try {
-                // Remove all non-numeric characters except periods
-                const cleanedPrice = String(priceInput)
-                  .replace(/,/g, '') // Remove commas first
-                  .replace(/[^\d.]/g, ''); // Remove non-digits/non-periods
-
-                parsedPrice = parseFloat(cleanedPrice);
-
-                if (isNaN(parsedPrice)) {
-                  throw new Error('Invalid price');
-                }
-              } catch (error) {
-                await connection.rollback();
-                return res.status(400).send('Invalid price format. Use numbers only (e.g., 1500000)');
-              }
-
-              productData.Price = parsedPrice;
-
-            } else {
-              productData.Price = null; // Explicitly set to null for jobs
-            }
-
             // 3. Insert into products table
             const [productResult] = await connection.query(
                 `INSERT INTO products SET ?`, 
@@ -392,18 +339,19 @@ router.post('/', upload.array('images', 5), async (req, res, next) => {
 
             // Handle category-specific inserts
             if (body.Category === 'Jobb') {
-                await connection.query(
-                    `INSERT INTO jobs SET ?`, {
-                        productdID: productId,
-                        JobTitle: body.JobTitle,
-                        CompanyName: body.CompanyName,
-                        EmploymentType: body.EmploymentType,
-                        Salary: body.Salary,
-                        ApplicationDeadline: body.ApplicationDeadline,
-                        ContactEmail: body.ContactEmail,
-                        JobDescription: body.JobDescription
-                    }
-                );
+              await connection.query(
+                `INSERT INTO jobs SET ?`, 
+                {
+                  productdID: productId,
+                  JobTitle: body.JobTitle || null, // Allow NULL
+                  CompanyName: body.CompanyName || null,
+                  EmploymentType: body.EmploymentType || null,
+                  Salary: body.Salary || null,
+                  JobDescription: body.JobDescription || null,
+                  ApplicationDeadline: body.ApplicationDeadline || null,
+                  ContactEmail: body.ContactEmail || null
+                }
+              );
             }
 
             if (body.Category === 'Bil') {
@@ -411,10 +359,10 @@ router.post('/', upload.array('images', 5), async (req, res, next) => {
                   productdID: productId,
                   brand_id: body.brand_id,
                   model_id: body.model_id,
-                  Year: body.Year,         
-                  Mileage: body.Mileage,   
-                  FuelType: body.FuelType, 
-                  Transmission: body.Transmission
+                  Year: body.Year || null,         
+                  Mileage: body.Mileage || null,  
+                  FuelType: body.FuelType || null,
+                  Transmission: body.Transmission || null
                 };
 
               await connection.query(`INSERT INTO cars SET ?`, carData);
@@ -423,15 +371,13 @@ router.post('/', upload.array('images', 5), async (req, res, next) => {
             if (body.Category === 'Eiendom') {
               const propertyData = {
                 productdID: productId,
-                PropertyType: body.PropertyType,
-                SizeSqm: body.SizeSqm,
-                NumRooms: body.NumRooms,
-                NumBathrooms: body.NumBathrooms,
-                Amenities: Array.isArray(body.Amenities) ? 
-               JSON.stringify(body.Amenities) : 
-               '[]',
-                YearBuilt: body.YearBuilt,
-                EnergyClass: body.EnergyClass
+                PropertyType: body.PropertyType || null, // Convert empty string to NULL
+                SizeSqm: body.SizeSqm ? parseInt(body.SizeSqm) : null,
+                NumRooms: body.NumRooms ? parseInt(body.NumRooms) : null,
+                NumBathrooms: body.NumBathrooms ? parseInt(body.NumBathrooms) : null,
+                Amenities: Array.isArray(body.Amenities) ? JSON.stringify(body.Amenities) : '[]',
+                YearBuilt: body.YearBuilt || null,
+                EnergyClass: body.EnergyClass || null
               };
 
               await connection.query(`INSERT INTO properties SET ?`, propertyData);
