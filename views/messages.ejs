@@ -243,50 +243,6 @@
             border-radius: 8px;
         }
 
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .conversations-list {
-                width: 100%;
-                height: 100%;
-                position: absolute;
-                z-index: 1;
-                background: white;
-                transform: translateX(-100%);
-                transition: transform 0.3s;
-            }
-
-            .conversations-list.show {
-                transform: translateX(0);
-            }
-
-            .chat-window {
-                width: 100%;
-            }
-
-            .message {
-                max-width: 85%;
-            }
-        }
-
-        .sender-name {
-            font-weight: 500;
-            color: #007bff;
-        }
-
-        .message-header {
-            font-size: 12px;
-            font-weight: 500;
-            margin-bottom: 4px;
-            color: #666;
-        }
-
-        .message.sent .message-header {
-            color: #fff;
-        }
-
-        .message.received .message-header {
-            color: #666;
-        }
     </style>
     <script>
         // Global initialization flag
