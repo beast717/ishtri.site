@@ -190,7 +190,7 @@ router.post('/forgot-password', async (req, res, next) => {
         if (!results.length) throw new Error('User not found');
         
         const user = results[0];
-        const resetLink = `http://ishtri.site/reset-password?email=${email}`;
+        const resetLink = `https://ishtri.site/api/auth/reset-password?email=${email}`; // ← Add /api/auth
         
         await transporter.sendMail({
             from: process.env.GMAIL_USER,
@@ -199,6 +199,12 @@ router.post('/forgot-password', async (req, res, next) => {
             html: `<p>Hello ${user.brukernavn},</p>
                    <p>Reset your password: <a href="${resetLink}">${resetLink}</a></p>`
         });
+
+        // Send styled HTML response instead of JSON
+        const htmlPath = path.join(__dirname, '../Public/ResetEmailSent.html');
+        const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+        const populatedContent = htmlContent.replace('{{email}}', email);
+        res.send(populatedContent);
         
         res.json({ message: 'Reset email sent' });
     } catch (err) {
