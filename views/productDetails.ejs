@@ -555,8 +555,10 @@ margin-top: 10px;
 
             // Update title
             titleElement.textContent = isJob ? product.JobTitle : 
-                                  isCar ? `${product.brand_name} ${product.model_name}` : 
-                                  product.ProductName;
+                                  isCar ? (product.brand_name && product.model_name ? 
+                                  `${product.brand_name} ${product.model_name}` : 
+                                  product.ProductName) :
+                          product.ProductName;
 
             if (product.Sold) {
                 const soldLabel = document.createElement('span');

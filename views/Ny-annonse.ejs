@@ -375,13 +375,13 @@ padding: 20px;
                      <input type="text" id="car-ProductName" name="ProductName" required>
 
                      <label for="CarBrand" data-i18n="form.brand">Brand</label>
-                     <select id="CarBrand" name="brand_id" required>
+                     <select id="CarBrand" name="brand_id" >
                          <option value="" data-i18n="form.select_brand">Select Brand</option>
                          <!-- Options loaded dynamically -->
                      </select>
 
                      <label for="CarModel" data-i18n="form.model">Model</label>
-                     <select id="CarModel" name="model_id" required disabled>
+                     <select id="CarModel" name="model_id" disabled>
                          <option value="" data-i18n="form.select_model">Select Model First</option>
                          <!-- Models loaded dynamically -->
                      </select>
@@ -591,10 +591,11 @@ padding: 20px;
         document.getElementById('CarBrand').addEventListener('change', function() {
             const brandId = this.value;
             const modelSelect = document.getElementById('CarModel');
-            document.getElementById('CarModel').disabled = false;
             
-            if (!brandId) {
-                modelSelect.disabled = true;
+            modelSelect.disabled = !brandId;
+            
+             if (!brandId) {
+                modelSelect.innerHTML = '<option value="">Select model</option>';
                 return;
             }
 

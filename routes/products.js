@@ -357,13 +357,17 @@ router.post('/', upload.array('images', 5), async (req, res, next) => {
             if (body.Category === 'Bil') {
               const carData = {
                   productdID: productId,
-                  brand_id: body.brand_id,
-                  model_id: body.model_id,
+                  brand_id: body.brand_id || null,
+                  model_id: body.model_id || null,
                   Year: body.Year || null,         
                   Mileage: body.Mileage || null,  
                   FuelType: body.FuelType || null,
                   Transmission: body.Transmission || null
                 };
+
+                // Convert empty strings to NULL for numeric fields
+              if (carData.Year === '') carData.Year = null;
+              if (carData.Mileage === '') carData.Mileage = null;
 
               await connection.query(`INSERT INTO cars SET ?`, carData);
             }
