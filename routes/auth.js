@@ -240,7 +240,7 @@ router.get('/reset-password', (req, res, next) => {
         const email = req.query.email;
         if (!email) throw new Error('Invalid reset link');
         
-        const htmlPath = path.join(__dirname, '../public/ResetPassword.html');
+        const htmlPath = path.join(__dirname, '../Public/ResetPassword.html');
         const htmlContent = fs.readFileSync(htmlPath, 'utf8');
         const populatedContent = htmlContent.replace('{{email}}', email);
         
