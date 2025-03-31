@@ -518,39 +518,38 @@ padding: 20px;
         'Jobb': 'job'
     };
 
-    // Activate the selected category's section
-    const activeSectionKey = categoryToSection[category];
-    if (activeSectionKey && sections[activeSectionKey]) {
-        sections[activeSectionKey].classList.add('active');
-        sections[activeSectionKey].querySelectorAll('input, textarea, select').forEach(field => {
-            field.disabled = false;
-        });
-    }
-
-    // Deactivate and disable fields in all other sections
+    // Hide all sections first
     Object.keys(sections).forEach(key => {
-        if (key !== activeSectionKey && key !== 'formContainer' && sections[key]) {
+        if (key !== 'formContainer' && sections[key]) {
+            sections[key].style.display = 'none';
             sections[key].classList.remove('active');
+            // Disable fields in inactive sections to prevent them from being submitted
             sections[key].querySelectorAll('input, textarea, select').forEach(field => {
                 field.disabled = true;
             });
         }
     });
 
+    // Show the selected category's section
+    const activeSectionKey = categoryToSection[category];
+    if (activeSectionKey && sections[activeSectionKey]) {
+        sections[activeSectionKey].style.display = 'block';
+        sections[activeSectionKey].classList.add('active');
+        // Enable fields in the active section
+        sections[activeSectionKey].querySelectorAll('input, textarea, select').forEach(field => {
+            field.disabled = false;
+        });
+    }
+
+    // Show the form container
     sections.formContainer.classList.add('active');
 
-    // Handle required fields
-    const allRequired = document.querySelectorAll('[required]');
-    allRequired.forEach(field => {
-    // Preserve required for Country and City
-    if (field.id !== 'Country' && field.id !== 'City') {
+    // Reset all required attributes first
+    document.querySelectorAll('[required]').forEach(field => {
         field.removeAttribute('required');
-    }
-});
+    });
 
-    document.getElementById('Country').required = true;
-    document.getElementById('City').required = true;
-
+    // Set required fields based on category
     const requiredFields = {
         'Torget': ['ProductName'],
         'Båt': ['BoatProductName'],
@@ -560,10 +559,21 @@ padding: 20px;
         'Bil': ['car-ProductName']
     };
 
+    // Add Country and City to all categories' required fields
+    if (requiredFields[category]) {
+        requiredFields[category].push('Country');
+        requiredFields[category].push('City');
+    }
+
+    // Set required attribute for the fields in the selected category
     requiredFields[category]?.forEach(fieldId => {
         const field = document.getElementById(fieldId);
         if (field) field.setAttribute('required', 'true');
     });
+
+    // Always ensure Country and City are required regardless of category
+    document.getElementById('Country').setAttribute('required', 'true');
+    document.getElementById('City').setAttribute('required', 'true');
 }
 
     function loadCountries() {
@@ -698,17 +708,22 @@ padding: 20px;
     });
 
     document.getElementById('productForm').addEventListener('submit', function(event) {
-        const selectedCategory = document.getElementById('Category').value;
-        let hasError = false;
-        document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+    // Prevent form submission initially
+    event.preventDefault();
+    
+    // Clear all previous error messages
+    document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+    
+    const selectedCategory = document.getElementById('Category').value;
+    let hasError = false;
 
-        if (!selectedCategory) {
+    if (!selectedCategory) {
         alert('Please select a category');
-        event.preventDefault();
         return;
     }
 
-        const titleFields = {
+    // Title field validation based on category
+    const titleFields = {
         'Torget': 'ProductName',
         'Båt': 'BoatProductName',
         'MC': 'MCProductName',
@@ -726,16 +741,15 @@ padding: 20px;
         }
     }
 
-    // Validate Country (ALWAYS REQUIRED)
+    // ALWAYS validate Country regardless of category
     const country = document.getElementById('Country').value;
     if (!country) {
         document.getElementById('CountryError').textContent = 'Country is required';
         hasError = true;
     }
 
-
-        // Validate City (only for Bil/Eiendom)
-    if (selectedCategory === 'Bil' || selectedCategory === 'Eiendom') {
+    // Validate City only if Country is selected
+    if (country) {
         const city = document.getElementById('City').value;
         if (!city) {
             document.getElementById('CityError').textContent = 'City is required';
@@ -743,18 +757,11 @@ padding: 20px;
         }
     }
 
-        if (hasError) {
-            event.preventDefault();
-        }
-    });
-
-    document.getElementById('ProductName').addEventListener('input', function() {
-        if (this.value.trim()) {
-            document.getElementById('ProductNameError').textContent = '';
-        } else {
-            document.getElementById('ProductNameError').textContent = 'Product Name is required';
-        }
-    });
+    // If no validation errors, submit the form
+    if (!hasError) {
+        this.submit();
+    }
+});
 </script>
 </body>
 </html>
