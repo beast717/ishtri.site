@@ -205,6 +205,27 @@ padding: 20px;
     font-size: 0.9em;
     margin-top: 5px;
 }
+
+/* Add to existing styles */
+.error-message-container {
+    display: none;
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 6px;
+    background-color: #fff8f8;
+    border: 1px solid #ffcccc;
+    color: #ff4444;
+    align-items: center;
+    gap: 10px;
+}
+
+.error-message-container i {
+    font-size: 18px;
+}
+
+.error-message-container.active {
+    display: flex;
+}
     </style>
 </head>
 <body>
@@ -481,6 +502,10 @@ padding: 20px;
 
                 <label for="Images" data-i18n="form.upload_images">Upload Images</label>
                 <input type="file" id="Images" name="images" multiple>
+                <div id="uploadError" class="error-message-container" style="display: none;">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span id="errorText"></span>
+                </div>
 
                 <!-- Hidden Category Field -->
                 <input type="hidden" id="Category" name="Category" required>
@@ -707,12 +732,34 @@ padding: 20px;
         loadCarBrands();
     });
 
-    document.getElementById('productForm').addEventListener('submit', function(event) {
+    document.getElementById('productForm').addEventListener('submit', async function(event) {
     // Prevent form submission initially
     event.preventDefault();
     
     // Clear all previous error messages
     document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+    const errorContainer = document.getElementById('uploadError');
+    errorContainer.style.display = 'none';
+
+    // Client-side validation for image count
+    const fileInput = document.getElementById('Images');
+    if (fileInput.files.length > 5) {
+        showUploadError('Maximum 5 images allowed');
+        return;
+    }
+
+    // Check individual file sizes client-side
+    let sizeError = false;
+    Array.from(fileInput.files).forEach(file => {
+        if (file.size > 5 * 1024 * 1024) { // 5MB
+            sizeError = true;
+        }
+    });
+    
+    if (sizeError) {
+        showUploadError('One or more images exceed 5MB size limit');
+        return;
+    }
     
     const selectedCategory = document.getElementById('Category').value;
     let hasError = false;
@@ -783,18 +830,39 @@ padding: 20px;
             firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     } else {
-        // Show loading state
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Submitting...';
-        
-        // Submit the form
-        setTimeout(() => {
-            this.submit();
-        }, 200);
+         // Show loading state
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...';
+
+    // Submit via fetch
+    try {
+        const formData = new FormData(this);
+        const response = await fetch('/api/products', {
+            method: 'POST',
+            body: formData
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Upload failed');
+        }
+
+        // Successful submission
+        window.location.href = '/mine-annonser';
+    } catch (error) {
+        showUploadError(error.message);
+        console.error('Submission error:', error);
+    } finally {
+        // Reset button state
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
     }
+}
+
 });
+
     // 2. Add real-time validation for fields
 function addRealTimeValidation() {
     // Add validation to all required fields
@@ -892,6 +960,10 @@ function validatePrice(field) {
 
 // 3. Image preview functionality
 document.getElementById('Images').addEventListener('change', function(event) {
+    // Clear any existing error messages
+    const errorContainer = document.getElementById('uploadError');
+    errorContainer.style.display = 'none';
+    document.getElementById('errorText').textContent = '';
     const previewContainer = document.getElementById('imagePreviewContainer') || createImagePreviewContainer();
     previewContainer.innerHTML = '';
     
@@ -1047,19 +1119,25 @@ function addClearFormButton() {
     clearBtn.style.backgroundColor = '#f0f0f0';
     clearBtn.style.color = '#333';
     
+    // In the addClearFormButton() function
     clearBtn.addEventListener('click', function() {
-        if (confirm('Are you sure you want to clear all form data?')) {
-            document.getElementById('productForm').reset();
-            localStorage.removeItem('formData');
-            localStorage.removeItem('selectedCategory');
-            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-            
-            const imagePreview = document.getElementById('imagePreviewContainer');
-            if (imagePreview) {
-                imagePreview.innerHTML = '';
-            }
+    if (confirm('Are you sure you want to clear all form data?')) {
+        // Add these lines
+        const errorContainer = document.getElementById('uploadError');
+        errorContainer.style.display = 'none';
+        document.getElementById('errorText').textContent = '';
+        
+        document.getElementById('productForm').reset();
+        localStorage.removeItem('formData');
+        localStorage.removeItem('selectedCategory');
+        document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+        
+        const imagePreview = document.getElementById('imagePreviewContainer');
+        if (imagePreview) {
+            imagePreview.innerHTML = '';
         }
-    });
+    }
+});
     
     submitBtn.parentNode.insertBefore(clearBtn, submitBtn);
 }
@@ -1093,6 +1171,26 @@ document.addEventListener('DOMContentLoaded', function() {
     setupFormDataSaving();
     addClearFormButton();
 });
+
+function showUploadError(message) {
+    const errorContainer = document.getElementById('uploadError');
+    const errorText = document.getElementById('errorText');
+    
+    if (!errorContainer || !errorText) {
+        console.error('Error elements missing in DOM');
+        alert('Error: ' + message);
+        return;
+    }
+    
+    // Clear previous messages before showing new one
+    errorText.textContent = '';
+    errorContainer.style.display = 'flex'; // Or use classList.add('active') if using classes
+    errorText.textContent = message;
+    
+    setTimeout(() => {
+        errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+}
 </script>
 </body>
 </html>

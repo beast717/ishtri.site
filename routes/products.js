@@ -396,6 +396,15 @@ router.post('/', upload.array('images', 5), async (req, res, next) => {
         }
 
     } catch (err) {
+         // Handle multer errors
+        if (err instanceof multer.MulterError) {
+            if (err.code === 'LIMIT_FILE_SIZE') {
+                return res.status(400).json({ message: 'File size exceeds 5MB limit' });
+            }
+            if (err.code === 'LIMIT_FILE_COUNT') {
+                return res.status(400).json({ message: 'Maximum 5 images allowed' });
+            }
+        }
         next(err);
     }
 });
