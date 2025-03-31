@@ -743,18 +743,8 @@ padding: 20px;
         };
 
     const priceField = document.getElementById(priceFields[selectedCategory]);
-        if (priceField && priceField.value) {
-            const price = parseFloat(priceField.value);
-            if (isNaN(price) || price < 0) {
-                const errorId = priceFields[selectedCategory] + 'Error';
-                // Create error element if it doesn't exist
-                if (!document.getElementById(errorId)) {
-                    const errorElement = document.createElement('div');
-                    errorElement.id = errorId;
-                    errorElement.className = 'error-message';
-                    priceField.insertAdjacentElement('afterend', errorElement);
-                }
-                document.getElementById(errorId).textContent = 'Please enter a valid price';
+        if (priceField) {
+            if (!validatePrice(priceField)) {
                 hasError = true;
             }
         }
@@ -863,9 +853,34 @@ function validatePrice(field) {
     
     if (field.value) {
         const price = parseFloat(field.value);
-        if (isNaN(price) || price < 0) {
+        
+        // Check if price is not a number
+        if (isNaN(price)) {
             field.classList.add('invalid');
             errorElement.textContent = 'Please enter a valid price';
+            return false;
+        }
+        
+        // Check if price is negative
+        if (price < 0) {
+            field.classList.add('invalid');
+            errorElement.textContent = 'Price cannot be negative';
+            return false;
+        }
+        
+        // Check if price exceeds database limits (assuming INT or DECIMAL type)
+        // MySQL INT has max value of 2147483647
+        if (price > 214748364) {
+            field.classList.add('invalid');
+            errorElement.textContent = 'Price is too high. Maximum allowed is 2,147,483,64';
+            return false;
+        }
+        
+        // Check decimal precision (if database column is DECIMAL)
+        const decimalParts = field.value.toString().split('.');
+        if (decimalParts.length > 1 && decimalParts[1].length > 2) {
+            field.classList.add('invalid');
+            errorElement.textContent = 'Please enter a price with maximum 2 decimal places';
             return false;
         }
     }
@@ -1051,6 +1066,27 @@ function addClearFormButton() {
 
 // Initialize all improvements
 document.addEventListener('DOMContentLoaded', function() {
+    // Add price validation to all price input fields
+    const priceInputs = [
+        document.getElementById('Price'), 
+        document.getElementById('car-Price'),
+        document.getElementById('PropertyPrice'), 
+        document.getElementById('BoatPrice'), 
+        document.getElementById('MCPrice')
+    ];
+
+    priceInputs.forEach(input => {
+        if (input) {
+            input.addEventListener('input', function() {
+                validatePrice(this);
+            });
+            
+            input.addEventListener('blur', function() {
+                validatePrice(this);
+            });
+        }
+    });
+
     loadCountries();
     loadCarBrands();
     addRealTimeValidation();
