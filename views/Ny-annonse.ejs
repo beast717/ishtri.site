@@ -214,7 +214,7 @@ padding: 20px;
         <!-- Heading -->
         <div class="overskrift">
             <h1 data-i18n="form.lag_nyannonse">List a new ad</h1>
-            <h2 data-i18n="form.velg_kat">Set category</h2>
+            <h2 data-i18n="form.velg_kat">Select category</h2>
         </div>
 
         <!-- Category Selection -->
@@ -732,6 +732,34 @@ padding: 20px;
         'Bil': 'car-ProductName'
     };
 
+    // Price validation for applicable categories
+    if (['Torget', 'Bil', 'Eiendom', 'Båt', 'MC'].includes(selectedCategory)) {
+        const priceFields = {
+            'Torget': 'Price',
+            'Bil': 'car-Price',
+            'Eiendom': 'PropertyPrice',
+            'Båt': 'BoatPrice',
+            'MC': 'MCPrice'
+        };
+
+    const priceField = document.getElementById(priceFields[selectedCategory]);
+        if (priceField && priceField.value) {
+            const price = parseFloat(priceField.value);
+            if (isNaN(price) || price < 0) {
+                const errorId = priceFields[selectedCategory] + 'Error';
+                // Create error element if it doesn't exist
+                if (!document.getElementById(errorId)) {
+                    const errorElement = document.createElement('div');
+                    errorElement.id = errorId;
+                    errorElement.className = 'error-message';
+                    priceField.insertAdjacentElement('afterend', errorElement);
+                }
+                document.getElementById(errorId).textContent = 'Please enter a valid price';
+                hasError = true;
+            }
+        }
+    }
+
     const titleFieldId = titleFields[selectedCategory];
     if (titleFieldId) {
         const titleField = document.getElementById(titleFieldId);
@@ -758,9 +786,276 @@ padding: 20px;
     }
 
     // If no validation errors, submit the form
-    if (!hasError) {
-        this.submit();
+    if (hasError) {
+        // Scroll to the first error
+        const firstError = document.querySelector('.error-message:not(:empty)');
+        if (firstError) {
+            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    } else {
+        // Show loading state
+        const submitBtn = this.querySelector('button[type="submit"]');
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Submitting...';
+        
+        // Submit the form
+        setTimeout(() => {
+            this.submit();
+        }, 200);
     }
+});
+    // 2. Add real-time validation for fields
+function addRealTimeValidation() {
+    // Add validation to all required fields
+    document.querySelectorAll('input[required], select[required], textarea[required]').forEach(field => {
+        field.addEventListener('blur', function() {
+            validateField(this);
+        });
+        
+        field.addEventListener('input', function() {
+            if (this.classList.contains('invalid')) {
+                validateField(this);
+            }
+        });
+    });
+    
+    // Add price validation to price fields
+    document.querySelectorAll('input[type="number"][id$="Price"]').forEach(field => {
+        field.addEventListener('input', function() {
+            validatePrice(this);
+        });
+    });
+}
+
+function validateField(field) {
+    const errorId = field.id + 'Error';
+    let errorElement = document.getElementById(errorId);
+    
+    if (!errorElement) {
+        errorElement = document.createElement('div');
+        errorElement.id = errorId;
+        errorElement.className = 'error-message';
+        field.insertAdjacentElement('afterend', errorElement);
+    }
+    
+    if (!field.value.trim()) {
+        field.classList.add('invalid');
+        errorElement.textContent = 'This field is required';
+        return false;
+    } else {
+        field.classList.remove('invalid');
+        errorElement.textContent = '';
+        return true;
+    }
+}
+
+function validatePrice(field) {
+    const errorId = field.id + 'Error';
+    let errorElement = document.getElementById(errorId);
+    
+    if (!errorElement) {
+        errorElement = document.createElement('div');
+        errorElement.id = errorId;
+        errorElement.className = 'error-message';
+        field.insertAdjacentElement('afterend', errorElement);
+    }
+    
+    if (field.value) {
+        const price = parseFloat(field.value);
+        if (isNaN(price) || price < 0) {
+            field.classList.add('invalid');
+            errorElement.textContent = 'Please enter a valid price';
+            return false;
+        }
+    }
+    
+    field.classList.remove('invalid');
+    errorElement.textContent = '';
+    return true;
+}
+
+// 3. Image preview functionality
+document.getElementById('Images').addEventListener('change', function(event) {
+    const previewContainer = document.getElementById('imagePreviewContainer') || createImagePreviewContainer();
+    previewContainer.innerHTML = '';
+    
+    const files = event.target.files;
+    if (files.length > 0) {
+        const previewHeader = document.createElement('h4');
+        previewHeader.textContent = 'Image Previews';
+        previewContainer.appendChild(previewHeader);
+        
+        const previewGrid = document.createElement('div');
+        previewGrid.className = 'image-preview-grid';
+        previewContainer.appendChild(previewGrid);
+        
+        for (let i = 0; i < Math.min(files.length, 5); i++) {
+            const file = files[i];
+            if (!file.type.startsWith('image/')) continue;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewItem = document.createElement('div');
+                previewItem.className = 'image-preview-item';
+                
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = 'Preview';
+                
+                previewItem.appendChild(img);
+                previewGrid.appendChild(previewItem);
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        if (files.length > 5) {
+            const moreInfo = document.createElement('p');
+            moreInfo.textContent = `+${files.length - 5} more images selected`;
+            previewContainer.appendChild(moreInfo);
+        }
+    }
+});
+
+function createImagePreviewContainer() {
+    const container = document.createElement('div');
+    container.id = 'imagePreviewContainer';
+    container.className = 'image-preview-container';
+    // Add CSS for image preview
+    const style = document.createElement('style');
+    style.textContent = `
+        .image-preview-container {
+            margin-top: 15px;
+        }
+        
+        .image-preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .image-preview-item {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+            height: 100px;
+        }
+        
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 3px;
+        }
+        
+        .invalid {
+            border-color: #ff4444 !important;
+            background-color: #fff8f8;
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Insert after the file input
+    document.getElementById('Images').insertAdjacentElement('afterend', container);
+    return container;
+}
+
+// 4. Save form data to localStorage to prevent data loss
+function setupFormDataSaving() {
+    // Restore form data on page load
+    const savedCategory = localStorage.getItem('selectedCategory');
+    if (savedCategory) {
+        setCategory(savedCategory);
+        
+        // Restore saved fields
+        const savedData = JSON.parse(localStorage.getItem('formData') || '{}');
+        Object.keys(savedData).forEach(fieldId => {
+            const field = document.getElementById(fieldId);
+            if (field) {
+                if (field.type === 'checkbox') {
+                    field.checked = savedData[fieldId];
+                } else {
+                    field.value = savedData[fieldId];
+                }
+            }
+        });
+        
+        // Trigger country change to load cities
+        if (savedData.Country) {
+            const countryEvent = new Event('change');
+            document.getElementById('Country').dispatchEvent(countryEvent);
+            
+            // Set timeout to restore city after cities are loaded
+            setTimeout(() => {
+                if (savedData.City) {
+                    document.getElementById('City').value = savedData.City;
+                }
+            }, 500);
+        }
+    }
+    
+    // Save form data as user types
+    const formElements = document.querySelectorAll('#productForm input, #productForm select, #productForm textarea');
+    formElements.forEach(element => {
+        element.addEventListener('change', saveFormData);
+        if (element.tagName === 'INPUT' && element.type !== 'file') {
+            element.addEventListener('input', saveFormData);
+        }
+    });
+}
+
+function saveFormData() {
+    const formData = {};
+    document.querySelectorAll('#productForm input, #productForm select, #productForm textarea').forEach(field => {
+        if (field.type === 'file') return; // Skip file inputs
+        if (field.type === 'checkbox') {
+            formData[field.id] = field.checked;
+        } else {
+            formData[field.id] = field.value;
+        }
+    });
+    
+    localStorage.setItem('formData', JSON.stringify(formData));
+    localStorage.setItem('selectedCategory', document.getElementById('Category').value);
+}
+
+// 5. Add a clear form button
+function addClearFormButton() {
+    const submitBtn = document.querySelector('#productForm button[type="submit"]');
+    
+    const clearBtn = document.createElement('button');
+    clearBtn.type = 'button';
+    clearBtn.textContent = 'Clear Form';
+    clearBtn.className = 'clear-button';
+    clearBtn.style.marginRight = '10px';
+    clearBtn.style.backgroundColor = '#f0f0f0';
+    clearBtn.style.color = '#333';
+    
+    clearBtn.addEventListener('click', function() {
+        if (confirm('Are you sure you want to clear all form data?')) {
+            document.getElementById('productForm').reset();
+            localStorage.removeItem('formData');
+            localStorage.removeItem('selectedCategory');
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+            
+            const imagePreview = document.getElementById('imagePreviewContainer');
+            if (imagePreview) {
+                imagePreview.innerHTML = '';
+            }
+        }
+    });
+    
+    submitBtn.parentNode.insertBefore(clearBtn, submitBtn);
+}
+
+// Initialize all improvements
+document.addEventListener('DOMContentLoaded', function() {
+    loadCountries();
+    loadCarBrands();
+    addRealTimeValidation();
+    setupFormDataSaving();
+    addClearFormButton();
 });
 </script>
 </body>
