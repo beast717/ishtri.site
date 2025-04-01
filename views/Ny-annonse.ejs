@@ -226,6 +226,28 @@ padding: 20px;
 .error-message-container.active {
     display: flex;
 }
+
+.success-message-container {
+    display: none; /* Hidden by default */
+    margin-top: 15px;
+    padding: 15px;
+    border-radius: 6px;
+    background-color: #e8f5e9; /* Light green background */
+    border: 1px solid #a5d6a7; /* Green border */
+    color: #2e7d32; /* Dark green text */
+    align-items: center;
+    gap: 10px;
+    text-align: left; /* Align text left within the container */
+}
+
+.success-message-container i {
+    font-size: 18px;
+    color: #4caf50; /* Slightly brighter green for icon */
+}
+
+.success-message-container.active {
+    display: flex; /* Use flex to show it */
+}
     </style>
 </head>
 <body>
@@ -333,7 +355,7 @@ padding: 20px;
                     <div class="form-column">
                         <label for="propertyTitle" data-i18n="form.title">Title <span class="required">*</span></label>
                         <input type="text" id="propertyTitle" name="ProductName" required>
-                        <div class="error-message" id="PropertyTitleError"></div>
+                        <div class="error-message" id="propertyTitleError"></div>
                         
                         <label for="PropertyPrice" data-i18n="form.price">Price</label>
                         <input type="number" id="PropertyPrice" name="EiendomPrice" >
@@ -409,7 +431,7 @@ padding: 20px;
                 <div class="form-column">
                      <label for="car-ProductName" data-i18n="form.title">Title <span class="required">*</span></label>
                      <input type="text" id="car-ProductName" name="ProductName" required>
-                     <div class="error-message" id="CarTitleError"></div>
+                     <div class="error-message" id="car-ProductNameError"></div>
 
                      <label for="CarBrand" data-i18n="form.brand">Brand</label>
                      <select id="CarBrand" name="brand_id" >
@@ -508,6 +530,10 @@ padding: 20px;
                     <i class="fas fa-exclamation-circle"></i>
                     <span id="errorText"></span>
                 </div>
+                <div id="successMessageContainer" class="success-message-container" style="display: none;">
+                    <i class="fas fa-check-circle"></i>
+                    <span id="successText"></span>
+                </div>
 
                 <!-- Hidden Category Field -->
                 <input type="hidden" id="Category" name="Category" required>
@@ -604,268 +630,147 @@ padding: 20px;
 }
 
     function loadCountries() {
-        fetch('/api/utils/countriess')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to load countries');
-                }
-                return response.json();
-            })
-            .then(countries => {
-                const countrySelect = document.getElementById('Country');
-                countries.forEach(country => {
-                    const option = document.createElement('option');
-                    option.value = country;
-                    option.textContent = country;
-                    countrySelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Error loading countries:', error);
-                const errorElement = document.createElement('p');
-                errorElement.textContent = 'Failed to load countries. Please try again later.';
-                errorElement.style.color = 'red';
-                document.getElementById('Country').insertAdjacentElement('afterend', errorElement);
-            });
-    }
-
-    function loadCarBrands() {
-        fetch('/api/utils/car-brands')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to load car brands');
-                }
-                return response.json();
-            })
-            .then(brands => {
-                const brandSelect = document.getElementById('CarBrand');
-                brands.forEach(brand => {
-                    const option = document.createElement('option');
-                    option.value = brand.brand_id;
-                    option.textContent = brand.brand_name;
-                    brandSelect.appendChild(option);
-                });
-            })
-            .catch(error => {
-                console.error('Error loading car brands:', error);
-                const errorElement = document.createElement('p');
-                errorElement.textContent = 'Failed to load car brands. Please try again later.';
-                errorElement.style.color = 'red';
-                document.getElementById('CarBrand').insertAdjacentElement('afterend', errorElement);
-            });
-    }
-
-    document.getElementById('Country').addEventListener('change', function() {
-        const selectedCountry = this.value;
-        const cityDropdown = document.getElementById('City');
-        const cityLabel = document.getElementById('cityLabel');
-
-        if (selectedCountry) {
-            fetch(`/api/utils/cities/${selectedCountry}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Failed to load cities');
-                    }
-                    return response.json();
-                })
-                .then(cities => {
-                    cityDropdown.innerHTML = `<option value="">Select city</option>`;
-                    cities.forEach(city => {
-                        const option = document.createElement('option');
-                        option.value = city;
-                        option.textContent = city;
-                        cityDropdown.appendChild(option);
-                    });
-                    cityDropdown.style.display = 'block';
-                    cityLabel.style.display = 'block';
-                })
-                .catch(error => {
-                    console.error('Error loading cities:', error);
-                    const errorElement = document.createElement('p');
-                    errorElement.textContent = 'Failed to load cities. Please try again later.';
-                    errorElement.style.color = 'red';
-                    document.getElementById('City').insertAdjacentElement('afterend', errorElement);
-                });
-        } else {
-            cityDropdown.style.display = 'none';
-            cityLabel.style.display = 'none';
-        }
-    });
-
-    document.getElementById('CarBrand').addEventListener('change', function() {
-        const brandId = this.value;
-        const modelSelect = document.getElementById('CarModel');
-        
-        modelSelect.disabled = !brandId;
-        
-        if (!brandId) {
-            modelSelect.innerHTML = '<option value="">Select model</option>';
-            return;
-        }
-
-        fetch(`/api/utils/car-models/${brandId}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to load car models');
-                }
-                return response.json();
-            })
-            .then(models => {
-                modelSelect.innerHTML = `<option value="">Select model</option>`;
-                models.forEach(model => {
-                    const option = document.createElement('option');
-                    option.value = model.model_id;
-                    option.textContent = model.model_name;
-                    modelSelect.appendChild(option);
-                });
-                modelSelect.disabled = false;
-            })
-            .catch(error => {
-                console.error('Error loading models:', error);
-                const errorElement = document.createElement('p');
-                errorElement.textContent = 'Failed to load car models. Please try again later.';
-                errorElement.style.color = 'red';
-                document.getElementById('CarModel').insertAdjacentElement('afterend', errorElement);
-            });
-    });
-
-    document.addEventListener('DOMContentLoaded', () => {
-        loadCountries();
-        loadCarBrands();
-    });
-
-    document.getElementById('productForm').addEventListener('submit', async function(event) {
-    // Prevent form submission initially
-    event.preventDefault();
-    
-    // Clear all previous error messages
-    document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-    const errorContainer = document.getElementById('uploadError');
-    errorContainer.style.display = 'none';
-
-    // Client-side validation for image count
-    const fileInput = document.getElementById('Images');
-    if (fileInput.files.length > 5) {
-        showUploadError('Maximum 5 images allowed');
-        return;
-    }
-
-    // Check individual file sizes client-side
-    let sizeError = false;
-    Array.from(fileInput.files).forEach(file => {
-        if (file.size > 5 * 1024 * 1024) { // 5MB
-            sizeError = true;
-        }
-    });
-    
-    if (sizeError) {
-        showUploadError('One or more images exceed 5MB size limit');
-        return;
-    }
-    
-    const selectedCategory = document.getElementById('Category').value;
-    let hasError = false;
-
-    if (!selectedCategory) {
-        alert('Please select a category');
-        return;
-    }
-
-    // Title field validation based on category
-    const titleFields = {
-        'Torget': 'ProductName',
-        'Båt': 'BoatProductName',
-        'MC': 'MCProductName',
-        'Jobb': 'JobTitle',
-        'Eiendom': 'propertyTitle',
-        'Bil': 'car-ProductName'
-    };
-
-    // Price validation for applicable categories
-    if (['Torget', 'Bil', 'Eiendom', 'Båt', 'MC'].includes(selectedCategory)) {
-        const priceFields = {
-            'Torget': 'Price',
-            'Bil': 'car-Price',
-            'Eiendom': 'PropertyPrice',
-            'Båt': 'BoatPrice',
-            'MC': 'MCPrice'
-        };
-
-    const priceField = document.getElementById(priceFields[selectedCategory]);
-        if (priceField) {
-            if (!validatePrice(priceField)) {
-                hasError = true;
+    const countrySelect = document.getElementById('Country'); // Get reference
+    fetch('/api/utils/countriess') // Note: URL still has 'countriess' typo from original code
+        .then(response => {
+            if (!response.ok) {
+                // Throw an error object with status text for better context
+                throw new Error(`HTTP error ${response.status}: ${response.statusText || 'Failed to load countries'}`);
             }
-        }
-    }
-
-    const titleFieldId = titleFields[selectedCategory];
-    if (titleFieldId) {
-        const titleField = document.getElementById(titleFieldId);
-        if (!titleField.value.trim()) {
-            document.getElementById(`${titleFieldId}Error`).textContent = 'This field is required';
-            hasError = true;
-        }
-    }
-
-    // ALWAYS validate Country regardless of category
-    const country = document.getElementById('Country').value;
-    if (!country) {
-        document.getElementById('CountryError').textContent = 'Country is required';
-        hasError = true;
-    }
-
-    // Validate City only if Country is selected
-    if (country) {
-        const city = document.getElementById('City').value;
-        if (!city) {
-            document.getElementById('CityError').textContent = 'City is required';
-            hasError = true;
-        }
-    }
-
-    // If no validation errors, submit the form
-    if (hasError) {
-        // Scroll to the first error
-        const firstError = document.querySelector('.error-message:not(:empty)');
-        if (firstError) {
-            firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-    } else {
-         // Show loading state
-    const submitBtn = this.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Submitting...';
-
-    // Submit via fetch
-    try {
-        const formData = new FormData(this);
-        const response = await fetch('/api/products', {
-            method: 'POST',
-            body: formData
+            return response.json();
+        })
+        .then(countries => {
+            // Clear previous options except the placeholder
+            countrySelect.innerHTML = '<option value="">None selected</option>';
+            countries.forEach(country => {
+                const option = document.createElement('option');
+                option.value = country;
+                option.textContent = country;
+                countrySelect.appendChild(option);
+            });
+            countrySelect.disabled = false; // Ensure it's enabled on success
+        })
+        .catch(error => {
+            console.error('Error loading countries:', error);
+            // Use showUploadError for user feedback
+            showUploadError(`Failed to load countries: ${error.message}. Please try refreshing the page.`);
+            // Disable the dropdown as it's unusable
+            countrySelect.disabled = true;
+            // Optionally add placeholder indicating error
+            countrySelect.innerHTML = '<option value="">Error loading countries</option>';
         });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Upload failed');
-        }
-
-        // Successful submission
-        window.location.href = '/mine-annonser';
-    } catch (error) {
-        showUploadError(error.message);
-        console.error('Submission error:', error);
-    } finally {
-        // Reset button state
-        submitBtn.disabled = false;
-        submitBtn.textContent = originalText;
-    }
 }
 
+
+    function loadCarBrands() {
+    const brandSelect = document.getElementById('CarBrand'); // Get reference
+    fetch('/api/utils/car-brands')
+        .then(response => {
+            if (!response.ok) {
+                 throw new Error(`HTTP error ${response.status}: ${response.statusText || 'Failed to load car brands'}`);
+            }
+            return response.json();
+        })
+        .then(brands => {
+            brandSelect.innerHTML = '<option value="" data-i18n="form.select_brand">Select Brand</option>'; // Reset
+            brands.forEach(brand => {
+                const option = document.createElement('option');
+                option.value = brand.brand_id;
+                option.textContent = brand.brand_name;
+                brandSelect.appendChild(option);
+            });
+            brandSelect.disabled = false; // Ensure enabled
+        })
+        .catch(error => {
+            console.error('Error loading car brands:', error);
+            showUploadError(`Failed to load car brands: ${error.message}. Please try refreshing.`);
+            brandSelect.disabled = true;
+            brandSelect.innerHTML = '<option value="">Error loading brands</option>';
+        });
+}
+
+    document.getElementById('Country').addEventListener('change', function() {
+    const selectedCountry = this.value;
+    const cityDropdown = document.getElementById('City');
+    const cityLabel = document.getElementById('cityLabel');
+    cityDropdown.disabled = true; // Disable initially
+
+    if (selectedCountry) {
+        cityLabel.style.display = 'block'; // Show label immediately
+        cityDropdown.style.display = 'block';
+        cityDropdown.innerHTML = `<option value="">Loading cities...</option>`; // Loading state
+
+        fetch(`/api/utils/cities/${selectedCountry}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error ${response.status}: ${response.statusText || 'Failed to load cities'}`);
+                }
+                return response.json();
+            })
+            .then(cities => {
+                cityDropdown.innerHTML = `<option value="" data-i18n="form.select_city">Select City</option>`; // Reset before populating
+                cities.forEach(city => {
+                    const option = document.createElement('option');
+                    option.value = city;
+                    option.textContent = city;
+                    cityDropdown.appendChild(option);
+                });
+                cityDropdown.disabled = false; // Enable on success
+            })
+            .catch(error => {
+                console.error('Error loading cities:', error);
+                showUploadError(`Failed to load cities for ${selectedCountry}: ${error.message}. Please try selecting the country again or refresh.`);
+                cityDropdown.disabled = true;
+                cityDropdown.innerHTML = `<option value="">Error loading cities</option>`;
+            });
+    } else {
+        // Hide and reset if no country is selected
+        cityDropdown.style.display = 'none';
+        cityLabel.style.display = 'none';
+        cityDropdown.innerHTML = `<option value="">Select City</option>`;
+        cityDropdown.disabled = true;
+    }
 });
 
-    // 2. Add real-time validation for fields
+    document.getElementById('CarBrand').addEventListener('change', function() {
+    const brandId = this.value;
+    const modelSelect = document.getElementById('CarModel');
+
+    modelSelect.disabled = true; // Disable initially or if no brand selected
+
+    if (!brandId) {
+        modelSelect.innerHTML = '<option value="" data-i18n="form.select_model">Select Model First</option>';
+        return; // Exit if no brand is selected
+    }
+
+    modelSelect.innerHTML = '<option value="">Loading models...</option>'; // Loading state
+
+    fetch(`/api/utils/car-models/${brandId}`)
+        .then(response => {
+            if (!response.ok) {
+                 throw new Error(`HTTP error ${response.status}: ${response.statusText || 'Failed to load car models'}`);
+            }
+            return response.json();
+        })
+        .then(models => {
+            modelSelect.innerHTML = `<option value="">Select model</option>`; // Reset
+            models.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model.model_id;
+                option.textContent = model.model_name;
+                modelSelect.appendChild(option);
+            });
+            modelSelect.disabled = false; // Enable on success
+        })
+        .catch(error => {
+            console.error('Error loading models:', error);
+            showUploadError(`Failed to load models for selected brand: ${error.message}. Please try selecting the brand again or refresh.`);
+            modelSelect.disabled = true;
+            modelSelect.innerHTML = `<option value="">Error loading models</option>`;
+        });
+});
+
+     // 2. Add real-time validation for fields
 function addRealTimeValidation() {
     // Add validation to all required fields
     document.querySelectorAll('input[required], select[required], textarea[required]').forEach(field => {
@@ -960,52 +865,6 @@ function validatePrice(field) {
     return true;
 }
 
-// 3. Image preview functionality
-document.getElementById('Images').addEventListener('change', function(event) {
-    // Clear any existing error messages
-    const errorContainer = document.getElementById('uploadError');
-    errorContainer.style.display = 'none';
-    document.getElementById('errorText').textContent = '';
-    const previewContainer = document.getElementById('imagePreviewContainer') || createImagePreviewContainer();
-    previewContainer.innerHTML = '';
-    
-    const files = event.target.files;
-    if (files.length > 0) {
-        const previewHeader = document.createElement('h4');
-        previewHeader.textContent = 'Image Previews';
-        previewContainer.appendChild(previewHeader);
-        
-        const previewGrid = document.createElement('div');
-        previewGrid.className = 'image-preview-grid';
-        previewContainer.appendChild(previewGrid);
-        
-        for (let i = 0; i < Math.min(files.length, 5); i++) {
-            const file = files[i];
-            if (!file.type.startsWith('image/')) continue;
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const previewItem = document.createElement('div');
-                previewItem.className = 'image-preview-item';
-                
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.alt = 'Preview';
-                
-                previewItem.appendChild(img);
-                previewGrid.appendChild(previewItem);
-            };
-            reader.readAsDataURL(file);
-        }
-        
-        if (files.length > 5) {
-            const moreInfo = document.createElement('p');
-            moreInfo.textContent = `+${files.length - 5} more images selected`;
-            previewContainer.appendChild(moreInfo);
-        }
-    }
-});
-
 function createImagePreviewContainer() {
     const container = document.createElement('div');
     container.id = 'imagePreviewContainer';
@@ -1052,97 +911,513 @@ function createImagePreviewContainer() {
 
 // 4. Save form data to localStorage to prevent data loss
 function setupFormDataSaving() {
-    // Restore form data on page load
-    const savedCategory = localStorage.getItem('selectedCategory');
-    if (savedCategory) {
-        setCategory(savedCategory);
+    try {
+        // Restore form data on page load
+        const savedCategory = localStorage.getItem('selectedCategory');
+        if (savedCategory) {
+            setCategory(savedCategory); // Assuming setCategory handles its own errors if needed
+
+            // Restore saved fields
+            const savedDataRaw = localStorage.getItem('formData');
+            const savedData = savedDataRaw ? JSON.parse(savedDataRaw) : {};
+
+            Object.keys(savedData).forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    if (field.type === 'checkbox') {
+                        field.checked = savedData[fieldId];
+                    } else {
+                        field.value = savedData[fieldId];
+                    }
+                }
+            });
         
-        // Restore saved fields
-        const savedData = JSON.parse(localStorage.getItem('formData') || '{}');
-        Object.keys(savedData).forEach(fieldId => {
-            const field = document.getElementById(fieldId);
-            if (field) {
-                if (field.type === 'checkbox') {
-                    field.checked = savedData[fieldId];
+         // Trigger country change to load cities
+            if (savedData.Country) {
+                const countrySelect = document.getElementById('Country');
+                // Ensure the value is actually set before dispatching event
+                if (countrySelect.value === savedData.Country) {
+                     const countryEvent = new Event('change');
+                     countrySelect.dispatchEvent(countryEvent);
+
+                     // Set timeout to restore city after cities are potentially loaded
+                     setTimeout(() => {
+                         if (savedData.City) {
+                             const citySelect = document.getElementById('City');
+                             // Check if city exists in dropdown before setting
+                             if (citySelect.querySelector(`option[value="${savedData.City}"]`)) {
+                                 citySelect.value = savedData.City;
+                             }
+                         }
+                     }, 700); // Increased timeout slightly
                 } else {
-                    field.value = savedData[fieldId];
+                     // If country value wasn't set immediately (e.g., options not loaded yet),
+                     // might need a more robust way, maybe wait for country options load
+                     console.warn("Could not immediately trigger country change for saved data.");
                 }
             }
-        });
-        
-        // Trigger country change to load cities
-        if (savedData.Country) {
-            const countryEvent = new Event('change');
-            document.getElementById('Country').dispatchEvent(countryEvent);
-            
-            // Set timeout to restore city after cities are loaded
-            setTimeout(() => {
-                if (savedData.City) {
-                    document.getElementById('City').value = savedData.City;
-                }
-            }, 500);
         }
+    } catch (e) {
+        console.error("Error reading from localStorage:", e);
+        // Optionally inform the user that saved form data couldn't be loaded
+        // showUploadError("Could not load previously saved form data.");
     }
-    
-    // Save form data as user types
+
+    // Save form data as user types/changes
     const formElements = document.querySelectorAll('#productForm input, #productForm select, #productForm textarea');
     formElements.forEach(element => {
         element.addEventListener('change', saveFormData);
-        if (element.tagName === 'INPUT' && element.type !== 'file') {
+        // Also save on input for text fields for more real-time saving
+        if (element.tagName === 'INPUT' && element.type !== 'file' && element.type !== 'checkbox' && element.type !== 'radio') {
             element.addEventListener('input', saveFormData);
+        }
+         // Handle checkbox changes correctly
+        if (element.type === 'checkbox'){
+             element.addEventListener('change', saveFormData);
         }
     });
 }
 
 function saveFormData() {
-    const formData = {};
-    document.querySelectorAll('#productForm input, #productForm select, #productForm textarea').forEach(field => {
-        if (field.type === 'file') return; // Skip file inputs
-        if (field.type === 'checkbox') {
-            formData[field.id] = field.checked;
+    try {
+        const formData = {};
+        document.querySelectorAll('#productForm input, #productForm select, #productForm textarea').forEach(field => {
+            // Skip file inputs and potentially the submit button if it's an input type
+            if (field.type === 'file' || field.type === 'submit' || !field.id) return;
+
+            if (field.type === 'checkbox') {
+                formData[field.id] = field.checked;
+            } else {
+                formData[field.id] = field.value;
+            }
+        });
+
+        localStorage.setItem('formData', JSON.stringify(formData));
+        const currentCategory = document.getElementById('Category').value;
+        if (currentCategory) {
+             localStorage.setItem('selectedCategory', currentCategory);
         } else {
-            formData[field.id] = field.value;
+             localStorage.removeItem('selectedCategory'); // Remove if no category selected
         }
-    });
-    
-    localStorage.setItem('formData', JSON.stringify(formData));
-    localStorage.setItem('selectedCategory', document.getElementById('Category').value);
+
+    } catch (e) {
+        console.error("Error writing to localStorage:", e);
+        // Optionally inform the user that the form cannot be auto-saved
+        // showUploadError("Could not auto-save form data. Storage might be full or disabled.");
+    }
 }
 
 // 5. Add a clear form button
 function addClearFormButton() {
     const submitBtn = document.querySelector('#productForm button[type="submit"]');
-    
+
+    // Check if submit button exists before proceeding
+    if (!submitBtn || !submitBtn.parentNode) {
+        console.error("Submit button or its parent not found. Cannot add Clear button.");
+        return;
+    }
+
     const clearBtn = document.createElement('button');
     clearBtn.type = 'button';
-    clearBtn.textContent = 'Clear Form';
-    clearBtn.className = 'clear-button';
+    clearBtn.textContent = 'Clear Form'; // You might want to add i18n here too
+    clearBtn.setAttribute('data-i18n', 'form.clear'); // Example i18n attribute
+    clearBtn.className = 'clear-button'; // Use class for styling if needed
     clearBtn.style.marginRight = '10px';
-    clearBtn.style.backgroundColor = '#f0f0f0';
-    clearBtn.style.color = '#333';
-    
-    // In the addClearFormButton() function
+    clearBtn.style.backgroundColor = '#6c757d'; // A neutral grey
+    clearBtn.style.color = '#fff';
+     clearBtn.style.border = 'none';
+     clearBtn.style.padding = '12px 20px'; // Match submit button padding
+     clearBtn.style.borderRadius = '6px'; // Match submit button radius
+     clearBtn.style.cursor = 'pointer';
+     clearBtn.style.fontWeight = '600'; // Match submit button weight
+     clearBtn.style.transition = 'background-color 0.3s'; // Add hover effect
+
+     // Add a hover effect similar to the submit button
+     clearBtn.addEventListener('mouseenter', () => {
+         clearBtn.style.backgroundColor = '#5a6268';
+     });
+     clearBtn.addEventListener('mouseleave', () => {
+         clearBtn.style.backgroundColor = '#6c757d';
+     });
+
+
+
     clearBtn.addEventListener('click', function() {
-    if (confirm('Are you sure you want to clear all form data?')) {
-        // Add these lines
-        const errorContainer = document.getElementById('uploadError');
-        errorContainer.style.display = 'none';
-        document.getElementById('errorText').textContent = '';
-        
-        document.getElementById('productForm').reset();
-        localStorage.removeItem('formData');
-        localStorage.removeItem('selectedCategory');
-        document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
-        
-        const imagePreview = document.getElementById('imagePreviewContainer');
-        if (imagePreview) {
-            imagePreview.innerHTML = '';
+        // Use i18n for confirmation message if possible
+        if (confirm('Are you sure you want to clear all form data? This cannot be undone.')) {
+            try {
+                localStorage.removeItem('formData');
+                localStorage.removeItem('selectedCategory');
+                console.log("Cleared form data from localStorage.");
+            } catch (e) {
+                console.error("Error clearing localStorage:", e);
+                // Inform user even if clearing fails, as reset will still happen
+                alert("Could not clear saved data from browser storage, but the form will be reset.");
+            }
+
+            // Reset the form visually
+            document.getElementById('productForm').reset();
+
+            // Clear dynamic elements and errors
+            const errorContainer = document.getElementById('uploadError');
+            if(errorContainer) errorContainer.style.display = 'none';
+            const errorText = document.getElementById('errorText');
+            if(errorText) errorText.textContent = '';
+
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+            document.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid')); // Remove red borders
+
+            const imagePreview = document.getElementById('imagePreviewContainer');
+            if (imagePreview) {
+                imagePreview.innerHTML = '';
+            }
+
+            // Hide city dropdown again as country will be reset
+            document.getElementById('City').style.display = 'none';
+            document.getElementById('cityLabel').style.display = 'none';
+            document.getElementById('City').innerHTML = '<option value="">Select City</option>'; // Clear old options
+
+            // Important: Also hide all category-specific fieldsets and the main form container
+             const sections = {
+                product: document.getElementById('productFields'),
+                job: document.getElementById('jobFields'),
+                property: document.getElementById('propertyFields'),
+                car: document.getElementById('carFields'),
+                boat: document.getElementById('boatFields'),
+                mc: document.getElementById('mcFields'),
+                formContainer: document.getElementById('productFormContainer')
+            };
+             Object.keys(sections).forEach(key => {
+                 if (sections[key]) {
+                     sections[key].style.display = 'none';
+                     sections[key].classList.remove('active');
+                     if (key !== 'formContainer') {
+                        sections[key].querySelectorAll('input, textarea, select').forEach(field => {
+                            field.disabled = true; // Ensure fields are disabled
+                        });
+                     }
+                 }
+             });
+             selectedCategory = ''; // Reset the global variable
+             document.getElementById('Category').value = ''; // Clear hidden category field
+             // Potentially scroll back to the category selection
+             document.querySelector('.kategorierContainer')?.scrollIntoView({ behavior: 'smooth' });
+
+
+        } // <-- This brace closes the 'if (confirm(...))' block
+    }); // <-- This closes the addEventListener callback & parenthesis
+
+    // **** THIS LINE WAS MISSING ****
+    // Insert the clear button before the submit button
+    submitBtn.parentNode.insertBefore(clearBtn, submitBtn);
+
+} // <-- This brace closes the addClearFormButton function
+
+function showUploadError(message) {
+    const errorContainer = document.getElementById('uploadError');
+    const errorText = document.getElementById('errorText');
+    
+    if (!errorContainer || !errorText) {
+        console.error('Error elements missing in DOM');
+        alert('Error: ' + message);
+        return;
+    }
+    
+    // Clear previous messages before showing new one
+    errorText.textContent = '';
+    errorContainer.style.display = 'flex'; // Or use classList.add('active') if using classes
+    errorText.textContent = message;
+    
+    setTimeout(() => {
+        errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+}
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCountries();
+        loadCarBrands();
+    });
+
+    document.getElementById('productForm').addEventListener('submit', async function(event) {
+    // Prevent form submission initially
+    event.preventDefault();
+
+    // Clear all previous error messages
+    document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+    const errorContainer = document.getElementById('uploadError');
+    const successContainer = document.getElementById('successMessageContainer');
+    const successText = document.getElementById('successText');
+    errorContainer.style.display = 'none';
+    if(successContainer) successContainer.style.display = 'none';
+    let hasError = false; // Reset hasError for submit validation
+    
+    const selectedCategory = document.getElementById('Category').value;
+    if (!selectedCategory) {
+        alert('Please select a category');
+        return;
+    }
+
+    // Title field validation based on category
+    const titleFields = {
+        'Torget': 'ProductName',
+        'Båt': 'BoatProductName',
+        'MC': 'MCProductName',
+        'Jobb': 'JobTitle',
+        'Eiendom': 'propertyTitle',
+        'Bil': 'car-ProductName'
+    };
+    const titleFieldId = titleFields[selectedCategory];
+    if (titleFieldId) {
+        const titleField = document.getElementById(titleFieldId);
+        if (!validateField(titleField)) { // Use validateField for consistency
+             hasError = true;
         }
     }
+
+    // Price validation for applicable categories
+    if (['Torget', 'Bil', 'Eiendom', 'Båt', 'MC'].includes(selectedCategory)) {
+        const priceFields = {
+            'Torget': 'Price',
+            'Bil': 'car-Price',
+            'Eiendom': 'PropertyPrice',
+            'Båt': 'BoatPrice',
+            'MC': 'MCPrice'
+        };
+        const priceField = document.getElementById(priceFields[selectedCategory]);
+        if (priceField) {
+            if (!validatePrice(priceField)) {
+                hasError = true;
+            }
+        }
+    }
+
+    // ALWAYS validate Country regardless of category
+     const countryField = document.getElementById('Country');
+    if (!validateField(countryField)) {
+        hasError = true;
+    }
+    if (countryField.value) { // Only validate city if country is selected and valid
+        const cityField = document.getElementById('City');
+        if (!validateField(cityField)) {
+             hasError = true;
+        }
+    }
+
+    // --- Image Validation (Count, Size, TYPE) ---
+    const fileInput = document.getElementById('Images');
+    const files = fileInput.files;
+
+    if (files.length > 5) {
+        showUploadError('Maximum 5 images allowed.');
+        hasError = true; // Mark error
+    }
+
+    let sizeError = false;
+    let typeError = false;
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+    const invalidFileNames = [];
+
+    if (!hasError && files.length > 0) { // Only check size/type if count is okay and files exist
+        Array.from(files).forEach(file => {
+            // Size Check
+            if (file.size > 5 * 1024 * 1024) { // 5MB
+                sizeError = true;
+            }
+            // Type Check (Added)
+            if (!file.type || !allowedTypes.some(type => file.type.startsWith(type))) {
+                 typeError = true;
+                 invalidFileNames.push(file.name); // Collect names for error message
+            }
+        });
+
+        if (sizeError) {
+            showUploadError('One or more images exceed the 5MB size limit.');
+            hasError = true; // Mark error
+        }
+        // Add Type Error Check (Added)
+        if (typeError) {
+            // Show specific error message about types
+            showUploadError(`Invalid file type(s) detected: ${invalidFileNames.join(', ')}. Please upload only valid image files.`);
+            hasError = true; // Mark error
+        }
+    }
+
+     // If any validation errors occurred, scroll and stop
+    if (hasError) {
+        // Scroll to the first inline error OR the main upload error container
+        const firstInlineError = document.querySelector('.error-message:not(:empty)');
+        const targetElement = firstInlineError || (errorContainer.style.display !== 'none' ? errorContainer : null);
+
+        if (targetElement) {
+            targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+        return; // Stop the submission process
+    }
+
+    // --- If NO errors, proceed with submission ---
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting...'; // Add i18n if needed
+
+    try {
+        // Clear local storage *only on successful submission*
+        localStorage.removeItem('formData');
+        localStorage.removeItem('selectedCategory');
+        console.log("Cleared saved form data on successful submission attempt.");
+
+
+        const formData = new FormData(this);
+        // Add selected category explicitly if needed by backend, though it's in hidden input
+        // formData.append('selectedCategory', selectedCategory);
+
+        const response = await fetch('/api/products', {
+            method: 'POST',
+            body: formData
+            // Add headers if required by your API (e.g., Authorization)
+            // headers: { 'Authorization': 'Bearer YOUR_TOKEN' }
+        });
+
+        if (!response.ok) {
+            let errorMsg = 'Upload failed. Please try again.';
+            try {
+                // Try to parse JSON error from backend
+                const errorData = await response.json();
+                errorMsg = errorData.message || `Server error: ${response.status} ${response.statusText}`;
+            } catch (e) {
+                // If response is not JSON or parsing fails
+                 errorMsg = `Server error: ${response.status} ${response.statusText}`;
+            }
+             // Re-enable local storage saving if submission fails? Optional.
+            // saveFormData(); // Might save partially incorrect data if user doesn't fix
+            throw new Error(errorMsg);
+        }
+        // <<< --- SUCCESS --- >>>
+        // Hide error container if it was somehow visible
+        if (errorContainer) errorContainer.style.display = 'none';
+
+        // Show success message
+        if (successContainer && successText) {
+            successText.textContent = 'Ad submitted successfully! Redirecting...'; // Set message text
+            successContainer.style.display = 'flex'; // Show the container
+            successContainer.scrollIntoView({ behavior: 'smooth', block: 'center' }); // Scroll to it
+        } else {
+            console.error("Success message container elements not found!");
+        }
+
+        // Wait for a few seconds before redirecting
+        setTimeout(() => {
+            window.location.href = '/mine-annonser'; // Redirect after delay
+        }, 2500); // 2500 milliseconds = 2.5 seconds delay
+
+    } catch (error) {
+        console.error('Submission error:', error);
+        showUploadError(`Submission failed: ${error.message}`);
+        // Ensure success message is hidden on error
+        if (successContainer) successContainer.style.display = 'none';
+
+    } finally {
+        // Reset button state (will happen just before redirect starts or if an error occurred)
+        submitBtn.disabled = false; // Re-enable *unless* redirecting immediately
+        submitBtn.textContent = originalText;
+    }
+ });
+
+// 3. Image preview functionality
+document.getElementById('Images').addEventListener('change', function(event) {
+    const errorContainer = document.getElementById('uploadError');
+    const errorText = document.getElementById('errorText');
+    const previewContainer = document.getElementById('imagePreviewContainer') || createImagePreviewContainer();
+    const files = event.target.files;
+    let invalidFilesFound = false;
+
+    // --- START: New File Type Validation ---
+    if (files.length > 0) {
+        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
+        const invalidFileNames = [];
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            // Check if file.type is empty (can happen) or doesn't start with 'image/'
+            // More robust check: Use a list of allowed types.
+            if (!file.type || !allowedTypes.some(type => file.type.startsWith(type))) {
+                invalidFilesFound = true;
+                invalidFileNames.push(file.name); // Collect names of invalid files
+                console.warn(`Invalid file type detected: ${file.name} (${file.type || 'unknown type'})`);
+            }
+        }
+
+        if (invalidFilesFound) {
+            // Show error message listing problematic files
+            showUploadError(`Invalid file type detected for: ${invalidFileNames.join(', ')}. Please upload only image files (JPEG, PNG, GIF, WEBP, SVG).`);
+            // Clear the file input to remove the invalid selection
+            event.target.value = null;
+            // Clear any previews that might have started rendering
+            previewContainer.innerHTML = '';
+            return; // Stop further processing (like preview generation)
+        }
+    }
+    // --- END: New File Type Validation ---
+
+    // Clear any previous validation errors if files are now valid
+    if (!invalidFilesFound) {
+       errorContainer.style.display = 'none';
+       errorText.textContent = '';
+    }
+
+    // --- Image Preview Logic (remains mostly the same) ---
+    previewContainer.innerHTML = ''; // Clear previous previews first
+
+    if (files.length > 0) {
+        // Check file count *again* after validation, as input might have been cleared
+        if (files.length > 5) {
+             showUploadError('Maximum 5 images allowed. Please select again.');
+             event.target.value = null; // Clear selection
+             return;
+        }
+
+        // Check size *again*
+        let sizeError = false;
+        Array.from(files).forEach(file => {
+            if (file.size > 5 * 1024 * 1024) { // 5MB
+                sizeError = true;
+            }
+        });
+        if (sizeError) {
+            showUploadError('One or more images exceed the 5MB size limit. Please select again.');
+            event.target.value = null; // Clear selection
+            return;
+        }
+
+        // If all checks pass, proceed with preview
+        const previewHeader = document.createElement('h4');
+        previewHeader.textContent = 'Image Previews';
+        previewContainer.appendChild(previewHeader);
+
+        const previewGrid = document.createElement('div');
+        previewGrid.className = 'image-preview-grid';
+        previewContainer.appendChild(previewGrid);
+
+        for (let i = 0; i < files.length; i++) { // Loop through all selected files now
+            const file = files[i];
+            // No need to check type again here, already validated
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewItem = document.createElement('div');
+                previewItem.className = 'image-preview-item';
+
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = `Preview of ${file.name}`; // More descriptive alt text
+
+                previewItem.appendChild(img);
+                previewGrid.appendChild(previewItem);
+            };
+            reader.readAsDataURL(file);
+        }
+
+    }
 });
-    
-    submitBtn.parentNode.insertBefore(clearBtn, submitBtn);
-}
 
 // Initialize all improvements
 document.addEventListener('DOMContentLoaded', function() {
@@ -1174,25 +1449,6 @@ document.addEventListener('DOMContentLoaded', function() {
     addClearFormButton();
 });
 
-function showUploadError(message) {
-    const errorContainer = document.getElementById('uploadError');
-    const errorText = document.getElementById('errorText');
-    
-    if (!errorContainer || !errorText) {
-        console.error('Error elements missing in DOM');
-        alert('Error: ' + message);
-        return;
-    }
-    
-    // Clear previous messages before showing new one
-    errorText.textContent = '';
-    errorContainer.style.display = 'flex'; // Or use classList.add('active') if using classes
-    errorText.textContent = message;
-    
-    setTimeout(() => {
-        errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
-}
 </script>
 </body>
 </html>
