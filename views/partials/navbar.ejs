@@ -64,7 +64,7 @@ color: #a7a7a7;
 #profileContainer {
 display: flex;
 align-items: center; /* Vertically center the items */
-gap: 10px; /* Space between icon and username */
+gap: 5px; /* Space between icon and username */
 position: relative;
 cursor: pointer;
 }
@@ -192,6 +192,19 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
   position: relative; /* Add this to create positioning context */
 }
 
+#profileDropdownArrow {
+    font-size: 14px; /* Adjust size as needed */
+    /* color is set inline for now, can be moved here */
+    /* margin-left is set inline for now, can be moved here */
+    /* transition is set inline for now, can be moved here */
+}
+
+/* Class to add via JS when dropdown is open */
+#profileContainer.dropdown-open #profileDropdownArrow {
+    transform: rotate(180deg); /* Rotate arrow when open */
+}
+
+
 @media (max-width: 768px) {
     .navBar {
         height: 60px;
@@ -210,7 +223,8 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
         display: none;
     }
 
-    #profileUsername {
+    #profileUsername,
+    #profileDropdownArrow { 
         display: none;
     }
 
@@ -273,6 +287,7 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
             <div id="profileContainer" style="display: none;">
                 <img id="profileIcon" src="prrofilepic.svg" alt="Profile Icon" style="width: 30px; height: 25px; cursor: pointer;">
                 <span id="profileUsername" style="cursor: pointer;">Username</span>
+                <i id="profileDropdownArrow" class="fas fa-caret-down" style="margin-left: 5px; color: #333; transition: transform 0.2s ease-in-out;"></i>
                 <div id="dropdownMenu">
                     <button id="logoutButton"> 
                         <i class="fas fa-sign-out-alt"></i>
@@ -315,17 +330,31 @@ checkUnreadMessages();
             }
         });
 
-    document.getElementById('profileContainer').addEventListener('click', function (event) {
-        const dropdownMenu = document.getElementById('dropdownMenu');
+    const profileContainer = document.getElementById('profileContainer');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    // profileContainer click listener
+    profileContainer.addEventListener('click', function (event) {
         const isVisible = dropdownMenu.style.display === 'block';
-        dropdownMenu.style.display = isVisible ? 'none' : 'block';
-        event.stopPropagation();
+        if (isVisible) {
+            dropdownMenu.style.display = 'none';
+            profileContainer.classList.remove('dropdown-open'); // Remove class for arrow rotation
+        } else {
+            // Optional: Hide other potential dropdowns if you add more later
+            // closeOtherDropdowns();
+            dropdownMenu.style.display = 'block';
+            profileContainer.classList.add('dropdown-open'); // Add class for arrow rotation
+        }
+        event.stopPropagation(); // Prevent click from immediately closing dropdown
     });
 
-    // Close dropdown if clicked outside
+    // document click listener (close dropdown if clicked outside)
     document.addEventListener('click', function () {
-        const dropdownMenu = document.getElementById('dropdownMenu');
-        dropdownMenu.style.display = 'none';
+        // Check if the dropdown is currently visible before trying to hide
+        if (dropdownMenu.style.display === 'block') {
+             dropdownMenu.style.display = 'none';
+             profileContainer.classList.remove('dropdown-open'); // Also remove class here to reset arrow
+        }
     });
 
     // Logout functionality
