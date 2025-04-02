@@ -57,8 +57,11 @@ router.get('/random-products', async (req, res, next) => {
         const [results] = await pool.promise().query(
             `SELECT ProductdID, ProductName, Price, Images 
              FROM products 
+             WHERE Images IS NOT NULL      -- Ensure Images column is not NULL
+               AND Images != ''            -- Ensure Images column is not empty
+               AND Images != 'default.jpg' -- Ensure Images column is not the default placeholder name
              ORDER BY RAND() 
-             LIMIT 5`
+             LIMIT 5` // Get up to 5 random products that meet the criteria
         );
         res.json(results);
     } catch (err) {
