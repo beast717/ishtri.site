@@ -9,7 +9,7 @@ const path = require('path');
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const crypto = require('crypto'); // <-- Add crypto for token generation
-const validator = require('Validator'); // <-- Add validator
+const validator = require('validator'); // <-- Add validator
 
 // Authentication middleware
 const isAuthenticated = (req, res, next) => {
