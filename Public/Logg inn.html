@@ -309,25 +309,50 @@
         const signupForm = document.querySelector('#signupForm form');
         if (!signupForm) return;
 
+        // --- Get or create the message area ---
+        // Ensure the message area exists *outside* the form fields but *within* the signupForm div
+        // Let's target a specific element or create one if it doesn't exist
+        let messageArea = document.getElementById('signupMessageArea');
+        if (!messageArea) {
+            messageArea = document.createElement('div');
+            messageArea.id = 'signupMessageArea';
+            // Insert it before the form element within the #signupForm container
+            const signupContainer = document.getElementById('signupForm');
+            signupContainer.insertBefore(messageArea, signupForm);
+        }
+        // --- ---
+
         signupForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             const button = signupForm.querySelector('button');
-            const errorMessage = signupForm.querySelector('#errorMessage') || createSignupErrorMessage(signupForm);
-            
+
+            // Use the dedicated message area
+            messageArea.style.display = 'none'; // Hide previous messages
+            messageArea.className = 'alert'; // Reset classes
+
+            // Use the loading function (assuming you implemented it as suggested before)
+            // setButtonLoading(button, true); // Start loading state
+            // Or simpler text change:
             button.innerHTML = 'Processing...';
             button.disabled = true;
-            errorMessage.style.display = 'none';
 
             try {
                 const formData = new FormData(signupForm);
                 const data = Object.fromEntries(formData.entries());
 
-                // Password validation
+                // Basic client-side password match validation (already exists)
                 if (data.passord !== data.confirmPassword) {
-                    showErrorMessage(errorMessage, 'Passwords do not match');
-                    resetButton(button, 'Create Account');
+                    showErrorMessage(messageArea, 'Passwords do not match'); // Show error in messageArea
+                    resetButton(button, 'Create Account'); // Use resetButton function
                     return;
                 }
+                // Basic client-side email format check (optional, browser handles type="email")
+                if (!/\S+@\S+\.\S+/.test(data.email)) { // Simple regex check
+                     showErrorMessage(messageArea, 'Please enter a valid email address.');
+                     resetButton(button, 'Create Account');
+                     return;
+                }
+
 
                 const response = await fetch('/api/auth/signup', {
                     method: 'POST',
@@ -336,21 +361,55 @@
                 });
 
                 const responseData = await response.json();
-                
+
                 if (response.ok) {
-                    showSuccessMessage(errorMessage, 'Account created successfully! Redirecting...');
-                    resetButton(button, 'Create Account');
-                    setTimeout(() => toggleForms(), 1500);
+                    // --- SUCCESS - User needs to check email ---
+                    showSuccessMessage(messageArea, responseData.message || 'Account created. Please check your email to verify.'); // Use the message from backend
+                    // Clear the form fields after successful submission
+                    signupForm.reset();
+                    // Keep the button disabled or change its text to indicate next step
+                    button.innerHTML = 'Verification Email Sent';
+                    // DO NOT toggle back to login automatically
+                    // DO NOT redirect automatically
+                    // The user must now go check their email.
+
                 } else {
-                    showErrorMessage(errorMessage, responseData.message || 'Error creating account');
-                    resetButton(button, 'Create Account');
+                    // --- ERROR ---
+                    showErrorMessage(messageArea, responseData.message || 'Error creating account');
+                    resetButton(button, 'Create Account'); // Re-enable button on error
                 }
             } catch (error) {
                 console.error('Signup error:', error);
-                showErrorMessage(errorMessage, 'Connection error. Please try again later');
-                resetButton(button, 'Create Account');
+                showErrorMessage(messageArea, 'Connection error. Please try again later');
+                resetButton(button, 'Create Account'); // Re-enable button on error
             }
+            // Removed the finally block if using setButtonLoading, otherwise keep it
+             // finally {
+             //    // This might run even after success message, so be careful
+             //    // Only reset button fully on error cases above
+             // }
         });
+    }
+
+    // Make sure your showErrorMessage and showSuccessMessage target the messageArea element correctly
+    function showErrorMessage(element, message) {
+        element.textContent = message;
+        element.className = 'alert alert-error'; // Set classes
+        element.style.display = 'block';
+        element.setAttribute('aria-live', 'polite'); // Add ARIA attribute
+    }
+
+    function showSuccessMessage(element, message) {
+        element.textContent = message;
+        element.className = 'alert alert-success'; // Set classes
+        element.style.display = 'block';
+        element.setAttribute('aria-live', 'polite'); // Add ARIA attribute
+    }
+
+    // Make sure resetButton function exists
+    function resetButton(button, text) {
+        button.innerHTML = text;
+        button.disabled = false;
     }
 
     // Form toggle functionality
@@ -363,29 +422,12 @@
         document.querySelectorAll('.alert').forEach(alert => alert.style.display = 'none');
     }
 
-    // Error/Success message handling
-    function showErrorMessage(element, message) {
-        element.textContent = message;
-        element.classList.add('alert', 'alert-error');
-        element.style.display = 'block';
-    }
-
-    function showSuccessMessage(element, message) {
-        element.textContent = message;
-        element.classList.add('alert', 'alert-success');
-        element.style.display = 'block';
-    }
 
     function createSignupErrorMessage(form) {
         const errorMessage = document.createElement('div');
         errorMessage.id = 'errorMessage';
         form.insertBefore(errorMessage, form.firstChild);
         return errorMessage;
-    }
-
-    function resetButton(button, text) {
-        button.innerHTML = text;
-        button.disabled = false;
     }
 
    document.addEventListener('DOMContentLoaded', () => {
