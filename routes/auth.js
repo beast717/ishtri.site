@@ -183,11 +183,12 @@ router.post('/login', async (req, res, next) => {
 });
 
 // Google login
-// Google login
 router.post('/google', async (req, res, next) => {
     try {
         const { credential } = req.body;
-        const ticket = await client.verifyIdToken({ /* ... */ });
+        const ticket = await client.verifyIdToken({ 
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID });
         const payload = ticket.getPayload();
 
         // Check if user exists by email OR google_id
