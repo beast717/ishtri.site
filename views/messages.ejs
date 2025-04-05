@@ -12,616 +12,1250 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/toast.js" defer></script>
     <script src="/js/skeleton.js" defer></script>
-    <script src="/js/backToTop.js" defer></script>
     <script src="/js/lazyLoad.js" defer></script>
     <style>
-        /* Modern Chat UI Styles */
+
+         body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            /* You might want to adjust the base font size too */
+            font-size: 15px; /* Example */
+        }
         .chat-container {
-            display: flex;
-            height: calc(100vh - 80px);
-            margin: 20px auto;
-            max-width: 1200px;
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
+        display: flex;
+        height: calc(100vh - 80px); /* Adjust 80px based on your actual navbar height */
+        margin: 10px auto; /* Reduced margin for mobile */
+        max-width: 1200px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden; /* Important for containing flex items */
+        position: relative; /* Needed for potential absolute positioning inside */
+    }
+
+    .conversations-list {
+        width: 300px;
+        border-right: 1px solid #eee;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0; /* Prevent shrinking on flex */
+        background-color: #fff; /* Ensure background */
+        will-change: contents; /* Optimization hint */
+        contain: content; /* Optimization hint */
+         transition: transform 0.3s ease-in-out, visibility 0.3s ease-in-out; /* For potential future sliding animations */
+    }
+
+    .search-container {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        flex-shrink: 0; /* Prevent shrinking */
+    }
+
+    .search-input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        font-size: 14px;
+        outline: none;
+        transition: border-color 0.3s;
+    }
+
+    .search-input:focus {
+        border-color: #007bff;
+    }
+
+    .conversations {
+        flex: 1; /* Allow conversations to take remaining space */
+        overflow-y: auto;
+        padding: 10px;
+        -webkit-overflow-scrolling: touch; /* Smoother scrolling on iOS */
+    }
+
+    .conversation-item {
+        display: flex;
+        align-items: center;
+        padding: 12px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-bottom: 5px;
+    }
+
+    .conversation-item:hover {
+        background-color: #f5f5f5;
+    }
+
+    .conversation-item.active {
+        background-color: #e3f2fd;
+    }
+
+    .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        margin-right: 12px;
+        background-color: #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        flex-shrink: 0; /* Prevent shrinking */
+    }
+
+    .conversation-info {
+        flex: 1; /* Allow info to take remaining space */
+        overflow: hidden; /* Prevent long names/previews from breaking layout */
+    }
+
+    .conversation-name {
+        font-weight: 500;
+        margin-bottom: 4px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .conversation-preview {
+        font-size: 12px;
+        color: #666;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .conversation-preview .sender-name { /* Style sender name */
+        font-weight: 500;
+        color: #333;
+    }
+
+    .badge { /* Unread count badge */
+        background-color: #007bff;
+        color: white;
+        border-radius: 10px;
+        padding: 2px 6px;
+        font-size: 10px;
+        margin-left: 8px;
+        flex-shrink: 0;
+    }
+
+
+    .chat-window {
+        flex: 1; /* Take remaining space on desktop */
+        display: flex;
+        flex-direction: column;
+        background-color: #fff; /* Ensure background */
+        overflow: hidden; /* Prevent content spill */
+         transition: transform 0.3s ease-in-out, visibility 0.3s ease-in-out; /* For potential future sliding animations */
+    }
+
+    .chat-header {
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        justify-content: space-between; /* Space out elements */
+        flex-shrink: 0; /* Prevent shrinking */
+        position: relative; /* For absolute positioning of back button if needed */
+        background-color: #f8f9fa; /* Slight background tint */
+    }
+
+    .back-button { /* Style for the new back button */
+        display: none; /* Hidden by default */
+        background: none;
+        border: none;
+        font-size: 20px;
+        color: #007bff;
+        cursor: pointer;
+        padding: 5px 10px 5px 0; /* Padding for easier tapping */
+        margin-right: 10px;
+    }
+
+    .chat-header-info {
+        display: flex;
+        align-items: center;
+        flex-grow: 1; /* Allow info to take space */
+        overflow: hidden; /* Prevent long names */
+    }
+
+    .selected-chat-name {
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .chat-messages {
+        flex: 1; /* Allow messages to fill space */
+        padding: 15px; /* Slightly reduced padding */
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px; /* Reduced gap */
+        background-color: #f9f9f9; /* Different background for message area */
+        -webkit-overflow-scrolling: touch; /* Smoother scrolling on iOS */
+    }
+
+    .message {
+        max-width: 75%; /* Slightly increased max-width */
+        padding: 8px 12px; /* Slightly reduced padding */
+        border-radius: 18px; /* More rounded */
+        margin-bottom: 2px;
+        position: relative;
+        word-wrap: break-word; /* Ensure long words break */
+        line-height: 1.4;
+    }
+
+    .message.sent {
+        background-color: #007bff;
+        color: white;
+        align-self: flex-end;
+        border-bottom-right-radius: 5px;
+    }
+
+    .message.received {
+        background-color: #e9e9eb; /* Slightly different grey */
+        color: #333;
+        align-self: flex-start;
+        border-bottom-left-radius: 5px;
+    }
+
+    .message-header { /* Optional: Show sender name above message */
+        font-size: 11px;
+        font-weight: 500;
+        margin-bottom: 3px;
+        color: #555;
+    }
+    .message.sent .message-header {
+         display: none; /* Hide sender name for own messages */
+    }
+    .message.received .message-header {
+        color: #007bff; /* Highlight sender name for received */
+    }
+
+    .message-content {
+        font-size: 14px; /* Slightly smaller font */
+    }
+
+    .message-time {
+        font-size: 10px; /* Even smaller time */
+        margin-top: 4px;
+        text-align: right; /* Align time to right */
+        opacity: 0.7;
+    }
+    .message.sent .message-time {
+        color: rgba(255, 255, 255, 0.7);
+    }
+     .message.received .message-time {
+        color: #666;
+    }
+
+    .message-status {
+        position: absolute;
+        bottom: 3px; /* Adjusted position */
+        right: 8px; /* Adjusted position */
+        font-size: 11px; /* Smaller ticks */
+        color: rgba(255, 255, 255, 0.7); /* Status color for sent */
+    }
+    .message-status.read { /* Specific class for read status */
+         /* Optionally change color if needed */
+    }
+
+    .chat-input-container {
+        padding: 10px 15px; /* Adjust padding */
+        border-top: 1px solid #eee;
+        display: flex;
+        align-items: center; /* Align items vertically */
+        gap: 10px;
+        background-color: #f8f9fa; /* Match header background */
+        flex-shrink: 0; /* Prevent shrinking */
+    }
+
+    .chat-input {
+        flex: 1;
+        padding: 10px 15px; /* Adjust padding */
+        border: 1px solid #ddd;
+        border-radius: 20px;
+        outline: none;
+        resize: none;
+        max-height: 100px; /* Limit height */
+        font-size: 14px;
+        line-height: 1.4;
+        overflow-y: auto; /* Allow scrolling within textarea */
+    }
+
+    .send-button {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        flex-shrink: 0; /* Prevent shrinking */
+    }
+
+    .send-button:hover {
+        background-color: #0056b3;
+    }
+    .send-button i {
+        font-size: 16px; /* Adjust icon size if needed */
+    }
+
+    .typing-indicator {
+        padding: 5px 15px; /* Match horizontal padding */
+        font-size: 12px;
+        color: #666;
+        font-style: italic;
+        height: 24px; /* Reserve space to prevent layout jump */
+        flex-shrink: 0;
+    }
+
+    /* Loading States */
+    .skeleton {
+        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+    }
+    @keyframes loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
+    .skeleton-message {
+        height: 60px;
+        margin-bottom: 10px;
+        border-radius: 8px;
+    }
+
+    /* Initial state for no user */
+    .error-message {
+        padding: 40px;
+        text-align: center;
+        width: 100%;
+    }
+     .login-button {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+
+
+    /* --- Mobile Responsiveness --- */
+    @media (max-width: 768px) {
+        .chat-container {
+            height: calc(100vh - 60px); /* Adjust for potentially smaller mobile navbar */
+            margin: 0;
+            border-radius: 0;
+            box-shadow: none;
+            /* flex-direction: column; No longer needed with visibility toggle */
         }
 
+        /* --- Conversation List (Mobile Default View) --- */
         .conversations-list {
-            will-change: contents;
-            contain: content;
+            width: 100%;
+            height: 100%; /* Take full height of container */
+            border-right: none;
+            display: flex; /* Keep as flex column */
+            position: absolute; /* Allow easy hiding/showing */
+            top: 0;
+            left: 0;
+            visibility: visible; /* Default state */
+            opacity: 1;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 10; /* Above chat window initially */
         }
 
-        .conversations-list {
-            width: 300px;
-            border-right: 1px solid #eee;
-            display: flex;
-            flex-direction: column;
+        /* --- Chat Window (Mobile Hidden View) --- */
+        .chat-window {
+            width: 100%;
+            height: 100%; /* Take full height of container */
+            position: absolute; /* Allow easy hiding/showing */
+            top: 0;
+            left: 0;
+            visibility: hidden; /* Hidden by default */
+            opacity: 0;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            z-index: 5; /* Below conversation list initially */
         }
+
+         /* --- State when Chat View is Active on Mobile --- */
+        .chat-container.mobile-chat-active .conversations-list {
+             visibility: hidden;
+             opacity: 0;
+             z-index: 5; /* Move behind */
+        }
+        .chat-container.mobile-chat-active .chat-window {
+             visibility: visible;
+             opacity: 1;
+             z-index: 10; /* Bring to front */
+        }
+
 
         .search-container {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
+            padding: 10px; /* Reduce padding */
         }
-
-        .search-input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.3s;
+         .conversations {
+            padding: 5px; /* Reduce padding */
         }
-
-        .search-input:focus {
-            border-color: #007bff;
-        }
-
-        .conversations {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-        }
-
         .conversation-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            margin-bottom: 5px;
-        }
-
-        .conversation-item:hover {
-            background-color: #f5f5f5;
-        }
-
-        .conversation-item.active {
-            background-color: #e3f2fd;
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin-right: 12px;
-            background-color: #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        .conversation-info {
-            flex: 1;
-        }
-
-        .conversation-name {
-            font-weight: 500;
-            margin-bottom: 4px;
-        }
-
-        .conversation-preview {
-            font-size: 12px;
-            color: #666;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .chat-window {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
+             padding: 10px; /* Adjust padding */
         }
 
         .chat-header {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+            padding: 10px 15px; /* Adjust padding */
+        }
+
+        .back-button { /* Show back button */
+            display: inline-block; /* Or block if preferred */
         }
 
         .chat-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+            padding: 10px;
         }
 
         .message {
-            max-width: 70%;
-            padding: 10px 15px;
-            border-radius: 15px;
-            margin-bottom: 5px;
-            position: relative;
+             max-width: 80%; /* Allow slightly wider messages */
         }
-
-        .message.sent {
-            background-color: #007bff;
-            color: white;
-            align-self: flex-end;
-            border-bottom-right-radius: 5px;
-        }
-
-        .message.received {
-            background-color: #f1f1f1;
-            color: #333;
-            align-self: flex-start;
-            border-bottom-left-radius: 5px;
-        }
-
-        .message-time {
-            font-size: 11px;
-            margin-top: 5px;
-            opacity: 0.7;
-        }
-
-        .message-status {
-            position: absolute;
-            bottom: 2px;
-            right: 5px;
-            font-size: 12px;
+        .message-content {
+            font-size: 15px; /* Slightly larger for readability */
         }
 
         .chat-input-container {
-            padding: 15px;
-            border-top: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            padding: 8px 10px;
         }
 
-        .chat-input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            outline: none;
-            resize: none;
-            max-height: 100px;
+         .chat-input {
+             padding: 8px 12px;
+             font-size: 15px;
         }
 
         .send-button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.3s;
+            width: 38px;
+            height: 38px;
         }
+         .send-button i {
+            font-size: 15px;
+         }
 
-        .send-button:hover {
-            background-color: #0056b3;
-        }
+         .typing-indicator {
+             padding: 5px 10px; /* Adjust padding */
+             height: 20px; /* Adjust height */
+         }
 
-        .typing-indicator {
-            padding: 5px 10px;
-            font-size: 12px;
-            color: #666;
-            font-style: italic;
-        }
+        /* Hide potential desktop-only elements if needed */
 
-        .online-status {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #28a745;
-            margin-right: 5px;
-        }
-
-        .offline-status {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background-color: #dc3545;
-            margin-right: 5px;
-        }
-
-        /* Loading States */
-        .skeleton {
-            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-            background-size: 200% 100%;
-            animation: loading 1.5s infinite;
-        }
-
-        @keyframes loading {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
-
-        .skeleton-message {
-            height: 60px;
-            margin-bottom: 10px;
-            border-radius: 8px;
-        }
+    }
+     @media (max-width: 480px) {
+         /* Further fine-tuning for very small screens if needed */
+         .avatar {
+             width: 35px;
+             height: 35px;
+             margin-right: 10px;
+         }
+         .message {
+             padding: 6px 10px;
+         }
+     }
 
     </style>
     <script>
-        // Global initialization flag
-        let isInitialized = false;
-        let socket = null;
+         // Global initialization flag
+    let isInitialized = false;
+    let socket = null;
 
-        // Single initialization function
-        function initialize() {
-            if (isInitialized) {
-                return;
-            }
-            
-            // Initialize chat functionality
-            initializeChat();
-            isInitialized = true;
+    // Single initialization function
+    function initialize() {
+        if (isInitialized) {
+            return;
         }
 
-        // Initialize on DOM content loaded
-        document.addEventListener('DOMContentLoaded', initialize);
+        // Initialize chat functionality
+        initializeChat();
+        isInitialized = true;
+    }
 
-        // Your existing chat initialization code
-        function initializeChat() {
-            // Initialize Socket.IO only once
-            if (socket) {
-                return; // If socket already exists, don't create a new one
-            }
-            
-            socket = io();
-            let currentConversation = null;
-            let typingTimeout = null;
+    // Initialize on DOM content loaded
+    document.addEventListener('DOMContentLoaded', initialize);
 
-            // Authenticate user
-            socket.emit('authenticate', '<%= user?.brukerId || user.brukerId %>');
-
-            // Handle new message
-            socket.on('messageReceived', (message) => {  // For RECEIVER only
-                appendMessage(message);
-                checkUnreadMessages(); // Only receiver should check unread count
-                updateConversationsList();
-            });
-
-            socket.on('messageSent', (message) => {  // For SENDER only
-                appendMessage(message);
-                updateConversationsList();  // But DON'T check unread count
-            });
-
-            // Handle typing status
-            socket.on('userTyping', (data) => {
-                if (currentConversation && currentConversation.productdID === data.productdID) {
-                    const typingIndicator = document.getElementById('typingIndicator');
-                    typingIndicator.style.display = 'block';
-                    setTimeout(() => {
-                        typingIndicator.style.display = 'none';
-                    }, 3000);
-                }
-            });
-
-            // Handle read receipts
-            socket.on('messageReadReceipt', (data) => {
-                updateMessageStatus(data.messageId, 'read');
-            });
-
-            // Setup search functionality
-            const searchInput = document.querySelector('.search-input');
-            if (searchInput) {
-                searchInput.addEventListener('input', (e) => {
-                    const searchTerm = e.target.value.toLowerCase();
-                    const conversations = document.querySelectorAll('.conversation-item');
-                    
-                    conversations.forEach(conv => {
-                        const name = conv.querySelector('.conversation-name').textContent.toLowerCase();
-                        const preview = conv.querySelector('.conversation-preview').textContent.toLowerCase();
-                        
-                        if (name.includes(searchTerm) || preview.includes(searchTerm)) {
-                            conv.style.display = 'flex';
-                        } else {
-                            conv.style.display = 'none';
-                        }
-                    });
-                });
-            }
-
-            // Setup message input
-            const messageInput = document.querySelector('.chat-input');
-            if (messageInput) {
-                messageInput.addEventListener('input', () => {
-                    if (!currentConversation) return;
-
-                    if (typingTimeout) clearTimeout(typingTimeout);
-                    
-                    socket.emit('typing', {
-                        senderId: '<%= user?.brukerId || user.brukerId %>',
-                        receiverId: currentConversation.lastMessage.senderId,
-                        productdID: currentConversation.productdID,
-                        isTyping: true
-                    });
-
-                    typingTimeout = setTimeout(() => {
-                        socket.emit('typing', {
-                            senderId: '<%= user?.brukerId || user.brukerId %>',
-                            receiverId: currentConversation.lastMessage.senderId,
-                            productdID: currentConversation.productdID,
-                            isTyping: false
-                        });
-                    }, 1000);
-                });
-
-                // Handle enter key in message input
-                messageInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        const sendButton = document.querySelector('.send-button');
-                        if (sendButton) {
-                            sendButton.click();
-                        }
-                    }
-                });
-            }
-
-            // Setup send button
-            const sendButton = document.querySelector('.send-button');
-            if (sendButton) {
-                sendButton.addEventListener('click', async () => {
-                    const input = document.querySelector('.chat-input');
-                    const message = input.value.trim();
-                    
-                    if (!message || !currentConversation) return;
-
-                    try {
-                        // Get the current user ID
-                        const currentUserId = '<%= user?.brukerId || user.brukerId %>';
-                        if (!currentUserId) {
-                            throw new Error('User not authenticated');
-                        }
-
-                        // Determine the receiver ID based on the conversation
-                        const receiverId = currentConversation.lastMessage.senderId === currentUserId 
-                         ? currentConversation.lastMessage.receiverId 
-                         : currentConversation.lastMessage.senderId;
-
-                        const response = await fetch('/api/messages', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                                productdID: currentConversation.productdID,
-                                messageContent: message,
-                                receiverId: receiverId
-                            })
-                        });
-
-                        if (!response.ok) {
-                            const errorData = await response.json();
-                            throw new Error(errorData.error || 'Failed to send message');
-                        }
-
-                        input.value = '';
-                        const newMessage = await response.json();
-                        appendMessage(newMessage);
-                        socket.emit('newMessage', newMessage);
-                        updateConversationsList(); // Refresh the conversations list
-                    } catch (error) {
-                        console.error('Error sending message:', error);
-                        alert(error.message || 'Failed to send message. Please try again.');
-                    }
-                });
-            }
-
-            // Load conversations
-            async function loadConversations() {
-                try {
-                    const response = await fetch('/api/messages');
-                    const messages = await response.json();
-                    displayConversations(messages);
-                } catch (error) {
-                    console.error('Error loading conversations:', error);
-                }
-            }
-
-            async function updateConversationsList() {
-            try {
-                const response = await fetch('/api/messages');
-                const messages = await response.json();
-                const grouped = groupMessagesByProduct(messages);
-                
-                // Smart update instead of full refresh
-                const existingIds = new Set(
-                    Array.from(document.querySelectorAll('.conversation-item'))
-                        .map(el => el.dataset.productId)
-                );
-
-                grouped.forEach(group => {
-                    if (!existingIds.has(group.productdID.toString())) {
-                        const newElement = createConversationElement(group);
-                        document.getElementById('conversationsList').prepend(newElement);
-                    }
-                });
-            } catch (error) {
-                console.error('Update failed:', error);
-            }
+    // Your existing chat initialization code
+    function initializeChat() {
+        // Initialize Socket.IO only once
+        if (socket) {
+            return; // If socket already exists, don't create a new one
         }
 
-            // Display conversations
-            function displayConversations(messages) {
-                const conversationsList = document.getElementById('conversationsList');
-                conversationsList.innerHTML = '';
+        socket = io();
+        let currentConversation = null;
+        let typingTimeout = null;
 
-                // Group messages by product
-                const groupedMessages = groupMessagesByProduct(messages);
+        // --- DOM Element References ---
+        const chatContainer = document.getElementById('chatContainer'); // Added ID in HTML
+        const conversationsListEl = document.getElementById('conversationsList');
+        const chatMessagesEl = document.getElementById('chatMessages');
+        const messageInput = document.querySelector('.chat-input');
+        const sendButton = document.getElementById('sendButton'); // Added ID in HTML
+        const searchInput = document.querySelector('.search-input');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const selectedChatNameEl = document.querySelector('.selected-chat-name');
+        const backButton = document.getElementById('backButton'); // Added ID in HTML
 
-                groupedMessages.forEach(group => {
-                    const conversationItem = createConversationElement(group);
-                    conversationsList.appendChild(conversationItem);
-                });
+        // --- Mobile View Logic ---
+        const switchToChatView = () => {
+             if (window.innerWidth <= 768) {
+                 chatContainer.classList.add('mobile-chat-active');
+             }
+        };
+
+        const switchToListView = () => {
+             if (window.innerWidth <= 768) {
+                 chatContainer.classList.remove('mobile-chat-active');
+                 currentConversation = null; // Reset current conversation when going back
+                 selectedChatNameEl.textContent = ''; // Clear header
+                 selectedChatNameEl.setAttribute('data-i18n', 'meldinger.klikk'); // Reset i18n key
+                 // Optionally, re-translate if using dynamic translation library
+                 // i18n.update(selectedChatNameEl);
+             }
+        };
+
+         // Back button functionality
+        if (backButton) {
+            backButton.addEventListener('click', switchToListView);
+        }
+
+        // Authenticate user - Get user ID safely
+        const currentUserId = getUserID(); // Use helper function
+        if (!currentUserId) {
+             console.error("User ID not found. Cannot authenticate.");
+             // Handle case where user ID isn't available (e.g., show error, redirect)
+             return; // Stop initialization if no user ID
+        }
+        socket.emit('authenticate', currentUserId);
+
+
+        // Handle new message
+        socket.on('messageReceived', (message) => {
+            // Check if the message belongs to the currently *displayed* conversation
+            if (currentConversation && message.productdID === currentConversation.productdID) {
+                 appendMessage(message);
+                 markMessageAsRead(message); // Mark as read if viewing the conversation
+            } else {
+                 // If not viewing, just update the list (which handles unread count)
+                 showToast(`New message about ${message.ProductName}`, 'info'); // Notify user
             }
+            updateConversationsList(); // Update list regardless (for preview, unread count)
+            checkUnreadMessages(); // Check overall unread count
+        });
 
-            // Group messages by product
-            function groupMessagesByProduct(messages) {
-                const groups = {};
-                const currentUserId = '<%= user?.brukerId || user.brukerId %>';
-                
-                messages.forEach(message => {
-                    if (!groups[message.productdID]) {
-                        groups[message.productdID] = {
-                            productdID: message.productdID,
-                            productName: message.ProductName,
-                            lastMessage: message,
-                            unreadCount: message.readd ? 0 : 1,
-                            senderName: message.senderName,
-                            receiverId: message.senderId === currentUserId ? message.receiverId : message.senderId
-                        };
+        socket.on('messageSent', (message) => { // SENDER confirmation
+            // Update the message status in the UI if needed (e.g., from pending to sent '✓')
+            updateMessageStatusUI(message.tempId || message.messageId, 'sent', message.messageId); // Use tempId if provided
+
+            // If the sent message matches the current view, maybe append *again* or *replace* placeholder
+            if (currentConversation && message.productdID === currentConversation.productdID) {
+                // If we used a placeholder, replace it. Otherwise, append.
+                // Let's assume appendMessage handles potential duplicates or updates if needed.
+                // appendMessage(message); // This might duplicate if append was called optimistically
+            }
+            updateConversationsList(); // Update list preview
+        });
+
+
+        // Handle typing status
+        socket.on('userTyping', (data) => {
+            if (currentConversation && currentConversation.productdID === data.productdID && data.senderId !== currentUserId) {
+                typingIndicator.textContent = `${data.senderName || 'User'} is typing...`; // Show who is typing
+                typingIndicator.style.display = 'block';
+                // Use a new timeout specific to this user/convo if needed
+                setTimeout(() => {
+                    typingIndicator.style.display = 'none';
+                     typingIndicator.textContent = ''; // Clear text
+                }, 3000); // Hide after 3 seconds of inactivity
+            }
+        });
+
+         // Handle user stopped typing
+        socket.on('userStoppedTyping', (data) => {
+            if (currentConversation && currentConversation.productdID === data.productdID && data.senderId !== currentUserId) {
+                typingIndicator.style.display = 'none';
+                 typingIndicator.textContent = ''; // Clear text
+            }
+        });
+
+
+        // Handle read receipts
+        socket.on('messageReadReceipt', (data) => { // data = { messageId, readerId }
+            // Update status only for messages sent *by the current user* that were read by someone else
+             if (data.readerId !== currentUserId) {
+                  updateMessageStatusUI(data.messageId, 'read');
+             }
+        });
+
+        // Setup search functionality
+        if (searchInput) {
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                const conversations = conversationsListEl.querySelectorAll('.conversation-item');
+
+                conversations.forEach(conv => {
+                    const name = conv.querySelector('.conversation-name')?.textContent.toLowerCase() || '';
+                    const preview = conv.querySelector('.conversation-preview')?.textContent.toLowerCase() || '';
+
+                    if (name.includes(searchTerm) || preview.includes(searchTerm)) {
+                        conv.style.display = 'flex';
                     } else {
-                        if (message.timestamp > groups[message.productdID].lastMessage.timestamp) {
-                            groups[message.productdID].lastMessage = message;
-                            groups[message.productdID].senderName = message.senderName;
-                            groups[message.productdID].receiverId = message.senderId === currentUserId ? message.receiverId : message.senderId;
-                        }
-                        if (!message.readd) {
-                            groups[message.productdID].unreadCount++;
-                        }
+                        conv.style.display = 'none';
                     }
                 });
-                return Object.values(groups);
-            }
+            });
+        }
 
-            // Create conversation element
-            function createConversationElement(group) {
-                const div = document.createElement('div');
-                div.className = 'conversation-item';
-                div.dataset.productId = group.productdID;
-                
-                div.innerHTML = `
-                    <div class="avatar">${group.productName[0]}</div>
-                    <div class="conversation-info">
-                        <div class="conversation-name">${group.productName}</div>
-                        <div class="conversation-preview">
-                            <span class="sender-name">${group.senderName}:</span> ${group.lastMessage.messageContent}
-                        </div>
-                    </div>
-                    ${group.unreadCount > 0 ? `<span class="badge">${group.unreadCount}</span>` : ''}
-                `;
+        // Setup message input
+        if (messageInput) {
+            messageInput.addEventListener('input', () => {
+                if (!currentConversation) return;
 
-                div.addEventListener('click', () => loadConversation(group));
-                return div;
-            }
+                // Clear previous timeout if user continues typing
+                if (typingTimeout) clearTimeout(typingTimeout);
 
-            // Load conversation
-            async function loadConversation(group) {
-                currentConversation = group;
-                document.querySelector('.selected-chat-name').textContent = `${group.productName} - ${group.senderName}`;
-                
-                try {
-                    const response = await fetch(`/api/messages/conversation?productdID=${group.productdID}`);
-                    const messages = await response.json();
-                    displayMessages(messages);
-                } catch (error) {
-                    console.error('Error loading conversation:', error);
-                }
-            }
-
-            // Display messages
-            function displayMessages(messages) {
-                const chatMessages = document.getElementById('chatMessages');
-                chatMessages.innerHTML = '';
-
-                messages.forEach(message => {
-                    appendMessage(message);
+                // Emit typing immediately
+                socket.emit('typing', {
+                    senderId: currentUserId,
+                    // Determine receiverId based on the *conversation group*, not just last message
+                    receiverId: currentConversation.otherParticipantId,
+                    productdID: currentConversation.productdID,
+                    senderName: '<%= user?.username || "User" %>', // Send current user's name
+                    isTyping: true
                 });
 
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
+                // Set a timeout to emit 'stopped typing'
+                typingTimeout = setTimeout(() => {
+                    socket.emit('typing', { // Re-use typing event with isTyping: false
+                        senderId: currentUserId,
+                        receiverId: currentConversation.otherParticipantId,
+                        productdID: currentConversation.productdID,
+                        isTyping: false
+                    });
+                    typingTimeout = null; // Clear the timeout ID
+                }, 1500); // Emit stop after 1.5 seconds of inactivity
+            });
 
-            // Append message
-            function appendMessage(message) {
-                const chatMessages = document.getElementById('chatMessages');
-                const messageDiv = document.createElement('div');
-                const currentUserId = '<%= user?.brukerId || user.brukerId %>';
-                messageDiv.className = `message ${message.senderId === currentUserId ? 'sent' : 'received'}`;
-                
-                messageDiv.innerHTML = `
-                    <div class="message-header">${message.senderName}</div>
-                    <div class="message-content">${message.messageContent}</div>
-                    <div class="message-time">${formatTime(message.timestamp)}</div>
-                    ${message.senderId === currentUserId ? 
-                        `<div class="message-status">${message.readd ? '✓✓' : '✓'}</div>` : ''}
-                `;
-
-                chatMessages.appendChild(messageDiv);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
-            }
-
-            // Format time
-            function formatTime(timestamp) {
-                const date = new Date(timestamp);
-                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            }
-
-            // Update message status
-            function updateMessageStatus(messageId, status) {
-                const message = document.querySelector(`[data-message-id="${messageId}"]`);
-                if (message) {
-                    const statusDiv = message.querySelector('.message-status');
-                    statusDiv.textContent = status === 'read' ? '✓✓' : '✓';
+            // Handle enter key in message input
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault(); // Prevent newline
+                    if (sendButton) {
+                        sendButton.click();
+                    }
                 }
-            }
-
-            // Load initial conversations
-            loadConversations();
+            });
         }
+
+        // Setup send button
+        if (sendButton) {
+            sendButton.addEventListener('click', async () => {
+                const messageContent = messageInput.value.trim();
+
+                if (!messageContent || !currentConversation) {
+                    console.warn("Cannot send empty message or no conversation selected.");
+                    return;
+                }
+
+                 // Optimistic UI update: Create a temporary message structure
+                 const tempId = `temp_${Date.now()}`; // Unique temporary ID
+                 const optimisticMessage = {
+                    messageId: tempId, // Use tempId
+                    tempId: tempId,   // Store it separately too if needed
+                    productdID: currentConversation.productdID,
+                    ProductName: currentConversation.productName,
+                    senderId: currentUserId,
+                    senderName: '<%= user?.username || "Me" %>', // Use current user's name
+                    receiverId: currentConversation.otherParticipantId, // Use the determined participant
+                    messageContent: messageContent,
+                    timestamp: new Date().toISOString(), // Current time
+                    readd: false, // Not read yet
+                    status: 'pending' // Add a pending status
+                 };
+
+                 appendMessage(optimisticMessage); // Add to UI immediately
+                 messageInput.value = ''; // Clear input
+                 messageInput.style.height = 'auto'; // Reset height after sending
+
+                try {
+                     // Stop typing indicator immediately
+                     if (typingTimeout) clearTimeout(typingTimeout);
+                     socket.emit('typing', {
+                         senderId: currentUserId,
+                         receiverId: currentConversation.otherParticipantId,
+                         productdID: currentConversation.productdID,
+                         isTyping: false
+                     });
+
+
+                    const response = await fetch('/api/messages', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            // Add authorization header if needed:
+                            // 'Authorization': `Bearer ${your_auth_token}`
+                        },
+                        body: JSON.stringify({
+                            productdID: currentConversation.productdID,
+                            messageContent: messageContent,
+                            receiverId: currentConversation.otherParticipantId, // Send to the other participant
+                            tempId: tempId // Send tempId to backend for correlation
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                    }
+
+                    const confirmedMessage = await response.json(); // Backend returns the saved message with real ID
+
+                    // Update the optimistic message with confirmed data (real ID, server timestamp)
+                    updateMessageStatusUI(tempId, 'sent', confirmedMessage.messageId, confirmedMessage.timestamp);
+
+                    // Emit the *confirmed* message via Socket.IO
+                    socket.emit('newMessage', confirmedMessage);
+
+                    updateConversationsList(); // Refresh conversations list after successful send
+
+                } catch (error) {
+                    console.error('Error sending message:', error);
+                     showToast(error.message || 'Failed to send message. Please try again.', 'error');
+                     // Update the optimistic message status to 'failed'
+                     updateMessageStatusUI(tempId, 'failed');
+                }
+            });
+        }
+
+
+         // --- Helper Function to Get User ID ---
+         function getUserID() {
+            // Attempt to get user ID from the EJS variable
+             try {
+                // Use optional chaining and nullish coalescing for safety
+                const userId = '<%= user?.brukerId ?? user?.brukerid ?? null %>';
+                 // Check if the template variable was actually rendered or is just the literal string
+                 if (userId && userId !== '<' + '%= user?.brukerId ?? user?.brukerid ?? null %' + '>') {
+                     // Check for 'null' string specifically if EJS renders null as a string
+                     return userId === 'null' ? null : userId;
+                 }
+             } catch (e) {
+                 console.error("Error accessing user ID from template:", e);
+             }
+
+             console.warn("User ID could not be determined.");
+             return null; // Return null if not found
+         }
+
+        // Load conversations
+        async function loadConversations() {
+             conversationsListEl.innerHTML = '<div class="skeleton skeleton-message" style="height: 65px; margin: 10px;"></div>'.repeat(5); // Show skeleton loader
+             try {
+                 const response = await fetch('/api/messages');
+                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                 const messages = await response.json();
+                 displayConversations(messages);
+             } catch (error) {
+                 console.error('Error loading conversations:', error);
+                  conversationsListEl.innerHTML = '<p style="padding: 15px; text-align: center; color: #dc3545;">Could not load conversations.</p>';
+                  showToast('Failed to load conversations.', 'error');
+             }
+         }
+
+        // Update conversations list (more efficient than full reload)
+        async function updateConversationsList() {
+            try {
+                const response = await fetch('/api/messages'); // Fetch latest data
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const messages = await response.json();
+                const grouped = groupMessagesByConversation(messages); // Use the updated grouping function
+
+                // Get current conversation IDs displayed
+                const currentDisplayedIds = new Set(
+                    Array.from(conversationsListEl.querySelectorAll('.conversation-item'))
+                        .map(el => el.dataset.conversationId) // Use conversationId
+                );
+                const latestGroupedIds = new Set(grouped.map(g => g.conversationId)); // Use conversationId
+
+                // 1. Update existing or add new conversations
+                grouped.forEach(group => {
+                    const existingItem = conversationsListEl.querySelector(`.conversation-item[data-conversation-id="${group.conversationId}"]`);
+                    if (existingItem) {
+                        // Update existing item content (more efficient than replacing)
+                        updateConversationElement(existingItem, group);
+                    } else {
+                        // Add new item (usually prepend for newest first)
+                        const newItem = createConversationElement(group);
+                        conversationsListEl.prepend(newItem); // Add new conversations to the top
+                    }
+                });
+
+                // 2. Remove conversations that no longer exist (optional, depends on logic)
+                currentDisplayedIds.forEach(id => {
+                    if (!latestGroupedIds.has(id)) {
+                        const itemToRemove = conversationsListEl.querySelector(`.conversation-item[data-conversation-id="${id}"]`);
+                        if (itemToRemove) itemToRemove.remove();
+                    }
+                });
+
+            } catch (error) {
+                console.error('Failed to update conversations list:', error);
+                 // Optionally show a non-intrusive error
+            }
+        }
+
+
+         // Group messages by CONVERSATION (Product + Other Participant)
+         function groupMessagesByConversation(messages) {
+             const groups = {};
+             const loggedInUserId = getUserID(); // Get current user ID
+
+             if (!loggedInUserId) return []; // Return empty if no user ID
+
+             messages.forEach(message => {
+                 // Determine the other participant's ID
+                 const otherParticipantId = message.senderId === loggedInUserId ? message.receiverId : message.senderId;
+                 // Create a unique conversation ID based on product and participants (order-independent)
+                 const participantIds = [message.senderId, message.receiverId].sort();
+                 const conversationId = `${message.productdID}_${participantIds[0]}_${participantIds[1]}`;
+
+                 if (!groups[conversationId]) {
+                     // Initialize group
+                     groups[conversationId] = {
+                         conversationId: conversationId,
+                         productdID: message.productdID,
+                         productName: message.ProductName,
+                         // Determine the name and ID of the *other* participant
+                         otherParticipantId: otherParticipantId,
+                         otherParticipantName: message.senderId === loggedInUserId ? message.receiverName : message.senderName, // Need receiverName from backend!
+                         lastMessage: message,
+                         unreadCount: 0,
+                         messages: [message] // Store all messages for potential use
+                     };
+                 } else {
+                     // Add message to existing group
+                     groups[conversationId].messages.push(message);
+                     // Update last message if this one is newer
+                     if (new Date(message.timestamp) > new Date(groups[conversationId].lastMessage.timestamp)) {
+                         groups[conversationId].lastMessage = message;
+                     }
+                 }
+                 // Update other participant name if the current message provides a better one (e.g., if the first message was from the current user)
+                  if (!groups[conversationId].otherParticipantName && message.senderId !== loggedInUserId) {
+                    groups[conversationId].otherParticipantName = message.senderName;
+                  }
+                   if (!groups[conversationId].otherParticipantName && message.receiverId !== loggedInUserId) {
+                     groups[conversationId].otherParticipantName = message.receiverName; // Ensure receiverName is available
+                   }
+
+             });
+
+             // Calculate unread counts and finalize structure
+             Object.values(groups).forEach(group => {
+                 group.unreadCount = group.messages.filter(m => m.receiverId === loggedInUserId && !m.readd).length;
+                 // Sort messages within the group by timestamp (optional, but good practice)
+                 group.messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+                 // Ensure lastMessage is indeed the last one after sorting
+                 group.lastMessage = group.messages[group.messages.length - 1];
+                  // Refine participant name (use Product name if participant name is missing?)
+                   group.displayName = group.otherParticipantName || `User ${group.otherParticipantId.substring(0, 5)}`; // Fallback name
+             });
+
+              // Sort groups by the timestamp of the last message (newest first)
+              return Object.values(groups).sort((a, b) => new Date(b.lastMessage.timestamp) - new Date(a.lastMessage.timestamp));
+         }
+
+        // Display conversations (Initial Load)
+        function displayConversations(messages) {
+            conversationsListEl.innerHTML = ''; // Clear previous content/skeletons
+            const groupedMessages = groupMessagesByConversation(messages);
+
+             if (groupedMessages.length === 0) {
+                 conversationsListEl.innerHTML = '<p style="padding: 15px; text-align: center; color: #666;">No conversations yet.</p>';
+                 return;
+             }
+
+            groupedMessages.forEach(group => {
+                const conversationItem = createConversationElement(group);
+                conversationsListEl.appendChild(conversationItem);
+            });
+        }
+
+         // Update existing conversation element in the list
+        function updateConversationElement(element, group) {
+             // Update Preview
+             const previewEl = element.querySelector('.conversation-preview');
+             if (previewEl) {
+                 const senderName = group.lastMessage.senderId === getUserID() ? "You" : (group.lastMessage.senderName || group.displayName);
+                 previewEl.innerHTML = `<span class="sender-name">${senderName}:</span> ${group.lastMessage.messageContent}`;
+             }
+             // Update Unread Badge
+             const badgeEl = element.querySelector('.badge');
+             if (group.unreadCount > 0) {
+                 if (badgeEl) {
+                     badgeEl.textContent = group.unreadCount;
+                 } else {
+                     const newBadge = document.createElement('span');
+                     newBadge.className = 'badge';
+                     newBadge.textContent = group.unreadCount;
+                     // Append badge correctly, maybe after conversation-info
+                     element.appendChild(newBadge); // Adjust placement if needed
+                 }
+             } else {
+                 if (badgeEl) {
+                     badgeEl.remove(); // Remove badge if count is zero
+                 }
+             }
+             // Update Data Attributes (like timestamp for potential sorting)
+             element.dataset.lastTimestamp = group.lastMessage.timestamp;
+
+             // Bring to top? If list isn't explicitly sorted, need manual reordering:
+             if (conversationsListEl.firstChild !== element) {
+                 conversationsListEl.prepend(element);
+             }
+        }
+
+
+        // Create conversation list item element
+         function createConversationElement(group) {
+             const div = document.createElement('div');
+             div.className = 'conversation-item';
+             div.dataset.conversationId = group.conversationId; // Use unique conversation ID
+             div.dataset.productId = group.productdID; // Keep product ID if needed
+             div.dataset.otherUserId = group.otherParticipantId;
+             div.dataset.lastTimestamp = group.lastMessage.timestamp; // Store timestamp for sorting/updates
+
+             const senderName = group.lastMessage.senderId === getUserID() ? "You" : (group.lastMessage.senderName || group.displayName);
+
+             div.innerHTML = `
+                 <div class="avatar">${group.productName ? group.productName[0].toUpperCase() : '?'}</div> <!-- Use Product Name Initial -->
+                 <div class="conversation-info">
+                     <div class="conversation-name">${group.productName} <span style="color: #555; font-weight: 400;">(w/ ${group.displayName})</span></div> <!-- Show Product & Participant -->
+                     <div class="conversation-preview">
+                         <span class="sender-name">${senderName}:</span> ${group.lastMessage.messageContent || '...'}
+                     </div>
+                 </div>
+                 ${group.unreadCount > 0 ? `<span class="badge">${group.unreadCount}</span>` : ''}
+             `;
+
+             div.addEventListener('click', () => loadConversationMessages(group)); // Pass the whole group object
+
+             // Highlight if active
+              if (currentConversation && currentConversation.conversationId === group.conversationId) {
+                 div.classList.add('active');
+             }
+
+             return div;
+         }
+
+        // Load messages for a specific conversation
+        async function loadConversationMessages(group) {
+             // Remove active class from previously selected item
+             const currentActive = conversationsListEl.querySelector('.conversation-item.active');
+             if (currentActive) currentActive.classList.remove('active');
+             // Add active class to the clicked item
+              const clickedItem = conversationsListEl.querySelector(`.conversation-item[data-conversation-id="${group.conversationId}"]`);
+              if (clickedItem) clickedItem.classList.add('active');
+
+
+            currentConversation = group; // Store the whole group info
+             selectedChatNameEl.textContent = `${group.productName} (with ${group.displayName})`; // Update header
+             selectedChatNameEl.removeAttribute('data-i18n'); // Remove i18n key once loaded
+             chatMessagesEl.innerHTML = '<div class="skeleton skeleton-message"></div>'.repeat(8); // Show skeleton loader
+             typingIndicator.style.display = 'none'; // Hide typing indicator initially
+
+            // Switch view on mobile
+             switchToChatView();
+
+            try {
+                const response = await fetch(`/api/messages/conversation?productdID=${group.productdID}&participant1=${getUserID()}&participant2=${group.otherParticipantId}`);
+                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const messages = await response.json();
+                displayMessages(messages); // Display fetched messages
+
+                // Mark messages as read after loading and displaying
+                markConversationAsRead(group.conversationId, messages);
+
+
+            } catch (error) {
+                console.error('Error loading conversation messages:', error);
+                chatMessagesEl.innerHTML = '<p style="padding: 15px; text-align: center; color: #dc3545;">Could not load messages.</p>';
+                 showToast('Failed to load messages.', 'error');
+            }
+        }
+
+         // --- Mark Messages/Conversation as Read ---
+         async function markConversationAsRead(conversationId, messages) {
+             const loggedInUserId = getUserID();
+             const unreadMessageIds = messages
+                 .filter(msg => msg.receiverId === loggedInUserId && !msg.readd)
+                 .map(msg => msg.messageId);
+
+             if (unreadMessageIds.length === 0) {
+                 return; // No unread messages to mark
+             }
+
+             // Update UI immediately (optimistic)
+             unreadMessageIds.forEach(messageId => {
+                 const messageEl = chatMessagesEl.querySelector(`[data-message-id="${messageId}"]`);
+             });
+
+             // Tell the server these messages were read
+             try {
+                 const response = await fetch('/api/messages/read', {
+                     method: 'POST',
+                     headers: { 'Content-Type': 'application/json' },
+                     body: JSON.stringify({ messageIds: unreadMessageIds })
+                 });
+                 if (!response.ok) throw new Error('Failed to mark messages as read on server.');
+
+                 // Emit read receipt via Socket.IO so the *sender* gets notified
+                 socket.emit('messagesRead', { messageIds: unreadMessageIds, readerId: loggedInUserId });
+
+                 // Update the conversation list (remove badge)
+                 updateConversationsList(); // This should handle the unread count update
+
+             } catch (error) {
+                 console.error("Error marking messages as read:", error);
+                  // Handle error, maybe revert optimistic UI changes if necessary
+             }
+         }
+
+          // Single message read (used when a new message arrives while viewing)
+          function markMessageAsRead(message) {
+             if (message.receiverId === getUserID() && !message.readd) {
+                  // Emit read receipt for this single message
+                   socket.emit('messagesRead', { messageIds: [message.messageId], readerId: getUserID() });
+                  // Optionally update UI if needed locally
+             }
+          }
+
+
+        // Display messages in the chat window
+        function displayMessages(messages) {
+            chatMessagesEl.innerHTML = ''; // Clear previous messages/skeletons
+             if (!messages || messages.length === 0) {
+                 chatMessagesEl.innerHTML = '<p style="padding: 15px; text-align: center; color: #666;">No messages in this conversation yet. Start typing!</p>';
+                 return;
+             }
+
+            messages.forEach(message => {
+                appendMessage(message); // Append each message
+            });
+
+            // Scroll to the bottom after messages are added
+            // Use setTimeout to ensure DOM has updated
+             setTimeout(() => {
+                 chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+             }, 0);
+        }
+
+        // Append a single message to the chat window
+        function appendMessage(message) {
+             // Avoid appending duplicates if message already exists (based on messageId)
+              if (message.messageId && chatMessagesEl.querySelector(`[data-message-id="${message.messageId}"]`)) {
+                  // If it's an update (e.g., status change), handle it in updateMessageStatusUI
+                  console.log(`Message ${message.messageId} already exists. Skipping append.`);
+                  return;
+              }
+              // Check for tempId duplicates too
+              if (message.tempId && chatMessagesEl.querySelector(`[data-message-id="${message.tempId}"]`)) {
+                  console.log(`Message with tempId ${message.tempId} already exists. Skipping append.`);
+                  return; // Or handle update via updateMessageStatusUI
+              }
+
+
+            const messageDiv = document.createElement('div');
+            const loggedInUserId = getUserID();
+            const isSent = message.senderId === loggedInUserId;
+
+            messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+            // Use real messageId if available, otherwise tempId
+             messageDiv.dataset.messageId = message.messageId || message.tempId;
+             if (message.tempId) messageDiv.dataset.tempId = message.tempId; // Keep tempId if present
+
+
+            // Determine status icon based on message state
+            let statusIcon = '';
+             if (isSent) {
+                 if (message.status === 'failed') {
+                     statusIcon = '<i class="fas fa-exclamation-circle" style="color: red;" title="Failed to send"></i>'; // Failed icon
+                 } else if (message.readd) {
+                     statusIcon = '✓✓'; // Read
+                 } else if (message.messageId && message.status !== 'pending') { // Check it's not pending and has a real ID
+                      statusIcon = '✓'; // Delivered (or just sent)
+                 } else {
+                     statusIcon = '<i class="far fa-clock" title="Sending..."></i>'; // Pending icon (e.g., Font Awesome clock)
+                 }
+             }
+
+
+            messageDiv.innerHTML = `
+                ${!isSent ? `<div class="message-header">${message.senderName || 'User'}</div>` : ''}
+                <div class="message-content">${escapeHTML(message.messageContent)}</div>
+                <div class="message-time">${formatTime(message.timestamp)}</div>
+                ${isSent ? `<div class="message-status ${message.readd ? 'read' : ''}">${statusIcon}</div>` : ''}
+            `;
+
+            chatMessagesEl.appendChild(messageDiv);
+
+            // Scroll to bottom only if the user isn't scrolled up reviewing history
+             // Add a small threshold (e.g., 100px)
+             const scrollThreshold = 100;
+             if (chatMessagesEl.scrollHeight - chatMessagesEl.scrollTop <= chatMessagesEl.clientHeight + scrollThreshold) {
+                 // Use setTimeout to allow DOM to render before scrolling
+                 setTimeout(() => {
+                     chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
+                 }, 0);
+             }
+        }
+
+         // --- Update Message Status in UI ---
+         function updateMessageStatusUI(id, status, newId = null, newTimestamp = null) {
+             // Find message by either real ID or temp ID
+             const messageEl = chatMessagesEl.querySelector(`[data-message-id="${id}"]`) || chatMessagesEl.querySelector(`[data-temp-id="${id}"]`);
+
+             if (messageEl) {
+                 const statusEl = messageEl.querySelector('.message-status');
+                 if (statusEl) {
+                     let statusIcon = statusEl.innerHTML; // Keep current icon by default
+                     if (status === 'sent') {
+                         statusIcon = '✓'; // Delivered/Sent
+                     } else if (status === 'read') {
+                         statusIcon = '✓✓'; // Read
+                         statusEl.classList.add('read');
+                     } else if (status === 'failed') {
+                          statusIcon = '<i class="fas fa-exclamation-circle" style="color: red;" title="Failed to send"></i>';
+                          messageEl.style.opacity = '0.7'; // Dim failed message slightly
+                     } else if (status === 'pending') {
+                         statusIcon = '<i class="far fa-clock" title="Sending..."></i>';
+                     }
+                     statusEl.innerHTML = statusIcon;
+                 }
+
+                 // If a new (real) ID was provided, update the dataset attribute
+                 if (newId && newId !== id) {
+                     messageEl.dataset.messageId = newId;
+                      // Remove tempId attribute if it exists
+                      if (messageEl.dataset.tempId) {
+                          delete messageEl.dataset.tempId;
+                      }
+                 }
+
+                 // Update timestamp if provided (e.g., from server confirmation)
+                  if (newTimestamp) {
+                     const timeEl = messageEl.querySelector('.message-time');
+                     if (timeEl) {
+                         timeEl.textContent = formatTime(newTimestamp);
+                     }
+                  }
+
+             } else {
+                 console.warn(`Message element not found for ID: ${id} to update status to ${status}`);
+             }
+         }
+
+
+        // Format time utility
+        function formatTime(timestamp) {
+            if (!timestamp) return '';
+            try {
+                const date = new Date(timestamp);
+                // Check if the date is valid
+                 if (isNaN(date.getTime())) {
+                     return 'Invalid date';
+                 }
+                return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }); // Use 24-hour format for clarity
+            } catch (e) {
+                console.error("Error formatting time:", timestamp, e);
+                return '...'; // Fallback for invalid timestamps
+            }
+        }
+
+        // Basic HTML escaping (Corrected Version)
+        function escapeHTML(str) {
+            if (!str) return '';
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+
+        // Check unread messages (could be used for a global counter)
+         function checkUnreadMessages() {
+             console.log("Checking for unread messages (implementation needed)");
+         }
+
+
+        // Initial Load
+        loadConversations();
+    }
     </script>
 </head>
 <body>
     <%- include('partials/navbar') %>
-    
-    <% if (!user) { %>
-        <div class="chat-container">
-            <div class="error-message">
-                <h2>Please log in to view messages</h2>
-                <a href="/login" class="login-button">Log In</a>
+   <% if (!user) { %>
+    <div class="chat-container">
+        <div class="error-message">
+            <h2>Please log in to view messages</h2>
+            <a href="/login" class="login-button">Log In</a>
+        </div>
+    </div>
+<% } else { %>
+    <!-- Add id="chatContainer" for JS targeting -->
+    <div class="chat-container" id="chatContainer">
+        <div class="conversations-list">
+            <div class="search-container">
+                <input type="text" class="search-input" data-i18n="[placeholder]search.placeholder" placeholder="Search conversations...">
+            </div>
+            <div class="conversations" id="conversationsList">
+                <!-- Conversations loaded via JS -->
+                 <!-- Skeleton Loader Example -->
+                 <div class="skeleton skeleton-message" style="height: 65px; margin: 10px;"></div>
+                 <div class="skeleton skeleton-message" style="height: 65px; margin: 10px;"></div>
+                 <div class="skeleton skeleton-message" style="height: 65px; margin: 10px;"></div>
             </div>
         </div>
-    <% } else { %>
-        <div class="chat-container">
-            <div class="conversations-list">
-                <div class="search-container">
-                    <input type="text" class="search-input" data-i18n="[placeholder]search.placeholder" placeholder="Search...">
+
+        <div class="chat-window">
+            <div class="chat-header">
+                 <!-- Add id="backButton" for JS targeting -->
+                <button class="back-button" id="backButton" aria-label="Back to conversations">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="chat-header-info">
+                     <!-- Add fallback text -->
+                    <span class="selected-chat-name" data-i18n="meldinger.klikk">Select a conversation</span>
                 </div>
-                <div class="conversations" id="conversationsList">
-                    <!-- Conversations will be loaded here -->
-                </div>
+                 <!-- Optional: Add other icons like call, video, info -->
             </div>
-            
-            <div class="chat-window">
-                <div class="chat-header">
-                    <div class="chat-header-info">
-                        <span class="selected-chat-name" data-i18n="meldinger.klikk">Click to View Messages</span>
-                    </div>
-                </div>
-                
-                <div class="chat-messages" id="chatMessages">
-                    <!-- Messages will be loaded here -->
-                </div>
-                
-                <div class="typing-indicator" id="typingIndicator" style="display: none;">
-                    User is typing...
-                </div>
-                
-                <div class="chat-input-container">
-                    <textarea class="chat-input" data-i18n="[placeholder]meldinger.placeholder" placeholder="Type your message..."></textarea>
-                    <button class="send-button" id="sendButton">
-                        <i class="fas fa-paper-plane"></i>
-                    </button>
-                </div>
+
+            <div class="chat-messages" id="chatMessages">
+            </div>
+
+             <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                 <!-- Text set by JS -->
+            </div>
+
+            <div class="chat-input-container">
+                <textarea class="chat-input" data-i18n="[placeholder]meldinger.placeholder" placeholder="Type your message..." rows="1"></textarea> <!-- Start with 1 row -->
+                <!-- Add id="sendButton" for JS targeting -->
+                <button class="send-button" id="sendButton" aria-label="Send message">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
             </div>
         </div>
-    <% } %>
+    </div>
+<% } %>
 </body>
 </html>
