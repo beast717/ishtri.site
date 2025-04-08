@@ -92,7 +92,7 @@ router.post('/signup', async (req, res, next) => {
         }
 
         // --- Send Verification Email ---
-        const verificationLink = `https://ishtri.site/api/auth/verify-email?token=${verificationToken}`; // Adjust domain if needed
+        const verificationLink = `${process.env.APP_BASE_URL}/api/auth/verify-email?token=${verificationToken}`; // Adjust domain if needed
 
         await transporter.sendMail({
             from: process.env.GMAIL_USER,
@@ -364,50 +364,83 @@ router.get('/verify-email', async (req, res, next) => {
     try {
         const { token } = req.query;
 
+        // 1. Basic Check: Token must be present
         if (!token) {
+            console.log("Verification request received without a token.");
             return res.status(400).send('Verification token is missing.');
         }
 
-        // Find user by token and check expiry
-        const [results] = await pool.promise().query(
+        // 2. Primary Check: Find user by VALID token (not expired, not yet cleared)
+        const [validTokenResults] = await pool.promise().query(
             'SELECT * FROM brukere WHERE verification_token = ? AND token_expires_at > NOW()',
             [token]
         );
 
-        if (results.length === 0) {
-            // Token not found or expired
-            // Check if already verified (token might be null after successful verification)
-             const [alreadyVerified] = await pool.promise().query(
-                'SELECT * FROM brukere WHERE verification_token = ?', [token]
-             );
-             if(alreadyVerified.length > 0 && alreadyVerified[0].is_verified) {
-                 // User exists and is verified, maybe clicked old link
-                 // Redirect to login or show "already verified" message
+        // 3. Handle Valid Token Found
+        if (validTokenResults.length > 0) {
+            const user = validTokenResults[0];
+
+            // Safety check: Handle rare race condition where token exists but user somehow got marked verified already
+            if (user.is_verified) {
+                 console.log(`Verification link clicked for already verified user (token was still present?): ${user.brukerId}, Email: ${user.email}`);
+                 // Send consistent "already verified" message
                  return res.send('Email already verified. You can <a href="/login">log in</a>.');
-             } else {
-                 // Truly invalid or expired
-                 return res.status(400).send('Invalid or expired verification link. Please try signing up again or request a new link.'); // Improve this message/page
-             }
+            }
+
+            // --- Main Success Path ---
+            // Mark user as verified and clear token info in the database
+            await pool.promise().query(
+                'UPDATE brukere SET is_verified = 1, verification_token = NULL, token_expires_at = NULL WHERE brukerId = ?',
+                [user.brukerId]
+            );
+
+            console.log(`User ${user.brukerId} (${user.email}) verified successfully via token: ${token}`);
+            // Send the success confirmation page/message
+            return res.send('Email successfully verified! You can now <a href="/login">log in</a>.');
+
+        } else {
+            // --- Initial Lookup Failed ---
+            // Reason could be: Invalid token, Expired token, OR Token already used/cleared (double-click/prefetch)
+            console.log(`Initial verification lookup failed for token: ${token}. Checking if user is already verified or token expired.`);
+
+            // 4. Secondary Check: Look for the token *without* the expiry check to differentiate reasons
+            // This helps identify if the token *was* valid but might have just been cleared or expired.
+            const [existingTokenUserResults] = await pool.promise().query(
+                'SELECT brukerId, email, is_verified FROM brukere WHERE verification_token = ?', // No expiry check here
+                [token]
+            );
+
+            if (existingTokenUserResults.length > 0) {
+                // Token exists in the DB (associated with a user), but the NOW() check failed earlier.
+                const potentialUser = existingTokenUserResults[0];
+
+                if (potentialUser.is_verified) {
+                    // Token is found, user IS verified => Must be the double-click/prefetch case
+                    // where the token was valid but cleared by the *first* successful request.
+                    console.log(`Verification link clicked, user ${potentialUser.brukerId} (${potentialUser.email}) already verified (token was ${token}). Handling as double-click.`);
+                    return res.send('Email already verified. You can <a href="/login">log in</a>.');
+                } else {
+                    // Token is found, user IS NOT verified => Token must have genuinely expired.
+                    console.log(`Verification link expired for user ${potentialUser.brukerId} (${potentialUser.email}). Token: ${token}`);
+                    // Provide a specific message for expired links if possible
+                    return res.status(400).send('Your verification link has expired. Please try signing up again or request a password reset to potentially get a new verification if implemented.'); // Adjust message as needed
+                }
+            } else {
+                // Token doesn't match *any* current verification_token in the DB.
+                // It's either genuinely invalid (never existed, typo) OR
+                // it was valid, used successfully, cleared, AND this check ran *after* the clear.
+                // This second possibility is less likely but covered by treating it as invalid/used.
+                console.log(`Verification token not found or already used and cleared: ${token}`);
+                return res.status(400).send('Invalid verification link. It may have already been used, is incorrect, or has expired.');
+            }
         }
 
-        const user = results[0];
-
-        // Mark user as verified and clear token info
-        await pool.promise().query(
-            'UPDATE brukere SET is_verified = 1, verification_token = NULL, token_expires_at = NULL WHERE brukerId = ?',
-            [user.brukerId]
-        );
-
-        console.log(`User ${user.brukerId} (${user.email}) verified successfully.`);
-
-        // Send a confirmation page/message
-        // You could create a simple HTML file for this
-        res.send('Email successfully verified! You can now <a href="/login">log in</a>.');
-
     } catch (err) {
-        console.error("Verification Error:", err);
-        res.status(500).send('An error occurred during email verification.');
-        next(err);
+        // 5. Catch-all Error Handling
+        console.error("Verification Process Error:", err);
+        // Avoid exposing detailed errors to the user
+        res.status(500).send('An error occurred during email verification. Please try again later or contact support.');
+        next(err); // Pass to Express error handling middleware if you have one
     }
 });
 
