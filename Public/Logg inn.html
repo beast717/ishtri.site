@@ -230,6 +230,10 @@
                 <input type="password" id="confirmPassword" name="confirmPassword" required>
                 <span class="password-toggle-icon">👁️</span>
             </div>
+            <div class="form-group honeypot" style="position: absolute; left: -5000px;" aria-hidden="true">
+                <label for="confirm_email">Do not fill this field</label>
+                <input type="text" id="confirm_email" name="confirm_email" tabindex="-1" autocomplete="off">
+            </div>
             <button type="submit" data-i18n="logg_inn.lag_konto">Create Account</button>
             <span class="toggle-link" onclick="toggleForms()" data-i18n="logg_inn.har_allerede_konto_logg_inn">Already have an account? Log In</span>
         </form>

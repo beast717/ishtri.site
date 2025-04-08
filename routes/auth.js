@@ -22,8 +22,15 @@ const VERIFICATION_REQUIRED_AFTER_DATE = new Date('2025-03-04T12:16:01Z');
 // User registration with Email Verification
 router.post('/signup', async (req, res, next) => {
     try {
-        const { brukernavn, email, passord, confirmPassword } = req.body;
+        const { brukernavn, email, passord, confirmPassword, confirm_email /* Honeypot field name */ } = req.body;
 
+        // --- Honeypot Check ---
+        if (confirm_email) { // If the hidden field has ANY value
+            console.log(`Honeypot triggered for signup attempt. Email: ${email}`);
+            // Fake success (might confuse the bot programmer less)
+            return res.status(201).json({ message: 'Account created. Please check your email to verify your account.' });
+
+        }
         // --- Basic Input Validation ---
         if (!brukernavn || !email || !passord || !confirmPassword) {
             return res.status(400).json({ message: 'All fields are required' });
