@@ -102,6 +102,131 @@
     padding: 20px;
 }
 
+/* --- Cookie Consent Banner Styles --- */
+.cookie-consent-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #2d3436; /* Dark background */
+    color: #dfe6e9; /* Light text */
+    padding: 20px 30px;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.15);
+    z-index: 1050; /* Ensure it's above most other content */
+    /* Start hidden for transition */
+    opacity: 0;
+    transform: translateY(100%);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; /* Match login page font */
+    display: none; /* Use display none initially to prevent flash */
+}
+
+.cookie-consent-banner.show {
+    display: block; /* Set display before starting animation */
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.cookie-consent-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    max-width: 1200px; /* Limit content width */
+    margin: 0 auto;
+    gap: 15px; /* Space between text and buttons */
+}
+
+.cookie-consent-text {
+    flex-grow: 1; /* Allow text to take available space */
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-right: 20px; /* Space before buttons */
+}
+
+.cookie-consent-link {
+    color: #74b9ff; /* Light blue link */
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+.cookie-consent-link:hover {
+    color: #a2d0ff;
+}
+
+.cookie-consent-buttons {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+}
+
+.cookie-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-size: 0.9rem;
+    white-space: nowrap; /* Prevent button text wrapping */
+}
+
+.cookie-btn-accept {
+    background-color: #6c5ce7; /* Primary action color */
+    color: white;
+}
+
+.cookie-btn-accept:hover {
+    background-color: #5b4bc4;
+    transform: scale(1.03);
+}
+
+.cookie-btn-reject {
+    background-color: #b2bec3; /* Secondary/Neutral action */
+    color: #2d3436;
+}
+
+.cookie-btn-reject:hover {
+    background-color: #a4b0bd;
+    transform: scale(1.03);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .cookie-consent-content {
+        flex-direction: column;
+        align-items: flex-start; /* Align items left on mobile */
+        gap: 20px;
+    }
+
+    .cookie-consent-text {
+        margin-right: 0; /* Remove right margin */
+        margin-bottom: 10px; /* Add bottom margin */
+    }
+
+    .cookie-consent-buttons {
+        width: 100%; /* Make buttons take full width */
+        justify-content: flex-end; /* Align buttons right */
+    }
+}
+
+@media (max-width: 480px) {
+    .cookie-consent-banner {
+        padding: 15px 20px;
+    }
+    .cookie-consent-text {
+        font-size: 0.85rem;
+    }
+    .cookie-btn {
+        padding: 8px 15px;
+        font-size: 0.85rem;
+    }
+    .cookie-consent-buttons {
+        gap: 8px;
+    }
+}
+
 @media (max-width: 768px) {
     #random-products {
         grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
