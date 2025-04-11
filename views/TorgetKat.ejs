@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="icon" href="ishtri1.png" sizes="16x16 32x32" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
@@ -613,6 +614,7 @@ select[multiple] option:checked {
 <body>
     <%- include('partials/navbar') %>
     <script src="/shared.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js" integrity="sha512-UOJe4paV6hYWBnS0c9GnIRH8PLm2nFK22uhfAvsTIqd3uwnWsVri1OPn5fJYdLtGY3wB11LGHJ4yPU1WFJeBYQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <div class="filter-container" style="margin-bottom: 20px;">
         <label for="priceFilter" data-i18n="filter.sorter_etter">Sort By:</label>
@@ -645,6 +647,10 @@ select[multiple] option:checked {
         ⟳ Reset Filters
     </button>
 
+    <div class="active-filters-container" id="activeFiltersDisplay" style="margin-bottom: 15px; padding: 10px 20px;">
+    <!-- Active filters will be shown here by JS -->
+</div>
+
     <div class="page-container">
         <div class="side-panel">
             <h3 data-i18n="filter.filter_land">Filter by Country</h3>
@@ -657,25 +663,23 @@ select[multiple] option:checked {
                 <!-- Car brands will be populated here -->
             </ul>
 
-            <!-- Add Car Specific Filters -->
-            <div id="carSpecificFilters" style="display: none;">
-                <!-- Year Range Filter -->
-                <div class="filter-section">
-                    <h4 data-i18n="filter.year_range">Year Range</h4>
-                    <div class="range-inputs">
-                        <input type="number" id="yearFrom" data-i18n="[placeholder]filter.from" placeholder="From" min="1900" max="2024">
-                        <input type="number" id="yearTo" data-i18n="[placeholder]filter.to" placeholder="To" min="1900" max="2024">
-                    </div>
-                </div>
-
-                <!-- Mileage Range Filter -->
-                <div class="filter-section">
-                    <h4 data-i18n="filter.mileage_range">Mileage (km)</h4>
-                    <div class="range-inputs">
-                        <input type="number" id="mileageFrom" data-i18n="[placeholder]filter.from" placeholder="From" min="0">
-                        <input type="number" id="mileageTo" data-i18n="[placeholder]filter.to" placeholder="To">
-                    </div>
-                </div>
+            <!-- Car Specific Filters Update -->
+        <div id="carSpecificFilters" style="display: none;">
+            <div class="filter-section">
+                <h4 data-i18n="filter.year_range">Year Range</h4>
+                <div class="slider-values"><span id="year-slider-val-min"></span> - <span id="year-slider-val-max"></span></div>
+                <div id="year-slider" class="range-slider"></div>
+                <!-- Hidden inputs to store values for the form/JS -->
+                <input type="hidden" id="yearFrom">
+                <input type="hidden" id="yearTo">
+            </div>
+            <div class="filter-section">
+                <h4 data-i18n="filter.mileage_range">Mileage (km)</h4>
+                 <div class="slider-values"><span id="mileage-slider-val-min"></span> - <span id="mileage-slider-val-max"></span></div>
+                <div id="mileage-slider" class="range-slider"></div>
+                <input type="hidden" id="mileageFrom">
+                <input type="hidden" id="mileageTo">
+            </div>
 
                 <!-- Fuel Type Filter -->
                 <div class="filter-section">
@@ -699,7 +703,7 @@ select[multiple] option:checked {
                 </div>
             </div>
 
-            <!-- Add Property Specific Filters -->
+            <!-- Property Specific Filters Update -->
             <div id="propertySpecificFilters" style="display: none;">
                 <!-- Property Type Filter -->
                 <div class="filter-section">
@@ -713,32 +717,27 @@ select[multiple] option:checked {
                     </select>
                 </div>
 
-                <!-- Size Range Filter -->
                 <div class="filter-section">
-                    <h4>Size (m²)</h4>
-                    <div class="range-inputs">
-                        <input type="number" id="sizeFrom" placeholder="From" min="0">
-                        <input type="number" id="sizeTo" placeholder="To">
-                    </div>
-                </div>
-
-                <!-- Rooms Filter -->
-                <div class="filter-section">
-                    <h4>Number of Rooms</h4>
-                    <div class="range-inputs">
-                        <input type="number" id="roomsFrom" placeholder="From" min="0">
-                        <input type="number" id="roomsTo" placeholder="To">
-                    </div>
-                </div>
-
-                <!-- Bathrooms Filter -->
-                <div class="filter-section">
-                    <h4>Number of Bathrooms</h4>
-                    <div class="range-inputs">
-                        <input type="number" id="bathroomsFrom" placeholder="From" min="0">
-                        <input type="number" id="bathroomsTo" placeholder="To">
-                    </div>
-                </div>
+                <h4>Size (m²)</h4>
+                 <div class="slider-values"><span id="size-slider-val-min"></span> - <span id="size-slider-val-max"></span></div>
+                <div id="size-slider" class="range-slider"></div>
+                <input type="hidden" id="sizeSqmFrom">
+                <input type="hidden" id="sizeSqmTo">
+            </div>
+             <div class="filter-section">
+                <h4>Number of Rooms</h4>
+                 <div class="slider-values"><span id="rooms-slider-val-min"></span> - <span id="rooms-slider-val-max"></span></div>
+                <div id="rooms-slider" class="range-slider"></div>
+                <input type="hidden" id="numRoomsFrom">
+                <input type="hidden" id="numRoomsTo">
+            </div>
+            <div class="filter-section">
+                <h4>Number of Bathrooms</h4>
+                <div class="slider-values"><span id="bathrooms-slider-val-min"></span> - <span id="bathrooms-slider-val-max"></span></div>
+                <div id="bathrooms-slider" class="range-slider"></div>
+                <input type="hidden" id="numBathroomsFrom">
+                <input type="hidden" id="numBathroomsTo">
+            </div>
 
                 <!-- Energy Class Filter -->
                 <div class="filter-section">
@@ -819,19 +818,6 @@ select[multiple] option:checked {
                 timeout = setTimeout(later, wait);
             };
         };
-
-        // Debounced version of applyFilters
-        const debouncedApplyFilters = debounce(applyFilters, 300);
-
-        // Add event listeners to all filter inputs
-        const filterInputs = document.querySelectorAll('input[type="number"], input[type="date"], select');
-        filterInputs.forEach(input => {
-            input.addEventListener('input', debouncedApplyFilters);
-            input.addEventListener('change', debouncedApplyFilters);
-        });
-
-        let filterTimeout;
-        const DEBOUNCE_DELAY = 300; // ms
 
         // Pagination variables
         let currentPage = 1;
@@ -916,10 +902,6 @@ select[multiple] option:checked {
                 });
             });
         }
-
-        // Initialize filters and UI once
-        initializeFilters();
-        handleCategoryVisibility();
 
         function showLoading() {
             document.getElementById('loadingOverlay').style.display = 'flex';
@@ -1224,6 +1206,64 @@ select[multiple] option:checked {
                 });
         }
 
+
+
+    // --- Slider Configuration ---
+const sliderConfigs = {
+    'year-slider': { range: { min: 1980, max: new Date().getFullYear() }, start: [1980, new Date().getFullYear()], step: 1, inputs: ['yearFrom', 'yearTo'], format: { to: v => Math.round(v), from: v => Math.round(v) } },
+    'mileage-slider': { range: { min: 0, max: 500000 }, start: [0, 500000], step: 1000, inputs: ['mileageFrom', 'mileageTo'], format: { to: v => Math.round(v), from: v => Math.round(v) } },
+    'size-slider': { range: { min: 10, max: 1000 }, start: [10, 1000], step: 10, inputs: ['sizeSqmFrom', 'sizeSqmTo'], format: { to: v => Math.round(v), from: v => Math.round(v) } },
+    'rooms-slider': { range: { min: 1, max: 10 }, start: [1, 10], step: 1, inputs: ['numRoomsFrom', 'numRoomsTo'], format: { to: v => Math.round(v), from: v => Math.round(v) } },
+    'bathrooms-slider': { range: { min: 1, max: 5 }, start: [1, 5], step: 1, inputs: ['numBathroomsFrom', 'numBathroomsTo'], format: { to: v => Math.round(v), from: v => Math.round(v) } }
+    // Add more sliders here if needed
+};
+
+// --- Initialize Sliders Function ---
+function initializeSliders() {
+    Object.keys(sliderConfigs).forEach(sliderId => {
+        const sliderElement = document.getElementById(sliderId);
+        const config = sliderConfigs[sliderId];
+        const minValDisplay = document.getElementById(`${sliderId}-val-min`);
+        const maxValDisplay = document.getElementById(`${sliderId}-val-max`);
+        const inputMin = document.getElementById(config.inputs[0]);
+        const inputMax = document.getElementById(config.inputs[1]);
+
+        if (sliderElement && inputMin && inputMax) {
+            noUiSlider.create(sliderElement, {
+                start: config.start,
+                connect: true, // Fills the range between handles
+                step: config.step,
+                range: config.range,
+                format: config.format, // Use formatting for whole numbers
+                behaviour: 'tap-drag',
+                tooltips: false // We'll use separate display elements
+            });
+
+            // Update display and hidden inputs when slider changes
+            sliderElement.noUiSlider.on('update', (values) => {
+                const [minVal, maxVal] = values;
+                if (minValDisplay) minValDisplay.textContent = minVal;
+                if (maxValDisplay) maxValDisplay.textContent = maxVal;
+                inputMin.value = minVal; // Update hidden input
+                inputMax.value = maxVal; // Update hidden input
+            });
+
+             // Trigger applyFilters ONLY when the user finishes sliding ('change' event)
+             sliderElement.noUiSlider.on('change', () => {
+                 // Update currentFilters state immediately on change for display purposes
+                 updateCurrentFiltersFromUI();
+                 // Debounce the actual API call
+                 debouncedApplyFilters();
+             });
+
+             // Set initial display values
+             const initialValues = sliderElement.noUiSlider.get();
+             if (minValDisplay) minValDisplay.textContent = initialValues[0];
+             if (maxValDisplay) maxValDisplay.textContent = initialValues[1];
+        }
+    });
+}
+
         function resetFilters() {  
             // 1. Reset UI elements
             document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
@@ -1278,25 +1318,53 @@ select[multiple] option:checked {
                 document.getElementById('deadlineDate').value = '';
             }
 
+             // Reset multi-selects
+            ['fuelTypeFilter', 'transmissionFilter', 'propertyTypeFilter', 'energyClassFilter', 'employmentTypeFilter'].forEach(id => {
+                const selectElement = document.getElementById(id);
+                if (selectElement) {
+                     Array.from(selectElement.options).forEach(option => option.selected = false);
+                }
+            });
+             // Reset date input
+            const deadlineDate = document.getElementById('deadlineDate');
+            if (deadlineDate) deadlineDate.value = '';
+
+
+            // --- START: ADD THIS SECTION TO RESET SLIDERS ---
+            Object.keys(sliderConfigs).forEach(sliderId => {
+                const sliderElement = document.getElementById(sliderId);
+                if (sliderElement && sliderElement.noUiSlider) { // Check if slider exists and is initialized
+                    // Reset the slider to its initial start values
+                    sliderElement.noUiSlider.set(sliderConfigs[sliderId].start);
+                    // Manually update hidden inputs immediately after reset
+                    const config = sliderConfigs[sliderId];
+                    const inputMin = document.getElementById(config.inputs[0]);
+                    const inputMax = document.getElementById(config.inputs[1]);
+                    if (inputMin) inputMin.value = sliderConfigs[sliderId].start[0];
+                    if (inputMax) inputMax.value = sliderConfigs[sliderId].start[1];
+                }
+            });
+
             // 3. Reset internal state
             currentFilters = {
-                priceOrder: 'asc',
+                priceOrder: document.getElementById('priceFilter').value, // Get the reset value
                 dateOrder: '',
                 subCategory: '',
                 selectedCountries: [],
                 selectedCarBrands: [],
                 selectedCities: [],
-                yearRange: { from: null, to: null },
-                mileageRange: { from: null, to: null },
+                // Reset ranges in state using the default slider values
+                yearRange: { from: sliderConfigs['year-slider'].start[0], to: sliderConfigs['year-slider'].start[1] },
+                mileageRange: { from: sliderConfigs['mileage-slider'].start[0], to: sliderConfigs['mileage-slider'].start[1] },
                 fuelTypes: [],
                 transmissionTypes: [],
                 propertyTypes: [],
-                sizeRange: { from: null, to: null },
-                roomsRange: { from: null, to: null },
-                bathroomsRange: { from: null, to: null },
+                sizeRange: { from: sliderConfigs['size-slider'].start[0], to: sliderConfigs['size-slider'].start[1] },
+                roomsRange: { from: sliderConfigs['rooms-slider'].start[0], to: sliderConfigs['rooms-slider'].start[1] },
+                bathroomsRange: { from: sliderConfigs['bathrooms-slider'].start[0], to: sliderConfigs['bathrooms-slider'].start[1] },
                 energyClasses: [],
                 employmentTypes: [],
-                salaryRange: { from: null, to: null },
+                salaryRange: { from: null, to: null }, // Assuming no salary slider yet
                 applicationDeadline: null
             };
 
@@ -1308,6 +1376,10 @@ select[multiple] option:checked {
             // 5. Clear container and force fresh load
             const container = document.getElementById('productsContainer');
             container.innerHTML = '<p>Loading products...</p>';
+            showSkeletonLoading(); // Show skeleton immediately
+
+            // --- Update Active Filters Display ---
+             updateActiveFiltersDisplay(); // Update tags to show none are active
             
             // 6. Fetch with cache busting
             fetchProducts(false, Date.now());
@@ -1340,6 +1412,21 @@ select[multiple] option:checked {
         function applyFilters() {
             clearTimeout(filterTimeout);
             filterTimeout = setTimeout(() => {
+                 console.log("Applying filters..."); // Debug log
+                // --- Gather Filter Values ---
+                updateCurrentFiltersFromUI(); // Use helper function
+
+                 // Reset pagination for new filter set
+                currentPage = 1;
+                hasMore = true;
+
+                // Clear container and fetch
+                document.getElementById('productsContainer').innerHTML = ''; // Clear only products
+                fetchProducts(); // Call your existing fetch function
+
+                 // --- Update Active Filters Display ---
+                updateActiveFiltersDisplay(); // Render the active filter tags
+
                 // Get values from car filters
                 const yearFrom = document.getElementById('yearFrom')?.value;
                 const yearTo = document.getElementById('yearTo')?.value;
@@ -1416,6 +1503,282 @@ select[multiple] option:checked {
             }, DEBOUNCE_DELAY);
         }
 
+        // Define debouncedApplyFilters ONCE, AFTER debounce and applyFilters
+        const debouncedApplyFilters = debounce(applyFilters, 300); // Or your delay
+
+        // Add event listeners to all filter inputs
+        const filterInputs = document.querySelectorAll('input[type="number"], input[type="date"], select');
+        filterInputs.forEach(input => {
+            input.addEventListener('input', debouncedApplyFilters);
+            input.addEventListener('change', debouncedApplyFilters);
+        });
+
+        let filterTimeout;
+        const DEBOUNCE_DELAY = 300; // ms
+
+        // --- NEW: Helper to Update currentFilters Object from UI ---
+function updateCurrentFiltersFromUI() {
+     const urlParams = new URLSearchParams(window.location.search);
+     const category = urlParams.get('category') || 'default';
+
+     currentFilters = {
+        priceOrder: document.getElementById('priceFilter')?.value || '',
+        dateOrder: document.getElementById('dateFilter')?.value || '',
+        subCategory: category === 'Torget' ? document.getElementById('subCategoryFilter')?.value || '' : '',
+        selectedCountries: Array.from(document.querySelectorAll('.country-list input[type="checkbox"]:checked')).map(cb => cb.value),
+        selectedCities: Array.from(document.querySelectorAll('.city-list input[type="checkbox"]:checked')).map(cb => cb.value),
+        // Car Filters
+        selectedCarBrands: category === 'Bil' ? Array.from(document.querySelectorAll('.car-brand-list input[type="checkbox"]:checked')).map(cb => cb.value) : [],
+        yearRange: { from: document.getElementById('yearFrom')?.value || null, to: document.getElementById('yearTo')?.value || null },
+        mileageRange: { from: document.getElementById('mileageFrom')?.value || null, to: document.getElementById('mileageTo')?.value || null },
+        fuelTypes: category === 'Bil' ? Array.from(document.getElementById('fuelTypeFilter')?.selectedOptions || []).map(opt => opt.value) : [],
+        transmissionTypes: category === 'Bil' ? Array.from(document.getElementById('transmissionFilter')?.selectedOptions || []).map(opt => opt.value) : [],
+        // Property Filters
+        propertyTypes: category === 'Eiendom' ? Array.from(document.getElementById('propertyTypeFilter')?.selectedOptions || []).map(opt => opt.value) : [],
+        sizeRange: { from: document.getElementById('sizeSqmFrom')?.value || null, to: document.getElementById('sizeSqmTo')?.value || null },
+        roomsRange: { from: document.getElementById('numRoomsFrom')?.value || null, to: document.getElementById('numRoomsTo')?.value || null },
+        bathroomsRange: { from: document.getElementById('numBathroomsFrom')?.value || null, to: document.getElementById('numBathroomsTo')?.value || null },
+        energyClasses: category === 'Eiendom' ? Array.from(document.getElementById('energyClassFilter')?.selectedOptions || []).map(opt => opt.value) : [],
+        // Work Filters (Example - Adjust based on actual IDs if different)
+        employmentTypes: category === 'Jobb' ? Array.from(document.getElementById('employmentTypeFilter')?.selectedOptions || []).map(opt => opt.value) : [],
+        salaryRange: { from: document.getElementById('salaryFrom')?.value || null, to: document.getElementById('salaryTo')?.value || null },
+        applicationDeadline: category === 'Jobb' ? document.getElementById('deadlineDate')?.value || null : null
+    };
+    // Clean null/empty values from range objects if needed by backend
+    Object.keys(currentFilters).forEach(key => {
+        if (typeof currentFilters[key] === 'object' && currentFilters[key] !== null && !Array.isArray(currentFilters[key])) {
+            if (currentFilters[key].from === null || currentFilters[key].from === '') delete currentFilters[key].from;
+            if (currentFilters[key].to === null || currentFilters[key].to === '') delete currentFilters[key].to;
+        }
+    });
+    console.log("Updated Filters:", currentFilters); // Debug log
+}
+
+
+// --- NEW: Function to Update Active Filters Display ---
+function updateActiveFiltersDisplay() {
+    const displayContainer = document.getElementById('activeFiltersDisplay');
+    if (!displayContainer) return;
+    displayContainer.innerHTML = ''; // Clear previous tags
+
+    let hasActiveFilters = false; // Flag to check if any filter is set
+
+    // --- GET CURRENT CATEGORY ---
+    const urlParams = new URLSearchParams(window.location.search);
+    const currentCategory = urlParams.get('category') || 'default'; // Get active category
+
+    const addFilterTag = (label, value, removeCallback) => {
+        hasActiveFilters = true;
+        const tag = document.createElement('span');
+        tag.className = 'active-filter-tag';
+        tag.innerHTML = `${label}: <strong>${value}</strong> <button class="remove-filter-btn" aria-label="Remove ${label} filter">×</button>`;
+        tag.querySelector('.remove-filter-btn').addEventListener('click', removeCallback);
+        displayContainer.appendChild(tag);
+    };
+
+    // --- Check and Add Tags for Each Filter Type (with Category Check) ---
+
+    // Price Sort (Applies to all categories with products)
+    if (currentFilters.priceOrder) {
+        const priceText = currentFilters.priceOrder === 'asc' ? 'Lowest First' : 'Highest First';
+        addFilterTag('Sort Price', priceText, () => {
+            document.getElementById('priceFilter').value = ''; // Or set to a default
+            applyFilters();
+        });
+    }
+    // Date Sort (Applies to all categories with products)
+    if (currentFilters.dateOrder) {
+        const dateText = currentFilters.dateOrder === 'asc' ? 'Oldest First' : 'Newest First';
+         addFilterTag('Sort Date', dateText, () => {
+            document.getElementById('dateFilter').value = '';
+            applyFilters();
+        });
+    }
+
+    // SubCategory (Only show if category is 'Torget')
+    if (currentCategory === 'Torget' && currentFilters.subCategory) {
+        addFilterTag('Subcategory', currentFilters.subCategory, () => {
+            document.getElementById('subCategoryFilter').value = '';
+            applyFilters();
+        });
+    }
+
+    // Countries (Applies to all)
+    currentFilters.selectedCountries.forEach(country => {
+        addFilterTag('Country', country, () => {
+            const cb = document.getElementById(country);
+             if(cb) cb.checked = false;
+            // Also uncheck and hide cities for this country
+            const cityList = document.getElementById(`${country}-cities`);
+            if (cityList) {
+                cityList.querySelectorAll('input[type="checkbox"]').forEach(cityCb => cityCb.checked = false);
+                cityList.style.display = 'none';
+            }
+            applyFilters();
+        });
+    });
+
+    // Cities (Applies to all)
+     currentFilters.selectedCities.forEach(cityId => {
+        const cityCheckbox = document.getElementById(`city_${cityId}`);
+        const cityName = cityCheckbox ? cityCheckbox.nextElementSibling.textContent : `City ${cityId}`;
+        addFilterTag('City', cityName, () => {
+             if(cityCheckbox) cityCheckbox.checked = false;
+            applyFilters();
+        });
+    });
+
+    // --- Category Specific Tags ---
+
+    // Car Filters (Only show if category is 'Bil')
+    if (currentCategory === 'Bil') {
+        // Car Brands
+        currentFilters.selectedCarBrands.forEach(brandId => {
+            const brandCheckbox = document.getElementById(`brand_${brandId}`);
+            const brandName = brandCheckbox ? brandCheckbox.nextElementSibling.textContent : `Brand ${brandId}`;
+            addFilterTag('Brand', brandName, () => {
+                if(brandCheckbox) brandCheckbox.checked = false;
+                applyFilters();
+            });
+        });
+        // Year Range
+        if (currentFilters.yearRange.from !== sliderConfigs['year-slider'].start[0] || currentFilters.yearRange.to !== sliderConfigs['year-slider'].start[1]) {
+            const label = `${currentFilters.yearRange.from || sliderConfigs['year-slider'].range.min} - ${currentFilters.yearRange.to || sliderConfigs['year-slider'].range.max}`;
+            addFilterTag('Year', label, () => {
+                const slider = document.getElementById('year-slider').noUiSlider;
+                slider.set(sliderConfigs['year-slider'].start);
+                applyFilters();
+            });
+        }
+        // Mileage Range
+        if (currentFilters.mileageRange.from !== sliderConfigs['mileage-slider'].start[0] || currentFilters.mileageRange.to !== sliderConfigs['mileage-slider'].start[1]) {
+             const label = `${currentFilters.mileageRange.from || sliderConfigs['mileage-slider'].range.min} - ${currentFilters.mileageRange.to || sliderConfigs['mileage-slider'].range.max} km`;
+            addFilterTag('Mileage', label, () => {
+                document.getElementById('mileage-slider').noUiSlider.set(sliderConfigs['mileage-slider'].start);
+                applyFilters();
+            });
+        }
+        // Fuel Types
+         if (currentFilters.fuelTypes && currentFilters.fuelTypes.length > 0) {
+            addFilterTag('Fuel Types', currentFilters.fuelTypes.join(', '), () => {
+                const selectElement = document.getElementById('fuelTypeFilter');
+                if (selectElement) Array.from(selectElement.options).forEach(option => option.selected = false);
+                applyFilters();
+            });
+        }
+        // Transmission Types
+         if (currentFilters.transmissionTypes && currentFilters.transmissionTypes.length > 0) {
+            addFilterTag('Transmission', currentFilters.transmissionTypes.join(', '), () => {
+                const selectElement = document.getElementById('transmissionFilter');
+                if (selectElement) Array.from(selectElement.options).forEach(option => option.selected = false);
+                applyFilters();
+            });
+        }
+    } // End of if (currentCategory === 'Bil')
+
+    // Property Filters (Only show if category is 'Eiendom')
+    if (currentCategory === 'Eiendom') {
+        // Property Types
+        if (currentFilters.propertyTypes && currentFilters.propertyTypes.length > 0) {
+             addFilterTag('Property Types', currentFilters.propertyTypes.join(', '), () => {
+                 const selectElement = document.getElementById('propertyTypeFilter');
+                 if (selectElement) Array.from(selectElement.options).forEach(option => option.selected = false);
+                 applyFilters();
+             });
+         }
+        // Size Range
+        if (currentFilters.sizeRange.from !== sliderConfigs['size-slider'].start[0] || currentFilters.sizeRange.to !== sliderConfigs['size-slider'].start[1]) {
+            const label = `${currentFilters.sizeRange.from || sliderConfigs['size-slider'].range.min} - ${currentFilters.sizeRange.to || sliderConfigs['size-slider'].range.max} m²`;
+            addFilterTag('Size', label, () => {
+                document.getElementById('size-slider').noUiSlider.set(sliderConfigs['size-slider'].start);
+                applyFilters();
+            });
+        }
+        // Rooms Range
+        if (currentFilters.roomsRange.from !== sliderConfigs['rooms-slider'].start[0] || currentFilters.roomsRange.to !== sliderConfigs['rooms-slider'].start[1]) {
+             const label = `${currentFilters.roomsRange.from || sliderConfigs['rooms-slider'].range.min} - ${currentFilters.roomsRange.to || sliderConfigs['rooms-slider'].range.max}`;
+            addFilterTag('Rooms', label, () => {
+                document.getElementById('rooms-slider').noUiSlider.set(sliderConfigs['rooms-slider'].start);
+                applyFilters();
+            });
+        }
+        // Bathrooms Range
+        if (currentFilters.bathroomsRange.from !== sliderConfigs['bathrooms-slider'].start[0] || currentFilters.bathroomsRange.to !== sliderConfigs['bathrooms-slider'].start[1]) {
+             const label = `${currentFilters.bathroomsRange.from || sliderConfigs['bathrooms-slider'].range.min} - ${currentFilters.bathroomsRange.to || sliderConfigs['bathrooms-slider'].range.max}`;
+            addFilterTag('Bathrooms', label, () => {
+                document.getElementById('bathrooms-slider').noUiSlider.set(sliderConfigs['bathrooms-slider'].start);
+                applyFilters();
+            });
+        }
+        // Energy Classes
+         if (currentFilters.energyClasses && currentFilters.energyClasses.length > 0) {
+             addFilterTag('Energy Classes', currentFilters.energyClasses.join(', '), () => {
+                 const selectElement = document.getElementById('energyClassFilter');
+                 if (selectElement) Array.from(selectElement.options).forEach(option => option.selected = false);
+                 applyFilters();
+             });
+         }
+    } // End of if (currentCategory === 'Eiendom')
+
+     // Job Filters (Only show if category is 'Jobb')
+     if (currentCategory === 'Jobb') {
+        // Employment Types
+         if (currentFilters.employmentTypes && currentFilters.employmentTypes.length > 0) {
+             addFilterTag('Employment Types', currentFilters.employmentTypes.join(', '), () => {
+                 const selectElement = document.getElementById('employmentTypeFilter');
+                 if (selectElement) Array.from(selectElement.options).forEach(option => option.selected = false);
+                 applyFilters();
+             });
+         }
+         // Add Salary Range and Deadline if needed (assuming no sliders for these yet)
+         // Example for Deadline:
+         // if (currentFilters.applicationDeadline) {
+         //    addFilterTag('Deadline Before', currentFilters.applicationDeadline, () => {
+         //       document.getElementById('deadlineDate').value = '';
+         //       applyFilters();
+         //    });
+         // }
+     } // End of if (currentCategory === 'Jobb')
+
+
+    // Show container only if there are active filters
+    displayContainer.style.display = hasActiveFilters ? 'flex' : 'none';
+}
+
+// Ensure other event listeners also call applyFilters correctly
+// (e.g., listeners for checkboxes, dropdowns)
+
+// --- Make applyFilters globally accessible if needed by inline `onchange` ---
+// It's generally better to attach listeners programmatically in JS,
+// but if you keep onchange="", this makes it work.
+window.applyFilters = applyFilters;
+
+// --- Add event listeners to filters ---
+function setupFilterListeners() {
+    // Dropdowns (Price, Date, SubCategory)
+    ['priceFilter', 'dateFilter', 'subCategoryFilter'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('change', applyFilters); // Use non-debounced for immediate select change
+    });
+
+    // Checkboxes (Countries, Cities, Brands) - These are added dynamically, attach in initialize functions
+    // No need for separate listeners here if attached during creation
+
+    // Sliders - Listener attached during initialization ('change' event uses debouncedApplyFilters)
+
+    // Multi-Selects
+    ['fuelTypeFilter', 'transmissionFilter', 'propertyTypeFilter', 'energyClassFilter', 'employmentTypeFilter'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('change', applyFilters); // Use non-debounced for immediate select change
+    });
+
+    // Range Input Fields (From/To for text inputs if any - not currently used with sliders)
+
+    // Date Input
+    const deadlineDate = document.getElementById('deadlineDate');
+    if (deadlineDate) deadlineDate.addEventListener('change', applyFilters);
+}
+
         document.getElementById('dateFilter').addEventListener('change', () => {
         document.getElementById('priceFilter').value = '';
         applyFilters();
@@ -1426,42 +1789,67 @@ select[multiple] option:checked {
     });
 
     function handleCategoryVisibility() {
-        const urlParams = new URLSearchParams(window.location.search);
+         const urlParams = new URLSearchParams(window.location.search);
         const category = urlParams.get('category') || 'default';
-        const subcategoryContainer = document.getElementById('subcategoryFilterContainer');
-        const carBrandSection = document.getElementById('carBrandList');
-        const carBrandLabel = document.getElementById('filterCar');
-        const carSpecificFilters = document.getElementById('carSpecificFilters');
-        const propertySpecificFilters = document.getElementById('propertySpecificFilters');
-        const workSpecificFilters = document.getElementById('workSpecificFilters');
+        console.log("Handling visibility for category:", category);
+
+        // --- Get references to filter UI elements ---
+        const subcategoryContainer = document.getElementById('subcategoryFilterContainer'); // Top filter bar section
+        const carBrandList = document.getElementById('carBrandList');           // Car brand checkbox list
+        const carBrandLabel = document.getElementById('filterCar');              // Car brand <h3> heading
+        const carSpecificFilters = document.getElementById('carSpecificFilters'); // DIV containing car sliders/selects
+        const propertySpecificFilters = document.getElementById('propertySpecificFilters'); // DIV containing property sliders/selects
+        const workSpecificFilters = document.getElementById('workSpecificFilters'); // DIV containing work selects/inputs
         const resetFiltersBtn = document.getElementById('resetFiltersBtn');
 
-        // Toggle subcategory filter
-        if (subcategoryContainer) {
-            subcategoryContainer.style.display = category === 'Torget' ? 'block' : 'none';
+        // --- Hide ALL potentially category-specific elements initially ---
+        if (subcategoryContainer) subcategoryContainer.style.display = 'none'; // Hide top subcat filter
+        if (carBrandList) carBrandList.style.display = 'none';                 // Hide car brand list
+        if (carBrandLabel) carBrandLabel.style.display = 'none';               // Hide car brand heading
+        if (carSpecificFilters) carSpecificFilters.style.display = 'none';     // Hide car specific div
+        if (propertySpecificFilters) propertySpecificFilters.style.display = 'none'; // Hide property specific div
+        if (workSpecificFilters) workSpecificFilters.style.display = 'none';     // Hide work specific div
+        // Add others if needed (e.g., boat, MC)
+
+        let showResetButton = false; // Flag for the main reset button
+
+        // --- Show elements based on the current category ---
+        switch (category) {
+            case 'Torget':
+                if (subcategoryContainer) subcategoryContainer.style.display = 'block'; // Show top subcat filter
+                showResetButton = true;
+                break;
+            case 'Bil':
+                if (carBrandList) carBrandList.style.display = 'block';       // Show car brand list
+                if (carBrandLabel) carBrandLabel.style.display = 'block';     // Show car brand heading
+                if (carSpecificFilters) carSpecificFilters.style.display = 'block'; // Show car specific div
+                showResetButton = true;
+                break;
+            case 'Eiendom':
+                if (propertySpecificFilters) propertySpecificFilters.style.display = 'block'; // Show property specific div
+                showResetButton = true;
+                break;
+            case 'Jobb':
+                if (workSpecificFilters) workSpecificFilters.style.display = 'block'; // Show work specific div
+                showResetButton = true;
+                break;
+             case 'Båt': // Example for Boat category
+                 // if (boatSpecificFilters) boatSpecificFilters.style.display = 'block';
+                 // showResetButton = true; // Decide if Boat needs reset
+                 break;
+            case 'MC': // Example for MC category
+                 // if (mcSpecificFilters) mcSpecificFilters.style.display = 'block';
+                 // showResetButton = true; // Decide if MC needs reset
+                 break;
+            default:
+                // No specific filters for other categories or default view
+                console.log("No specific filters for category:", category);
+                break;
         }
 
-        // Toggle car brand filter and specific filters
-        if (carBrandSection && carBrandLabel && carSpecificFilters) {
-            const shouldShowCar = category === 'Bil';
-            carBrandSection.style.display = shouldShowCar ? 'block' : 'none';
-            carBrandLabel.style.display = shouldShowCar ? 'block' : 'none';
-            carSpecificFilters.style.display = shouldShowCar ? 'block' : 'none';
-        }
-
-        // Toggle property specific filters
-        if (propertySpecificFilters) {
-            propertySpecificFilters.style.display = category === 'Eiendom' ? 'block' : 'none';
-        }
-
-        // Toggle work specific filters
-        if (workSpecificFilters) {
-            workSpecificFilters.style.display = category === 'Jobb' ? 'block' : 'none';
-        }
-
-        // Show reset filters button for all valid categories
+        // Show/hide the global reset button
         if (resetFiltersBtn) {
-            resetFiltersBtn.style.display = ['Torget', 'Bil', 'Jobb', 'Eiendom'].includes(category) ? 'flex' : 'none';
+            resetFiltersBtn.style.display = showResetButton ? 'flex' : 'none';
         }
     }
 
@@ -1656,18 +2044,22 @@ select[multiple] option:checked {
         }
 
         window.onload = function () {
+            handleCategoryVisibility();
+            initializeSliders();
+            updateActiveFiltersDisplay();
             fetchProducts();
             checkUnreadMessages();
             initializeFilters();
             initializeFavorites();
             applyFilters();
-            handleCategoryVisibility();
             checkUnreadMessages();
             
             // Initialize lazy loading
             if (window.lazyLoader) {
                 window.lazyLoader.observe();
             }
+
+            setupFilterListeners();
         };
     });
 </script>
