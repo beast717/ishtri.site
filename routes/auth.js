@@ -21,16 +21,16 @@ const VERIFICATION_REQUIRED_AFTER_DATE = new Date('2025-03-04T12:16:01Z');
 
 // User registration with Email Verification
 router.post('/signup', async (req, res, next) => {
+    // Use a single main try...catch for overall request handling
     try {
         const { brukernavn, email, passord, confirmPassword, confirm_email /* Honeypot field name */ } = req.body;
 
         // --- Honeypot Check ---
-        if (confirm_email) { // If the hidden field has ANY value
+        if (confirm_email) {
             console.log(`Honeypot triggered for signup attempt. Email: ${email}`);
-            // Fake success (might confuse the bot programmer less)
             return res.status(201).json({ message: 'Account created. Please check your email to verify your account.' });
-
         }
+
         // --- Basic Input Validation ---
         if (!brukernavn || !email || !passord || !confirmPassword) {
             return res.status(400).json({ message: 'All fields are required' });
@@ -38,15 +38,13 @@ router.post('/signup', async (req, res, next) => {
         if (passord !== confirmPassword) {
             return res.status(400).json({ message: 'Passwords do not match' });
         }
-
-        // --- Email Format Validation ---
-        if (!validator.isEmail(email)) { // <-- Use validator
+        if (!validator.isEmail(email)) {
             return res.status(400).json({ message: 'Invalid email format' });
         }
 
         // --- Check for Existing Verified User (Username or Email) ---
         const [existingUser] = await pool.promise().query(
-            'SELECT * FROM brukere WHERE brukernavn = ? OR (email = ? AND is_verified = 1)', // Check verified email
+            'SELECT * FROM brukere WHERE brukernavn = ? OR (email = ? AND is_verified = 1)',
             [brukernavn, email]
         );
 
@@ -54,13 +52,11 @@ router.post('/signup', async (req, res, next) => {
             if (existingUser[0].brukernavn === brukernavn) {
                 return res.status(400).json({ message: 'Username already exists' });
             } else {
-                // Email is already registered and verified
-                return res.status(400).json({ message: 'Email already registered' });
+                return res.status(400).json({ message: 'Email already registered and verified' });
             }
         }
 
-        // --- Handle Potentially Unverified Existing Email ---
-        // Check if the email exists but is not verified
+        // --- Check for Existing Unverified User (Email) ---
         const [unverifiedEmail] = await pool.promise().query(
             'SELECT * FROM brukere WHERE email = ? AND is_verified = 0',
             [email]
@@ -69,32 +65,38 @@ router.post('/signup', async (req, res, next) => {
         let userId;
         const verificationToken = crypto.randomBytes(32).toString('hex');
         const tokenExpiresAt = new Date(Date.now() + 3600000); // Token valid for 1 hour
+        const hashedPassword = await bcrypt.hash(passord, 10); // Hash password once
+        let operationPath = ''; // Variable to track the path for logging
 
         if (unverifiedEmail.length > 0) {
-            // Email exists but is not verified - Update token and resend email
+            // --- UPDATE PATH (Second+ attempt for this email) ---
+            operationPath = 'UPDATE';
             userId = unverifiedEmail[0].brukerId;
-            const hashedPassword = await bcrypt.hash(passord, 10); // Hash the potentially new password
+            console.log(`[${operationPath} PATH] User ID ${userId} found for unverified email ${email}. Updating...`);
+
             await pool.promise().query(
                 'UPDATE brukere SET brukernavn = ?, passord = ?, verification_token = ?, token_expires_at = ? WHERE brukerId = ?',
                 [brukernavn, hashedPassword, verificationToken, tokenExpiresAt, userId]
             );
-            console.log(`Updating unverified user ${userId} with new token.`);
+            console.log(`[${operationPath} PATH] Updated unverified user ${userId} with new details and token ${verificationToken}.`);
+
         } else {
-            // New user - Insert with unverified status
-            const hashedPassword = await bcrypt.hash(passord, 10);
+            // --- INSERT PATH (First attempt for this email) ---
+            operationPath = 'INSERT';
+            console.log(`[${operationPath} PATH] No existing user found for email ${email}. Creating new user...`);
+
             const [result] = await pool.promise().query(
                 `INSERT INTO brukere (brukernavn, email, passord, is_verified, verification_token, token_expires_at)
                  VALUES (?, ?, ?, ?, ?, ?)`,
-                [brukernavn, email, hashedPassword, 0, verificationToken, tokenExpiresAt] // is_verified = 0
+                [brukernavn, email, hashedPassword, 0, verificationToken, tokenExpiresAt]
             );
             userId = result.insertId;
-            console.log(`Inserted new unverified user ${userId} with token.`);
+            console.log(`[${operationPath} PATH] Inserted new unverified user ${userId} with token ${verificationToken}.`);
         }
 
-        // --- Send Verification Email ---
-        const verificationLink = `${process.env.APP_BASE_URL}/api/auth/verify-email?token=${verificationToken}`; // Adjust domain if needed
-
-        await transporter.sendMail({
+        // --- Send Verification Email (Common Logic) ---
+        const verificationLink = `${process.env.APP_BASE_URL}/api/auth/verify-email?token=${verificationToken}`;
+        const mailOptions = {
             from: process.env.GMAIL_USER,
             to: email,
             subject: 'Verify Your Email for Ishtri',
@@ -102,16 +104,42 @@ router.post('/signup', async (req, res, next) => {
                    <p>Thank you for registering. Please click the link below to verify your email address:</p>
                    <p><a href="${verificationLink}">${verificationLink}</a></p>
                    <p>This link will expire in 1 hour.</p>`
-        });
+        };
 
-        // --- Respond to Client ---
-        res.status(201).json({ message: 'Account created. Please check your email to verify your account.' }); // Changed message
+        // Add specific logging and error handling around sendMail
+        console.log(`[${operationPath} PATH] Attempting to send verification email to ${email} for user ${userId} with token ${verificationToken}`);
+        try {
+            const info = await transporter.sendMail(mailOptions);
+            console.log(`[${operationPath} PATH] Verification email SENT successfully for user ${userId}. Message ID: ${info.messageId}`);
+        } catch (mailError) {
+            // Log the specific error from Nodemailer
+            console.error(`[${operationPath} PATH] FAILED to send verification email for user ${userId} to ${email}. Token: ${verificationToken}. Error:`, mailError);
+            // Decide recovery strategy:
+            // Option 1: Inform user explicitly (might be better UX)
+            // return res.status(500).json({ message: 'Account created, but failed to send verification email. Please contact support or try signing up again.' });
+            // Option 2: Still respond with the generic success message, but log the error server-side. The user might try again, triggering the UPDATE path (which apparently works). This matches the observed behavior.
+            // Let the main catch block handle the response, but the error is logged.
+            throw mailError; // Re-throw the error to be caught by the main catch block below
+        }
+
+        // --- Respond to Client (if email sending didn't throw an error) ---
+        res.status(201).json({ message: 'Account created. Please check your email to verify your account.' });
 
     } catch (err) {
-        console.error("Signup Error:", err); // Log detailed error on server
-        // Avoid exposing detailed errors to the client
-        res.status(500).json({ message: 'An internal error occurred during signup.' });
-        next(err); // Use if you have specific error handling middleware
+        // --- Main Error Handling ---
+        // Log the error regardless of type
+        console.error("Signup Process Error:", err);
+
+        // Check if the error came specifically from the mail sending block
+        // (This check might need adjustment based on how mailError looks)
+        if (err.code && (err.code === 'EENVELOPE' || err.command || typeof err.responseCode === 'number')) { // Basic check for Nodemailer error properties
+             res.status(500).json({ message: 'Account processed, but there was an issue sending the verification email. Please try registering again shortly or contact support if the problem persists.' });
+        } else {
+            // Handle other potential errors (DB errors, etc.)
+            res.status(500).json({ message: 'An internal error occurred during signup.' });
+        }
+        // Optional: Pass to Express error handling middleware if you have one configured
+        next(err);
     }
 });
 
