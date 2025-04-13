@@ -133,6 +133,10 @@ app.use('/api/auth', authRoutes);
 const notificationRoutes = require('./routes/notifications');
 app.use('/api/notifications', notificationRoutes);
 
+// Settings routes
+const settingsRoutes = require('./routes/settings');
+app.use('/api/settings', settingsRoutes);
+
 // Server initialization
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
