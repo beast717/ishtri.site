@@ -49,4 +49,8 @@ router.get('/search', (req, res) => {
     res.render('SearchResults'); 
 });
 
+router.get('/notifications', isAuthenticated, (req, res) => {
+    res.render('notifications', { user: req.session.user || null }); // Pass user if needed
+});
+
 module.exports = router;

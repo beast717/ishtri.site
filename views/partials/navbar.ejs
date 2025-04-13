@@ -1,4 +1,4 @@
-<script src="/shared.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 <link rel="icon" href="ishtri1.png" sizes="16x16 32x32" type="image/png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
@@ -274,7 +274,7 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
             <a href="/"><img src="nah.png" alt="Ishtri Logo" class="mobile-logo"></a>
         </div>
         <div class="navBarButtons">
-           <a id="notificationIcon" href="/saved-searches">
+           <a id="notificationIcon" href="/notifications">
               <i class="fas fa-bell"></i>
               <span class="notification-badge" id="notificationBadge"></span>
               <span data-i18n="navbar.notifications">Notifications</span>
@@ -284,7 +284,7 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
                 <i class="fas fa-envelope"></i> <span data-i18n="navbar.messages">Messages</span>
                 <span id="unreadBadge" class="badge">●</span>
             </a>
-            <a id="loginButton" href="Logg inn.html"><i class="fas fa-sign-in-alt"></i> <span data-i18n="navbar.log_in">Logg inn</span></a>
+            <a id="loginButton" href="Logg inn.html"><i class="fas fa-sign-in-alt"></i> <span data-i18n="navbar.log_in">Log in</span></a>
             <div id="profileContainer" style="display: none;">
                 <img id="profileIcon" src="prrofilepic.svg" alt="Profile Icon" style="width: 30px; height: 25px; cursor: pointer;">
                 <span id="profileUsername" style="cursor: pointer;">Username</span>
@@ -302,6 +302,10 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
                         <i class="fas fa-heart"></i> 
                         <span>Favorites</span>
                     </a>
+                    <a href="/saved-searches">
+                        <i class="fas fa-save"></i> 
+                        <span>saved searches</span>
+                    </a>
                 </div>
             </div>
             <img src="translate.svg" style="width: 30px; height: 25px;">
@@ -312,85 +316,6 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
             </select>
         </div>
     </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-checkUnreadMessages();
-    // Fetch username to toggle login/profile
-    fetch('/api/auth/current-user', { 
-    credentials: 'include' // This is crucial for session cookies
-})
-        .then(response => response.json())
-        .then(data => {
-            if (data.brukernavn) {
-                document.getElementById('loginButton').style.display = 'none';
-                const profileContainer = document.getElementById('profileContainer');
-                profileContainer.style.display = 'flex';
-                document.getElementById('profileUsername').textContent = data.brukernavn;
-                document.getElementById('profileIcon').src = data.profileIconUrl || 'prrofilepic.svg';
-            }
-        });
-
-    const profileContainer = document.getElementById('profileContainer');
-    const dropdownMenu = document.getElementById('dropdownMenu');
-
-    // profileContainer click listener
-    profileContainer.addEventListener('click', function (event) {
-        const isVisible = dropdownMenu.style.display === 'block';
-        if (isVisible) {
-            dropdownMenu.style.display = 'none';
-            profileContainer.classList.remove('dropdown-open'); // Remove class for arrow rotation
-        } else {
-            // Optional: Hide other potential dropdowns if you add more later
-            // closeOtherDropdowns();
-            dropdownMenu.style.display = 'block';
-            profileContainer.classList.add('dropdown-open'); // Add class for arrow rotation
-        }
-        event.stopPropagation(); // Prevent click from immediately closing dropdown
-    });
-
-    // document click listener (close dropdown if clicked outside)
-    document.addEventListener('click', function () {
-        // Check if the dropdown is currently visible before trying to hide
-        if (dropdownMenu.style.display === 'block') {
-             dropdownMenu.style.display = 'none';
-             profileContainer.classList.remove('dropdown-open'); // Also remove class here to reset arrow
-        }
-    });
-
-    // Logout functionality
-    document.getElementById('logoutButton').addEventListener('click', () => {
-        fetch('/api/auth/logout', { method: 'POST' })
-            .then(response => {
-                if (response.ok) window.location.href = '/';
-            });
-    });
-
-    // Move this OUTSIDE the DOMContentLoaded listener
-    function updateNotificationBadge() {
-        fetch('/notifications/unread-count')
-            .then(response => response.json())
-            .then(data => {
-                const badge = document.getElementById('notificationBadge');
-                if (badge) {
-                    badge.textContent = data.count;
-                    badge.style.display = data.count > 0 ? 'block' : 'none';
-                }
-            })
-            .catch(error => console.error('Error updating badge:', error));
-    }
-
-    // Initialize when DOM is ready
-    // Initial check
-    updateNotificationBadge();
-    
-    // Update every 60 seconds
-    setInterval(updateNotificationBadge, 60000);
-    
-    // Make available globally for testing
-    window.updateNotificationBadge = updateNotificationBadge;
-});
-</script>
 <!-- START: Cookie Consent Banner HTML -->
 <div id="cookieConsentBanner" class="cookie-consent-banner" role="region" aria-label="Cookie consent">
     <div class="cookie-consent-content">

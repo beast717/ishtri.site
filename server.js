@@ -121,13 +121,17 @@ app.use('/api/search', searchRoutes);
 const messageRoutes = require('./routes/messages');
 app.use('/api/messages', messageRoutes);
 
-// Notification routes
+// Saved-searches routes
 const savedSearchRoutes = require('./routes/savedSearches');
 app.use('/api/saved-searches', savedSearchRoutes);
 
 // Authentication routes
 const { router: authRoutes, isAuthenticated } = require('./routes/auth');
 app.use('/api/auth', authRoutes);
+
+// Nontification routes
+const notificationRoutes = require('./routes/notifications');
+app.use('/api/notifications', notificationRoutes);
 
 // Server initialization
 const PORT = process.env.PORT || 3000;
