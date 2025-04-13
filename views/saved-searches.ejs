@@ -77,62 +77,69 @@
                         item.dataset.searchId = search.search_id;
 
                         // Simple filter summary (can be improved)
+                        let filtersObj; 
                         let filtersSummary = 'Filters: ';
+                        // --- START: ROBUST PARSING LOGIC (similar to matchingService.js) ---
                         try {
-                            // Safely access filters, default to empty object if null/undefined
-                            const filtersObj = search.filters || {};
+                            if (typeof search.filters === 'string') {
+                                // It's a string, attempt to parse
+                                filtersObj = search.filters ? JSON.parse(search.filters) : {};
+                                console.log(`Parsed filters STRING for search ${search.search_id}:`, filtersObj); // Debug log
+                            } else if (typeof search.filters === 'object' && search.filters !== null) {
+                                // It's already an object, use it directly
+                                filtersObj = search.filters;
+                                console.log(`Using filters OBJECT directly for search ${search.search_id}:`, filtersObj); // Debug log
+                            } else {
+                                // Handle null, undefined, or other unexpected types
+                                console.warn(`Unexpected type or null filters for search ${search.search_id}:`, search.filters);
+                                filtersObj = {};
+                            }
 
-                            filtersSummary += Object.entries(filtersObj).map(([key, value]) => {
-                                // --- START ENHANCED FORMATTING ---
+                            // Check if filters object is empty after potential parsing/assignment
+                            if (Object.keys(filtersObj).length === 0) {
+                                filtersSummary = 'No specific filters';
+                            } else {
+                                // --- EXISTING SUMMARY GENERATION LOGIC using filtersObj ---
+                                filtersSummary += Object.entries(filtersObj).map(([key, value]) => {
+                                    // --- START ENHANCED FORMATTING ---
+                                    if (key === 'cities' && Array.isArray(value)) {
+                                        const cityNames = value.map(cityId => cityMap[cityId] || `Unknown City (ID: ${cityId})`);
+                                        return `cities: ${cityNames.join(', ')}`;
+                                    } else if (key === 'countries' && Array.isArray(value)) {
+                                        const countryNames = value.map(countryName => countryMap[countryName] || countryName);
+                                        return `countries: ${countryNames.join(', ')}`;
+                                    } else if (typeof value === 'object' && value !== null && !Array.isArray(value) && (value.hasOwnProperty('from') || value.hasOwnProperty('to'))) {
+                                        const rangeParts = [];
+                                        if (value.from !== null && value.from !== undefined && value.from !== '') rangeParts.push(value.from);
+                                        if (value.to !== null && value.to !== undefined && value.to !== '') rangeParts.push(value.to);
+                                        const formattedRange = rangeParts.join(' - ');
+                                        // Format key (e.g., yearRange -> Year Range)
+                                        const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).replace('Range', ' Range');
+                                        return `${formattedKey}: ${formattedRange || 'Any'}`;
+                                    } else if (Array.isArray(value)) {
+                                        if (value.length > 0) {
+                                             const formattedKey = key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()); // e.g. fuel_types -> Fuel Types
+                                             return `${formattedKey}: ${value.join(', ')}`;
+                                        } else { return ''; }
+                                    } else if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
+                                        const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()); // e.g. subCategory -> Sub Category
+                                        return `${formattedKey}: ${value}`;
+                                    } else { return ''; }
+                                    // --- END ENHANCED FORMATTING ---
+                                }).filter(Boolean) // Remove empty strings
+                                  .slice(0, 3)    // Limit to first 3 filters shown
+                                  .join('; ');     // Join with semicolon and space
 
-                                if (key === 'cities' && Array.isArray(value)) {
-                                    const cityNames = value.map(cityId => cityMap[cityId] || `Unknown City (ID: ${cityId})`);
-                                    return `cities: ${cityNames.join(', ')}`; // Keep specific city handling
-                                } else if (key === 'countries' && Array.isArray(value)) {
-                                    const countryNames = value.map(countryName => countryMap[countryName] || countryName);
-                                    return `countries: ${countryNames.join(', ')}`; // Keep specific country handling
-                                } else if (typeof value === 'object' && value !== null && !Array.isArray(value) && (value.hasOwnProperty('from') || value.hasOwnProperty('to'))) {
-                                    // Handle range objects (like yearRange, mileageRange, sizeRange, etc.)
-                                    const rangeParts = [];
-                                    if (value.from !== null && value.from !== undefined && value.from !== '') {
-                                        rangeParts.push(value.from);
-                                    }
-                                    if (value.to !== null && value.to !== undefined && value.to !== '') {
-                                        rangeParts.push(value.to);
-                                    }
-                                    // Join with ' - ' only if both exist, otherwise just show the one that exists
-                                    const formattedRange = rangeParts.join(' - ');
-                                    return `${key}: ${formattedRange || 'N/A'}`; // Show N/A if both from/to are empty/null
-                                } else if (Array.isArray(value)) {
-                                    // Handle other simple arrays (like fuel_types, property_types, etc.)
-                                    if (value.length > 0) {
-                                        return `${key}: ${value.join(', ')}`;
-                                    } else {
-                                        return ''; // Don't display empty arrays
-                                    }
-                                } else if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
-                                    // Handle simple primitive values directly
-                                    return `${key}: ${value}`;
-                                } else {
-                                    // Fallback for any other complex types or null/undefined values (excluding handled cases)
-                                    // You might want to hide these or use stringify, depending on preference
-                                    // Option 1: Hide them
-                                     return '';
-                                    // Option 2: Stringify them (like before, but less common now)
-                                    // return `${key}: ${JSON.stringify(value)}`;
-                                }
-                                // --- END ENHANCED FORMATTING ---
-                            }).filter(Boolean) // Remove any empty strings generated (e.g., from empty arrays or hidden complex types)
-                              .slice(0, 3) // Keep the limit if you want
-                              .join('; '); // Join the parts
+                                if (Object.keys(filtersObj).length > 3 && filtersSummary.length > 0 && filtersSummary !== 'Filters: ') filtersSummary += '...'; // Add ellipsis if more than 3 filters exist
+                                if (filtersSummary === 'Filters: ') filtersSummary = 'No specific filters'; // Catch case where all filters resulted in empty strings
+                            }
 
-                            if (Object.keys(filtersObj).length > 3 && filtersSummary.length > 0) filtersSummary += '...'; // Add ellipsis only if needed
-                            if (filtersSummary.length === 0 || filtersSummary === 'Filters: ') filtersSummary = 'No specific filters'; // Correct empty check
-
-                        } catch (filtersError) {
-                        console.error("Error parsing filters for display:", search.filters, filtersError);
-                        filtersSummary = "Could not display filters.";
-                    }
+                        } catch (e) {
+                            // This catch block now specifically handles errors from JSON.parse if input was a malformed *string*
+                            console.error(`Error parsing filters JSON STRING for display (Search ID: ${search.search_id}):`, search.filters, e);
+                            filtersSummary = "Error displaying filters.";
+                            filtersObj = {}; // Ensure filtersObj is an empty object on error
+                        }
 
                         item.innerHTML = `
                             <div>
@@ -141,7 +148,7 @@
                                 <div class="filters-summary">${filtersSummary}</div>
                             </div>
                             <div class="search-item-actions">
-                                <button class="view-btn" data-category="${search.category}" data-filters='${JSON.stringify(search.filters || {})}'>View Results</button>
+                                <button class="view-btn" data-category="${search.category}" data-filters='${JSON.stringify(filtersObj || {})}'>View Results</button>
                                 <button class="delete-btn">Delete</button>
                             </div>
                         `;
