@@ -1,19 +1,45 @@
 const socketIO = require('socket.io');
 
+const activeUsers = new Map(); // Keep track of userId -> socketId
+
 function initializeSocket(server) {
     const io = socketIO(server);
-    
-    // Store active users
-    const activeUsers = new Map();
 
     io.on('connection', (socket) => {
-        console.log('New client connected');
+        console.log(`New client connected: ${socket.id}`);
 
-        // Handle user authentication
         socket.on('authenticate', (userId) => {
-            activeUsers.set(userId, socket.id);
-            io.emit('userStatus', { userId, status: 'online' });
+            if (!userId) return;
+            const userIdStr = String(userId); // Use consistent type for map key
+            console.log(`Authenticating user ${userIdStr} with socket ${socket.id}`);
+            activeUsers.set(userIdStr, socket.id);
+            // Maybe emit user status here if needed
+             io.emit('userStatus', { userId: userIdStr, status: 'online' });
+
+             // Send existing notifications upon connection/auth? (Optional)
         });
+
+        // Handle user disconnection
+        socket.on('disconnect', () => {
+            let disconnectedUserId = null;
+            // Find which user disconnected
+            for (const [userIdStr, socketId] of activeUsers.entries()) {
+                if (socketId === socket.id) {
+                    disconnectedUserId = userIdStr;
+                    break;
+                }
+            }
+            if (disconnectedUserId) {
+                console.log(`User ${disconnectedUserId} disconnected (Socket ${socket.id})`);
+                activeUsers.delete(disconnectedUserId);
+                // Maybe emit user status offline
+                 io.emit('userStatus', { userId: disconnectedUserId, status: 'offline' });
+            } else {
+                 console.log(`Socket ${socket.id} disconnected without known user.`);
+            }
+        });
+
+
 
         // Handle new message
         socket.on('newMessage', (message) => {
@@ -46,23 +72,14 @@ function initializeSocket(server) {
             }
         });
 
-        // Handle disconnection
-        socket.on('disconnect', () => {
-            let userId;
-            for (const [key, value] of activeUsers.entries()) {
-                if (value === socket.id) {
-                    userId = key;
-                    break;
-                }
-            }
-            if (userId) {
-                activeUsers.delete(userId);
-                io.emit('userStatus', { userId, status: 'offline' });
-            }
-        });
     });
 
     return io;
 }
 
-module.exports = initializeSocket; 
+// Export the map or a function to access it
+function getActiveUsersMap() {
+    return activeUsers;
+}
+
+module.exports = { initializeSocket, getActiveUsersMap }; // Export the function

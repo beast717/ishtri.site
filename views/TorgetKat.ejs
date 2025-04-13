@@ -462,6 +462,18 @@ select[multiple] option:checked {
     transform: translateY(-3px);
 }
 
+ .save-search-button { /* Example */
+    padding: 10px 15px; 
+    background-color: #28a745; 
+    color: white; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer;
+  }
+  .save-search-button:hover { 
+    background-color: #218838; 
+}
+
 @media (max-width: 768px) {
     /* Mobile Layout Adjustments */
     .page-container {
@@ -640,6 +652,9 @@ select[multiple] option:checked {
                 <option value="Annet" data-i18n="subkategori.annet">Else</option>
             </select>
         </div> 
+        <button id="saveSearchBtn" class="save-search-button" style="margin: 20px;">
+  <i class="fas fa-save"></i> Save This Search
+</button>
     </div>  
 
     <!-- Move reset filters button outside of subcategoryFilterContainer -->
@@ -1525,7 +1540,9 @@ function updateCurrentFiltersFromUI() {
         priceOrder: document.getElementById('priceFilter')?.value || '',
         dateOrder: document.getElementById('dateFilter')?.value || '',
         subCategory: category === 'Torget' ? document.getElementById('subCategoryFilter')?.value || '' : '',
-        selectedCountries: Array.from(document.querySelectorAll('.country-list input[type="checkbox"]:checked')).map(cb => cb.value),
+        selectedCountries: Array.from(
+            document.querySelectorAll('.country-list > li > div > input[type="checkbox"]:checked')
+        ).map(cb => cb.value),
         selectedCities: Array.from(document.querySelectorAll('.city-list input[type="checkbox"]:checked')).map(cb => cb.value),
         // Car Filters
         selectedCarBrands: category === 'Bil' ? Array.from(document.querySelectorAll('.car-brand-list input[type="checkbox"]:checked')).map(cb => cb.value) : [],
@@ -1915,20 +1932,300 @@ function setupFilterListeners() {
                 }
             });
 
-            // Initialize countries and cities
-            initializeCountries();
-            
-            // Initialize car brands
-            initializeCarBrands();
         }
 
-        function initializeCountries() {
-            const countryList = document.querySelector('.country-list');
-            if (!countryList || countryList.children.length > 0) return;
+       const saveSearchBtn = document.getElementById('saveSearchBtn');
+         if (saveSearchBtn) {
+             saveSearchBtn.addEventListener('click', async () => {
+         // 1. Check login (Keep this part)
+         try {
+             const userRes = await fetch('/api/auth/current-user');
+             const userData = await userRes.json();
+             if (!userData || !userData.brukerId) {
+                 window.toast.show('Please log in to save searches.', 'info');
+                 return;
+             }
+         } catch (error) {
+              window.toast.show('Could not verify login status.', 'error');
+              return;
+         }
 
-            fetch('/api/utils/countries')
-                .then(response => response.json())
-                .then(countries => {
+         // 2. Get search name (Keep this part)
+         const searchName = prompt("Enter a name for this search:");
+         if (!searchName || searchName.trim() === '') {
+             window.toast.show('Search not saved (no name provided).', 'warning');
+             return;
+         }
+
+         // 3. *** START: CORRECTED FILTER GATHERING ***
+         const urlParams = new URLSearchParams(window.location.search);
+         const category = urlParams.get('category'); // Get the ACTUAL active category
+
+         if (!category) {
+             window.toast.show('Cannot save search: Category not identified.', 'error');
+             return;
+         }
+
+         // Initialize an EMPTY object for filters to be saved
+         const filtersToSave = {};
+
+         // --- Add Common Filters (apply to most categories) ---
+         const selectedCountries = Array.from(
+            document.querySelectorAll('.country-list > li > div > input[type="checkbox"]:checked')
+         ).map(cb => cb.value);
+        if (selectedCountries.length > 0) filtersToSave.countries = selectedCountries;
+
+          const selectedCities = Array.from(document.querySelectorAll('.city-list input[type="checkbox"]:checked')).map(cb => cb.value); // Ensure this parenthesis is closed
+     if (selectedCities.length > 0) filtersToSave.cities = selectedCities; 
+
+
+         // --- Add Category-Specific Filters ---
+         switch (category) {
+            case 'Torget':
+                const subCategory = document.getElementById('subCategoryFilter')?.value;
+                if (subCategory) filtersToSave.subCategory = subCategory;
+                break;
+
+            case 'Bil':
+                const selectedCarBrands = Array.from(document.querySelectorAll('.car-brand-list input[type="checkbox"]:checked')).map(cb => cb.value);
+                if (selectedCarBrands.length > 0) filtersToSave.car_brands = selectedCarBrands; // Use consistent key name
+
+                const yearFrom = document.getElementById('yearFrom')?.value;
+                const yearTo = document.getElementById('yearTo')?.value;
+                if (yearFrom || yearTo) filtersToSave.yearRange = { from: yearFrom || null, to: yearTo || null };
+
+                const mileageFrom = document.getElementById('mileageFrom')?.value;
+                const mileageTo = document.getElementById('mileageTo')?.value;
+                if (mileageFrom || mileageTo) filtersToSave.mileageRange = { from: mileageFrom || null, to: mileageTo || null };
+
+                const fuelTypes = Array.from(document.getElementById('fuelTypeFilter')?.selectedOptions || []).map(opt => opt.value);
+                if (fuelTypes.length > 0) filtersToSave.fuel_types = fuelTypes; // Use consistent key name
+
+                const transmissionTypes = Array.from(document.getElementById('transmissionFilter')?.selectedOptions || []).map(opt => opt.value);
+                if (transmissionTypes.length > 0) filtersToSave.transmission_types = transmissionTypes; // Use consistent key name
+                break;
+
+            case 'Eiendom':
+                const propertyTypes = Array.from(document.getElementById('propertyTypeFilter')?.selectedOptions || []).map(opt => opt.value);
+                if (propertyTypes.length > 0) filtersToSave.property_types = propertyTypes; // Use consistent key name
+
+                const sizeSqmFrom = document.getElementById('sizeSqmFrom')?.value;
+                const sizeSqmTo = document.getElementById('sizeSqmTo')?.value;
+                 if (sizeSqmFrom || sizeSqmTo) filtersToSave.sizeRange = { from: sizeSqmFrom || null, to: sizeSqmTo || null }; // Use sizeRange
+
+                const numRoomsFrom = document.getElementById('numRoomsFrom')?.value;
+                const numRoomsTo = document.getElementById('numRoomsTo')?.value;
+                if (numRoomsFrom || numRoomsTo) filtersToSave.roomsRange = { from: numRoomsFrom || null, to: numRoomsTo || null }; // Use roomsRange
+
+                const numBathroomsFrom = document.getElementById('numBathroomsFrom')?.value;
+                const numBathroomsTo = document.getElementById('numBathroomsTo')?.value;
+                if (numBathroomsFrom || numBathroomsTo) filtersToSave.bathroomsRange = { from: numBathroomsFrom || null, to: numBathroomsTo || null }; // Use bathroomsRange
+
+                const energyClasses = Array.from(document.getElementById('energyClassFilter')?.selectedOptions || []).map(opt => opt.value);
+                if (energyClasses.length > 0) filtersToSave.energy_classes = energyClasses; // Use consistent key name
+                break;
+
+            case 'Jobb':
+                 const employmentTypes = Array.from(document.getElementById('employmentTypeFilter')?.selectedOptions || []).map(opt => opt.value);
+                 if (employmentTypes.length > 0) filtersToSave.employment_types = employmentTypes; // Use consistent key name
+
+                 const salaryFrom = document.getElementById('salaryFrom')?.value;
+                 const salaryTo = document.getElementById('salaryTo')?.value;
+                 if (salaryFrom || salaryTo) filtersToSave.salaryRange = { from: salaryFrom || null, to: salaryTo || null };
+
+                 const applicationDeadline = document.getElementById('deadlineDate')?.value;
+                 if (applicationDeadline) filtersToSave.applicationDeadline = applicationDeadline;
+                break;
+
+             // Add cases for 'Båt', 'MC' if they have savable filters
+         }
+         // *** END: CORRECTED FILTER GATHERING ***
+
+
+         // 4. Send ONLY the relevant filters to the backend
+         try {
+             const response = await fetch('/api/saved-searches', {
+                 method: 'POST',
+                 headers: { 'Content-Type': 'application/json' },
+                 body: JSON.stringify({
+                     search_name: searchName,
+                     category: category, // Send the correct category
+                     filters: filtersToSave // Send the filtered object
+                 })
+             });
+
+             if (!response.ok) {
+                 const errorData = await response.json();
+                 throw new Error(errorData.message || 'Failed to save search.');
+             }
+
+             const result = await response.json();
+             window.toast.show(`Search '${result.search_name}' saved successfully!`, 'success');
+
+         } catch (error) {
+             console.error("Error saving search:", error);
+             window.toast.show(`Error: ${error.message}`, 'error');
+         }
+     });
+ }
+
+function applyFiltersFromURL() {
+    const urlParams = new URLSearchParams(window.location.search);
+    console.log("Applying filters from URL parameters:", urlParams.toString());
+
+    let filtersApplied = false; // Flag to see if we actually changed anything
+
+    // --- Helper Function to Update Multi-Select ---
+    const updateMultiSelect = (selectId, values) => {
+        const select = document.getElementById(selectId);
+        if (select && values && values.length > 0) {
+            Array.from(select.options).forEach(option => {
+                option.selected = values.includes(option.value);
+            });
+            filtersApplied = true;
+        }
+    };
+
+    // --- Helper Function to Update Checkboxes ---
+    const updateCheckboxes = (selector, values) => {
+        if (values && values.length > 0) {
+            document.querySelectorAll(selector).forEach(checkbox => {
+                if (values.includes(checkbox.value)) {
+                    checkbox.checked = true;
+                    // If it's a city checkbox, make sure its country list is expanded
+                    const cityList = checkbox.closest('.city-list');
+                    if (cityList && cityList.style.display !== 'block') {
+                         const countryCheckbox = cityList.closest('li').querySelector('input[type="checkbox"]');
+                         if (countryCheckbox) countryCheckbox.checked = true; // Ensure country is checked too
+                         cityList.style.display = 'block';
+                    }
+                     filtersApplied = true;
+                } else {
+                    checkbox.checked = false;
+                }
+            });
+
+        }
+    };
+
+     // --- Helper Function to Update Single Select ---
+    const updateSingleSelect = (selectId, value) => {
+         const select = document.getElementById(selectId);
+         if (select && value) {
+             select.value = value;
+             if(select.value === value) filtersApplied = true; // Check if value was successfully set
+         }
+     };
+
+     // --- Helper Function to Update Slider ---
+     const updateSlider = (sliderId, fromValue, toValue) => {
+          const sliderElement = document.getElementById(sliderId);
+          const config = sliderConfigs[sliderId]; // Assumes sliderConfigs is accessible
+          if (sliderElement && sliderElement.noUiSlider && config) {
+              const currentVals = sliderElement.noUiSlider.get();
+              const newFrom = fromValue !== null ? parseFloat(fromValue) : config.start[0];
+              const newTo = toValue !== null ? parseFloat(toValue) : config.start[1];
+
+              // Only update if values are different from default start AND valid within range
+              if ((!isNaN(newFrom) && !isNaN(newTo)) &&
+                  (newFrom !== config.start[0] || newTo !== config.start[1]) &&
+                  (newFrom >= config.range.min && newTo <= config.range.max && newFrom <= newTo))
+              {
+                   sliderElement.noUiSlider.set([newFrom, newTo]);
+                   // Update hidden inputs associated with the slider
+                   document.getElementById(config.inputs[0]).value = newFrom;
+                   document.getElementById(config.inputs[1]).value = newTo;
+                   filtersApplied = true;
+              }
+          }
+      };
+
+    // --- Apply Filters based on URL Params ---
+
+    // Sort Orders (update dropdowns)
+    updateSingleSelect('priceFilter', urlParams.get('sortPrice'));
+    updateSingleSelect('dateFilter', urlParams.get('sortDate'));
+
+    // Common Filters
+    updateCheckboxes('.country-list input[type="checkbox"]', urlParams.get('countries')?.split(','));
+    updateCheckboxes('.city-list input[type="checkbox"]', urlParams.get('cities')?.split(','));
+
+    // Category Specific Filters
+    const category = urlParams.get('category');
+    switch(category) {
+        case 'Torget':
+            updateSingleSelect('subCategoryFilter', urlParams.get('subCategory'));
+            break;
+        case 'Bil':
+            updateCheckboxes('.car-brand-list input[type="checkbox"]', urlParams.get('carBrand')?.split(',')); // Use carBrand key
+            updateSlider('year-slider', urlParams.get('yearFrom'), urlParams.get('yearTo'));
+            updateSlider('mileage-slider', urlParams.get('mileageFrom'), urlParams.get('mileageTo'));
+            updateMultiSelect('fuelTypeFilter', urlParams.get('fuelTypes')?.split(','));
+            updateMultiSelect('transmissionFilter', urlParams.get('transmissionTypes')?.split(','));
+            break;
+        case 'Eiendom':
+             updateMultiSelect('propertyTypeFilter', urlParams.get('propertyType')?.split(','));
+             updateSlider('size-slider', urlParams.get('sizeSqmFrom'), urlParams.get('sizeSqmTo'));
+             updateSlider('rooms-slider', urlParams.get('numRoomsFrom'), urlParams.get('numRoomsTo'));
+             updateSlider('bathrooms-slider', urlParams.get('numBathroomsFrom'), urlParams.get('numBathroomsTo'));
+             updateMultiSelect('energyClassFilter', urlParams.get('energyClass')?.split(','));
+            break;
+         case 'Jobb':
+             updateMultiSelect('employmentTypeFilter', urlParams.get('employmentTypes')?.split(','));
+             // Update salary range inputs (assuming no slider yet)
+             const salaryFromInput = document.getElementById('salaryFrom');
+             const salaryToInput = document.getElementById('salaryTo');
+             if(salaryFromInput && urlParams.has('salaryFrom')) salaryFromInput.value = urlParams.get('salaryFrom');
+             if(salaryToInput && urlParams.has('salaryTo')) salaryToInput.value = urlParams.get('salaryTo');
+             // Update deadline input
+             const deadlineInput = document.getElementById('deadlineDate');
+             if(deadlineInput && urlParams.has('deadline')) deadlineInput.value = urlParams.get('deadline');
+            break;
+        // Add cases for Båt, MC if needed
+    }
+
+     console.log("Finished applying URL filters. Filters Applied:", filtersApplied);
+    return filtersApplied; // Return true if any UI element was changed
+}
+        async function initializeCountries() {
+        const countryList = document.querySelector('.country-list');
+
+        if (!countryList) {
+            console.error("initializeCountries: CRITICAL - Could not find '.country-list'.");
+            return Promise.reject("Country list container not found");
+        }
+
+        // --- Refined Check ---
+        // Check specifically for a country checkbox structure, not just any li
+        // Use a data attribute to mark initialization?
+        const isAlreadyInitialized = countryList.dataset.initialized === 'true';
+        const hasCountryCheckboxes = countryList.querySelector('li > div > input[type="checkbox"][id]:not([id^="city_"])'); // Look for a country ID, not a city ID
+
+        if (isAlreadyInitialized || hasCountryCheckboxes) {
+            console.log(`initializeCountries: Skipping initialization. Already initialized: ${isAlreadyInitialized}, Found existing country checkboxes: ${!!hasCountryCheckboxes}`);
+            // If it has checkboxes but isn't marked initialized, mark it now?
+            if (hasCountryCheckboxes && !isAlreadyInitialized) {
+                countryList.dataset.initialized = 'true';
+            }
+            return Promise.resolve(); // Already populated or marked
+        }
+
+        countryList.innerHTML = ''; // Clear any "Loading...", "Error..." messages FIRST
+
+        return fetch('/api/utils/countries')
+            .then(response => response.json())
+            .then(countries => {
+                  if (countries.length === 0) {
+                     console.log("initializeCountries: Received 0 countries.");
+                     countryList.innerHTML = '<li>No countries available.</li>';
+                     countryList.dataset.initialized = 'true'; // Mark as initialized even if empty
+                     return;
+                }
+
+                // *** Mark as initialized AFTER successfully adding elements ***
+                countryList.dataset.initialized = 'true';
+                console.log("initializeCountries: Marked list as initialized.");
+
                     countries.forEach(countryData => {
                         const countryItem = document.createElement('li');
                         countryItem.innerHTML = `
@@ -1973,16 +2270,30 @@ function setupFilterListeners() {
                     });
                 })
                 .catch(error => {
-                    console.error("Error loading countries and cities:", error);
-                    countryList.innerHTML = '<p>Error loading countries</p>';
+                     console.error("initializeCountries: CATCH block.", error);
+                countryList.innerHTML = `<li style="color: red;">Error: ${error.message}.</li>`;
+                // Don't mark as initialized on error
+                delete countryList.dataset.initialized;
+                return Promise.reject(error);
                 });
         }
 
-        function initializeCarBrands() {
-            const container = document.getElementById('carBrandList');
-            if (!container || container.children.length > 0) return;
+         async function initializeCarBrands() {
+          const container = document.getElementById('carBrandList'); // Assuming ID is correct
+        // ... (check container exists) ...
 
-            fetch('/api/utils/car-brands')
+        const isAlreadyInitialized = container.dataset.initialized === 'true';
+        const hasBrandCheckboxes = container.querySelector('li > div > input[type="checkbox"][id^="brand_"]');
+
+        if (isAlreadyInitialized || hasBrandCheckboxes) {
+             console.log(`initializeCarBrands: Skipping initialization. Initialized: ${isAlreadyInitialized}, Found existing checkboxes: ${!!hasBrandCheckboxes}`);
+             if(hasBrandCheckboxes && !isAlreadyInitialized) container.dataset.initialized = 'true';
+             return Promise.resolve();
+        }
+
+        container.innerHTML = ''; // Clear stale content
+
+        return fetch('/api/utils/car-brands')
                 .then(response => response.json())
                 .then(brands => {
                     if (!brands || brands.length === 0) {
@@ -2008,6 +2319,7 @@ function setupFilterListeners() {
                 .catch(error => {
                     console.error("Error loading car brands:", error);
                     container.innerHTML = '<p>Error loading car brands</p>';
+                    return Promise.resolve();
                 });
         }
 
@@ -2043,25 +2355,60 @@ function setupFilterListeners() {
             }
         }
 
-        window.onload = function () {
-            handleCategoryVisibility();
-            initializeSliders();
-            updateActiveFiltersDisplay();
-            fetchProducts();
-            checkUnreadMessages();
-            initializeFilters();
-            initializeFavorites();
-            applyFilters();
-            checkUnreadMessages();
-            
-            // Initialize lazy loading
+         window.addEventListener('load', async () => { // Use 'load' if images etc. affect layout, 'DOMContentLoaded' otherwise
+          const countryList = document.querySelector('.country-list');
+          const carBrandList = document.getElementById('carBrandList');
+          if (countryList) delete countryList.dataset.initialized;
+          if (carBrandList) delete carBrandList.dataset.initialized;
+        try {
+            // --- Synchronous Setup First ---
+            handleCategoryVisibility(); // Determine which filters *should* be visible
+            initializeSliders();        // Setup sliders (uses existing DOM elements)
+            initializeFilters();       // Add basic listeners to static elements
+            checkUnreadMessages();     // Any other sync setup
+
+            // --- Wait for ASYNC UI elements to be created ---
+            await Promise.all([
+                initializeCountries(),
+                initializeCarBrands()
+                // Add other async initializations here if needed
+            ]);
+
+            // --- Now Apply Filters from URL (elements exist) ---
+            const urlFiltersApplied = applyFiltersFromURL();
+            // --- Update UI and Fetch Initial Data ---
+            updateActiveFiltersDisplay(); // Show filter tags based on URL/UI state
+            initializeFavorites(); // Check favorites (can run after elements exist)
+
+            // Fetch products *after* ensuring URL filters are applied to the UI state
+            // applyFilters() internally updates currentFilters and calls fetchProducts
+            if (urlFiltersApplied) {
+                 applyFilters(); // Trigger a filter application which includes fetching
+             } else {
+                 fetchProducts(); // Fetch default products if no URL filters were applied
+             }
+
+            // Setup remaining listeners (like save search button)
+            const saveSearchBtn = document.getElementById('saveSearchBtn');
+             if (saveSearchBtn) {
+                // ... attach your save search listener here ...
+                saveSearchBtn.addEventListener('click', async () => { /* ... your existing save logic ... */ });
+             }
+             
+            // Initialize lazy loading last
             if (window.lazyLoader) {
                 window.lazyLoader.observe();
             }
 
-            setupFilterListeners();
-        };
+        } catch (error) {
+            console.error("Error during page initialization:", error);
+            // Display a user-friendly error message on the page if appropriate
+            const container = document.getElementById('productsContainer');
+            if(container) container.innerHTML = "<p class='error-message'>An error occurred loading the page. Please try refreshing.</p>";
+        }
     });
+
+}); 
 </script>
 </body>
 </html>

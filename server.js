@@ -9,16 +9,18 @@ const path = require('path');
 const dotenv = require('dotenv');
 const nodemailer = require('nodemailer');
 const http = require('http');
+const cron = require('node-cron');
 dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
 
 // Import configs
+const { checkNewProductsForMatches } = require('./services/backgroundMatcher');
+const { initializeSocket, getActiveUsersMap } = require('./config/socket'); 
 const pool = require('./config/db');
 const { transporter } = require('./config/email');
 const upload = require('./config/upload');
-const initializeSocket = require('./config/socket');
 
 // Initialize Socket.IO
 const io = initializeSocket(server);
@@ -69,6 +71,19 @@ app.use((err, req, res, next) => {
     });
 });
 
+// --- Cron Job for Matching Saved Searches ---
+// Run every 5 minutes (adjust schedule as needed: '*/5 * * * *')
+cron.schedule('*/1 * * * *', async () => { // Run every 1 minute for testing
+    console.log('Running saved search matching job...');
+    try {
+        // Pass 'io' instance to the job if needed for real-time updates
+        await checkNewProductsForMatches(io, getActiveUsersMap);
+        console.log('Saved search matching job finished.');
+    } catch (error) {
+        console.error('Error in saved search matching job:', error);
+    }
+});
+
 // Routes
 app.get('/', (req, res) => res.render('Forside'));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'Logg inn.html')));
@@ -79,6 +94,8 @@ app.get('/reise', (req, res) => res.render('reise'));
 
 const viewRoutes = require('./routes/views');
 app.use('/', viewRoutes);
+
+
 
 // Favorites routes
 const favoriteRoutes = require('./routes/favorites');
@@ -105,8 +122,8 @@ const messageRoutes = require('./routes/messages');
 app.use('/api/messages', messageRoutes);
 
 // Notification routes
-const notificationRoutes = require('./routes/notifications');
-app.use('/notifications', notificationRoutes);
+const savedSearchRoutes = require('./routes/savedSearches');
+app.use('/api/saved-searches', savedSearchRoutes);
 
 // Authentication routes
 const { router: authRoutes, isAuthenticated } = require('./routes/auth');

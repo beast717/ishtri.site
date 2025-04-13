@@ -12,6 +12,11 @@ router.get('/mine-annonser', isAuthenticated, (req, res) => {
     res.render('mine-annonser');
 });
 
+// Saved Searches page
+router.get('/saved-searches', isAuthenticated, (req, res) => {
+    res.render('saved-searches', { user: req.session.user || null }); // Pass user if needed by navbar
+});
+
 // Product details page
 router.get('/productDetails', (req, res) => {
     res.render('productDetails', {
