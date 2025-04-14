@@ -34,11 +34,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(require('cors')());
 
-// Sentry: Add Request Handler
-app.use(Sentry.Handlers.requestHandler());
-// Sentry: Add Tracing Handler to enable tracing for requests
-app.use(Sentry.Handlers.tracingHandler());
-
 const sessionStore = new MySQLStore({}, pool);
 app.use(session({
     store: sessionStore,
@@ -119,8 +114,6 @@ app.use('/api/notifications', notificationRoutes);
 const settingsRoutes = require('./routes/settings');
 app.use('/api/settings', settingsRoutes);
 
-app.use(Sentry.Handlers.errorHandler());
-
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
@@ -143,12 +136,10 @@ cron.schedule('*/5 * * * *', async () => { // Run every 1 minute for testing
 });
 
 // --- TEMPORARY TEST CODE (add before server.listen) ---
+
 try {
-  console.log("Intentionally throwing test error for Sentry...");
-  throw new Error("This is a test error for Sentry verification!"); // Use throw new Error
-  // foo(); // Or call an undefined function like the example
+  foo();
 } catch (e) {
-  console.log("Caught test error, capturing with Sentry...");
   Sentry.captureException(e);
 }
 // --- END TEMPORARY TEST CODE ---
