@@ -346,20 +346,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert("Could not save your language preference due to a browser issue.");
             }
         });
-    } // end if(languageSelect)
+    } 
 
-}); // End DOMContentLoaded
-
-// Optional: Global function to check consent status if needed by other inline scripts (less common now)
-/*
-function hasCookieConsent() {
-    try {
-        return localStorage.getItem('cookieConsentStatus_ishtri_v1') === 'accepted';
-    } catch (e) {
-        console.error("Could not read consent status from localStorage:", e);
-        return false; // Default to no consent if storage fails
-    }
-}
-*/
-
-// --- END OF FILE Public/shared.js ---
+}); 

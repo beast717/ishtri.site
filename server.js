@@ -1,4 +1,6 @@
 // server.js
+require("./instrument.js");
+const Sentry = require("@sentry/node");
 const bcrypt = require('bcrypt');
 const express = require('express');
 const session = require('express-session');
@@ -32,7 +34,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(require('cors')());
 
-// Session configuration
+// Sentry: Add Request Handler
+app.use(Sentry.Handlers.requestHandler());
+// Sentry: Add Tracing Handler to enable tracing for requests
+app.use(Sentry.Handlers.tracingHandler());
+
 const sessionStore = new MySQLStore({}, pool);
 app.use(session({
     store: sessionStore,
@@ -62,28 +68,6 @@ app.use(express.static(path.join(__dirname, 'Public')));
 app.use('/uploads', express.static('uploads'));
 app.use('/.well-known', express.static(path.join(__dirname, '.well-known')));
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({
-        error: 'Internal Server Error',
-        message: process.env.NODE_ENV === 'development' ? err.message : null
-    });
-});
-
-// --- Cron Job for Matching Saved Searches ---
-// Run every 5 minutes (adjust schedule as needed: '*/5 * * * *')
-cron.schedule('*/1 * * * *', async () => { // Run every 1 minute for testing
-    console.log('Running saved search matching job...');
-    try {
-        // Pass 'io' instance to the job if needed for real-time updates
-        await checkNewProductsForMatches(io, getActiveUsersMap);
-        console.log('Saved search matching job finished.');
-    } catch (error) {
-        console.error('Error in saved search matching job:', error);
-    }
-});
-
 // Routes
 app.get('/', (req, res) => res.render('Forside'));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'Logg inn.html')));
@@ -94,8 +78,6 @@ app.get('/reise', (req, res) => res.render('reise'));
 
 const viewRoutes = require('./routes/views');
 app.use('/', viewRoutes);
-
-
 
 // Favorites routes
 const favoriteRoutes = require('./routes/favorites');
@@ -136,6 +118,40 @@ app.use('/api/notifications', notificationRoutes);
 // Settings routes
 const settingsRoutes = require('./routes/settings');
 app.use('/api/settings', settingsRoutes);
+
+app.use(Sentry.Handlers.errorHandler());
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+        error: 'Internal Server Error',
+        message: process.env.NODE_ENV === 'development' ? err.message : null
+    });
+});
+
+// --- Cron Job for Matching Saved Searches ---
+cron.schedule('*/5 * * * *', async () => { // Run every 1 minute for testing
+    console.log('Running saved search matching job...');
+    try {
+        // Pass 'io' instance to the job if needed for real-time updates
+        await checkNewProductsForMatches(io, getActiveUsersMap);
+        console.log('Saved search matching job finished.');
+    } catch (error) {
+        console.error('Error in saved search matching job:', error);
+    }
+});
+
+// --- TEMPORARY TEST CODE (add before server.listen) ---
+try {
+  console.log("Intentionally throwing test error for Sentry...");
+  throw new Error("This is a test error for Sentry verification!"); // Use throw new Error
+  // foo(); // Or call an undefined function like the example
+} catch (e) {
+  console.log("Caught test error, capturing with Sentry...");
+  Sentry.captureException(e);
+}
+// --- END TEMPORARY TEST CODE ---
 
 // Server initialization
 const PORT = process.env.PORT || 3000;
