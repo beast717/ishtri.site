@@ -135,15 +135,6 @@ cron.schedule('*/5 * * * *', async () => { // Run every 1 minute for testing
     }
 });
 
-// --- TEMPORARY TEST CODE (add before server.listen) ---
-
-try {
-  foo();
-} catch (e) {
-  Sentry.captureException(e);
-}
-// --- END TEMPORARY TEST CODE ---
-
 // Server initialization
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
