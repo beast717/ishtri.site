@@ -46,20 +46,6 @@
         flex-shrink: 0; /* Prevent shrinking */
     }
 
-    .search-input {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 20px;
-        font-size: 14px;
-        outline: none;
-        transition: border-color 0.3s;
-    }
-
-    .search-input:focus {
-        border-color: #007bff;
-    }
-
     .conversations {
         flex: 1; /* Allow conversations to take remaining space */
         overflow-y: auto;
@@ -251,9 +237,7 @@
         font-size: 11px; /* Smaller ticks */
         color: rgba(255, 255, 255, 0.7); /* Status color for sent */
     }
-    .message-status.read { /* Specific class for read status */
-         /* Optionally change color if needed */
-    }
+    
 
     .chat-input-container {
         padding: 10px 15px; /* Adjust padding */
@@ -1244,7 +1228,7 @@
                  <!-- Text set by JS -->
             </div>
 
-            <div class="chat-input-container">
+            <div class="form-group chat-input-container">
                 <textarea class="chat-input" data-i18n="[placeholder]meldinger.placeholder" placeholder="Type your message..." rows="1"></textarea> <!-- Start with 1 row -->
                 <!-- Add id="sendButton" for JS targeting -->
                 <button class="btn btn-primary send-button" id="sendButton" aria-label="Send message">

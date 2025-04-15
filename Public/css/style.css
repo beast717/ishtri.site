@@ -147,45 +147,105 @@ a:hover {
     margin-top: 20px; /* Keep existing margin */
 }
 
+/* --- Product List Item Style --- */
+.product { /* As seen in mine-annonser, favorites, SearchResults, TorgetKat */
+    display: flex;
+    align-items: flex-start; /* Align items to top */
+    gap: 20px; /* Space between image and text */
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: #fff;
+    border: 1px solid #e9ecef; /* Lighter border */
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.product:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.product img.product-image { /* Target images within .product */
+    width: 150px; /* Fixed width for list view */
+    height: 120px; /* Fixed height */
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0; /* Prevent image from shrinking */
+}
+
+.product > div { /* Target the text content container */
+   flex-grow: 1; /* Allow text content to take remaining space */
+}
+
+.product h3 {
+    margin: 0 0 8px 0; /* Adjust margin */
+    font-size: 1.1rem;
+    color: #333;
+    display: flex; /* Use flex for title/favorite icon */
+    justify-content: space-between;
+    align-items: center;
+}
+
+.product p {
+    margin: 5px 0;
+    color: #555;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.product strong { /* Style bold text within product info */
+   color: #333;
+}
+
+/* --- Product Card Style (Grid View) --- */
+/* Use the existing .product-card styles from style.css - ensure they are up-to-date */
 .product-card {
-    border: 1px solid #eee;
+    border: 1px solid #e9ecef; /* Lighter border */
     border-radius: 8px;
     padding: 15px;
     text-align: center;
-    min-width: 150px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    min-width: 180px; /* Adjust as needed */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     background-color: #fff;
     flex-shrink: 0;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
-    position: relative;
+    position: relative; /* For favorite icon positioning */
+    display: flex; /* Use flex for better internal alignment */
+    flex-direction: column;
 }
 
 .product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.product-image {
+.product-card .product-image { /* Target images within .product-card */
     width: 100%;
-    height: 200px;
+    height: 180px; /* Adjust card image height */
     object-fit: cover;
     border-radius: 4px;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
 }
 
-.product-card h4 {
-    margin: 10px 0;
-    font-size: 1.1em;
+.product-card h4 { /* Use h4 for cards? */
+    margin: 0 0 8px 0; /* Adjust spacing */
+    font-size: 1rem;
     color: #333;
+    font-weight: 600;
+    flex-grow: 1; /* Allow title to push price down */
+    min-height: 2.4em; /* Prevent jumpy layout if titles vary */
 }
 
-.product-card p {
+.product-card p { /* Price styling */
     color: #007bff;
-    font-weight: bold;
-    font-size: 1.2em;
-    margin: 5px 0;
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 10px 0 0 0; /* Margin top */
 }
 
+/* Ensure favorite icon styling is consistent (already in style.css) */
 .favorite-icon {
     position: absolute;
     top: 10px;
@@ -193,22 +253,32 @@ a:hover {
     font-size: 1.2em;
     cursor: pointer;
     color: #ccc;
-    transition: color 0.2s ease;
+    transition: color 0.2s ease, transform 0.2s ease;
     z-index: 1;
+    background: none; /* Ensure no button background interferes */
+    border: none;
+    padding: 5px; /* Slightly larger clickable area */
+     -webkit-tap-highlight-color: transparent; /* Remove tap highlight on mobile */
 }
+ .favorite-icon:hover {
+     /* color: #ff4757; */ /* Keep color change for favorited state */
+     transform: scale(1.15);
+ }
+ .favorite-icon.favorited {
+     color: #ff4757;
+ }
 
-.favorite-icon:hover {
-    color: #ff4757;
-}
-
-.favorite-icon.favorited {
-    color: #ff4757;
-}
-
+/* Ensure sold label is consistent */
 .sold-label {
-    color: #dc3545;
+    color: #fff;
+    background-color: #dc3545; /* Red background */
+    padding: 3px 8px;
+    border-radius: 4px;
     font-size: 0.8em;
-    margin-left: 5px;
+    font-weight: 500;
+    margin-left: 8px;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 /* Loading States */
@@ -413,6 +483,110 @@ a:hover {
     gap: 5px;
 }
 
+/* --- Global Form Styles --- */
+.form-group {
+    margin-bottom: 1.25rem; /* Consistent spacing */
+    text-align: left; /* Ensure labels align left */
+}
+
+label {
+    display: block; /* Ensure label is on its own line */
+    margin-bottom: 0.5rem;
+    font-weight: 500; /* Slightly bolder labels */
+    font-size: 0.95rem;
+    color: #495057;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="url"],
+input[type="date"],
+input[type="search"], /* Add search type */
+select,
+textarea {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem; /* More padding */
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff; /* White background */
+    background-clip: padding-box;
+    border: 1px solid #ced4da; /* Standard border */
+    border-radius: 6px; /* Match button radius */
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    box-sizing: border-box; /* Important */
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="number"]:focus,
+input[type="url"]:focus,
+input[type="date"]:focus,
+input[type="search"]:focus,
+select:focus,
+textarea:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Style selects consistently */
+select {
+    appearance: none; /* Remove default styling */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e"); /* Simple caret */
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 16px 12px;
+    padding-right: 2.5rem; /* Space for caret */
+}
+
+select[multiple] {
+    background-image: none; /* No caret for multi-select */
+    padding-right: 1rem;
+    height: auto; /* Allow multi-select to grow */
+}
+
+textarea {
+    resize: vertical; /* Allow vertical resize only */
+    min-height: 100px;
+}
+
+/* Checkbox/Radio custom styling (Optional but recommended for consistency) */
+.checkbox-group label,
+.radio-group label {
+    display: flex; /* Align checkbox/radio and text */
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-weight: 400; /* Normal weight for options */
+}
+.checkbox-group input[type="checkbox"],
+.radio-group input[type="radio"] {
+    width: auto; /* Override default width */
+    margin-right: 0.5rem;
+}
+
+/* Error states */
+ input.invalid,
+ select.invalid,
+ textarea.invalid {
+    border-color: #dc3545 !important; /* Ensure override */
+    background-color: #fff8f8;
+ }
+.error-message {
+    color: #dc3545;
+    font-size: 0.85em;
+    margin-top: 0.25rem;
+    display: block; /* Ensure it takes space */
+    min-height: 1.2em; /* Prevent layout shifts */
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     .cookie-consent-content {
@@ -520,4 +694,46 @@ a:hover {
         transform: translateX(100%);
         opacity: 0;
     }
+}
+
+#languageSelect {
+    /* Override global select styles for navbar */
+    padding: 8px 12px !important;
+    font-size: 14px !important;
+    border: 1px solid #ccc !important;
+    border-radius: 4px !important;
+    background-color: white !important;
+    color: #333 !important;
+    width: auto !important;
+    min-width: 90px;
+    box-shadow: none !important;
+}
+
+.filter-container label {
+    display: inline-block;
+    margin-bottom: 0;
+    margin-right: 6px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #495057;
+    vertical-align: middle;
+}
+
+.filter-container select {
+    max-width: 180px;
+    min-width: 90px;
+    width: auto;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+    margin-left: 0;
+    box-sizing: border-box;
+    height: 38px;
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
+    /* Fix overlapping arrow: */
+    background-repeat: no-repeat;
+    background-position: right 12px center !important; /* Move arrow further right */
+    background-size: 16px 12px !important;
+    padding-right: 2.8rem !important; /* More space for arrow */
 }

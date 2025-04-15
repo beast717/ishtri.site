@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <link rel="icon" href="ishtri1.png" sizes="16x16 32x32" type="image/png">
+    <link rel="stylesheet" href="/css/style.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://js-de.sentry-cdn.com/4cb627e4e2cb38629abf1676342ede0f.min.js" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
@@ -10,7 +11,6 @@
     <style>
         /* Modern styling */
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -81,39 +81,6 @@
             text-align: left;
         }
 
-        input[type="text"],
-        input[type="password"],
-        input[type="email"] {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ced4da;
-            border-radius: 6px;
-            font-size: 0.9rem;
-            transition: border-color 0.3s ease;
-        }
-
-        input:focus {
-            border-color: #6c5ce7;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(108, 92, 231, 0.1);
-        }
-
-        button {
-            width: 100%;
-            padding: 0.875rem;
-            background: #6c5ce7;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
-
-        button:hover {
-            background: #5b4bc4;
-        }
-
         .alert {
             padding: 0.875rem;
             margin-bottom: 1.5rem;
@@ -181,7 +148,7 @@
     <div id="loginForm">
         <h2 data-i18n="logg_inn.logg_inn">Welcome Back</h2>
         <p class="subtitle" data-i18n="logg_inn.subtitle">Log in to contact sellers, save favorites, list ads, and access exclusive features.</p>
-        <div id="errorMessage" class="alert alert-error" style="display: none;"></div>
+        <div id="errorMessage" class="alert alert-error error-message" style="display: none;"></div>
         <form id="loginFormElement" action="/api/auth/login" method="POST">
             <div class="social-login">
               <div id="googleSignIn" class="google-btn"></div>
@@ -200,7 +167,7 @@
                 <input type="password" id="loginPassword" name="passord" required>
                 <span class="password-toggle-icon" role="button" aria-label="Toggle password visibility">👁️</span>
             </div>
-            <button type="submit" data-i18n="logg_inn.logg_inn">Continue →</button>
+            <button type="submit" class="btn btn-primary" data-i18n="logg_inn.logg_inn">Continue →</button>
             <a href="/forgot-password" class="toggle-link" data-i18n="logg_inn.forgot_password">Forgot Password?</a>
             <span class="toggle-link" onclick="toggleForms()" data-i18n="logg_inn.lag_konto">Create Account</span>
         </form>
@@ -233,7 +200,7 @@
                 <label for="confirm_email">Do not fill this field</label>
                 <input type="text" id="confirm_email" name="confirm_email" tabindex="-1" autocomplete="off">
             </div>
-            <button type="submit" data-i18n="logg_inn.lag_konto">Create Account</button>
+            <button type="submit" class="btn btn-primary" data-i18n="logg_inn.lag_konto">Create Account</button>
             <span class="toggle-link" onclick="toggleForms()" data-i18n="logg_inn.har_allerede_konto_logg_inn">Already have an account? Log In</span>
         </form>
     </div>
@@ -298,12 +265,12 @@
                 if (response.ok) {
                     window.location.href = '/';
                 } else {
-                    showErrorMessage(errorMessage, responseData.message || 'Invalid credentials');
+                    showErrorMessage(errorMessage, responseData.message || 'Invalid credentials', loginForm.querySelector('#loginPassword'));
                     resetButton(button, 'Continue →');
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                showErrorMessage(errorMessage, 'Connection error. Please try again later');
+                showErrorMessage(errorMessage, 'Connection error. Please try again later', loginForm.querySelector('#loginPassword'));
                 resetButton(button, 'Continue →');
             }
         });
@@ -314,30 +281,20 @@
         const signupForm = document.querySelector('#signupForm form');
         if (!signupForm) return;
 
-        // --- Get or create the message area ---
-        // Ensure the message area exists *outside* the form fields but *within* the signupForm div
-        // Let's target a specific element or create one if it doesn't exist
         let messageArea = document.getElementById('signupMessageArea');
         if (!messageArea) {
             messageArea = document.createElement('div');
             messageArea.id = 'signupMessageArea';
-            // Insert it before the form element within the #signupForm container
             const signupContainer = document.getElementById('signupForm');
             signupContainer.insertBefore(messageArea, signupForm);
         }
-        // --- ---
 
         signupForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             const button = signupForm.querySelector('button');
+            messageArea.style.display = 'none';
+            messageArea.className = 'alert';
 
-            // Use the dedicated message area
-            messageArea.style.display = 'none'; // Hide previous messages
-            messageArea.className = 'alert'; // Reset classes
-
-            // Use the loading function (assuming you implemented it as suggested before)
-            // setButtonLoading(button, true); // Start loading state
-            // Or simpler text change:
             button.innerHTML = 'Processing...';
             button.disabled = true;
 
@@ -345,19 +302,16 @@
                 const formData = new FormData(signupForm);
                 const data = Object.fromEntries(formData.entries());
 
-                // Basic client-side password match validation (already exists)
                 if (data.passord !== data.confirmPassword) {
-                    showErrorMessage(messageArea, 'Passwords do not match'); // Show error in messageArea
-                    resetButton(button, 'Create Account'); // Use resetButton function
+                    showErrorMessage(messageArea, 'Passwords do not match', signupForm.querySelector('#confirmPassword'));
+                    resetButton(button, 'Create Account');
                     return;
                 }
-                // Basic client-side email format check (optional, browser handles type="email")
-                if (!/\S+@\S+\.\S+/.test(data.email)) { // Simple regex check
-                     showErrorMessage(messageArea, 'Please enter a valid email address.');
-                     resetButton(button, 'Create Account');
-                     return;
+                if (!/\S+@\S+\.\S+/.test(data.email)) {
+                    showErrorMessage(messageArea, 'Please enter a valid email address.', signupForm.querySelector('#signupEmail'));
+                    resetButton(button, 'Create Account');
+                    return;
                 }
-
 
                 const response = await fetch('/api/auth/signup', {
                     method: 'POST',
@@ -368,40 +322,28 @@
                 const responseData = await response.json();
 
                 if (response.ok) {
-                    // --- SUCCESS - User needs to check email ---
-                    showSuccessMessage(messageArea, responseData.message || 'Account created. Please check your email to verify.'); // Use the message from backend
-                    // Clear the form fields after successful submission
+                    showSuccessMessage(messageArea, responseData.message || 'Account created. Please check your email to verify.');
                     signupForm.reset();
-                    // Keep the button disabled or change its text to indicate next step
                     button.innerHTML = 'Verification Email Sent';
-                    // DO NOT toggle back to login automatically
-                    // DO NOT redirect automatically
-                    // The user must now go check their email.
-
                 } else {
-                    // --- ERROR ---
                     showErrorMessage(messageArea, responseData.message || 'Error creating account');
-                    resetButton(button, 'Create Account'); // Re-enable button on error
+                    resetButton(button, 'Create Account');
                 }
             } catch (error) {
                 console.error('Signup error:', error);
                 showErrorMessage(messageArea, 'Connection error. Please try again later');
-                resetButton(button, 'Create Account'); // Re-enable button on error
+                resetButton(button, 'Create Account');
             }
-            // Removed the finally block if using setButtonLoading, otherwise keep it
-             // finally {
-             //    // This might run even after success message, so be careful
-             //    // Only reset button fully on error cases above
-             // }
         });
     }
 
     // Make sure your showErrorMessage and showSuccessMessage target the messageArea element correctly
-    function showErrorMessage(element, message) {
+    function showErrorMessage(element, message, input) {
         element.textContent = message;
-        element.className = 'alert alert-error'; // Set classes
+        element.className = 'alert alert-error error-message'; // Set classes
         element.style.display = 'block';
         element.setAttribute('aria-live', 'polite'); // Add ARIA attribute
+        if (input) input.classList.add('invalid');
     }
 
     function showSuccessMessage(element, message) {
@@ -416,6 +358,13 @@
         button.innerHTML = text;
         button.disabled = false;
     }
+
+    // Remove invalid class on input change
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', () => input.classList.remove('invalid'));
+        });
+    });
 
     // Form toggle functionality
     function toggleForms() {

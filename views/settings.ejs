@@ -33,11 +33,6 @@
          .setting-item:last-child {
              border-bottom: none;
          }
-        .setting-label {
-            font-size: 1.1em;
-            color: #555;
-        }
-        /* Basic Toggle Switch CSS */
         .switch {
             position: relative;
             display: inline-block;
@@ -91,19 +86,18 @@
 
     <div class="settings-container">
         <h1>Settings</h1>
-
-        <div class="setting-item">
-            <label for="emailNotifications" class="setting-label">
-                Receive email for saved search matches
-            </label>
-            <label class="switch">
-                <input type="checkbox" id="emailNotifications">
-                <span class="slider"></span>
-            </label>
-        </div>
-
-        <!-- Add more settings here if needed -->
-
+        <form>
+            <div class="form-group setting-item">
+                <label for="emailNotifications" class="setting-label">
+                    Receive email for saved search matches
+                </label>
+                <label class="switch">
+                    <input type="checkbox" id="emailNotifications">
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <!-- Add more settings here if needed -->
+        </form>
         <div id="saveStatus"></div> <!-- For saving feedback -->
 
     </div>
