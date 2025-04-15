@@ -105,7 +105,6 @@ z-index: 101; /* Above the overlay */
 border-radius: 8px;
 max-width: 400px;
 width: 90%;
-font-family: Arial, sans-serif;
 }
 
 #overlay {
@@ -195,7 +194,6 @@ margin-top: 10px;
     border-radius: 8px;
     max-width: 400px;
     width: 90%;
-    font-family: Arial, sans-serif;
     text-align: center;
 }
 
@@ -375,8 +373,8 @@ margin-top: 10px;
         <h3>Send Message to Owner</h3>
         <textarea id="messageInput" rows="5" cols="40" placeholder="Type your message here..."></textarea>
         <br><br>
-        <button id="sendMessageButton">Send</button>
-        <button id="cancelMessageButton">Cancel</button>
+        <button id="sendMessageButton" class="btn btn-primary">Send</button>
+        <button id="cancelMessageButton" class="btn btn-secondary">Cancel</button>
     </div>
     <div id="overlay"></div>
 
@@ -400,15 +398,15 @@ margin-top: 10px;
         <p style="display: none;"><strong data-i18n="product_details.location">Location:</strong> <span id="productLocation"></span></p>
         <p id="productDescription" style="display: none;">Product Description</p>
 
-        <button class="sendMessage" id="contactOwner" style="display: none;" data-i18n="product_details.contact_owner">Contact owner</button>
-        <button id="favoriteButton" class="sendMessage" style="display: none;">Favorite</button>
+        <button class="btn btn-primary sendMessage" id="contactOwner" style="display: none;" data-i18n="product_details.contact_owner">Contact owner</button>
+        <button id="favoriteButton" class="btn btn-primary sendMessage" style="display: none;">Favorite</button>
     </div>
     <div id="loginModal">
     <h3>You need to log in to favorite this product</h3>
     <p>Please log in to access this feature.</p>
     <div class="button-container">
-        <button id="loginButton1">Log In</button>
-        <button id="cancelLoginButton">Cancel</button>
+        <button id="loginButton1" class="btn btn-primary">Log In</button>
+        <button id="cancelLoginButton" class="btn btn-secondary">Cancel</button>
     </div>
 </div>
 <div id="loginOverlay"></div>

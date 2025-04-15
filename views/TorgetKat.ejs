@@ -28,7 +28,6 @@ h1 {
 }
 
 .product {
-    font-family: Arial, Helvetica, sans-serifx;
     border: 1px solid #ddd;
     border-radius: 8px;
     padding: 15px;
@@ -109,7 +108,6 @@ h1 {
     align-items: center;
     gap: 10px;
     margin-top: 10px;
-    font-family: 'Arial', sans-serif;
 }
 
 .filter-container label {
@@ -135,7 +133,6 @@ h1 {
 }
 
 .side-panel {
-font-family: Arial, Helvetica, sans-serif;
 width: 250px;
 background-color: #f9f9f9;
 border: 1px solid #ddd;
@@ -658,7 +655,7 @@ select[multiple] option:checked {
     </div>  
 
     <!-- Move reset filters button outside of subcategoryFilterContainer -->
-    <button onclick="resetFilters()" class="reset-filters-btn" id="resetFiltersBtn" style="display: none;">
+    <button onclick="resetFilters()" class="btn btn-danger reset-filters-btn">
         ⟳ Reset Filters
     </button>
 
@@ -1092,7 +1089,7 @@ select[multiple] option:checked {
               apiUrl += `&countries=${encodeURIComponent(currentFilters.selectedCountries.join(','))}`;
             }
             if (currentFilters.selectedCities.length) {
-              apiUrl += `&cities=${currentFilters.selectedCities.join(',')}`;
+              apiUrl += `&cities=${encodeURIComponent(currentFilters.selectedCities.join(','))}`;
             }
 
             // Add car specific filters

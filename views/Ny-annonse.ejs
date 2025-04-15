@@ -190,7 +190,7 @@
 
         /* Form Container Styling */
         .formContainer {
-        font-family: Arial, Helvetica, sans-serif;
+        /* Removed font-family: Arial, Helvetica, sans-serif; */
         text-align: center;
         margin-top: 50px;
         display: none;
@@ -373,11 +373,15 @@
             background-color: #fff8f8;
         }
         .clear-button {
+            /* Remove these properties:
             background-color: #6c757d;
             color: white;
+            */
         }
         .clear-button:hover {
+            /* Remove:
             background-color: #5a6268;
+            */
         }
     </style>
 </head>
@@ -677,8 +681,8 @@
 
                 <!-- Action Buttons -->
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                    <button type="button" class="clear-button" data-i18n="form.clear">Clear Form</button>
-                    <button type="submit" data-i18n="form.submit">Submit</button>
+                    <button type="button" class="btn btn-secondary clear-button" data-i18n="form.clear">Clear Form</button>
+                    <button type="submit" class="btn btn-primary" data-i18n="form.submit">Submit</button>
                 </div>
             </form>
         </div>

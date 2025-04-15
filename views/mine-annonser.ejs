@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <link rel="icon" href="ishtri1.png" sizes="16x16 32x32" type="image/png">
-
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -23,7 +22,6 @@
         }
 
         .product {
-            font-family: Arial, Helvetica, sans-serifx;
             border: 1px solid #ddd;
             border-radius: 8px;
             padding: 15px;
@@ -49,213 +47,135 @@
             margin: 0;
         }
 
-
-        /* General Button Styles */
-/* Button Styles (same as before) */
-button {
-    padding: 10px 15px;
-    font-size: 14px;
-    font-weight: bold;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-/* Delete Button */
-.delete-button {
-    background-color: #ff4d4d; /* Bright red */
-    color: white;
-}
-
-.delete-button:hover {
-    background-color: #e60000; /* Darker red on hover */
-    transform: scale(1.05);
-}
-
-.delete-button:active {
-    background-color: #cc0000; /* Even darker red when clicked */
-}
-
-/* Mark as Sold Button */
-.sold-button {
-    background-color: #4caf50; /* Green */
-    color: white;
-}
-
-.sold-button:hover {
-    background-color: #388e3c; /* Darker green on hover */
-    transform: scale(1.05);
-}
-
-.sold-button:active {
-    background-color: #2e7d32; /* Even darker green when clicked */
-}
-
-/* Mark as Unsold Button */
-.unsold-button {
-    background-color: #ff9800; /* Orange */
-    color: white;
-}
-
-.unsold-button:hover {
-    background-color: #f57c00; /* Darker orange on hover */
-    transform: scale(1.05);
-}
-
-.unsold-button:active {
-    background-color: #ef6c00; /* Even darker orange when clicked */
-}
-
-/* Accessibility */
-button:focus {
-    outline: 2px solid #000;
-    outline-offset: 2px;
-}
-
-button:disabled {
-    background-color: #ccc; /* Disabled state */
-    color: #777;
-    cursor: not-allowed;
-}
-
-/* Flexbox Container for Buttons */
-.button-container {
-    display: flex;
-    gap: 10px; /* Space between buttons */
-    margin-top: 10px;
-}
-
-.button-container button {
-    flex: 1; /* Equal button width */
-}
-
-/* Highlight Sold Label */
-.sold-label {
-    color: #ffffff;
-    background-color: #ff5722; /* Highlight color (e.g., orange) */
-    padding: 3px 6px;
-    border-radius: 4px;
-    font-size: 14px;
-    font-weight: bold;
-    margin-left: 5px;
-    display: inline-block;
-}
-
-    
-
-
-
-        h1{
-            font-family: Arial, Helvetica, sans-serif;
+        /* Keep only the button-container flex styling */
+        .button-container {
+            display: flex;
+            gap: 10px; /* Space between buttons */
+            margin-top: 10px;
         }
 
-    /* Skeleton Loading Styles */
-    .skeleton {
-        background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-        background-size: 200% 100%;
-        animation: loading 1.5s infinite;
-    }
+        .button-container button {
+            flex: 1; /* Equal button width */
+        }
 
-    @keyframes loading {
-        0% { background-position: 200% 0; }
-        100% { background-position: -200% 0; }
-    }
+        /* Highlight Sold Label */
+        .sold-label {
+            color: #ffffff;
+            background-color: #ff5722; /* Highlight color (e.g., orange) */
+            padding: 3px 6px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 5px;
+            display: inline-block;
+        }
 
-    .skeleton-product {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-        padding: 15px;
-        margin: 10px 0;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        background: white;
-    }
+        /* Skeleton Loading Styles */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+        }
 
-    .skeleton-image {
-        width: 300px;
-        height: 200px;
-        border-radius: 5px;
-    }
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
 
-    .skeleton-text {
-        height: 20px;
-        margin: 10px 0;
-        border-radius: 4px;
-    }
+        .skeleton-product {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: white;
+        }
 
-    .skeleton-title {
-        width: 70%;
-    }
+        .skeleton-image {
+            width: 300px;
+            height: 200px;
+            border-radius: 5px;
+        }
 
-    .skeleton-price {
-        width: 40%;
-    }
+        .skeleton-text {
+            height: 20px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
 
-    .skeleton-location {
-        width: 60%;
-    }
+        .skeleton-title {
+            width: 70%;
+        }
 
-    .skeleton-date {
-        width: 50%;
-    }
+        .skeleton-price {
+            width: 40%;
+        }
 
-    /* Toast Notification Styles */
-    .toast-container {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 1000;
-    }
+        .skeleton-location {
+            width: 60%;
+        }
 
-    .toast {
-        background: white;
-        border-radius: 4px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        margin-bottom: 10px;
-        padding: 15px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        animation: slideIn 0.3s ease-out;
-    }
+        .skeleton-date {
+            width: 50%;
+        }
 
-    @keyframes slideIn {
-        from { transform: translateX(100%); }
-        to { transform: translateX(0); }
-    }
+        /* Toast Notification Styles */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
 
-    /* Back to Top Button Styles */
-    .back-to-top {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        background: #007bff;
-        color: white;
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        z-index: 1000;
-    }
+        .toast {
+            background: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: slideIn 0.3s ease-out;
+        }
 
-    .back-to-top.visible {
-        opacity: 1;
-        visibility: visible;
-    }
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
 
-    .back-to-top:hover {
-        background: #0056b3;
-        transform: translateY(-3px);
-    }
+        /* Back to Top Button Styles */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: #007bff;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .back-to-top:hover {
+            background: #0056b3;
+            transform: translateY(-3px);
+        }
     </style>
 </head>
 <body>
@@ -330,11 +250,11 @@ button:disabled {
                             <p><strong data-i18n="product_details.location">Location:</strong> ${product.Location}</p>
                             <p><strong data-i18n="product_details.dato">Date:</strong> ${product.Date}</p>
                             <div class="button-container">
-                            <button class="delete-button" data-id="${product.ProductdID}" data-i18n="product_details.slett">Delete</button>
-                            ${product.Sold 
-                                ? `<button class="unsold-button" data-id="${product.ProductdID}" data-i18n="product_details.mark_unsold">Mark as Unsold</button>`
-                                : `<button class="sold-button" data-id="${product.ProductdID}" data-i18n="product_details.mark_sold">Mark as Sold</button>`
-                            }
+                                <button class="btn btn-danger delete-button" data-id="${product.ProductdID}" data-i18n="product_details.slett">Delete</button>
+                                ${product.Sold 
+                                    ? `<button class="btn btn-warning unsold-button" data-id="${product.ProductdID}" data-i18n="product_details.mark_unsold">Mark as Unsold</button>`
+                                    : `<button class="btn btn-success sold-button" data-id="${product.ProductdID}" data-i18n="product_details.mark_sold">Mark as Sold</button>`
+                                }
                             </div>
                         </div>
                     `;
