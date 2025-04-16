@@ -468,17 +468,57 @@ margin-top: 10px;
 
         // ========== FAVORITE FUNCTIONALITY ========== //
         function initializeFavorites() {
-            // Check backend for current favorite status
-            fetch('/api/favorites')
+            // Check if user is logged in first
+            fetch('/api/auth/current-user')
                 .then(response => response.json())
-                .then(favorites => {
-                    const isFavorited = favorites.some(p => p.ProductdID == productdID);
-                    favoriteButton.textContent = isFavorited ? 'Unfavorite' : 'Favorite';
-                    favoriteButton.classList.toggle('unfavorite', isFavorited);
+                .then(data => {
+                    if (data.brukernavn) {
+                        // User is logged in, proceed to check favorites
+                        fetch('/api/favorites')
+                            .then(response => {
+                                if (!response.ok) { // Check if the response was successful
+                                    // Handle potential errors even for logged-in users
+                                    if (response.status === 401) {
+                                        // This shouldn't happen if current-user check passed, but as a safeguard
+                                        console.warn("Unauthorized access to favorites despite session check.");
+                                        favoriteButton.textContent = 'Favorite';
+                                        favoriteButton.classList.remove('unfavorite');
+                                    } else {
+                                        throw new Error(`HTTP error! status: ${response.status}`);
+                                    }
+                                    return null; // Prevent further processing on error
+                                }
+                                return response.json();
+                            })
+                            .then(favorites => {
+                                if (favorites) { // Only process if favorites were successfully fetched
+                                    const isFavorited = favorites.some(p => p.ProductdID == productdID);
+                                    favoriteButton.textContent = isFavorited ? 'Unfavorite' : 'Favorite';
+                                    favoriteButton.classList.toggle('unfavorite', isFavorited);
+                                }
+                            })
+                            .catch(error => {
+                                console.error("Error checking favorites for logged-in user:", error);
+                                // Avoid showing the generic error toast here if it's just a fetch issue
+                                // window.toast.show('Failed to check favorite status', 'error');
+                                // Optionally, set a default state or log differently
+                                favoriteButton.textContent = 'Favorite';
+                                favoriteButton.classList.remove('unfavorite');
+                            });
+                    } else {
+                        // User is not logged in, set default button state
+                        favoriteButton.textContent = 'Favorite';
+                        favoriteButton.classList.remove('unfavorite');
+                        // No need to show an error toast here, this is expected behavior
+                    }
                 })
                 .catch(error => {
-                    console.error("Error checking favorites:", error);
-                    window.toast.show('Failed to check favorite status', 'error');
+                    // This catch handles errors fetching the current-user status itself
+                    console.error("Error checking user session:", error);
+                    window.toast.show('Failed to check login status', 'error');
+                    // Set default button state as a fallback
+                    favoriteButton.textContent = 'Favorite';
+                    favoriteButton.classList.remove('unfavorite');
                 });
         }
 

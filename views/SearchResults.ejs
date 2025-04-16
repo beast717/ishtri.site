@@ -364,37 +364,29 @@ function displayProducts(products, append = false) {
                 const isFavorited = icon.classList.contains('favorited');
 
                 try {
-                    const userResponse = await fetch('/api/auth/current-user');
-                    const userData = await userResponse.json();
-                    
-                    if (!userData.brukernavn) {
-                        window.toast.show('Please log in to add favorites', 'info');
-                        return;
-                    }
+                        const response = await fetch('/api/favorites', {
+                            method: 'POST',
+                            credentials: 'include',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ productdID }),
+                        });
 
-                    const endpoint = isFavorited ? '/api/unfavorite' : '/api/favorite';
-                    const response = await fetch(endpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({ productdID }),
-                    });
-
-                    if (response.ok) {
-                        icon.classList.toggle('favorited');
-                        icon.style.color = isFavorited ? '#ccc' : '#ff4757';
-                        window.toast.show(
-                            isFavorited ? 'Product removed from favorites' : 'Product added to favorites',
-                            'success'
-                        );
-                    } else {
-                        window.toast.show('Failed to update favorites', 'error');
+                        if (response.ok) {
+                            e.target.classList.toggle('favorited');
+                            e.target.style.color = isFavorited ? '#ccc' : '#ff4757';
+                            window.toast.show(
+                                isFavorited ? 'Product removed from favorites' : 'Product added to favorites',
+                                'success'
+                            );
+                        } else {
+                            window.toast.show('Failed to update favorites', 'error');
+                        }
+                    } catch (error) {
+                        console.error("Error handling favorite:", error);
+                        window.toast.show('An error occurred', 'error');
                     }
-                } catch (error) {
-                    console.error("Error handling favorite:", error);
-                    window.toast.show('An error occurred', 'error');
-                }
             });
         });
     }

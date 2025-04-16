@@ -677,7 +677,10 @@ h1 {
                 })
                 .then(data => {
                      hasMore = data.products.length >= limit;
-                     displayProducts(data.products, loadMore);
+                     displayProducts(data.products, loadMore); // Products are displayed here
+
+                     // *** ADD FAVORITE CHECK HERE ***
+                     initializeFavorites(); // Check favorite status after products are in the DOM
 
                      // Reposition the load more button to the bottom of the container
                      const loadButton = document.getElementById('loadMoreButton');
@@ -1891,7 +1894,6 @@ function applyFiltersFromURL() {
             const urlFiltersApplied = applyFiltersFromURL();
             // --- Update UI and Fetch Initial Data ---
             updateActiveFiltersDisplay(); // Show filter tags based on URL/UI state
-            initializeFavorites(); // Check favorites (can run after elements exist)
 
             // Fetch products *after* ensuring URL filters are applied to the UI state
             // applyFilters() internally updates currentFilters and calls fetchProducts
