@@ -214,19 +214,18 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
     }
 
     .logoOgTittel img {
-        height: 40px;
+        height: 35px; /* Reduced height for smaller screens */
     }
 
     .navBarButtons {
-        gap: 15px;
+        gap: 40px; /* Increased gap for more spacing */
     }
 
     .navBarButtons a span[data-i18n] {
         display: none;
     }
 
-    #profileUsername,
-    #profileDropdownArrow { 
+    #profileUsername { /* Only hide username, keep arrow */
         display: none;
     }
 
@@ -235,6 +234,7 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
         font-size: 12px;
         background-size: 12px;
         background-position: right 5px center;
+        display: none; /* Hide language select on smaller screens */
     }
 
     .navBarButtons img[src="translate.svg"] {
@@ -244,11 +244,11 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
     #notificationIcon,
     #newAdButton,
     #messagesButton {
-        font-size: 18px;
+        font-size: 22px; /* Increased icon size */
     }
 
     .navBarButtons i {
-        font-size: 18px;
+        font-size: 22px; /* Increased general icon size */
     }
 
     #dropdownMenu {
@@ -258,8 +258,8 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
     }
 
     #notificationBadge {
-        right: 50px;
-        top: -5px;
+        right: -5px; /* Adjust position relative to the icon */
+        top: -5px;  /* Adjust vertical position */
     }
 
     #unreadBadge {
