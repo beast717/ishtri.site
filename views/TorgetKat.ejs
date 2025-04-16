@@ -1082,6 +1082,18 @@ function updateActiveFiltersDisplay() {
     const urlParams = new URLSearchParams(window.location.search);
     const currentCategory = urlParams.get('category') || 'default'; // Get active category
 
+    // --- START: Subcategory Translation Map ---
+    const subCategoryTranslations = {
+        'Klær': 'Clothes',
+        'Elektronikk': 'Electronics',
+        'Hvitvarer': 'White Goods',
+        'Møbler': 'Furniture',
+        'Annet': 'Else'
+        // Add more translations if needed
+    };
+    // --- END: Subcategory Translation Map ---
+
+
     const addFilterTag = (label, value, removeCallback) => {
         hasActiveFilters = true;
         const tag = document.createElement('span');
@@ -1112,7 +1124,10 @@ function updateActiveFiltersDisplay() {
 
     // SubCategory (Only show if category is 'Torget')
     if (currentCategory === 'Torget' && currentFilters.subCategory) {
-        addFilterTag('Subcategory', currentFilters.subCategory, () => {
+        // --- START: Use translated value ---
+        const displayValue = subCategoryTranslations[currentFilters.subCategory] || currentFilters.subCategory;
+        addFilterTag('Subcategory', displayValue, () => {
+        // --- END: Use translated value ---
             document.getElementById('subCategoryFilter').value = '';
             applyFilters();
         });

@@ -59,6 +59,18 @@
                         console.error("Error fetching countries:", countriesError);
                     }
 
+                    // --- START: Add Subcategory Translation Map ---
+                    const subCategoryTranslations = {
+                        'Klær': 'Clothes',
+                        'Elektronikk': 'Electronics',
+                        'Hvitvarer': 'White Goods',
+                        'Møbler': 'Furniture',
+                        'Annet': 'Else'
+                        // Add more translations if needed
+                    };
+                    // --- END: Add Subcategory Translation Map ---
+
+
                     const searchesResponse = await fetch('/api/saved-searches');
                     if (!searchesResponse.ok) {
                         if (searchesResponse.status === 401) throw new Error('Please log in to view saved searches.');
@@ -102,6 +114,13 @@
                                 // --- EXISTING SUMMARY GENERATION LOGIC using filtersObj ---
                                 filtersSummary += Object.entries(filtersObj).map(([key, value]) => {
                                     // --- START ENHANCED FORMATTING ---
+                                    // --- START: Translate SubCategory for Display ---
+                                    let displayValue = value;
+                                    if (key === 'subCategory' && subCategoryTranslations[value]) {
+                                        displayValue = subCategoryTranslations[value];
+                                    }
+                                    // --- END: Translate SubCategory for Display ---
+
                                     if (key === 'cities' && Array.isArray(value)) {
                                         const cityNames = value.map(cityId => cityMap[cityId] || `Unknown City (ID: ${cityId})`);
                                         return `cities: ${cityNames.join(', ')}`;
@@ -123,7 +142,9 @@
                                         } else { return ''; }
                                     } else if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
                                         const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()); // e.g. subCategory -> Sub Category
-                                        return `${formattedKey}: ${value}`;
+                                        // --- Use displayValue instead of value ---
+                                        return `${formattedKey}: ${displayValue}`;
+                                        // --- Use displayValue instead of value ---
                                     } else { return ''; }
                                     // --- END ENHANCED FORMATTING ---
                                 }).filter(Boolean) // Remove empty strings
