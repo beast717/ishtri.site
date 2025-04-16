@@ -492,6 +492,7 @@ a:hover {
 .form-group {
     margin-bottom: 1.25rem; /* Consistent spacing */
     text-align: left; /* Ensure labels align left */
+    position: relative; /* Needed for absolute positioning of icon */
 }
 
 label {
@@ -590,6 +591,38 @@ textarea {
     margin-top: 0.25rem;
     display: block; /* Ensure it takes space */
     min-height: 1.2em; /* Prevent layout shifts */
+}
+
+/* Password Toggle Icon Styling */
+.password-toggle {
+    position: relative;
+}
+
+.password-toggle-icon {
+    position: absolute;
+    right: 12px;
+    top: 70%; /* Position relative to the top of .form-group, adjust as needed */
+    transform: translateY(-50%); /* Center vertically relative to the 'top' value */
+    cursor: pointer;
+    color: #636e72; /* Icon color */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.password-toggle-icon svg {
+    width: 18px; /* Icon size */
+    height: 18px; /* Icon size */
+    fill: currentColor;
+    vertical-align: middle;
+}
+
+/* Adjust input padding to prevent text overlap */
+input[type="password"],
+input[type="text"] {
+    /* Ensure existing padding is sufficient, or add specific padding-right */
+    padding-right: 40px !important; /* Add space for the icon */
 }
 
 /* Responsive Adjustments */
