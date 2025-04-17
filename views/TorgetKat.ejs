@@ -1882,10 +1882,13 @@ function applyFiltersFromURL() {
                 offcanvasSidePanel.innerHTML = topFilterContainer.outerHTML + mainSidePanel.innerHTML;
 
                 // NEW: ensure drawer inputs/labels use unique IDs but can sync back to main panel
-                offcanvasSidePanel.querySelectorAll('input[id]').forEach(input => {
-                    input.dataset.syncId = input.id;       // remember original ID
-                    input.id = input.id + '-drawer';       // give drawer input a unique ID
+                // --- START: Modify querySelectorAll to include 'select[id]' ---
+                offcanvasSidePanel.querySelectorAll('input[id], select[id]').forEach(element => {
+                    element.dataset.syncId = element.id;       // remember original ID
+                    element.id = element.id + '-drawer';       // give drawer element a unique ID
                 });
+                // --- END: Modify querySelectorAll ---
+
                 offcanvasSidePanel.querySelectorAll('label[for]').forEach(label => {
                     label.htmlFor = label.htmlFor + '-drawer'; // point labels at the new drawer IDs
                 });
@@ -1895,6 +1898,18 @@ function applyFiltersFromURL() {
                     const mainCb = document.getElementById(drawerCb.dataset.syncId);
                     if (mainCb) drawerCb.checked = mainCb.checked;
                 });
+
+                // --- START: Sync Select Values (Price, Date, SubCategory) ---
+                ['priceFilter', 'dateFilter', 'subCategoryFilter'].forEach(selectId => {
+                    const mainSelect = document.getElementById(selectId);
+                    const drawerSelect = offcanvasSidePanel.querySelector(`select[data-sync-id="${selectId}"]`); // Find by data-sync-id
+                    if (mainSelect && drawerSelect) {
+                        drawerSelect.value = mainSelect.value; // Set drawer value to match main value
+                        console.log(`Synced ${selectId}: Main=${mainSelect.value}, Drawer=${drawerSelect.value}`); // Debug log
+                    }
+                });
+                // --- END: Sync Select Values ---
+
 
                 // --- START: Re-initialize sliders specifically for the drawer ---
                 // Find all slider elements within the newly populated drawer
