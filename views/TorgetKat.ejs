@@ -1875,6 +1875,8 @@ function applyFiltersFromURL() {
                              if (drawerSlider.noUiSlider) {
                                 drawerSlider.noUiSlider.destroy();
                              }
+                             // Clear existing content to prevent duplicate slider bars
+                             drawerSlider.innerHTML = '';
                             // Create a new slider instance in the drawer
                             noUiSlider.create(drawerSlider, {
                                 start: mainSlider.noUiSlider.get(), // Start with the main slider's current value
