@@ -514,16 +514,16 @@
 
             // Add car specific filters
             if (category === 'Bil') {
-                if (currentFilters.yearRange.from) {
+                if (currentFilters.yearRange.from && currentFilters.yearRange.from !== sliderConfigs['year-slider'].start[0]) {
                     apiUrl += `&yearFrom=${currentFilters.yearRange.from}`;
                 }
-                if (currentFilters.yearRange.to) {
+                if (currentFilters.yearRange.to && currentFilters.yearRange.to !== sliderConfigs['year-slider'].start[1]) {
                     apiUrl += `&yearTo=${currentFilters.yearRange.to}`;
                 }
-                if (currentFilters.mileageRange.from) {
+                if (currentFilters.mileageRange.from && currentFilters.mileageRange.from !== sliderConfigs['mileage-slider'].start[0]) {
                     apiUrl += `&mileageFrom=${currentFilters.mileageRange.from}`;
                 }
-                if (currentFilters.mileageRange.to) {
+                if (currentFilters.mileageRange.to && currentFilters.mileageRange.to !== sliderConfigs['mileage-slider'].start[1]) {
                     apiUrl += `&mileageTo=${currentFilters.mileageRange.to}`;
                 }
                 if (currentFilters.fuelTypes.length) {
@@ -539,22 +539,22 @@
                 if (currentFilters.propertyTypes.length) {
                     apiUrl += `&propertyType=${encodeURIComponent(currentFilters.propertyTypes.join(','))}`;
                 }
-                if (currentFilters.sizeRange.from) {
+                if (currentFilters.sizeRange.from && currentFilters.sizeRange.from !== sliderConfigs['size-slider'].start[0]) {
                     apiUrl += `&sizeSqmFrom=${encodeURIComponent(currentFilters.sizeRange.from)}`;
                 }
-                if (currentFilters.sizeRange.to) {
+                if (currentFilters.sizeRange.to && currentFilters.sizeRange.to !== sliderConfigs['size-slider'].start[1]) {
                     apiUrl += `&sizeSqmTo=${encodeURIComponent(currentFilters.sizeRange.to)}`;
                 }
-                if (currentFilters.roomsRange.from) {
+                if (currentFilters.roomsRange.from && currentFilters.roomsRange.from !== sliderConfigs['rooms-slider'].start[0]) {
                     apiUrl += `&numRoomsFrom=${encodeURIComponent(currentFilters.roomsRange.from)}`;
                 }
-                if (currentFilters.roomsRange.to) {
+                if (currentFilters.roomsRange.to && currentFilters.roomsRange.to !== sliderConfigs['rooms-slider'].start[1]) {
                     apiUrl += `&numRoomsTo=${encodeURIComponent(currentFilters.roomsRange.to)}`;
                 }
-                if (currentFilters.bathroomsRange.from) {
+                if (currentFilters.bathroomsRange.from && currentFilters.bathroomsRange.from !== sliderConfigs['bathrooms-slider'].start[0]) {
                     apiUrl += `&numBathroomsFrom=${encodeURIComponent(currentFilters.bathroomsRange.from)}`;
                 }
-                if (currentFilters.bathroomsRange.to) {
+                if (currentFilters.bathroomsRange.to && currentFilters.bathroomsRange.to !== sliderConfigs['bathrooms-slider'].start[1]) {
                     apiUrl += `&numBathroomsTo=${encodeURIComponent(currentFilters.bathroomsRange.to)}`;
                 }
                 if (currentFilters.energyClasses.length) {
@@ -736,12 +736,6 @@ function initializeSliders() {
             // Reset Property filters
             if (category === 'Eiendom') {
                 document.getElementById('propertyTypeFilter').selectedIndex = -1;
-                document.getElementById('sizeFrom').value = '';
-                document.getElementById('sizeTo').value = '';
-                document.getElementById('roomsFrom').value = '';
-                document.getElementById('roomsTo').value = '';
-                document.getElementById('bathroomsFrom').value = '';
-                document.getElementById('bathroomsTo').value = '';
                 document.getElementById('energyClassFilter').selectedIndex = -1;
             }
 
