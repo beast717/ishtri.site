@@ -13,159 +13,62 @@
     <script src="/js/backToTop.js" defer></script>
     <script src="/js/lazyLoad.js" defer></script>
     
-    <style>   
-/* Only keep unique layout/filter/special styles */
-h1 {
-    text-align: center;
-    margin-bottom: 20px;
-}
-
-.productsContainer {
-    margin-top: -27px;  
-    padding: 20px;
-    flex: 1;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-}
-
-.filter-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.custom-title {
-    color: #666;
-    font-size: 1.2rem;
-    font-weight: normal;
-    margin-top: 5px;
-}
-
-.filter-section {
-    margin: 15px 0;
-    padding: 10px;
-    border-top: 1px solid #eee;
-}
-
-.filter-section h4 {
-    margin: 0 0 10px 0;
-    color: #333;
-    font-size: 14px;
-}
-
-@media (max-width: 768px) {
-
-    .productsContainer {
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); /* Keep specific grid adjustment */
-        padding: 10px;
-    }
-
-    /* Filter Container Adjustments */
-    .filter-container {
-        flex-wrap: wrap;
-        gap: 8px;
-        margin: 10px 0;
-    }
-
-    #priceFilter,
-    #dateFilter,
-    #subCategoryFilter {
-        width: 100%;
-        font-size: 12px;
-        padding: 6px;
-    }
-
-    .filter-section h4 {
-        font-size: 13px;
-    }
-
-    .range-inputs {
-        flex-direction: column;
-    }
-
-    .filter-container label {
-        width: 100%;
-        font-size: 12px;
-    }
-
-    #carSpecificFilters,
-    #propertySpecificFilters,
-    #workSpecificFilters {
-        padding: 5px;
-    }
-
-    select[multiple] {
-        min-height: 60px;
-        font-size: 12px;
-    }
-}
-
-@media (max-width: 480px) {
-    .productsContainer {
-        grid-template-columns: 1fr; 
-    }
-
-}
-    </style>
+    <!-- Removed the <style> block -->
 </head>
 <body>
     <%- include('partials/navbar') %>
     <script src="/shared.js"></script>
      <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js" integrity="sha512-UOJe4paV6hYWBnS0c9GnIRH8PLm2nFK22uhfAvsTIqd3uwnWsVri1OPn5fJYdLtGY3wB11LGHJ4yPU1WFJeBYQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <div class="filter-container" style="margin-bottom: 20px; padding-left: 25px;">
-        <label for="priceFilter" data-i18n="filter.sorter_etter">Sort By:</label>
-        <select id="priceFilter" onchange="applyFilters()">
-            <option value="asc" data-i18n="filter.lavest_pris">Lowest Price</option>
-            <option value="desc" data-i18n="filter.høyest_pris">Highest Price</option>
-            <option value="" data-i18n="filter.alle">All</option>
-        </select>
-        <label for="dateFilter" data-i18n="filter.utgitt">Date:</label>
-        <select id="dateFilter" onchange="applyFilters()">
-            <option value="" data-i18n="filter.alle">All</option>
-            <option value="desc" data-i18n="filter.nylige">New</option>
-            <option value="asc" data-i18n="filter.eldre">Old</option>
-        </select>
-        <div id="subcategoryFilterContainer" style="display: none;">
-            <label for="subCategoryFilter" data-i18n="form.category">Categori:</label>
-            <select id="subCategoryFilter" onchange="applyFilters()">
+    <!-- Wrap the original filter container for easier hiding on mobile -->
+    <div class="filter-container-wrapper" style="margin-bottom: 20px; padding-left: 25px;">
+        <!-- This container will be hidden on mobile -->
+        <!-- MOVED FILTERS BACK HERE -->
+        <div class="filter-container">
+            <label for="priceFilter" data-i18n="filter.sorter_etter">Sort By:</label>
+            <select id="priceFilter" onchange="applyFilters()">
+                <option value="asc" data-i18n="filter.lavest_pris">Lowest Price</option>
+                <option value="desc" data-i18n="filter.høyest_pris">Highest Price</option>
                 <option value="" data-i18n="filter.alle">All</option>
-                <option value="Klær" data-i18n="subkategori.klær">Clothes</option>
-                <option value="Elektronikk" data-i18n="subkategori.elektronikk">Electronics</option>
-                <option value="Hvitvarer" data-i18n="subkategori.hvitvarer">White Goods</option>
-                <option value="Møbler" data-i18n="subkategori.møbler">Furniture</option>
-                <option value="Annet" data-i18n="subkategori.annet">Else</option>
             </select>
+            <label for="dateFilter" data-i18n="filter.utgitt">Date:</label>
+            <select id="dateFilter" onchange="applyFilters()">
+                <option value="" data-i18n="filter.alle">All</option>
+                <option value="desc" data-i18n="filter.nylige">New</option>
+                <option value="asc" data-i18n="filter.eldre">Old</option>
+            </select>
+            <div id="subcategoryFilterContainer" style="display: none;">
+                <label for="subCategoryFilter" data-i18n="form.category">Categori:</label>
+                <select id="subCategoryFilter" onchange="applyFilters()">
+                    <option value="" data-i18n="filter.alle">All</option>
+                    <option value="Klær" data-i18n="subkategori.klær">Clothes</option>
+                    <option value="Elektronikk" data-i18n="subkategori.elektronikk">Electronics</option>
+                    <option value="Hvitvarer" data-i18n="subkategori.hvitvarer">White Goods</option>
+                    <option value="Møbler" data-i18n="subkategori.møbler">Furniture</option>
+                    <option value="Annet" data-i18n="subkategori.annet">Else</option>
+                </select>
+            </div>
+            <div class="filter-actions">
+                <button id="saveSearchBtn" class="save-search-button">
+                    <i class="fas fa-save"></i> Save This Search
+                </button>
+                <button onclick="resetFilters()" class="reset-filters-btn" id="resetFiltersBtn">
+                    ⟳ Reset Filters
+                </button>
+            </div>
         </div>
-        <div class="filter-actions">
-            <button id="saveSearchBtn" class="save-search-button">
-                <i class="fas fa-save"></i> Save This Search
-            </button>
-            <button onclick="resetFilters()" class="reset-filters-btn" id="resetFiltersBtn"> <!-- Removed btn and btn-danger classes -->
-                ⟳ Reset Filters
-            </button>
-        </div>
+        <!-- END MOVED FILTERS -->
     </div>
 
     <div class="active-filters-container" id="activeFiltersDisplay" style="margin-bottom: 15px; padding: 10px 20px;">
-    <!-- Active filters will be shown here by JS -->
-</div>
+        <!-- Active filters will be shown here by JS -->
+    </div>
 
     <div class="page-container">
-        <div class="side-panel">
+        <!-- Side panel: visible on desktop, hidden on mobile -->
+        <div class="side-panel" id="mainSidePanel">
+            <!-- Filters are NO LONGER here -->
+
             <h3 data-i18n="filter.filter_land">Filter by Country</h3>
             <ul class="country-list">
                 <!-- Countries will be populated here -->
@@ -305,6 +208,23 @@ h1 {
         </div>
     </div>
 
+    <!-- Off-Canvas Filter Overlay & Drawer (MOBILE ONLY) -->
+    <div class="offcanvas-filter-overlay" id="offcanvasFilterOverlay"></div>
+    <aside class="offcanvas-filter-drawer" id="offcanvasFilterDrawer" aria-modal="true" role="dialog" tabindex="-1">
+        <div class="offcanvas-filter-header">
+            <span class="offcanvas-filter-title"><i class="fas fa-filter"></i> Filters</span>
+            <button class="offcanvas-filter-close" id="offcanvasFilterClose" aria-label="Close Filters">&times;</button>
+        </div>
+        <div class="offcanvas-filter-content">
+            <!-- Move the side-panel content here for mobile -->
+            <div id="offcanvasSidePanel">
+                <!-- Will be filled by JS with .side-panel content -->
+            </div>
+        </div>
+    </aside>
+    <button class="offcanvas-filter-btn" id="offcanvasFilterBtn" type="button">
+        <i class="fas fa-filter"></i> Filter
+    </button>
 
     <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner"></div>
@@ -1922,6 +1842,61 @@ function applyFiltersFromURL() {
             if(container) container.innerHTML = "<p class='error-message'>An error occurred loading the page. Please try refreshing.</p>";
         }
     });
+
+    // --- Off-Canvas Filter Drawer Logic ---
+    (function() {
+        const filterBtn = document.getElementById('offcanvasFilterBtn');
+        const drawer = document.getElementById('offcanvasFilterDrawer');
+        const overlay = document.getElementById('offcanvasFilterOverlay');
+        const closeBtn = document.getElementById('offcanvasFilterClose');
+        const mainSidePanel = document.getElementById('mainSidePanel');
+        const offcanvasSidePanel = document.getElementById('offcanvasSidePanel');
+        const topFilterContainer = document.querySelector('.filter-container-wrapper .filter-container'); // Get the top filter container
+
+        // Always sync side-panel content AND top filters into drawer on open
+        function syncSidePanelToDrawer() {
+            if (!mainSidePanel || !offcanvasSidePanel || !topFilterContainer) return;
+            if (window.innerWidth <= 900) {
+                // Combine top filters and side panel content
+                offcanvasSidePanel.innerHTML = topFilterContainer.outerHTML + mainSidePanel.innerHTML;
+            } else {
+                offcanvasSidePanel.innerHTML = '';
+            }
+        }
+
+        function openDrawer() {
+            syncSidePanelToDrawer();
+            drawer.classList.add('active');
+            overlay.classList.add('active');
+            document.body.classList.add('offcanvas-open');
+            setTimeout(() => drawer.focus(), 100);
+        }
+        function closeDrawer() {
+            drawer.classList.remove('active');
+            overlay.classList.remove('active');
+            document.body.classList.remove('offcanvas-open');
+        }
+        if (filterBtn) filterBtn.addEventListener('click', openDrawer);
+        if (closeBtn) closeBtn.addEventListener('click', closeDrawer);
+        if (overlay) overlay.addEventListener('click', closeDrawer);
+
+        document.addEventListener('keydown', function(e) {
+            if (drawer.classList.contains('active') && (e.key === 'Escape' || e.key === 'Esc')) {
+                closeDrawer();
+            }
+        });
+
+        // Always sync on resize (in case filters change)
+        window.addEventListener('resize', syncSidePanelToDrawer);
+        window.addEventListener('DOMContentLoaded', syncSidePanelToDrawer);
+
+        // Re-initialize filter listeners for drawer content after opening
+        drawer.addEventListener('transitionend', function() {
+            if (drawer.classList.contains('active')) {
+                initializeFilters();
+            }
+        });
+    })();
 
 }); 
 </script>
