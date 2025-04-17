@@ -59,7 +59,7 @@
         <!-- END MOVED FILTERS -->
     </div>
 
-    <div class="active-filters-container" id="activeFiltersDisplay" style="margin-bottom: 15px; padding: 10px 20px;">
+    <div class="active-filters-container" id="activeFiltersDisplay" style="display: none; margin-bottom: 15px; padding: 10px 20px;">
         <!-- Active filters will be shown here by JS -->
     </div>
 
@@ -1204,15 +1204,22 @@ function updateActiveFiltersDisplay() {
     // Show container only if there are active filters
     displayContainer.style.display = hasActiveFilters ? 'flex' : 'none';
 
-    // push page content below active filters
+    // push page content below active filters ONLY ON MOBILE
     const page = document.querySelector('.page-container');
     if (page) {
-        if (hasActiveFilters) {
-            // use the filter container's bottom offset, then nudge up by 20px
-            const bottom = displayContainer.getBoundingClientRect().bottom;
-            const offset = Math.max(0, Math.ceil(bottom - 60));
-            page.style.marginTop = `${offset}px`;
+        // Check screen width - use the same breakpoint as CSS (900px)
+        if (window.innerWidth <= 900) {
+            if (hasActiveFilters) {
+                // use the filter container's bottom offset, then nudge up by 20px
+                const bottom = displayContainer.getBoundingClientRect().bottom;
+                // Adjust the offset calculation if needed for mobile layout
+                const offset = Math.max(0, Math.ceil(bottom - 60)); // Keep existing mobile logic
+                page.style.marginTop = `${offset}px`;
+            } else {
+                page.style.marginTop = ''; // Reset if no filters on mobile
+            }
         } else {
+            // On desktop (width > 900px), always reset margin to let CSS handle it
             page.style.marginTop = '';
         }
     }
@@ -2086,6 +2093,17 @@ function applyFiltersFromURL() {
         window.addEventListener('resize', syncSidePanelToDrawer);
         // Sync drawer content initially on load (important if starting on mobile view)
         window.addEventListener('DOMContentLoaded', syncSidePanelToDrawer);
+
+        // Add resize listener to re-evaluate margin on screen size change
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                // Re-run the display logic which includes the margin calculation
+                updateActiveFiltersDisplay();
+            }, 150); // Debounce resize event
+        });
+
     })();
 
 }); 
