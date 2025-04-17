@@ -449,6 +449,7 @@ a:hover {
     gap: 8px;
     align-items: center;
 }
+
 .active-filter-tag {
     display: inline-flex;
     align-items: center;
@@ -1108,26 +1109,40 @@ input[type="text"] {
         display: none !important;
     }
 
-    /* Add margin-top to push content below the button */
+    /* Reduce margin-top to decrease gap */
     .page-container {
-        margin-top: 90px; /* Adjust this value as needed */
+        /* margin-top: 190px; */ /* Previous value */
+        margin-top: 160px; /* Reduced margin. Adjust if tags overlap products. */
     }
 
     #offcanvasFilterBtn {
         display: flex !important;
         position: absolute;
-        top: 90px; /* Adjust if needed */
+        top: 90px; /* Position from the top */
         left: 25px;
         right: auto;
         bottom: auto;
-        transform: none !important; 
+        transform: none !important;
         padding: 8px 18px 8px 12px !important;
         font-size: 0.95rem !important;
         gap: 6px !important;
+        z-index: 2; /* Button above tags */
     }
 
-    #offcanvasFilterBtn .fa-filter {
-        font-size: 1.2em !important;
+    /* Position filter tags absolutely, below the button */
+    .active-filters-container {
+        position: absolute; /* Position absolutely */
+        top: 135px;        /* Place below the button (90px + ~40px height + 5px gap) */
+        left: 0;           /* Align to left edge */
+        right: 0;          /* Align to right edge */
+        z-index: 1;        /* Tags below button, above page content */
+        margin-top: 0;     /* Remove previous margin */
+        margin-bottom: 15px; /* Keep bottom margin for spacing when tags exist */
+        padding-left: 20px;
+        padding-right: 20px;
+        min-height: 1px;
+        box-sizing: border-box; /* Include padding in width */
+        /* background: #f8f9fa; */ /* Optional: Add background to visualize */
     }
 }
 @media (min-width: 901px) {
@@ -1157,14 +1172,12 @@ input[type="text"] {
     align-items: center;
     cursor: pointer;
     transition: background 0.2s, box-shadow 0.2s;
+    /* z-index is applied within the media query where it's positioned absolutely */
 }
 #offcanvasFilterBtn:active {
     background: #1a232c;
 }
-#offcanvasFilterBtn .fa-filter {
-     /* Base icon size can be defined here if needed, but overridden in media query */
-     /* font-size: 1.2em; */ /* Example */
-}
+
 /* Prevent background scroll when drawer is open */
 body.offcanvas-open {
     overflow: hidden !important;
