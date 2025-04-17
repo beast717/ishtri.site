@@ -1849,16 +1849,74 @@ function applyFiltersFromURL() {
         // Always sync side-panel content AND top filters into drawer on open
         function syncSidePanelToDrawer() {
             if (!mainSidePanel || !offcanvasSidePanel || !topFilterContainer) return;
-            if (window.innerWidth <= 900) {
+            // Only sync if drawer is intended for the current viewport
+            if (window.innerWidth <= 900) { // Or your mobile breakpoint
                 // Combine top filters and side panel content
                 offcanvasSidePanel.innerHTML = topFilterContainer.outerHTML + mainSidePanel.innerHTML;
+
+                // --- START: Re-initialize sliders specifically for the drawer ---
+                // Find all slider elements within the newly populated drawer
+                const drawerSliders = offcanvasSidePanel.querySelectorAll('.range-slider[id]');
+                drawerSliders.forEach(drawerSlider => {
+                    const sliderId = drawerSlider.id;
+                    const mainSlider = document.getElementById(sliderId); // Find original slider
+
+                    // Check if the original slider was initialized and has a config
+                    if (mainSlider && mainSlider.noUiSlider && sliderConfigs[sliderId]) {
+                        const config = sliderConfigs[sliderId];
+                        const minValDisplay = offcanvasSidePanel.querySelector(`#${sliderId}-val-min`);
+                        const maxValDisplay = offcanvasSidePanel.querySelector(`#${sliderId}-val-max`);
+                        // Find corresponding hidden inputs *within the drawer*
+                        const inputMin = offcanvasSidePanel.querySelector(`input[id="${config.inputs[0]}"]`);
+                        const inputMax = offcanvasSidePanel.querySelector(`input[id="${config.inputs[1]}"]`);
+
+                        if (drawerSlider && inputMin && inputMax) {
+                             // Destroy existing slider instance if present (important for re-sync)
+                             if (drawerSlider.noUiSlider) {
+                                drawerSlider.noUiSlider.destroy();
+                             }
+                            // Create a new slider instance in the drawer
+                            noUiSlider.create(drawerSlider, {
+                                start: mainSlider.noUiSlider.get(), // Start with the main slider's current value
+                                connect: true,
+                                step: config.step,
+                                range: config.range,
+                                format: config.format,
+                                behaviour: 'tap-drag',
+                                tooltips: false
+                            });
+
+                            // Update drawer display/inputs when drawer slider changes
+                            drawerSlider.noUiSlider.on('update', (values) => {
+                                const [minVal, maxVal] = values;
+                                if (minValDisplay) minValDisplay.textContent = minVal;
+                                if (maxValDisplay) maxValDisplay.textContent = maxVal;
+                                inputMin.value = minVal;
+                                inputMax.value = maxVal;
+                            });
+
+                            // When drawer slider *finishes* changing, update the *main* slider and apply filters
+                            drawerSlider.noUiSlider.on('change', (values) => {
+                                mainSlider.noUiSlider.set(values); // Sync back to main slider
+                                debouncedApplyFilters(); // Use debounced version as slider changes can be frequent during drag
+                            });
+
+                             // Set initial display values in the drawer
+                             const initialValues = drawerSlider.noUiSlider.get();
+                             if (minValDisplay) minValDisplay.textContent = initialValues[0];
+                             if (maxValDisplay) maxValDisplay.textContent = initialValues[1];
+                        }
+                    }
+                });
+                 // --- END: Re-initialize sliders specifically for the drawer ---
+
             } else {
-                offcanvasSidePanel.innerHTML = '';
+                offcanvasSidePanel.innerHTML = ''; // Clear drawer on desktop
             }
         }
 
         function openDrawer() {
-            syncSidePanelToDrawer();
+            syncSidePanelToDrawer(); // Sync content *before* showing
             drawer.classList.add('active');
             overlay.classList.add('active');
             document.body.classList.add('offcanvas-open');
@@ -1879,16 +1937,92 @@ function applyFiltersFromURL() {
             }
         });
 
-        // Always sync on resize (in case filters change)
+        // --- START: Delegated Event Listener for Drawer ---
+        if (drawer) {
+            drawer.addEventListener('change', function(event) {
+                const target = event.target;
+
+                // Ignore changes if they don't have an ID we can match or aren't relevant filter inputs
+                if (!target.id || !['INPUT', 'SELECT'].includes(target.tagName)) {
+                    return;
+                }
+
+                // Sliders are handled by their own 'change' event added during syncSidePanelToDrawer
+                if (target.closest('.noUi-base')) {
+                    return;
+                }
+
+                const mainElement = document.getElementById(target.id); // Find corresponding main element
+
+                if (!mainElement) {
+                     console.warn("Drawer Change: Could not find corresponding main element for ID:", target.id);
+                     return; // Cannot sync if main element doesn't exist
+                }
+
+                // Sync state from drawer element (target) to main element
+                if (target.type === 'checkbox') {
+                    mainElement.checked = target.checked;
+
+                    // Specific logic for Country checkboxes within the drawer
+                    const countryListItem = target.closest('.country-list > li');
+                    // Check if the target is the direct country checkbox (not a city checkbox)
+                    if (countryListItem && target.id === countryListItem.querySelector('div > input[type="checkbox"]')?.id) {
+                        const cityListInDrawer = countryListItem.querySelector('.city-list');
+                        if (cityListInDrawer) {
+                            cityListInDrawer.style.display = target.checked ? 'block' : 'none';
+                            // If country is unchecked in drawer, uncheck corresponding cities in main panel AND drawer
+                            if (!target.checked) {
+                                const mainCityList = mainElement.closest('li')?.querySelector('.city-list');
+                                if (mainCityList) {
+                                    mainCityList.querySelectorAll('input[type="checkbox"]').forEach(mainCityCb => {
+                                        mainCityCb.checked = false;
+                                    });
+                                }
+                                // Also uncheck cities within the drawer itself
+                                cityListInDrawer.querySelectorAll('input[type="checkbox"]').forEach(drawerCityCb => {
+                                    drawerCityCb.checked = false;
+                                });
+                            }
+                        }
+                    }
+                    // No specific UI action needed here for city checkboxes within the drawer,
+                    // as their state is synced to the main element which applyFilters reads.
+
+                } else if (target.tagName === 'SELECT') {
+                     if (target.multiple) {
+                         // Sync selected options for multi-select
+                         const selectedValues = Array.from(target.selectedOptions).map(opt => opt.value);
+                         Array.from(mainElement.options).forEach(mainOpt => {
+                             mainOpt.selected = selectedValues.includes(mainOpt.value);
+                         });
+                     } else {
+                         // Sync value for single select
+                         mainElement.value = target.value;
+                     }
+                } else if (target.type === 'date' || target.type === 'number' || target.type === 'text') {
+                     // Sync value for text-based inputs
+                     mainElement.value = target.value;
+                }
+                 // Add other types if necessary
+
+                // After syncing the main element, trigger the filter application
+                // applyFilters reads from the main elements, which are now up-to-date
+                applyFilters(); // Use non-debounced for immediate feedback on simple controls
+            });
+        }
+        // --- END: Delegated Event Listener for Drawer ---
+
+        // Always sync on resize (in case filters change or viewport crosses breakpoint)
         window.addEventListener('resize', syncSidePanelToDrawer);
+        // Sync drawer content initially on load (important if starting on mobile view)
         window.addEventListener('DOMContentLoaded', syncSidePanelToDrawer);
 
-        // Re-initialize filter listeners for drawer content after opening
-        drawer.addEventListener('transitionend', function() {
-            if (drawer.classList.contains('active')) {
-                initializeFilters();
-            }
-        });
+        // REMOVED: Re-initialize filter listeners for drawer content after opening
+        // drawer.addEventListener('transitionend', function() {
+        //     if (drawer.classList.contains('active')) {
+        //         // initializeFilters(); // NO LONGER NEEDED - Handled by delegation
+        //     }
+        // });
     })();
 
 }); 
