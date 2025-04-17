@@ -1111,28 +1111,29 @@ input[type="text"] {
 
     /* Reduce margin-top to decrease gap */
     .page-container {
-        /* margin-top: 190px; */ /* Previous value */
-        margin-top: 160px; /* Reduced margin. Adjust if tags overlap products. */
+        margin-top: 150px !important; /* push entire content below the fixed filter button + filter tags */
     }
 
     #offcanvasFilterBtn {
         display: flex !important;
-        position: absolute;
-        top: 90px; /* Position from the top */
-        left: 25px;
+        position: fixed;
+        top: 80px;    /* sit below the navbar */
+        left: 20px;
         right: auto;
         bottom: auto;
         transform: none !important;
         padding: 8px 18px 8px 12px !important;
         font-size: 0.95rem !important;
         gap: 6px !important;
-        z-index: 2; /* Button above tags */
+        
     }
 
     /* Position filter tags absolutely, below the button */
     .active-filters-container {
-        position: absolute; /* Position absolutely */
-        top: 135px;        /* Place below the button (90px + ~40px height + 5px gap) */
+        position: absolute; /* absolute under the button */
+        top: 130px;         /* adjust to live just below the toggle */
+        z-index: 1000;      /* above page content */
+        margin: 0;        /* no extra margins */
         left: 0;           /* Align to left edge */
         right: 0;          /* Align to right edge */
         z-index: 1;        /* Tags below button, above page content */
@@ -1147,6 +1148,7 @@ input[type="text"] {
 
     /* Prevent “No products found” from sliding up into the filter tags */
     .productsContainer {
+        padding-top: 500px; /* increased so products start below filters */
         margin-top: 0 !important;
     }
 }
@@ -1162,10 +1164,6 @@ input[type="text"] {
     /* Ensure the wrapper is visible on desktop (it should be by default) */
     .filter-container-wrapper {
         display: block; /* Or remove this line if block is the default */
-    }
-    .productsContainer {
-        /* align the products’ top edge with the side‑panel */
-        padding-top: 0 !important; /* was 15px */
     }
 }
 /* Filter Button (mobile) - Base styles (appearance, hidden by default) */
@@ -1201,8 +1199,7 @@ h1 {
 
 .productsContainer {
     margin-top: 0 !important;    /* override the -27px so content always starts below filters */
-    /* reduce top padding from 20px to 15px */
-    padding: 15px 20px 20px;
+    padding: 20px;
     flex: 1;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }

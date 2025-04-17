@@ -1203,26 +1203,6 @@ function updateActiveFiltersDisplay() {
 
     // Show container only if there are active filters
     displayContainer.style.display = hasActiveFilters ? 'flex' : 'none';
-
-    // push page content below active filters ONLY ON MOBILE
-    const page = document.querySelector('.page-container');
-    if (page) {
-        // Check screen width - use the same breakpoint as CSS (900px)
-        if (window.innerWidth <= 900) {
-            if (hasActiveFilters) {
-                // use the filter container's bottom offset, then nudge up by 20px
-                const bottom = displayContainer.getBoundingClientRect().bottom;
-                // Adjust the offset calculation if needed for mobile layout
-                const offset = Math.max(0, Math.ceil(bottom - 60)); // Keep existing mobile logic
-                page.style.marginTop = `${offset}px`;
-            } else {
-                page.style.marginTop = ''; // Reset if no filters on mobile
-            }
-        } else {
-            // On desktop (width > 900px), always reset margin to let CSS handle it
-            page.style.marginTop = '';
-        }
-    }
 }
 
 // Ensure other event listeners also call applyFilters correctly
