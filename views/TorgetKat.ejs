@@ -885,10 +885,10 @@ function initializeSliders() {
                     dateOrder: document.getElementById('dateFilter').value,
                     subCategory: document.getElementById('subCategoryFilter')?.value || '',
                     selectedCountries: Array.from(
-                        document.querySelectorAll('.country-list input[type="checkbox"]:checked')
+                        document.querySelectorAll('#mainSidePanel .country-list > li > div > input[type="checkbox"]:checked')
                     ).map(checkbox => checkbox.value),
                     selectedCities: Array.from(
-                        document.querySelectorAll('.city-list input[type="checkbox"]:checked')
+                        document.querySelectorAll('#mainSidePanel .city-list input[type="checkbox"]:checked')
                     ).map(checkbox => checkbox.value),
                     selectedCarBrands: Array.from(
                         document.querySelectorAll('.car-brand-list input[type="checkbox"]:checked')
@@ -955,9 +955,9 @@ function updateCurrentFiltersFromUI() {
         dateOrder: document.getElementById('dateFilter')?.value || '',
         subCategory: category === 'Torget' ? document.getElementById('subCategoryFilter')?.value || '' : '',
         selectedCountries: Array.from(
-            document.querySelectorAll('.country-list > li > div > input[type="checkbox"]:checked')
+            document.querySelectorAll('#mainSidePanel .country-list > li > div > input[type="checkbox"]:checked')
         ).map(cb => cb.value),
-        selectedCities: Array.from(document.querySelectorAll('.city-list input[type="checkbox"]:checked')).map(cb => cb.value),
+        selectedCities: Array.from(document.querySelectorAll('#mainSidePanel .city-list input[type="checkbox"]:checked')).map(cb => cb.value),
         // Car Filters
         selectedCarBrands: category === 'Bil' ? Array.from(document.querySelectorAll('.car-brand-list input[type="checkbox"]:checked')).map(cb => cb.value) : [],
         yearRange: { from: document.getElementById('yearFrom')?.value || null, to: document.getElementById('yearTo')?.value || null },
@@ -1050,14 +1050,18 @@ function updateActiveFiltersDisplay() {
     }
 
     // Countries (Applies to all)
-    currentFilters.selectedCountries.forEach(country => {
-        addFilterTag('Country', country, () => {
-            const cb = document.getElementById(country);
-             if(cb) cb.checked = false;
+    currentFilters.selectedCountries.forEach(countryVal => {
+        // find the corresponding checkbox in main panel and its label
+        const cb = document.querySelector(
+            `#mainSidePanel .country-list input[value="${countryVal}"]`
+        );
+        const labelText = cb?.nextElementSibling?.textContent || countryVal;
+        addFilterTag('Country', labelText, () => {
+            if (cb) cb.checked = false;
             // Also uncheck and hide cities for this country
-            const cityList = document.getElementById(`${country}-cities`);
+            const cityList = document.getElementById(`${countryVal}-cities`);
             if (cityList) {
-                cityList.querySelectorAll('input[type="checkbox"]').forEach(cityCb => cityCb.checked = false);
+                cityList.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
                 cityList.style.display = 'none';
             }
             applyFilters();
@@ -1065,11 +1069,21 @@ function updateActiveFiltersDisplay() {
     });
 
     // Cities (Applies to all)
-     currentFilters.selectedCities.forEach(cityId => {
-        const cityCheckbox = document.getElementById(`city_${cityId}`);
-        const cityName = cityCheckbox ? cityCheckbox.nextElementSibling.textContent : `City ${cityId}`;
-        addFilterTag('City', cityName, () => {
-             if(cityCheckbox) cityCheckbox.checked = false;
+    // build unique list of city IDs
+    var uniqCities = [];
+    currentFilters.selectedCities.forEach(function(cityId) {
+        if (uniqCities.indexOf(cityId) === -1) {
+            uniqCities.push(cityId);
+        }
+    });
+    // render each unique city tag
+    uniqCities.forEach(function(cityId) {
+        var cityCheckbox = document.getElementById('city_' + cityId);
+        var cityName = cityCheckbox
+            ? cityCheckbox.nextElementSibling.textContent
+            : cityId;
+        addFilterTag('City', cityName, function() {
+            if (cityCheckbox) cityCheckbox.checked = false;
             applyFilters();
         });
     });
@@ -1867,6 +1881,15 @@ function applyFiltersFromURL() {
                 // Combine top filters and side panel content
                 offcanvasSidePanel.innerHTML = topFilterContainer.outerHTML + mainSidePanel.innerHTML;
 
+                // NEW: ensure drawer inputs/labels use unique IDs but can sync back to main panel
+                offcanvasSidePanel.querySelectorAll('input[id]').forEach(input => {
+                    input.dataset.syncId = input.id;       // remember original ID
+                    input.id = input.id + '-drawer';       // give drawer input a unique ID
+                });
+                offcanvasSidePanel.querySelectorAll('label[for]').forEach(label => {
+                    label.htmlFor = label.htmlFor + '-drawer'; // point labels at the new drawer IDs
+                });
+
                 // --- START: Re-initialize sliders specifically for the drawer ---
                 // Find all slider elements within the newly populated drawer
                 const drawerSliders = offcanvasSidePanel.querySelectorAll('.range-slider[id]');
@@ -1967,10 +1990,11 @@ function applyFiltersFromURL() {
                     return;
                 }
 
-                const mainElement = document.getElementById(target.id); // Find corresponding main element
+                const mainId = target.dataset.syncId || target.id;      // prefer original ID if set
+                const mainElement = document.getElementById(mainId);
 
                 if (!mainElement) {
-                     console.warn("Drawer Change: Could not find corresponding main element for ID:", target.id);
+                     console.warn("Drawer Change: Could not find corresponding main element for ID:", mainId);
                      return; // Cannot sync if main element doesn't exist
                 }
 
