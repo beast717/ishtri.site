@@ -1144,6 +1144,11 @@ input[type="text"] {
         box-sizing: border-box; /* Include padding in width */
         /* background: #f8f9fa; */ /* Optional: Add background to visualize */
     }
+
+    /* Prevent “No products found” from sliding up into the filter tags */
+    .productsContainer {
+        margin-top: 0 !important;
+    }
 }
 @media (min-width: 901px) {
     .offcanvas-filter-btn,
@@ -1191,7 +1196,7 @@ h1 {
 }
 
 .productsContainer {
-    margin-top: -27px;
+    margin-top: 0 !important;    /* override the -27px so content always starts below filters */
     padding: 20px;
     flex: 1;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));

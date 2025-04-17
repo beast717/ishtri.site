@@ -1189,6 +1189,19 @@ function updateActiveFiltersDisplay() {
 
     // Show container only if there are active filters
     displayContainer.style.display = hasActiveFilters ? 'flex' : 'none';
+
+    // push page content below active filters
+    const page = document.querySelector('.page-container');
+    if (page) {
+        if (hasActiveFilters) {
+            // use the filter container's bottom offset, then nudge up by 20px
+            const bottom = displayContainer.getBoundingClientRect().bottom;
+            const offset = Math.max(0, Math.ceil(bottom - 60));
+            page.style.marginTop = `${offset}px`;
+        } else {
+            page.style.marginTop = '';
+        }
+    }
 }
 
 // Ensure other event listeners also call applyFilters correctly
