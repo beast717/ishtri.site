@@ -1890,23 +1890,38 @@ function applyFiltersFromURL() {
                     label.htmlFor = label.htmlFor + '-drawer'; // point labels at the new drawer IDs
                 });
 
+                // NEW: sync checked state from main panel to drawer
+                offcanvasSidePanel.querySelectorAll('input[type="checkbox"][data-sync-id]').forEach(drawerCb => {
+                    const mainCb = document.getElementById(drawerCb.dataset.syncId);
+                    if (mainCb) drawerCb.checked = mainCb.checked;
+                });
+
                 // --- START: Re-initialize sliders specifically for the drawer ---
                 // Find all slider elements within the newly populated drawer
                 const drawerSliders = offcanvasSidePanel.querySelectorAll('.range-slider[id]');
                 drawerSliders.forEach(drawerSlider => {
-                    const sliderId = drawerSlider.id;
+                    // --- START: ensure unique IDs for drawer sliders ---
+                    const originalId = drawerSlider.id;
+                    drawerSlider.dataset.syncSliderId = originalId;        // remember original ID
+                    drawerSlider.id = originalId + '-drawer';              // new unique ID
+                    const sliderId = drawerSlider.dataset.syncSliderId;    // use original ID for lookup
+                    // --- END: ensure unique IDs ---
+
                     const mainSlider = document.getElementById(sliderId); // Find original slider
 
                     // Check if the original slider was initialized and has a config
                     if (mainSlider && mainSlider.noUiSlider && sliderConfigs[sliderId]) {
                         const config = sliderConfigs[sliderId];
+                        // --- Correctly query value displays (IDs likely unchanged) ---
                         const minValDisplay = offcanvasSidePanel.querySelector(`#${sliderId}-val-min`);
                         const maxValDisplay = offcanvasSidePanel.querySelector(`#${sliderId}-val-max`);
-                        // Find corresponding hidden inputs *within the drawer*
-                        const inputMin = offcanvasSidePanel.querySelector(`input[id="${config.inputs[0]}"]`);
-                        const inputMax = offcanvasSidePanel.querySelector(`input[id="${config.inputs[1]}"]`);
+                        
+                        // --- START: Correctly query hidden inputs using their MODIFIED drawer IDs ---
+                        const inputMin = offcanvasSidePanel.querySelector(`input[id="${config.inputs[0]}-drawer"]`); 
+                        const inputMax = offcanvasSidePanel.querySelector(`input[id="${config.inputs[1]}-drawer"]`);
+                        // --- END: Corrected query selectors ---
 
-                        if (drawerSlider && inputMin && inputMax) {
+                        if (drawerSlider && inputMin && inputMax) { // Check if drawer slider AND the correct inputs were found
                              // Destroy existing slider instance if present (important for re-sync)
                              if (drawerSlider.noUiSlider) {
                                 drawerSlider.noUiSlider.destroy();
@@ -1954,10 +1969,11 @@ function applyFiltersFromURL() {
         }
 
         function openDrawer() {
-            syncSidePanelToDrawer(); // Sync content *before* showing
+            syncSidePanelToDrawer();              // clone structure & set IDs
             drawer.classList.add('active');
             overlay.classList.add('active');
             document.body.classList.add('offcanvas-open');
+
             setTimeout(() => drawer.focus(), 100);
         }
         function closeDrawer() {
@@ -2055,13 +2071,6 @@ function applyFiltersFromURL() {
         window.addEventListener('resize', syncSidePanelToDrawer);
         // Sync drawer content initially on load (important if starting on mobile view)
         window.addEventListener('DOMContentLoaded', syncSidePanelToDrawer);
-
-        // REMOVED: Re-initialize filter listeners for drawer content after opening
-        // drawer.addEventListener('transitionend', function() {
-        //     if (drawer.classList.contains('active')) {
-        //         // initializeFilters(); // NO LONGER NEEDED - Handled by delegation
-        //     }
-        // });
     })();
 
 }); 
