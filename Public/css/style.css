@@ -1199,7 +1199,6 @@ h1 {
 
 .productsContainer {
     margin-top: 0 !important;    /* override the -27px so content always starts below filters */
-    padding: 20px;
     flex: 1;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
 }
