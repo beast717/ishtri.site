@@ -127,21 +127,21 @@ border-top: 1px solid #ccc; /* Add a border between items */
     text-align: center;
 }
 
-
-.badge {
-position: absolute;
-top: 0px;
-right: 0px;
-transform: translate(-580%, -30%);
-color: white;
-background-color: red;
-border-radius: 50%;
-width: 12px;
-height: 12px;
-font-size: 10px;
-text-align: center;
-line-height: 12px;
-display: none; /* Initially hidden, as set by JavaScript */
+/* Common style for both badges */
+.nav-badge {
+    position: absolute;
+    top: -8px; /* Adjust base vertical position */
+    background: #ff4757; /* Use consistent red */
+    color: white;
+    border-radius: 50%;
+    padding: 1px 2px; /* Consistent padding */
+    font-size: 10px; /* Consistent font size */
+    min-width: 14px; /* Consistent min width */
+    line-height: 1.4; /* Consistent line height */
+    text-align: center;
+    display: none; /* Hidden by default */
+    z-index: 20; /* Ensure above icons */
+    box-sizing: border-box;
 }
 
 #languageSelect {
@@ -174,24 +174,21 @@ border-color: #007bff; /* Highlight border on focus */
 box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
 }
 
+/* Keep ID for JS targeting and specific positioning */
 #notificationBadge {
-  position: absolute;
-  top: -9px;
-  right: 85px;
-  background: #ff4757;
-  color: white;
-  border-radius: 50%;
-  padding: 1px 2px;
-  font-size: 8px;
-  display: none;
-  z-index: 20;
-  min-width: 14px;
-  line-height: 2;
-  text-align: center;
+  right: 85px; /* Position relative to notification icon */
+  /* Inherits styles from .nav-badge */
 }
 
-#notificationIcon {
-  position: relative; /* Add this to create positioning context */
+/* Keep ID for JS targeting and specific positioning */
+#unreadBadge {
+    right: 70px; /* Position relative to message icon/text */
+    /* Inherits styles from .nav-badge */
+}
+
+#notificationIcon,
+#messagesButton { /* Apply relative positioning to parent links */
+  position: relative;
 }
 
 #profileDropdownArrow {
@@ -263,7 +260,8 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
     }
 
     #unreadBadge {
-        transform: translate(-450%, -30%);
+        top: -5px;
+        right: -5px;
     }
 }
    
@@ -277,13 +275,13 @@ box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25); /* Add a focus ring */
         <div class="navBarButtons">
            <a id="notificationIcon" href="/notifications">
               <i class="fas fa-bell"></i>
-              <span class="notification-badge" id="notificationBadge"></span>
+              <span class="nav-badge" id="notificationBadge"></span>
               <span data-i18n="navbar.notifications">Notifications</span>
             </a>
             <a id="newAdButton" href="/ny-annonse"><i class="fas fa-plus-circle"></i> <span data-i18n="navbar.new_ad">New ad</span></a>
             <a id="messagesButton" href="/messages" style="position: relative;">
                 <i class="fas fa-envelope"></i> <span data-i18n="navbar.messages">Messages</span>
-                <span id="unreadBadge" class="badge">●</span>
+                <span class="nav-badge" id="unreadBadge"></span>
             </a>
             <a id="loginButton" href="Logg inn.html"><i class="fas fa-sign-in-alt"></i> <span data-i18n="navbar.log_in">Log in</span></a>
             <div id="profileContainer" style="display: none;">

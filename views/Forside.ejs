@@ -272,40 +272,67 @@
 
              // Function to initialize favorite icons
             function initializeFavorites() {
-                fetch('/api/favorites', { credentials: 'include' })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Authentication required');
-                        }
-                        const contentType = response.headers.get('content-type');
-                        if (!contentType || !contentType.includes('application/json')) {
-                            throw new Error('Invalid response format');
-                        }
-                        return response.json();
-                    })
-                    .then(favorites => {
-                    document.querySelectorAll('.favorite-icon').forEach(icon => {
-                        const productdID = icon.getAttribute('data-product-id');
-                        const isFavorited = favorites.some(product => product.ProductdID === Number(productdID));
+                // First, check if the user is logged in
+                fetch('/api/auth/current-user', { credentials: 'include' })
+                    .then(response => response.json())
+                    .then(userData => {
+                        if (userData && userData.brukernavn) {
+                            // User is logged in, fetch favorites
+                            fetch('/api/favorites', { credentials: 'include' })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        // Handle potential errors even if logged in initially
+                                        if (response.status === 401) {
+                                            throw new Error('Authentication required');
+                                        }
+                                        throw new Error('Failed to fetch favorites');
+                                    }
+                                    const contentType = response.headers.get('content-type');
+                                    if (!contentType || !contentType.includes('application/json')) {
+                                        throw new Error('Invalid response format from /api/favorites');
+                                    }
+                                    return response.json();
+                                })
+                                .then(favorites => {
+                                    document.querySelectorAll('.favorite-icon').forEach(icon => {
+                                        const productdID = icon.getAttribute('data-product-id');
+                                        const isFavorited = favorites.some(product => product.ProductdID === Number(productdID));
 
-                        if (isFavorited) {
-                            icon.classList.add('favorited');
-                            icon.style.color = '#ff4757'; // Red color for favorited products
+                                        if (isFavorited) {
+                                            icon.classList.add('favorited');
+                                            icon.style.color = '#ff4757'; // Red color for favorited products
+                                        } else {
+                                            icon.classList.remove('favorited');
+                                            icon.style.color = '#ccc'; // Default color for non-favorited products
+                                        }
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error("Error fetching or processing favorites:", error);
+                                    // Ensure icons are in default state on error
+                                    document.querySelectorAll('.favorite-icon').forEach(icon => {
+                                        icon.classList.remove('favorited');
+                                        icon.style.color = '#ccc';
+                                    });
+                                });
                         } else {
-                            icon.classList.remove('favorited');
-                            icon.style.color = '#ccc'; // Default color for non-favorited products
+                            // User is not logged in, set all icons to default state
+                            console.log("User not logged in, skipping favorite status check.");
+                            document.querySelectorAll('.favorite-icon').forEach(icon => {
+                                icon.classList.remove('favorited');
+                                icon.style.color = '#ccc';
+                            });
                         }
+                    })
+                    .catch(error => {
+                        console.error("Error checking user session for favorites:", error);
+                        // Ensure icons are in default state on error
+                        document.querySelectorAll('.favorite-icon').forEach(icon => {
+                            icon.classList.remove('favorited');
+                            icon.style.color = '#ccc';
+                        });
                     });
-                })
-                 .catch(error => {
-                console.error("Error checking favorites:", error);
-                // Clear favorite states on error
-                document.querySelectorAll('.favorite-icon').forEach(icon => {
-                    icon.classList.remove('favorited');
-                    icon.style.color = '#ccc';
-                });
-            });
-    }
+            }
 
         // Handle favorite icon clicks
         document.addEventListener('click', (e) => {
@@ -360,8 +387,33 @@
         });
             window.addEventListener('load', loadRandomProducts);
         window.onload = function () {
-    checkUnreadMessages(); 
-};
+            // Check user login status before checking messages
+            fetch('/api/auth/current-user', { credentials: 'include' })
+                .then(response => response.json())
+                .then(userData => {
+                    if (userData && userData.brukernavn) {
+                        // Only call checkUnreadMessages if the user is logged in
+                        if (typeof checkUnreadMessages === 'function') {
+                             checkUnreadMessages();
+                        } else {
+                            console.warn("checkUnreadMessages function not found in shared.js");
+                        }
+                    } else {
+                        console.log("User not logged in, skipping unread message check.");
+                        // Optionally update UI to show 0 notifications if needed
+                         if (typeof updateNotificationBadge === 'function') {
+                            updateNotificationBadge(0);
+                         }
+                    }
+                })
+                .catch(error => {
+                    console.error("Error checking user session for messages:", error);
+                     // Optionally update UI to show 0 notifications on error
+                     if (typeof updateNotificationBadge === 'function') {
+                        updateNotificationBadge(0);
+                     }
+                });
+        };
 
         </script>
 </body>

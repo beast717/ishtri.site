@@ -46,22 +46,36 @@ function updateNotificationBadge() {
     fetch('/api/notifications/unread-count', { credentials: 'include' }) // Send cookies
         .then(response => {
             if (!response.ok) {
+                // If not OK (e.g., 401 Unauthorized), don't try to parse JSON
                 if (response.status !== 401) {
-                     console.error('Error fetching notification count:', response.statusText);
+                     console.error('Error fetching notification count:', response.status, response.statusText);
                 } // else { console.log("User not logged in for notification count."); } // Optional log
-                return { count: 0 }; // Default to 0 on error/unauthenticated
+                // Return an object that looks like the expected success response but with count 0
+                return { count: 0 };
+            }
+            // Only attempt to parse JSON if the response was successful (status 2xx)
+            const contentType = response.headers.get('content-type');
+             if (!contentType || !contentType.includes('application/json')) {
+                console.error('Received non-JSON response from notification count endpoint');
+                // Even on success, if it's not JSON, treat as error/zero count
+                return { count: 0 };
             }
             return response.json();
         })
         .then(data => {
-            const count = data.count || 0;
+            // Ensure data is an object and has a count property, default to 0 otherwise
+            const count = (data && typeof data.count === 'number') ? data.count : 0;
             notificationBadge.textContent = count; // Update text content
             // Use 'block' or 'flex' or appropriate display value based on your CSS
             notificationBadge.style.display = count > 0 ? 'block' : 'none';
         })
         .catch(error => {
+            // Catch network errors or errors from response.json() if it still fails
             console.error('Error updating notification badge:', error);
-            notificationBadge.style.display = 'none'; // Hide on fetch error
+            if (notificationBadge) { // Check again in case it disappeared
+                 notificationBadge.textContent = '0'; // Reset text
+                 notificationBadge.style.display = 'none'; // Hide on fetch error
+            }
         });
 }
 
@@ -109,154 +123,204 @@ function loadNonEssentialScripts() {
 // --- Main DOMContentLoaded Listener ---
 document.addEventListener('DOMContentLoaded', () => {
 
-    // --- Initial UI Updates & Checks ---
-    checkUnreadMessages();      // Check message count on load
-    updateNotificationBadge();  // Check notification count on load
+    // --- Authentication Check ---
+    // Fetch user status first to determine if authenticated calls should proceed
+    fetch('/api/auth/current-user', { credentials: 'include' })
+        .then(res => {
+            // Check if response is okay AND is JSON before parsing
+            if (!res.ok) {
+                 // Handle non-OK responses (like 401) - user is not logged in or error occurred
+                 if (res.status === 401) {
+                     console.log("User not logged in (initial check). Skipping authenticated initial loads.");
+                 } else {
+                     console.error(`Initial user check failed with status: ${res.status}`);
+                 }
+                 return null; // Indicate user is not logged in or error
+            }
+            const contentType = res.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                 console.error('Received non-JSON response from current-user endpoint');
+                 return null; // Treat as error/not logged in
+            }
+            return res.json(); // Parse JSON only if response is OK and content type is correct
+        })
+        .then(user => {
+            const isLoggedIn = user && user.brukerId;
 
-    // --- Socket.IO Setup & Authentication ---
-    // Ensure socket.io client library is loaded before this script in your HTML
-    // e.g., <script src="/socket.io/socket.io.js"></script>
-    let socket; // Declare socket variable
-    try {
-        socket = io(); // Connect to Socket.IO server
+            // --- Initial UI Updates & Checks (Conditional) ---
+            if (isLoggedIn) {
+                console.log("User is logged in. Performing initial authenticated loads.");
+                checkUnreadMessages();      // Check message count on load
+                updateNotificationBadge();  // Check notification count on load
+            } else {
+                // Optionally update badges to 0 explicitly if needed, though default state might suffice
+                 const messageBadge = document.getElementById('unreadBadge');
+                 if (messageBadge) messageBadge.style.display = 'none';
+                 const notificationBadge = document.getElementById('notificationBadge');
+                 if (notificationBadge) notificationBadge.style.display = 'none';
+            }
 
-        // Function to authenticate socket connection
-        function authenticateSocket() {
-            fetch('/api/auth/current-user', { credentials: 'include' })
-                .then(res => {
-                    if (!res.ok) { throw new Error(`HTTP error ${res.status}`); }
-                    return res.json();
-                })
-                .then(user => {
-                    if (user && user.brukerId) {
-                        socket.emit('authenticate', user.brukerId);
-                        console.log(`Socket authenticated for user: ${user.brukerId}`);
-                    } else {
-                        console.log("User not logged in, socket not authenticated.");
-                    }
-                }).catch(error => {
-                    // Handle case where user isn't logged in (401 etc.) gracefully
-                    if (error.message.includes('401')) {
-                        console.log("User not logged in (fetch failed), socket not authenticated.");
-                    } else {
-                        console.error("Error fetching current user for socket auth:", error);
-                    }
-                });
+            // --- Socket.IO Setup & Authentication ---
+            setupSocketIO(isLoggedIn ? user.brukerId : null); // Pass user ID or null
+
+            // --- Navbar Profile/Login State Logic ---
+            setupNavbar(isLoggedIn ? user : null); // Pass user object or null
+
+        })
+        .catch(error => {
+            // Catch errors from the initial fetch/json parsing itself
+            console.error("Error during initial user check:", error);
+            // Setup UI assuming logged out state on error
+            setupSocketIO(null);
+            setupNavbar(null);
+             // Ensure badges are hidden on error
+             const messageBadge = document.getElementById('unreadBadge');
+             if (messageBadge) messageBadge.style.display = 'none';
+             const notificationBadge = document.getElementById('notificationBadge');
+             if (notificationBadge) notificationBadge.style.display = 'none';
+        });
+
+
+    // --- Socket.IO Setup Function ---
+    let socket; // Declare socket variable in wider scope if needed elsewhere
+    function setupSocketIO(userId) {
+        try {
+            // Connect only if not already connected (or handle reconnection logic if needed)
+            if (!socket || !socket.connected) {
+                 socket = io(); // Connect to Socket.IO server
+                 console.log("Socket.IO attempting connection.");
+
+                 socket.on('connect', () => {
+                     console.log("Socket.IO connected.");
+                     // Authenticate immediately if userId is available
+                     if (userId) {
+                         socket.emit('authenticate', userId);
+                         console.log(`Socket authenticated for user: ${userId}`);
+                     } else {
+                         console.log("User not logged in, socket connected but not authenticated.");
+                     }
+                 });
+
+                 socket.on('disconnect', (reason) => {
+                     console.log(`Socket.IO disconnected: ${reason}`);
+                     // Handle potential reconnection logic here if needed
+                 });
+
+                 socket.on('connect_error', (error) => {
+                     console.error("Socket.IO connection error:", error);
+                 });
+
+                 // --- Socket Event Listeners (for real-time updates) ---
+                 // Listen for new notifications
+                 socket.on('new_notification', (notificationData) => {
+                     console.log('Received new notification via socket:', notificationData);
+                     updateNotificationBadge(); // Update badge when a new notification arrives
+                     if (window.toast) {
+                         const productLink = notificationData.productdID
+                             ? `<a href="/productDetails?productdID=${notificationData.productdID}" style="text-decoration: underline; color: blue;">View Product</a>`
+                             : '';
+                         window.toast.show(`New Match: ${notificationData.message} ${productLink}`, 'info', 10000);
+                     }
+                 });
+
+                 // Listen for updates when a notification is read elsewhere
+                 socket.on('notification_read', (data) => {
+                     console.log('Socket event: notification_read received:', data);
+                     updateNotificationBadge(); // Update badge count
+                 });
+
+                 // Listen for updates when all notifications are read elsewhere
+                 socket.on('all_notifications_read', () => {
+                     console.log('Socket event: all_notifications_read received.');
+                     updateNotificationBadge(); // Update badge count
+                 });
+
+                 // Listen for new messages to update message badge (optional, but good practice)
+                 socket.on('messageReceived', (messageData) => {
+                     console.log('Received new message via socket:', messageData);
+                     // Avoid incrementing if user is currently on the messages page
+                     if (!document.getElementById('messagesPageContainer')) {
+                         checkUnreadMessages(); // Re-fetch message count
+                     }
+                 });
+
+            } else if (userId && !socket.authenticated) {
+                 // If socket exists but wasn't authenticated (e.g., user logged in after page load)
+                 // This scenario might need more complex handling depending on app flow
+                 console.log("Socket exists, attempting re-authentication.");
+                 socket.emit('authenticate', userId);
+            }
+
+        } catch (e) {
+            console.error("Socket.IO setup failed. Real-time updates disabled.", e);
+            // Handle cases where socket.io might not load or connect
+        }
+    }
+
+
+    // --- Navbar Setup Function ---
+    function setupNavbar(user) {
+        const loginButton = document.getElementById('loginButton');
+        const profileContainer = document.getElementById('profileContainer');
+        const profileUsername = document.getElementById('profileUsername');
+        // const profileIcon = document.getElementById('profileIcon'); // Uncomment if using profile icon
+
+        if (loginButton && profileContainer) { // Ensure basic elements exist
+            if (user && user.brukernavn) {
+                loginButton.style.display = 'none';
+                profileContainer.style.display = 'flex'; // Or 'block' etc. based on your CSS
+                if (profileUsername) profileUsername.textContent = user.brukernavn;
+                // if (profileIcon) profileIcon.src = user.profileIconUrl || 'prrofilepic.svg'; // Uncomment and adjust if needed
+            } else {
+                loginButton.style.display = 'block'; // Or 'flex', 'inline-flex' etc.
+                profileContainer.style.display = 'none';
+            }
+        } else {
+             console.warn("Navbar elements (loginButton/profileContainer) not found.");
         }
 
-        // Authenticate the socket connection on page load
-        authenticateSocket();
+        // --- Profile Dropdown Logic (can stay here or be moved inside setupNavbar) ---
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        if (profileContainer && dropdownMenu) { // Check elements exist
+            profileContainer.addEventListener('click', function (event) {
+                const isVisible = dropdownMenu.style.display === 'block';
+                dropdownMenu.style.display = isVisible ? 'none' : 'block';
+                profileContainer.classList.toggle('dropdown-open', !isVisible);
+                event.stopPropagation(); // Prevent click closing it immediately
+            });
 
-        // --- Socket Event Listeners (for real-time updates) ---
-        if (socket) {
-            // Listen for new notifications
-            socket.on('new_notification', (notificationData) => {
-                console.log('Received new notification via socket:', notificationData);
-                updateNotificationBadge(); // Update badge when a new notification arrives
-                if (window.toast) {
-                    const productLink = notificationData.productdID
-                        ? `<a href="/productDetails?productdID=${notificationData.productdID}" style="text-decoration: underline; color: blue;">View Product</a>`
-                        : '';
-                    window.toast.show(`New Match: ${notificationData.message} ${productLink}`, 'info', 10000);
+            // Close dropdown if clicking outside of it
+            document.addEventListener('click', function (event) {
+                // Check if dropdownMenu exists and is visible before trying to access its style
+                if (dropdownMenu && dropdownMenu.style.display === 'block' && !profileContainer.contains(event.target)) {
+                    dropdownMenu.style.display = 'none';
+                    profileContainer.classList.remove('dropdown-open');
                 }
             });
+        }
 
-            // Listen for updates when a notification is read elsewhere
-            socket.on('notification_read', (data) => {
-                console.log('Socket event: notification_read received:', data);
-                updateNotificationBadge(); // Update badge count
-            });
-
-            // Listen for updates when all notifications are read elsewhere
-            socket.on('all_notifications_read', () => {
-                console.log('Socket event: all_notifications_read received.');
-                updateNotificationBadge(); // Update badge count
-            });
-
-             // Listen for new messages to update message badge (optional, but good practice)
-             socket.on('messageReceived', (messageData) => {
-                console.log('Received new message via socket:', messageData);
-                // Avoid incrementing if user is currently on the messages page
-                if (!document.getElementById('messagesPageContainer')) {
-                     checkUnreadMessages(); // Re-fetch message count
-                }
-             });
-
-        } // end if(socket)
-
-    } catch (e) {
-        console.error("Socket.IO connection failed. Real-time updates disabled.", e);
-        // Handle cases where socket.io might not load or connect
-    }
-
-
-    // --- Navbar Profile/Login State Logic ---
-    const loginButton = document.getElementById('loginButton');
-    const profileContainer = document.getElementById('profileContainer');
-    const profileUsername = document.getElementById('profileUsername');
-    // const profileIcon = document.getElementById('profileIcon'); // Uncomment if using profile icon
-
-    if (loginButton && profileContainer) { // Ensure basic elements exist
-        fetch('/api/auth/current-user', { credentials: 'include' })
-            .then(response => response.json())
-            .then(data => {
-                if (data.brukernavn) {
-                    loginButton.style.display = 'none';
-                    profileContainer.style.display = 'flex';
-                    if (profileUsername) profileUsername.textContent = data.brukernavn;
-                    // if (profileIcon) profileIcon.src = data.profileIconUrl || 'prrofilepic.svg'; // Uncomment and adjust if needed
-                } else {
-                    loginButton.style.display = 'block'; // Or 'block', 'inline-flex' etc.
-                    profileContainer.style.display = 'none';
-                }
-            }).catch(error => {
-                console.error("Error setting up navbar auth state:", error);
-                // Default to showing login button if fetch fails
-                loginButton.style.display = 'flex';
-                profileContainer.style.display = 'none';
-            });
-    }
-
-
-    // --- Profile Dropdown Logic ---
-    const dropdownMenu = document.getElementById('dropdownMenu');
-    if (profileContainer && dropdownMenu) { // Check elements exist
-        profileContainer.addEventListener('click', function (event) {
-            const isVisible = dropdownMenu.style.display === 'block';
-            dropdownMenu.style.display = isVisible ? 'none' : 'block';
-            profileContainer.classList.toggle('dropdown-open', !isVisible);
-            event.stopPropagation(); // Prevent click closing it immediately
-        });
-
-        // Close dropdown if clicking outside of it
-        document.addEventListener('click', function (event) {
-            if (dropdownMenu.style.display === 'block' && !profileContainer.contains(event.target)) {
-                dropdownMenu.style.display = 'none';
-                profileContainer.classList.remove('dropdown-open');
-            }
-        });
-    }
-
-    // --- Logout Button Logic ---
-    const logoutButton = document.getElementById('logoutButton');
-    if (logoutButton) {
-        logoutButton.addEventListener('click', () => {
-            fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
-                .then(response => {
-                    if (response.ok) {
-                        if (socket) { // Disconnect socket if connected
-                            socket.disconnect();
+        // --- Logout Button Logic (can stay here or be moved inside setupNavbar) ---
+        const logoutButton = document.getElementById('logoutButton');
+        if (logoutButton) {
+            logoutButton.addEventListener('click', () => {
+                fetch('/api/auth/logout', { method: 'POST', credentials: 'include' })
+                    .then(response => {
+                        if (response.ok) {
+                            if (socket && socket.connected) { // Disconnect socket if connected
+                                console.log("Logging out, disconnecting socket.");
+                                socket.disconnect();
+                            }
+                            window.location.href = '/'; // Redirect to homepage
+                        } else {
+                            console.error("Logout failed on server.");
+                            window.toast?.show('Logout failed. Please try again.', 'error'); // Use toast if available
                         }
-                        window.location.href = '/'; // Redirect to homepage
-                    } else {
-                        console.error("Logout failed on server.");
-                        window.toast?.show('Logout failed. Please try again.', 'error'); // Use toast if available
-                    }
-                }).catch(err => {
-                    console.error("Error during logout fetch:", err);
-                     window.toast?.show('An error occurred during logout.', 'error');
-                });
-        });
+                    }).catch(err => {
+                        console.error("Error during logout fetch:", err);
+                         window.toast?.show('An error occurred during logout.', 'error');
+                    });
+            });
+        }
     }
 
 
@@ -349,4 +413,4 @@ document.addEventListener('DOMContentLoaded', () => {
         
     } */
 
-}); 
+});
