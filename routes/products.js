@@ -185,8 +185,10 @@ router.get('/', async (req, res, next) => {
             const validCountries = countryList.filter(c => c.trim() !== "");
             
             if (validCountries.length > 0) {
-                query += ` AND ci.country IN (${validCountries.map(() => '?').join(',')})`;
-                params.push(...validCountries.map(c => c.trim()));
+                // Use LOWER() for case-insensitive comparison
+                query += ` AND LOWER(ci.country) IN (${validCountries.map(() => '?').join(',')})`; 
+                // Convert parameters to lowercase
+                params.push(...validCountries.map(c => c.trim().toLowerCase())); 
             }
         }
 

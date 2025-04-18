@@ -235,8 +235,7 @@
     </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        console.log("Initializing TorgetKat page...");      
+    document.addEventListener('DOMContentLoaded', () => {      
 
         // Add debouncing utility
         const debounce = (func, wait) => {
@@ -514,16 +513,20 @@
 
             // Add car specific filters
             if (category === 'Bil') {
-                if (currentFilters.yearRange.from && currentFilters.yearRange.from !== sliderConfigs['year-slider'].start[0]) {
+                const yearConfig = sliderConfigs['year-slider'];
+                // Ensure comparison uses numbers and checks for null
+                if (currentFilters.yearRange.from !== null && Number(currentFilters.yearRange.from) !== yearConfig.start[0]) {
                     apiUrl += `&yearFrom=${currentFilters.yearRange.from}`;
                 }
-                if (currentFilters.yearRange.to && currentFilters.yearRange.to !== sliderConfigs['year-slider'].start[1]) {
+                if (currentFilters.yearRange.to !== null && Number(currentFilters.yearRange.to) !== yearConfig.start[1]) {
                     apiUrl += `&yearTo=${currentFilters.yearRange.to}`;
                 }
-                if (currentFilters.mileageRange.from && currentFilters.mileageRange.from !== sliderConfigs['mileage-slider'].start[0]) {
+                const mileageConfig = sliderConfigs['mileage-slider'];
+                 // Ensure comparison uses numbers and checks for null
+                if (currentFilters.mileageRange.from !== null && Number(currentFilters.mileageRange.from) !== mileageConfig.start[0]) {
                     apiUrl += `&mileageFrom=${currentFilters.mileageRange.from}`;
                 }
-                if (currentFilters.mileageRange.to && currentFilters.mileageRange.to !== sliderConfigs['mileage-slider'].start[1]) {
+                if (currentFilters.mileageRange.to !== null && Number(currentFilters.mileageRange.to) !== mileageConfig.start[1]) {
                     apiUrl += `&mileageTo=${currentFilters.mileageRange.to}`;
                 }
                 if (currentFilters.fuelTypes.length) {
@@ -539,22 +542,28 @@
                 if (currentFilters.propertyTypes.length) {
                     apiUrl += `&propertyType=${encodeURIComponent(currentFilters.propertyTypes.join(','))}`;
                 }
-                if (currentFilters.sizeRange.from && currentFilters.sizeRange.from !== sliderConfigs['size-slider'].start[0]) {
+                const sizeConfig = sliderConfigs['size-slider'];
+                 // Ensure comparison uses numbers and checks for null
+                if (currentFilters.sizeRange.from !== null && Number(currentFilters.sizeRange.from) !== sizeConfig.start[0]) {
                     apiUrl += `&sizeSqmFrom=${encodeURIComponent(currentFilters.sizeRange.from)}`;
                 }
-                if (currentFilters.sizeRange.to && currentFilters.sizeRange.to !== sliderConfigs['size-slider'].start[1]) {
+                if (currentFilters.sizeRange.to !== null && Number(currentFilters.sizeRange.to) !== sizeConfig.start[1]) {
                     apiUrl += `&sizeSqmTo=${encodeURIComponent(currentFilters.sizeRange.to)}`;
                 }
-                if (currentFilters.roomsRange.from && currentFilters.roomsRange.from !== sliderConfigs['rooms-slider'].start[0]) {
+                const roomsConfig = sliderConfigs['rooms-slider'];
+                 // Ensure comparison uses numbers and checks for null
+                if (currentFilters.roomsRange.from !== null && Number(currentFilters.roomsRange.from) !== roomsConfig.start[0]) {
                     apiUrl += `&numRoomsFrom=${encodeURIComponent(currentFilters.roomsRange.from)}`;
                 }
-                if (currentFilters.roomsRange.to && currentFilters.roomsRange.to !== sliderConfigs['rooms-slider'].start[1]) {
+                if (currentFilters.roomsRange.to !== null && Number(currentFilters.roomsRange.to) !== roomsConfig.start[1]) {
                     apiUrl += `&numRoomsTo=${encodeURIComponent(currentFilters.roomsRange.to)}`;
                 }
-                if (currentFilters.bathroomsRange.from && currentFilters.bathroomsRange.from !== sliderConfigs['bathrooms-slider'].start[0]) {
+                const bathroomsConfig = sliderConfigs['bathrooms-slider'];
+                 // Ensure comparison uses numbers and checks for null
+                if (currentFilters.bathroomsRange.from !== null && Number(currentFilters.bathroomsRange.from) !== bathroomsConfig.start[0]) {
                     apiUrl += `&numBathroomsFrom=${encodeURIComponent(currentFilters.bathroomsRange.from)}`;
                 }
-                if (currentFilters.bathroomsRange.to && currentFilters.bathroomsRange.to !== sliderConfigs['bathrooms-slider'].start[1]) {
+                if (currentFilters.bathroomsRange.to !== null && Number(currentFilters.bathroomsRange.to) !== bathroomsConfig.start[1]) {
                     apiUrl += `&numBathroomsTo=${encodeURIComponent(currentFilters.bathroomsRange.to)}`;
                 }
                 if (currentFilters.energyClasses.length) {
@@ -841,7 +850,6 @@ function initializeSliders() {
         function applyFilters() {
             clearTimeout(filterTimeout);
             filterTimeout = setTimeout(() => {
-                 console.log("Applying filters..."); // Debug log
                 // --- Gather Filter Values ---
                 updateCurrentFiltersFromUI(); // Use helper function
 
@@ -982,7 +990,6 @@ function updateCurrentFiltersFromUI() {
             if (currentFilters[key].to === null || currentFilters[key].to === '') delete currentFilters[key].to;
         }
     });
-    console.log("Updated Filters:", currentFilters); // Debug log
 }
 
 
@@ -1251,7 +1258,6 @@ function setupFilterListeners() {
     function handleCategoryVisibility() {
          const urlParams = new URLSearchParams(window.location.search);
         const category = urlParams.get('category') || 'default';
-        console.log("Handling visibility for category:", category);
 
         // --- Get references to filter UI elements ---
         const subcategoryContainer = document.getElementById('subcategoryFilterContainer'); // Top filter bar section
@@ -1303,7 +1309,6 @@ function setupFilterListeners() {
                  break;
             default:
                 // No specific filters for other categories or default view
-                console.log("No specific filters for category:", category);
                 break;
         }
 
@@ -1316,12 +1321,10 @@ function setupFilterListeners() {
         function initializeFilters() {
             // Add a flag to track if filters have been initialized
             if (window.filtersInitialized) {
-                console.log("Filters already initialized, skipping...");
                 return;
             }
             window.filtersInitialized = true;
 
-            console.log("Initializing filters...");
 
             // Price and Date filters
             document.getElementById('priceFilter').addEventListener('change', applyFilters);
@@ -1377,144 +1380,153 @@ function setupFilterListeners() {
 
         }
 
+        // --- REMOVE THIS BLOCK ---
+       /*
        const saveSearchBtn = document.getElementById('saveSearchBtn');
          if (saveSearchBtn) {
              saveSearchBtn.addEventListener('click', async () => {
-         // 1. Check login (Keep this part)
-         try {
-             const userRes = await fetch('/api/auth/current-user');
-             const userData = await userRes.json();
-             if (!userData || !userData.brukerId) {
-                 window.toast.show('Please log in to save searches.', 'info');
-                 return;
-             }
-         } catch (error) {
-              window.toast.show('Could not verify login status.', 'error');
-              return;
-         }
-
-         // 2. Get search name (Keep this part)
-         const searchName = prompt("Enter a name for this search:");
-         if (!searchName || searchName.trim() === '') {
-             window.toast.show('Search not saved (no name provided).', 'warning');
-             return;
-         }
-
-         // 3. *** START: CORRECTED FILTER GATHERING ***
-         const urlParams = new URLSearchParams(window.location.search);
-         const category = urlParams.get('category'); // Get the ACTUAL active category
-
-         if (!category) {
-             window.toast.show('Cannot save search: Category not identified.', 'error');
-             return;
-         }
-
-         // Initialize an EMPTY object for filters to be saved
-         const filtersToSave = {};
-
-         // --- Add Common Filters (apply to most categories) ---
-         const selectedCountries = Array.from(
-            document.querySelectorAll('.country-list > li > div > input[type="checkbox"]:checked')
-         ).map(cb => cb.value);
-        if (selectedCountries.length > 0) filtersToSave.countries = selectedCountries;
-
-          const selectedCities = Array.from(document.querySelectorAll('.city-list input[type="checkbox"]:checked')).map(cb => cb.value); // Ensure this parenthesis is closed
-     if (selectedCities.length > 0) filtersToSave.cities = selectedCities; 
-
-
-         // --- Add Category-Specific Filters ---
-         switch (category) {
-            case 'Torget':
-                const subCategory = document.getElementById('subCategoryFilter')?.value;
-                if (subCategory) filtersToSave.subCategory = subCategory;
-                break;
-
-            case 'Bil':
-                const selectedCarBrands = Array.from(document.querySelectorAll('.car-brand-list input[type="checkbox"]:checked')).map(cb => cb.value);
-                if (selectedCarBrands.length > 0) filtersToSave.car_brands = selectedCarBrands; // Use consistent key name
-
-                const yearFrom = document.getElementById('yearFrom')?.value;
-                const yearTo = document.getElementById('yearTo')?.value;
-                if (yearFrom || yearTo) filtersToSave.yearRange = { from: yearFrom || null, to: yearTo || null };
-
-                const mileageFrom = document.getElementById('mileageFrom')?.value;
-                const mileageTo = document.getElementById('mileageTo')?.value;
-                if (mileageFrom || mileageTo) filtersToSave.mileageRange = { from: mileageFrom || null, to: mileageTo || null };
-
-                const fuelTypes = Array.from(document.getElementById('fuelTypeFilter')?.selectedOptions || []).map(opt => opt.value);
-                if (fuelTypes.length > 0) filtersToSave.fuel_types = fuelTypes; // Use consistent key name
-
-                const transmissionTypes = Array.from(document.getElementById('transmissionFilter')?.selectedOptions || []).map(opt => opt.value);
-                if (transmissionTypes.length > 0) filtersToSave.transmission_types = transmissionTypes; // Use consistent key name
-                break;
-
-            case 'Eiendom':
-                const propertyTypes = Array.from(document.getElementById('propertyTypeFilter')?.selectedOptions || []).map(opt => opt.value);
-                if (propertyTypes.length > 0) filtersToSave.property_types = propertyTypes; // Use consistent key name
-
-                const sizeSqmFrom = document.getElementById('sizeSqmFrom')?.value;
-                const sizeSqmTo = document.getElementById('sizeSqmTo')?.value;
-                 if (sizeSqmFrom || sizeSqmTo) filtersToSave.sizeRange = { from: sizeSqmFrom || null, to: sizeSqmTo || null }; // Use sizeRange
-
-                const numRoomsFrom = document.getElementById('numRoomsFrom')?.value;
-                const numRoomsTo = document.getElementById('numRoomsTo')?.value;
-                if (numRoomsFrom || numRoomsTo) filtersToSave.roomsRange = { from: numRoomsFrom || null, to: numRoomsTo || null }; // Use roomsRange
-
-                const numBathroomsFrom = document.getElementById('numBathroomsFrom')?.value;
-                const numBathroomsTo = document.getElementById('numBathroomsTo')?.value;
-                if (numBathroomsFrom || numBathroomsTo) filtersToSave.bathroomsRange = { from: numBathroomsFrom || null, to: numBathroomsTo || null }; // Use bathroomsRange
-
-                const energyClasses = Array.from(document.getElementById('energyClassFilter')?.selectedOptions || []).map(opt => opt.value);
-                if (energyClasses.length > 0) filtersToSave.energy_classes = energyClasses; // Use consistent key name
-                break;
-
-            case 'Jobb':
-                 const employmentTypes = Array.from(document.getElementById('employmentTypeFilter')?.selectedOptions || []).map(opt => opt.value);
-                 if (employmentTypes.length > 0) filtersToSave.employment_types = employmentTypes; // Use consistent key name
-
-                 const salaryFrom = document.getElementById('salaryFrom')?.value;
-                 const salaryTo = document.getElementById('salaryTo')?.value;
-                 if (salaryFrom || salaryTo) filtersToSave.salaryRange = { from: salaryFrom || null, to: salaryTo || null };
-
-                 const applicationDeadline = document.getElementById('deadlineDate')?.value;
-                 if (applicationDeadline) filtersToSave.applicationDeadline = applicationDeadline;
-                break;
-
-             // Add cases for 'Båt', 'MC' if they have savable filters
-         }
-         // *** END: CORRECTED FILTER GATHERING ***
-
-
-         // 4. Send ONLY the relevant filters to the backend
-         try {
-             const response = await fetch('/api/saved-searches', {
-                 method: 'POST',
-                 headers: { 'Content-Type': 'application/json' },
-                 body: JSON.stringify({
-                     search_name: searchName,
-                     category: category, // Send the correct category
-                     filters: filtersToSave // Send the filtered object
-                 })
+                 // ... existing save logic ...
              });
-
-             if (!response.ok) {
-                 const errorData = await response.json();
-                 throw new Error(errorData.message || 'Failed to save search.');
-             }
-
-             const result = await response.json();
-             window.toast.show(`Search '${result.search_name}' saved successfully!`, 'success');
-
-         } catch (error) {
-             console.error("Error saving search:", error);
-             window.toast.show(`Error: ${error.message}`, 'error');
          }
-     });
- }
+       */
+       // --- END REMOVAL ---
+
+
+        // --- ADD THIS DELEGATED LISTENER ---
+        document.body.addEventListener('click', async (event) => {
+            const saveButton = event.target.closest('.save-search-button'); // Check if click was on or inside the button
+            if (!saveButton) {
+                return; // Click wasn't on the save button
+            }
+
+            // --- Existing Save Search Logic START ---
+            // (Copied from the original direct listener)
+            try {
+                const userRes = await fetch('/api/auth/current-user');
+                const userData = await userRes.json();
+                if (!userData || !userData.brukerId) {
+                    window.toast.show('Please log in to save searches.', 'info');
+                    return;
+                }
+            } catch (error) {
+                window.toast.show('Could not verify login status.', 'error');
+                return;
+            }
+
+            const searchName = prompt("Enter a name for this search:");
+            if (!searchName || searchName.trim() === '') {
+                window.toast.show('Search not saved (no name provided).', 'warning');
+                return;
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const category = urlParams.get('category');
+
+            if (!category) {
+                window.toast.show('Cannot save search: Category not identified.', 'error');
+                return;
+            }
+
+            const filtersToSave = {};
+
+            // --- Add Common Filters (Reads from MAIN panel elements, assuming sync works) ---
+            const selectedCountries = Array.from(
+                document.querySelectorAll('#mainSidePanel .country-list > li > div > input[type="checkbox"]:checked') // Read from main panel
+            ).map(cb => cb.value);
+            if (selectedCountries.length > 0) filtersToSave.countries = selectedCountries;
+
+            const selectedCities = Array.from(document.querySelectorAll('#mainSidePanel .city-list input[type="checkbox"]:checked')).map(cb => cb.value); // Read from main panel
+            if (selectedCities.length > 0) filtersToSave.cities = selectedCities;
+
+            // --- Add Category-Specific Filters (Reads from MAIN panel elements) ---
+            switch (category) {
+                case 'Torget':
+                    const subCategory = document.getElementById('subCategoryFilter')?.value; // Read from main filter bar
+                    if (subCategory) filtersToSave.subCategory = subCategory;
+                    break;
+
+                case 'Bil':
+                    const selectedCarBrands = Array.from(document.querySelectorAll('#mainSidePanel .car-brand-list input[type="checkbox"]:checked')).map(cb => cb.value); // Read from main panel
+                    if (selectedCarBrands.length > 0) filtersToSave.car_brands = selectedCarBrands;
+
+                    const yearFrom = document.getElementById('yearFrom')?.value; // Read from main panel
+                    const yearTo = document.getElementById('yearTo')?.value;     // Read from main panel
+                    if (yearFrom || yearTo) filtersToSave.yearRange = { from: yearFrom || null, to: yearTo || null };
+
+                    const mileageFrom = document.getElementById('mileageFrom')?.value; // Read from main panel
+                    const mileageTo = document.getElementById('mileageTo')?.value;     // Read from main panel
+                    if (mileageFrom || mileageTo) filtersToSave.mileageRange = { from: mileageFrom || null, to: mileageTo || null };
+
+                    const fuelTypes = Array.from(document.getElementById('fuelTypeFilter')?.selectedOptions || []).map(opt => opt.value); // Read from main panel
+                    if (fuelTypes.length > 0) filtersToSave.fuel_types = fuelTypes;
+
+                    const transmissionTypes = Array.from(document.getElementById('transmissionFilter')?.selectedOptions || []).map(opt => opt.value); // Read from main panel
+                    if (transmissionTypes.length > 0) filtersToSave.transmission_types = transmissionTypes;
+                    break;
+
+                case 'Eiendom':
+                    const propertyTypes = Array.from(document.getElementById('propertyTypeFilter')?.selectedOptions || []).map(opt => opt.value); // Read from main panel
+                    if (propertyTypes.length > 0) filtersToSave.property_types = propertyTypes;
+
+                    const sizeSqmFrom = document.getElementById('sizeSqmFrom')?.value; // Read from main panel
+                    const sizeSqmTo = document.getElementById('sizeSqmTo')?.value;     // Read from main panel
+                    if (sizeSqmFrom || sizeSqmTo) filtersToSave.sizeRange = { from: sizeSqmFrom || null, to: sizeSqmTo || null };
+
+                    const numRoomsFrom = document.getElementById('numRoomsFrom')?.value; // Read from main panel
+                    const numRoomsTo = document.getElementById('numRoomsTo')?.value;     // Read from main panel
+                    if (numRoomsFrom || numRoomsTo) filtersToSave.roomsRange = { from: numRoomsFrom || null, to: numRoomsTo || null };
+
+                    const numBathroomsFrom = document.getElementById('numBathroomsFrom')?.value; // Read from main panel
+                    const numBathroomsTo = document.getElementById('numBathroomsTo')?.value;     // Read from main panel
+                    if (numBathroomsFrom || numBathroomsTo) filtersToSave.bathroomsRange = { from: numBathroomsFrom || null, to: numBathroomsTo || null };
+
+                    const energyClasses = Array.from(document.getElementById('energyClassFilter')?.selectedOptions || []).map(opt => opt.value); // Read from main panel
+                    if (energyClasses.length > 0) filtersToSave.energy_classes = energyClasses;
+                    break;
+
+                case 'Jobb':
+                    const employmentTypes = Array.from(document.getElementById('employmentTypeFilter')?.selectedOptions || []).map(opt => opt.value); // Read from main panel
+                    if (employmentTypes.length > 0) filtersToSave.employment_types = employmentTypes;
+
+                    const salaryFrom = document.getElementById('salaryFrom')?.value; // Read from main panel
+                    const salaryTo = document.getElementById('salaryTo')?.value;     // Read from main panel
+                    if (salaryFrom || salaryTo) filtersToSave.salaryRange = { from: salaryFrom || null, to: salaryTo || null };
+
+                    const applicationDeadline = document.getElementById('deadlineDate')?.value; // Read from main panel
+                    if (applicationDeadline) filtersToSave.applicationDeadline = applicationDeadline;
+                    break;
+            }
+
+            try {
+                const response = await fetch('/api/saved-searches', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        search_name: searchName,
+                        category: category,
+                        filters: filtersToSave
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to save search.');
+                }
+
+                const result = await response.json();
+                window.toast.show(`Search '${result.search_name}' saved successfully!`, 'success');
+
+            } catch (error) {
+                console.error("Error saving search:", error);
+                window.toast.show(`Error: ${error.message}`, 'error');
+            }
+            // --- Existing Save Search Logic END ---
+        });
+        // --- END ADDED LISTENER ---
+
 
 function applyFiltersFromURL() {
     const urlParams = new URLSearchParams(window.location.search);
-    console.log("Applying filters from URL parameters:", urlParams.toString());
 
     let filtersApplied = false; // Flag to see if we actually changed anything
 
@@ -1627,7 +1639,6 @@ function applyFiltersFromURL() {
         // Add cases for Båt, MC if needed
     }
 
-     console.log("Finished applying URL filters. Filters Applied:", filtersApplied);
     return filtersApplied; // Return true if any UI element was changed
 }
         async function initializeCountries() {
@@ -1645,7 +1656,6 @@ function applyFiltersFromURL() {
         const hasCountryCheckboxes = countryList.querySelector('li > div > input[type="checkbox"][id]:not([id^="city_"])'); // Look for a country ID, not a city ID
 
         if (isAlreadyInitialized || hasCountryCheckboxes) {
-            console.log(`initializeCountries: Skipping initialization. Already initialized: ${isAlreadyInitialized}, Found existing country checkboxes: ${!!hasCountryCheckboxes}`);
             // If it has checkboxes but isn't marked initialized, mark it now?
             if (hasCountryCheckboxes && !isAlreadyInitialized) {
                 countryList.dataset.initialized = 'true';
@@ -1659,7 +1669,6 @@ function applyFiltersFromURL() {
             .then(response => response.json())
             .then(countries => {
                   if (countries.length === 0) {
-                     console.log("initializeCountries: Received 0 countries.");
                      countryList.innerHTML = '<li>No countries available.</li>';
                      countryList.dataset.initialized = 'true'; // Mark as initialized even if empty
                      return;
@@ -1667,7 +1676,6 @@ function applyFiltersFromURL() {
 
                 // *** Mark as initialized AFTER successfully adding elements ***
                 countryList.dataset.initialized = 'true';
-                console.log("initializeCountries: Marked list as initialized.");
 
                     countries.forEach(countryData => {
                         const countryItem = document.createElement('li');
@@ -1729,7 +1737,6 @@ function applyFiltersFromURL() {
         const hasBrandCheckboxes = container.querySelector('li > div > input[type="checkbox"][id^="brand_"]');
 
         if (isAlreadyInitialized || hasBrandCheckboxes) {
-             console.log(`initializeCarBrands: Skipping initialization. Initialized: ${isAlreadyInitialized}, Found existing checkboxes: ${!!hasBrandCheckboxes}`);
              if(hasBrandCheckboxes && !isAlreadyInitialized) container.dataset.initialized = 'true';
              return Promise.resolve();
         }
@@ -1740,11 +1747,9 @@ function applyFiltersFromURL() {
                 .then(response => response.json())
                 .then(brands => {
                     if (!brands || brands.length === 0) {
-                        console.log("No car brands received");
                         return;
                     }
 
-                    console.log("Loading car brands:", brands.length);
                     brands.forEach(brand => {
                         const li = document.createElement('li');
                         li.innerHTML = `
@@ -1892,7 +1897,6 @@ function applyFiltersFromURL() {
                     const drawerSelect = offcanvasSidePanel.querySelector(`select[data-sync-id="${selectId}"]`); // Find by data-sync-id
                     if (mainSelect && drawerSelect) {
                         drawerSelect.value = mainSelect.value; // Set drawer value to match main value
-                        console.log(`Synced ${selectId}: Main=${mainSelect.value}, Drawer=${drawerSelect.value}`); // Debug log
                     }
                 });
                 // --- END: Sync Select Values ---

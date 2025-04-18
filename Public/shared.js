@@ -315,7 +315,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- Language Selector Logic ---
-    const languageSelect = document.getElementById('languageSelect');
+    /*const languageSelect = document.getElementById('languageSelect');
     if (languageSelect) {
         // Load saved language or default to browser/English
         const savedLang = localStorage.getItem('preferredLanguage') || navigator.language.split('-')[0] || 'en';
@@ -346,6 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert("Could not save your language preference due to a browser issue.");
             }
         });
-    } 
+        
+    } */
 
 }); 
