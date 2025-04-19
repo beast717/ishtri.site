@@ -215,7 +215,6 @@ router.post('/login', async (req, res, next) => {
                 return next(err);
             }
             // Session is saved, now send the success response
-            console.log('Session saved successfully for user:', req.session.user.brukernavn);
             res.json({ message: 'Login successful', user: req.session.user }); // Send user object back if frontend needs it
         });
         // --- End session save ---
