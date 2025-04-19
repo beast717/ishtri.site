@@ -120,19 +120,24 @@ router.post('/signup', async (req, res, next) => {
 
     } catch (err) {
         // --- Main Error Handling ---
-        // Log the error regardless of type
         console.error("Signup Process Error:", err);
 
-        // Check if the error came specifically from the mail sending block
-        // (This check might need adjustment based on how mailError looks)
-        if (err.code && (err.code === 'EENVELOPE' || err.command || typeof err.responseCode === 'number')) { // Basic check for Nodemailer error properties
+        // Check if headers have already been sent (just in case, though unlikely here)
+        if (res.headersSent) {
+            // If headers are sent, we can't send another response,
+            // but we should still log and potentially pass to the *next* error handler
+            // if there was one after the global one (which there isn't usually).
+            // For safety, just return or call next without sending response.
+            return next(err); // Or just return; if no further error handling needed
+        }
+
+        // Send appropriate error response
+        if (err.code && (err.code === 'EENVELOPE' || err.command || typeof err.responseCode === 'number')) {
              res.status(500).json({ message: 'Account processed, but there was an issue sending the verification email. Please try registering again shortly or contact support if the problem persists.' });
         } else {
-            // Handle other potential errors (DB errors, etc.)
             res.status(500).json({ message: 'An internal error occurred during signup.' });
         }
-        // Optional: Pass to Express error handling middleware if you have one configured
-        next(err);
+        // REMOVE THE next(err); CALL FROM HERE
     }
 });
 
