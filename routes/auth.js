@@ -202,7 +202,21 @@ router.post('/login', async (req, res, next) => {
         req.session.brukerId = user.brukerId; // Keep for backward compatibility if needed
         req.session.brukernavn = user.brukernavn; // Keep for backward compatibility
 
-        res.json({ message: 'Login successful' });
+        // --- Explicitly save the session before responding ---
+        req.session.save((err) => {
+            if (err) {
+                console.error("Session save error during login:", err);
+                // Pass the error to the main error handler
+                return next(err);
+            }
+            // Session is saved, now send the success response
+            console.log('Session saved successfully for user:', req.session.user.brukernavn);
+            res.json({ message: 'Login successful', user: req.session.user }); // Send user object back if frontend needs it
+        });
+        // --- End session save ---
+
+        // REMOVE any res.json() or similar response that was here before adding req.session.save()
+
     } catch (err) {
         next(err);
     }
