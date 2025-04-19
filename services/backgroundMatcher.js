@@ -32,7 +32,6 @@ async function checkNewProductsForMatches(io, getActiveUsersMap) {
             query += ` WHERE p.Date > ? ORDER BY p.Date ASC`; // Process oldest first within the batch
             params.push(lastCheckTimestamp);
         } else {
-            console.log("BackgroundMatcher: First run or restart detected. Will process products created from now on.");
             // Initialize timestamp to current time so the *next* run picks up new items
             lastCheckTimestamp = currentCheckTime;
             // Potentially persist this initial timestamp immediately
@@ -67,7 +66,6 @@ async function checkNewProductsForMatches(io, getActiveUsersMap) {
              // Consider persisting lastCheckTimestamp here
 
          } else {
-              console.log(`BackgroundMatcher: No new products found since last check.`);
               // Keep lastCheckTimestamp as is, no need to update to currentCheckTime
          }
 

@@ -264,7 +264,6 @@
                         initializeFavorites();
                     })
                     .catch(err => {
-                        console.error("Error loading products:", err);
                         randomProductsContainer.innerHTML = '<p>Error loading products. Please try again.</p>';
                         window.toast.show('Error loading products. Please try again.', 'error');
                     });
@@ -308,7 +307,7 @@
                                     });
                                 })
                                 .catch(error => {
-                                    console.error("Error fetching or processing favorites:", error);
+console.error("Error fetching or processing favorites:", error);
                                     // Ensure icons are in default state on error
                                     document.querySelectorAll('.favorite-icon').forEach(icon => {
                                         icon.classList.remove('favorited');
@@ -317,7 +316,6 @@
                                 });
                         } else {
                             // User is not logged in, set all icons to default state
-                            console.log("User not logged in, skipping favorite status check.");
                             document.querySelectorAll('.favorite-icon').forEach(icon => {
                                 icon.classList.remove('favorited');
                                 icon.style.color = '#ccc';
@@ -325,7 +323,6 @@
                         }
                     })
                     .catch(error => {
-                        console.error("Error checking user session for favorites:", error);
                         // Ensure icons are in default state on error
                         document.querySelectorAll('.favorite-icon').forEach(icon => {
                             icon.classList.remove('favorited');
@@ -375,12 +372,10 @@
                             );
                         })
                         .catch(error => {
-                            console.error("Error handling favorite:", error);
                             window.toast.show('Error updating favorites. Please try again.', 'error');
                         });
                     })
                     .catch(error => {
-                        console.error("Error checking user session:", error);
                         window.toast.show('Error checking authentication. Please try again.', 'error');
                     });
             }
@@ -396,10 +391,8 @@
                         if (typeof checkUnreadMessages === 'function') {
                              checkUnreadMessages();
                         } else {
-                            console.warn("checkUnreadMessages function not found in shared.js");
                         }
                     } else {
-                        console.log("User not logged in, skipping unread message check.");
                         // Optionally update UI to show 0 notifications if needed
                          if (typeof updateNotificationBadge === 'function') {
                             updateNotificationBadge(0);

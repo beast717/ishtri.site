@@ -468,7 +468,6 @@
                             window.toast.show('Failed to update favorites', 'error');
                         }
                     } catch (error) {
-                        console.error("Error handling favorite:", error);
                         window.toast.show('An error occurred', 'error');
                     }
                 });
@@ -634,7 +633,6 @@
                  }
             })
                 .catch(error => {
-                    console.error("Error fetching products:", error);
                     isLoading = false;
                     const container = document.getElementById('productsContainer');
                     container.innerHTML = `
@@ -1517,7 +1515,6 @@ function setupFilterListeners() {
                 window.toast.show(`Search '${result.search_name}' saved successfully!`, 'success');
 
             } catch (error) {
-                console.error("Error saving search:", error);
                 window.toast.show(`Error: ${error.message}`, 'error');
             }
             // --- Existing Save Search Logic END ---
@@ -1645,7 +1642,6 @@ function applyFiltersFromURL() {
         const countryList = document.querySelector('.country-list');
 
         if (!countryList) {
-            console.error("initializeCountries: CRITICAL - Could not find '.country-list'.");
             return Promise.reject("Country list container not found");
         }
 
@@ -1721,7 +1717,6 @@ function applyFiltersFromURL() {
                     });
                 })
                 .catch(error => {
-                     console.error("initializeCountries: CATCH block.", error);
                 countryList.innerHTML = `<li style="color: red;">Error: ${error.message}.</li>`;
                 // Don't mark as initialized on error
                 delete countryList.dataset.initialized;
@@ -1765,7 +1760,6 @@ function applyFiltersFromURL() {
                     });
                 })
                 .catch(error => {
-                    console.error("Error loading car brands:", error);
                     container.innerHTML = '<p>Error loading car brands</p>';
                     return Promise.resolve();
                 });
@@ -1782,7 +1776,7 @@ function applyFiltersFromURL() {
                         icon.style.color = isFavorited ? '#ff4757' : '#ccc';
                     });
                 })
-                .catch(error => console.error("Error checking favorites:", error));
+                .catch(error => {});
         }
 
         function showSkeletonLoading() {
@@ -1848,7 +1842,6 @@ function applyFiltersFromURL() {
             }
 
         } catch (error) {
-            console.error("Error during page initialization:", error);
             // Display a user-friendly error message on the page if appropriate
             const container = document.getElementById('productsContainer');
             if(container) container.innerHTML = "<p class='error-message'>An error occurred loading the page. Please try refreshing.</p>";
@@ -2016,7 +2009,6 @@ function applyFiltersFromURL() {
                 const mainElement = document.getElementById(mainId);
 
                 if (!mainElement) {
-                     console.warn("Drawer Change: Could not find corresponding main element for ID:", mainId);
                      return; // Cannot sync if main element doesn't exist
                 }
 

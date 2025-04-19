@@ -511,7 +511,6 @@
         // Authenticate user - Get user ID safely
         const currentUserId = getUserID(); // Use helper function
         if (!currentUserId) {
-             console.error("User ID not found. Cannot authenticate.");
              // Handle case where user ID isn't available (e.g., show error, redirect)
              return; // Stop initialization if no user ID
         }
