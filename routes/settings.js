@@ -3,6 +3,12 @@ const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
 const { isAuthenticated } = require('./auth'); // Use your auth middleware
+const { body, validationResult } = require('express-validator'); // <-- Import validator functions
+
+// --- Validation Chain ---
+const updateEmailPrefValidation = [
+    body('enabled').isBoolean().withMessage('Invalid value for "enabled". Must be true or false.'),
+];
 
 // GET current email notification preference
 router.get('/email-preference', isAuthenticated, async (req, res, next) => {
@@ -26,19 +32,24 @@ router.get('/email-preference', isAuthenticated, async (req, res, next) => {
 });
 
 // PUT update email notification preference
-router.put('/email-preference', isAuthenticated, async (req, res, next) => {
+router.put('/email-preference', isAuthenticated, updateEmailPrefValidation, async (req, res, next) => { // <-- Add validation middleware
+    // --- Validation Check ---
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        // Use the message from the validator
+        return res.status(400).json({ message: errors.array()[0].msg });
+    }
+    // --- End Validation Check ---
+
     try {
         const userId = req.session.user?.brukerId || req.session.brukerId;
-        const { enabled } = req.body; // Expecting { "enabled": true } or { "enabled": false }
+        const { enabled } = req.body; // Use validated data
 
-        // Validate input
-        if (typeof enabled !== 'boolean') {
-            return res.status(400).json({ message: 'Invalid value for "enabled". Must be true or false.' });
-        }
+        // Validation handled by express-validator
 
         const [result] = await pool.promise().query(
             'UPDATE brukere SET email_notifications_enabled = ? WHERE brukerId = ?',
-            [enabled, userId]
+            [enabled, userId] // Use validated boolean
         );
 
         if (result.affectedRows === 0) {

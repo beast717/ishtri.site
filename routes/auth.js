@@ -10,6 +10,7 @@ const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const crypto = require('crypto'); // <-- Add crypto for token generation
 const validator = require('validator'); // <-- Add validator
+const { body, validationResult, check } = require('express-validator'); // <-- Import validator functions
 
 // Authentication middleware
 const isAuthenticated = (req, res, next) => {
@@ -19,10 +20,56 @@ const isAuthenticated = (req, res, next) => {
 
 const VERIFICATION_REQUIRED_AFTER_DATE = new Date('2025-03-04T12:16:01Z');
 
+// Validation chains
+const signupValidation = [
+    body('brukernavn').trim().notEmpty().withMessage('Username is required').isLength({ min: 3 }).withMessage('Username must be at least 3 characters long'),
+    body('email').trim().isEmail().withMessage('Invalid email format').normalizeEmail(),
+    body('passord').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
+    body('confirmPassword').custom((value, { req }) => {
+        if (value !== req.body.passord) {
+            throw new Error('Passwords do not match');
+        }
+        return true;
+    }),
+    // Honeypot check - no explicit validation needed, just check if it exists
+];
+
+const loginValidation = [
+    body('brukernavn').trim().notEmpty().withMessage('Username/Email is required'), // Can be username or email
+    body('passord').notEmpty().withMessage('Password is required'),
+];
+
+const googleLoginValidation = [
+    body('credential').notEmpty().withMessage('Google credential token is required'),
+];
+
+const forgotPasswordValidation = [
+    body('email').trim().isEmail().withMessage('Invalid email format').normalizeEmail(),
+];
+
+const resetPasswordValidation = [
+    body('email').trim().isEmail().withMessage('Invalid email format').normalizeEmail(), // Hidden field, but validate anyway
+    body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters long'),
+    body('confirmPassword').custom((value, { req }) => {
+        if (value !== req.body.newPassword) {
+            throw new Error('Passwords do not match');
+        }
+        return true;
+    }),
+];
+
 // User registration with Email Verification
-router.post('/signup', async (req, res, next) => {
+router.post('/signup', signupValidation, async (req, res, next) => { // <-- Add validation middleware
     // Use a single main try...catch for overall request handling
     try {
+        // --- Validation Check ---
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            // Return only the first error message for simplicity
+            return res.status(400).json({ message: errors.array()[0].msg });
+        }
+        // --- End Validation Check ---
+
         const { brukernavn, email, passord, confirmPassword, confirm_email /* Honeypot field name */ } = req.body;
 
         // --- Honeypot Check ---
@@ -142,8 +189,15 @@ router.post('/signup', async (req, res, next) => {
 });
 
 // User login
-router.post('/login', async (req, res, next) => {
+router.post('/login', loginValidation, async (req, res, next) => { // <-- Add validation middleware
     try {
+        // --- Validation Check ---
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ message: errors.array()[0].msg });
+        }
+        // --- End Validation Check ---
+
         const { brukernavn, passord } = req.body;
 
         if (!brukernavn || !passord) {
@@ -227,8 +281,15 @@ router.post('/login', async (req, res, next) => {
 });
 
 // Google login
-router.post('/google', async (req, res, next) => {
+router.post('/google', googleLoginValidation, async (req, res, next) => { // <-- Add validation middleware
     try {
+        // --- Validation Check ---
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ message: errors.array()[0].msg });
+        }
+        // --- End Validation Check ---
+
         const { credential } = req.body;
         const ticket = await client.verifyIdToken({ 
             idToken: credential,
@@ -309,8 +370,17 @@ router.post('/google', async (req, res, next) => {
 });
 
 // Password reset handling
-router.post('/forgot-password', async (req, res, next) => {
+router.post('/forgot-password', forgotPasswordValidation, async (req, res, next) => { // <-- Add validation middleware
     try {
+        // --- Validation Check ---
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            // Maybe render an error page or send a specific response for UI
+            // For now, sending JSON, but the original sends HTML. Adjust as needed.
+            return res.status(400).json({ message: errors.array()[0].msg });
+        }
+        // --- End Validation Check ---
+
         const { email } = req.body;
         const [results] = await pool.promise().query(
             'SELECT * FROM brukere WHERE email = ?',
@@ -342,8 +412,17 @@ router.post('/forgot-password', async (req, res, next) => {
 });
 
 // Password reset confirmation
-router.post('/reset-password', async (req, res, next) => {
+router.post('/reset-password', resetPasswordValidation, async (req, res, next) => { // <-- Add validation middleware
     try {
+        // --- Validation Check ---
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            // Send error message back to the reset form page (which needs JS to display it)
+            // Or render an error page. Sending plain text for now.
+            return res.status(400).send(`Error: ${errors.array()[0].msg}. <a href="javascript:history.back()">Go Back</a>`);
+        }
+        // --- End Validation Check ---
+
         const { email, newPassword, confirmPassword } = req.body;
         
         if (newPassword !== confirmPassword) {
@@ -359,7 +438,10 @@ router.post('/reset-password', async (req, res, next) => {
         
         res.send('Password updated. <a href="/login">Login</a>');
     } catch (err) {
-        next(err);
+        // ...existing code...
+        // Consider sending a user-friendly error page here too
+        res.status(500).send('An error occurred while resetting the password. <a href="javascript:history.back()">Go Back</a>');
+        // next(err); // Avoid calling next if response is sent
     }
 });
 
