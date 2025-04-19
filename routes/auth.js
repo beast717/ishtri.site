@@ -377,10 +377,21 @@ router.get('/reset-password', (req, res, next) => {
 
 // Get current user
 router.get('/current-user', (req, res) => {
-    res.json({ 
-        brukernavn: req.session.brukernavn || null,
-        brukerId: req.session.brukerId || null
-    });
+    // Check if the user object exists in the session
+    if (req.session.user) {
+        // Send the user object stored during login
+        res.json(req.session.user);
+    } else {
+        // Send null values if no user is logged in
+        res.json({
+            brukernavn: null,
+            brukerId: null,
+            // Add other fields expected by the frontend in a logged-out state if necessary
+            email: null,
+            profilepic: null,
+            is_verified: null
+        });
+    }
 });
 
 // Logout
