@@ -428,12 +428,12 @@
                     <!-- ... (product fields) ... -->
                     <div class="form-group">
                         <label for="ProductName" data-i18n="form.product_name">Product Name <span class="required">*</span></label>
-                        <input type="text" id="ProductName" name="ProductName"> <!-- Removed required initially -->
+                        <input type="text" id="ProductName" name="ProductName" data-i18n="[placeholder]form.product_name_placeholder" placeholder="e.g., Used Sofa, iPhone X"> <!-- Added placeholder -->
                         <div class="error-message" id="ProductNameError"></div>
                     </div>
                     <div class="form-group">
                         <label for="Price" data-i18n="form.price">Price</label>
-                        <input type="number" id="Price" name="TorgetPrice" >
+                        <input type="number" id="Price" name="TorgetPrice" data-i18n="[placeholder]form.price_placeholder" placeholder="e.g., 1500"> <!-- Added placeholder -->
                         <div class="error-message" id="PriceError"></div> <!-- Added -->
                     </div>
                     <div class="form-group">
@@ -448,7 +448,7 @@
                     </div>
                     <div class="form-group">
                         <label for="Description" data-i18n="form.description">Description</label>
-                        <textarea id="Description" name="Description" ></textarea>
+                        <textarea id="Description" name="Description" data-i18n="[placeholder]form.description_placeholder_product" placeholder="Describe the item's condition, features, etc."></textarea> <!-- Added placeholder -->
                     </div>
                 </div>
                 <div id="jobFields" style="display: none;">
@@ -456,12 +456,12 @@
                     <h3 data-i18n="form.job_details">Job Details</h3>
                     <div class="form-group">
                         <label for="JobTitle" data-i18n="form.job_title">Job Title <span class="required">*</span></label>
-                        <input type="text" id="JobTitle" name="JobTitle"> <!-- Removed required initially -->
+                        <input type="text" id="JobTitle" name="JobTitle" data-i18n="[placeholder]form.job_title_placeholder" placeholder="e.g., Software Engineer, Marketing Manager"> <!-- Added placeholder -->
                         <div class="error-message" id="JobTitleError"></div>
                     </div>
                     <div class="form-group">
                         <label for="CompanyName" data-i18n="form.company_name">Company Name</label>
-                        <input type="text" id="CompanyName" name="CompanyName" >
+                        <input type="text" id="CompanyName" name="CompanyName" data-i18n="[placeholder]form.company_name_placeholder" placeholder="e.g., Tech Solutions Inc."> <!-- Added placeholder -->
                     </div>
                     <div class="form-group">
                         <label for="EmploymentType" data-i18n="form.employment_type">Employment Type</label>
@@ -499,12 +499,12 @@
                     <h3 data-i18n="property.details">Property Details</h3>
                     <div class="form-group">
                         <label for="propertyTitle" data-i18n="form.title">Title <span class="required">*</span></label>
-                        <input type="text" id="propertyTitle" name="ProductName"> <!-- Removed required initially -->
+                        <input type="text" id="propertyTitle" name="ProductName" data-i18n="[placeholder]property.title_placeholder" placeholder="e.g., Modern Apartment Downtown, Cozy House with Garden"> <!-- Added placeholder -->
                         <div class="error-message" id="propertyTitleError"></div>
                     </div>
                     <div class="form-group">
                         <label for="PropertyPrice" data-i18n="form.price">Price</label>
-                        <input type="number" id="PropertyPrice" name="EiendomPrice" >
+                        <input type="number" id="PropertyPrice" name="EiendomPrice" data-i18n="[placeholder]form.price_placeholder" placeholder="e.g., 3500000"> <!-- Added placeholder -->
                         <div class="error-message" id="PropertyPriceError"></div> <!-- Added -->
                     </div>
                     <div class="form-group">
@@ -520,15 +520,15 @@
                     </div>
                     <div class="form-group">
                         <label for="SizeSqm" data-i18n="property.size">Size (m²)</label>
-                        <input type="number" id="SizeSqm" name="SizeSqm" >
+                        <input type="number" id="SizeSqm" name="SizeSqm" data-i18n="[placeholder]property.size_placeholder" placeholder="e.g., 85"> <!-- Added placeholder -->
                     </div>
                     <div class="form-group">
                         <label for="NumRooms" data-i18n="property.rooms">Number of Bedrooms</label>
-                        <input type="number" id="NumRooms" name="NumRooms" >
+                        <input type="number" id="NumRooms" name="NumRooms" data-i18n="[placeholder]property.rooms_placeholder" placeholder="e.g., 3"> <!-- Added placeholder -->
                     </div>
                     <div class="form-group">
                         <label for="NumBathrooms" data-i18n="property.bathrooms">Number of Bathrooms</label>
-                        <input type="number" id="NumBathrooms" name="NumBathrooms" >
+                        <input type="number" id="NumBathrooms" name="NumBathrooms" data-i18n="[placeholder]property.bathrooms_placeholder" placeholder="e.g., 2"> <!-- Added placeholder -->
                     </div>
                     <div class="form-group">
                         <label data-i18n="amenities.title">Amenities</label>
@@ -557,7 +557,7 @@
                     </div>
                     <div class="form-group">
                         <label for="YearBuilt" data-i18n="property.year_built">Year Built</label>
-                        <input type="number" id="YearBuilt" name="YearBuilt" >
+                        <input type="number" id="YearBuilt" name="YearBuilt" data-i18n="[placeholder]property.year_built_placeholder" placeholder="e.g., 2010"> <!-- Added placeholder -->
                     </div>
                     <div class="form-group">
                         <label for="EnergyClass" data-i18n="property.energy_class">Energy Class</label>
@@ -572,7 +572,7 @@
                     </div>
                     <div class="form-group">
                         <label for="PropertyDescription" data-i18n="form.description">Description (Optional)</label>
-                        <textarea id="PropertyDescription" name="Description" rows="4" placeholder="Add a description of your property..."></textarea>
+                        <textarea id="PropertyDescription" name="Description" rows="4" data-i18n="[placeholder]property.description_placeholder" placeholder="Add a description of your property..."></textarea> <!-- Added placeholder -->
                     </div>
                 </div>
                 <div id="carFields" style="display: none;">
@@ -580,7 +580,7 @@
                     <h3 data-i18n="form.car_details">Car Details</h3>
                     <div class="form-group">
                         <label for="car-ProductName" data-i18n="form.title">Title <span class="required">*</span></label>
-                        <input type="text" id="car-ProductName" name="ProductName"> <!-- Removed required initially -->
+                        <input type="text" id="car-ProductName" name="ProductName" data-i18n="[placeholder]form.car_title_placeholder" placeholder="e.g., Well-maintained VW Golf 2018"> <!-- Added placeholder -->
                         <div class="error-message" id="car-ProductNameError"></div>
                     </div>
                     <div class="form-group">
@@ -599,15 +599,15 @@
                     </div>
                     <div class="form-group">
                         <label for="Year" data-i18n="form.year">Year</label>
-                         <input type="number" id="Year" name="Year" >
+                         <input type="number" id="Year" name="Year" data-i18n="[placeholder]form.year_placeholder" placeholder="e.g., 2018"> <!-- Added placeholder -->
                     </div>
                     <div class="form-group">
                         <label for="Mileage" data-i18n="form.mileage">Mileage</label>
-                        <input type="number" id="Mileage" name="Mileage" >
+                        <input type="number" id="Mileage" name="Mileage" data-i18n="[placeholder]form.mileage_placeholder" placeholder="e.g., 55000"> <!-- Added placeholder -->
                     </div>
                     <div class="form-group">
                         <label for="car-Price" data-i18n="form.price">Price</label>
-                        <input type="number" id="car-Price" name="BilPrice"> <!-- Removed pattern -->
+                        <input type="number" id="car-Price" name="BilPrice" data-i18n="[placeholder]form.price_placeholder" placeholder="e.g., 180000"> <!-- Added placeholder -->
                         <div class="error-message" id="car-PriceError"></div> <!-- Added -->
                     </div>
                     <div class="form-group">
@@ -630,41 +630,41 @@
                     </div>
                     <div class="form-group">
                         <label for="car-Description" data-i18n="form.description">Description</label>
-                        <textarea id="car-Description" name="Description" ></textarea>
+                        <textarea id="car-Description" name="Description" data-i18n="[placeholder]form.description_placeholder_car" placeholder="Describe the car's condition, features, service history, etc."></textarea> <!-- Added placeholder -->
                     </div>
                 </div>
                  <div id="boatFields" style="display: none;">
                     <h3 data-i18n="form.boat_details">Boat Details</h3>
                     <div class="form-group">
                         <label for="BoatProductName" data-i18n="form.product_name">Product Name <span class="required">*</span></label>
-                        <input type="text" id="BoatProductName" name="ProductName"> <!-- Removed required initially -->
+                        <input type="text" id="BoatProductName" name="ProductName" data-i18n="[placeholder]form.boat_name_placeholder" placeholder="e.g., Askeladden C65 Cruiser, Yamaha Outboard Motor"> <!-- Added placeholder -->
                         <div class="error-message" id="BoatProductNameError"></div>
                     </div>
                     <div class="form-group">
                         <label for="BoatPrice" data-i18n="form.price">Price</label>
-                        <input type="number" id="BoatPrice" name="BåtPrice"> <!-- Changed name -->
+                        <input type="number" id="BoatPrice" name="BåtPrice" data-i18n="[placeholder]form.price_placeholder" placeholder="e.g., 450000"> <!-- Added placeholder -->
                         <div class="error-message" id="BoatPriceError"></div> <!-- Added -->
                     </div>
                     <div class="form-group">
                         <label for="BoatDescription" data-i18n="form.description">Description</label>
-                        <textarea id="BoatDescription" name="Description"></textarea>
+                        <textarea id="BoatDescription" name="Description" data-i18n="[placeholder]form.description_placeholder_boat" placeholder="Describe the boat's condition, equipment, engine hours, etc."></textarea> <!-- Added placeholder -->
                     </div>
                 </div>
                 <div id="mcFields" style="display: none;">
                     <h3 data-i18n="form.mc_details">MC Details</h3>
                     <div class="form-group">
                         <label for="MCProductName" data-i18n="form.product_name">Product Name <span class="required">*</span></label>
-                        <input type="text" id="MCProductName" name="ProductName"> <!-- Removed required initially -->
+                        <input type="text" id="MCProductName" name="ProductName" data-i18n="[placeholder]form.mc_name_placeholder" placeholder="e.g., Yamaha MT-07 2020, Harley Davidson Sportster"> <!-- Added placeholder -->
                         <div class="error-message" id="MCProductNameError"></div>
                     </div>
                     <div class="form-group">
                         <label for="MCPrice" data-i18n="form.price">Price</label>
-                        <input type="number" id="MCPrice" name="MCPrice"> <!-- Changed name -->
+                        <input type="number" id="MCPrice" name="MCPrice" data-i18n="[placeholder]form.price_placeholder" placeholder="e.g., 85000"> <!-- Added placeholder -->
                         <div class="error-message" id="MCPriceError"></div> <!-- Added -->
                     </div>
                     <div class="form-group">
                         <label for="MCDescription" data-i18n="form.description">Description</label>
-                        <textarea id="MCDescription" name="Description"></textarea>
+                        <textarea id="MCDescription" name="Description" data-i18n="[placeholder]form.description_placeholder_mc" placeholder="Describe the motorcycle's condition, mileage, modifications, etc."></textarea> <!-- Added placeholder -->
                     </div>
                 </div>
 
@@ -687,7 +687,7 @@
                 </div>
                 <div class="form-group">
                     <label for="Location" data-i18n="form.location">Location</label>
-                    <input type="text" id="Location" name="Location" >
+                    <input type="text" id="Location" name="Location" data-i18n="[placeholder]form.location_placeholder" placeholder="e.g., Street Name 123, Specific Area"> <!-- Added placeholder -->
                 </div>
 
                 <!-- NEW Drag-and-Drop Upload Area -->
