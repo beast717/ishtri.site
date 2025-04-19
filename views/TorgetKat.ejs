@@ -2,16 +2,47 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="icon" href="ishtri1.png" sizes="16x16 32x32" type="image/png">
+    <link rel="icon" href="/ishtri1.png" sizes="16x16 32x32" type="image/png"> <!-- Use root-relative path -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Universe of Products</title>
-    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- SEO and Social Media Meta Tags -->
+    <!-- Title Tag: Make it dynamic based on the category -->
+    <title><%= typeof category !== 'undefined' ? category : 'Products' %> | Ishtri Marketplace</title>
+
+    <!-- Meta Description: Describe the category page -->
+    <meta name="description" content="Browse and filter products in the <%= typeof category !== 'undefined' ? category : 'selected' %> category on Ishtri. Find items by price, date, location, and more.">
+
+    <!-- Keywords: Include category and related terms -->
+    <meta name="keywords" content="<%= typeof category !== 'undefined' ? category : 'products' %>, Ishtri, marketplace, buy, sell, filter, sort, <%= typeof category !== 'undefined' ? category.toLowerCase() : '' %> listings">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <!-- Construct URL dynamically if possible -->
+    <meta property="og:url" content="https://ishtri.site/torgetkat?category=<%= typeof category !== 'undefined' ? category : '' %>"> <!-- Replace with actual domain -->
+    <meta property="og:title" content="<%= typeof category !== 'undefined' ? category : 'Products' %> | Ishtri Marketplace">
+    <meta property="og:description" content="Browse and filter products in the <%= typeof category !== 'undefined' ? category : 'selected' %> category on Ishtri.">
+    <meta property="og:image" content="https://ishtri.site/ishtri1.png"> <!-- Replace with actual domain and path to a relevant image or logo -->
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary">
+    <meta property="twitter:url" content="https://ishtri.site/torgetkat?category=<%= typeof category !== 'undefined' ? category : '' %>"> <!-- Replace with actual domain -->
+    <meta property="twitter:title" content="<%= typeof category !== 'undefined' ? category : 'Products' %> | Ishtri Marketplace">
+    <meta property="twitter:description" content="Browse and filter products in the <%= typeof category !== 'undefined' ? category : 'selected' %> category on Ishtri.">
+    <meta property="twitter:image" content="https://ishtri.site/ishtri1.png"> <!-- Replace with actual domain and path to a relevant image or logo -->
+
+    <!-- Other Meta Tags -->
+    <meta name="robots" content="index, follow"> <!-- Allow indexing of category pages -->
+    <link rel="canonical" href="https://ishtri.site/torgetkat?category=<%= typeof category !== 'undefined' ? category : '' %>" /> <!-- Replace with actual domain -->
+
+    <!-- Stylesheets and Scripts -->
+    <link rel="stylesheet" href="/css/style.css"> <!-- Use root-relative path -->
     <script src="/js/toast.js" defer></script>
     <script src="/js/skeleton.js" defer></script>
     <script src="/js/backToTop.js" defer></script>
     <script src="/js/lazyLoad.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js" integrity="sha512-UOJe4paV6hYWBnS0c9GnIRH8PLm2nFK22uhfAvsTIqd3uwnWsVri1OPn5fJYdLtGY3wB11LGHJ4yPU1WFJeBYQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 </head>
 <body>

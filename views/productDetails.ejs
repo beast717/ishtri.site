@@ -1,12 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" href="ishtri1.png" sizes="16x16 32x32" type="image/png">
+    <link rel="icon" href="/ishtri1.png" sizes="16x16 32x32" type="image/png"> <!-- Use root-relative path -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details</title>
-    <link rel="stylesheet" href="/css/style.css">
+
+    <!-- SEO and Social Media Meta Tags -->
+    <!-- Title Tag: Be concise and descriptive. Use product name if available. -->
+    <title><%= typeof product !== 'undefined' ? product.ProductName + ' | Ishtri' : 'Product Details | Ishtri' %></title>
+
+    <!-- Meta Description: Summarize the page content for search engines. -->
+    <meta name="description" content="<%= typeof product !== 'undefined' ? 'View details for ' + product.ProductName + ' on Ishtri. Find price, location, description, and contact the owner.' : 'Explore product details on Ishtri. Find information about various items available on our marketplace.' %>">
+
+    <!-- Keywords: Relevant terms for search. -->
+    <meta name="keywords" content="<%= typeof product !== 'undefined' ? product.ProductName + ', ' + product.category + ', buy, sell, marketplace, Ishtri' : 'product details, marketplace, buy, sell, Ishtri' %>">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="product">
+    <meta property="og:url" content="<%= typeof product !== 'undefined' ? 'https://ishtri.site/productDetails?productdID=' + product.ProductdID : 'https:/ishtri.site' %>"> <!-- Replace with actual domain and URL -->
+    <meta property="og:title" content="<%= typeof product !== 'undefined' ? product.ProductName + ' | Ishtri' : 'Product Details | Ishtri' %>">
+    <meta property="og:description" content="<%= typeof product !== 'undefined' ? 'View details for ' + product.ProductName + '.' : 'Explore product details on Ishtri.' %>">
+    <!-- Use the first product image for OG image if available -->
+    <meta property="og:image" content="<%= typeof product !== 'undefined' && product.Images && product.Images.split(',').length > 0 ? '/uploads/' + product.Images.split(',')[0].trim() : '/images/default-product.png' %>"> <!-- Replace with actual domain/path -->
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="<%= typeof product !== 'undefined' ? 'https://ishtri.site/productDetails?productdID=' + product.ProductdID : 'https://ishtri.site' %>"> <!-- Replace with actual domain and URL -->
+    <meta property="twitter:title" content="<%= typeof product !== 'undefined' ? product.ProductName + ' | Ishtri' : 'Product Details | Ishtri' %>">
+    <meta property="twitter:description" content="<%= typeof product !== 'undefined' ? 'View details for ' + product.ProductName + '.' : 'Explore product details on Ishtri.' %>">
+    <!-- Use the first product image for Twitter image if available -->
+    <meta property="twitter:image" content="<%= typeof product !== 'undefined' && product.Images && product.Images.split(',').length > 0 ? '/uploads/' + product.Images.split(',')[0].trim() : '/images/default-product.png' %>"> <!-- Replace with actual domain/path -->
+
+    <!-- Other Meta Tags -->
+    <meta name="robots" content="index, follow"> <!-- Allow search engines to index -->
+    <link rel="canonical" href="<%= typeof product !== 'undefined' ? 'https://ishtri.site/productDetails?productdID=' + product.ProductdID : 'https://ishtri.site' %>" /> <!-- Replace with actual domain and URL -->
+
+    <!-- Stylesheets and Scripts -->
+    <link rel="stylesheet" href="/css/style.css"> <!-- Use root-relative path -->
     <script src="/js/toast.js" defer></script>
     <script src="/js/skeleton.js" defer></script>
     <script src="/js/backToTop.js" defer></script>
