@@ -35,13 +35,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 const cors = require('cors');
-const corsOptions = {
+/*const corsOptions = {
   origin: process.env.NODE_ENV === 'production' 
             ? 'https://ishtri.site' // Replace with your actual frontend URL
             : '*', // Or specify allowed origins for dev if needed
   credentials: true, // Important if you need to send cookies across domains
 };
-app.use(cors(corsOptions));
+*/
+app.use(cors());
 
 const sessionStore = new MySQLStore({}, pool);
 app.use(session({
