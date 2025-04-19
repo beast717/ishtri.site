@@ -11,7 +11,6 @@ function initializeSocket(server) {
         socket.on('authenticate', (userId) => {
             if (!userId) return;
             const userIdStr = String(userId); // Use consistent type for map key
-            console.log(`Authenticating user ${userIdStr} with socket ${socket.id}`);
             activeUsers.set(userIdStr, socket.id);
             // Maybe emit user status here if needed
              io.emit('userStatus', { userId: userIdStr, status: 'online' });
@@ -30,16 +29,11 @@ function initializeSocket(server) {
                 }
             }
             if (disconnectedUserId) {
-                console.log(`User ${disconnectedUserId} disconnected (Socket ${socket.id})`);
                 activeUsers.delete(disconnectedUserId);
                 // Maybe emit user status offline
                  io.emit('userStatus', { userId: disconnectedUserId, status: 'offline' });
-            } else {
-                 console.log(`Socket ${socket.id} disconnected without known user.`);
             }
         });
-
-
 
         // Handle new message
         socket.on('newMessage', (message) => {

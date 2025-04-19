@@ -27,7 +27,6 @@ router.post('/signup', async (req, res, next) => {
 
         // --- Honeypot Check ---
         if (confirm_email) {
-            console.log(`Honeypot triggered for signup attempt. Email: ${email}`);
             return res.status(201).json({ message: 'Account created. Please check your email to verify your account.' });
         }
 
@@ -72,18 +71,15 @@ router.post('/signup', async (req, res, next) => {
             // --- UPDATE PATH (Second+ attempt for this email) ---
             operationPath = 'UPDATE';
             userId = unverifiedEmail[0].brukerId;
-            console.log(`[${operationPath} PATH] User ID ${userId} found for unverified email ${email}. Updating...`);
 
             await pool.promise().query(
                 'UPDATE brukere SET brukernavn = ?, passord = ?, verification_token = ?, token_expires_at = ? WHERE brukerId = ?',
                 [brukernavn, hashedPassword, verificationToken, tokenExpiresAt, userId]
             );
-            console.log(`[${operationPath} PATH] Updated unverified user ${userId} with new details and token ${verificationToken}.`);
 
         } else {
             // --- INSERT PATH (First attempt for this email) ---
             operationPath = 'INSERT';
-            console.log(`[${operationPath} PATH] No existing user found for email ${email}. Creating new user...`);
 
             const [result] = await pool.promise().query(
                 `INSERT INTO brukere (brukernavn, email, passord, is_verified, verification_token, token_expires_at)
@@ -91,7 +87,6 @@ router.post('/signup', async (req, res, next) => {
                 [brukernavn, email, hashedPassword, 0, verificationToken, tokenExpiresAt]
             );
             userId = result.insertId;
-            console.log(`[${operationPath} PATH] Inserted new unverified user ${userId} with token ${verificationToken}.`);
         }
 
         // --- Send Verification Email (Common Logic) ---
@@ -107,10 +102,8 @@ router.post('/signup', async (req, res, next) => {
         };
 
         // Add specific logging and error handling around sendMail
-        console.log(`[${operationPath} PATH] Attempting to send verification email to ${email} for user ${userId} with token ${verificationToken}`);
         try {
             const info = await transporter.sendMail(mailOptions);
-            console.log(`[${operationPath} PATH] Verification email SENT successfully for user ${userId}. Message ID: ${info.messageId}`);
         } catch (mailError) {
             // Log the specific error from Nodemailer
             console.error(`[${operationPath} PATH] FAILED to send verification email for user ${userId} to ${email}. Token: ${verificationToken}. Error:`, mailError);
@@ -175,10 +168,8 @@ router.post('/login', async (req, res, next) => {
                 canLogin = true;
                 // Optional: You might want to mark them as verified now, or prompt them later.
                 // await pool.promise().query('UPDATE brukere SET is_verified = 1 WHERE brukerId = ?', [user.brukerId]);
-                console.log(`Legacy login allowed for unverified user: ${user.brukerId}`);
             } else {
                 // User was created AFTER verification was required and is not verified - NOT OK
-                console.log(`Login blocked for unverified user created after cutoff: ${user.brukerId}`);
                 return res.status(401).json({ message: 'Account not verified. Please check your email.' });
             }
         }
@@ -327,7 +318,6 @@ router.post('/forgot-password', async (req, res, next) => {
         const populatedContent = htmlContent.replace('{{email}}', email);
         res.send(populatedContent);
         
-        res.json({ message: 'Reset email sent' });
     } catch (err) {
         next(err);
     }
@@ -394,7 +384,6 @@ router.get('/verify-email', async (req, res, next) => {
 
         // 1. Basic Check: Token must be present
         if (!token) {
-            console.log("Verification request received without a token.");
             return res.status(400).send('Verification token is missing.');
         }
 
@@ -410,8 +399,6 @@ router.get('/verify-email', async (req, res, next) => {
 
             // Safety check: Handle rare race condition where token exists but user somehow got marked verified already
             if (user.is_verified) {
-                 console.log(`Verification link clicked for already verified user (token was still present?): ${user.brukerId}, Email: ${user.email}`);
-                 // Send consistent "already verified" message
                  return res.send('Email already verified. You can <a href="/login">log in</a>.');
             }
 
@@ -422,14 +409,11 @@ router.get('/verify-email', async (req, res, next) => {
                 [user.brukerId]
             );
 
-            console.log(`User ${user.brukerId} (${user.email}) verified successfully via token: ${token}`);
-            // Send the success confirmation page/message
             return res.send('Email successfully verified! You can now <a href="/login">log in</a>.');
 
         } else {
             // --- Initial Lookup Failed ---
             // Reason could be: Invalid token, Expired token, OR Token already used/cleared (double-click/prefetch)
-            console.log(`Initial verification lookup failed for token: ${token}. Checking if user is already verified or token expired.`);
 
             // 4. Secondary Check: Look for the token *without* the expiry check to differentiate reasons
             // This helps identify if the token *was* valid but might have just been cleared or expired.
@@ -445,12 +429,9 @@ router.get('/verify-email', async (req, res, next) => {
                 if (potentialUser.is_verified) {
                     // Token is found, user IS verified => Must be the double-click/prefetch case
                     // where the token was valid but cleared by the *first* successful request.
-                    console.log(`Verification link clicked, user ${potentialUser.brukerId} (${potentialUser.email}) already verified (token was ${token}). Handling as double-click.`);
                     return res.send('Email already verified. You can <a href="/login">log in</a>.');
                 } else {
                     // Token is found, user IS NOT verified => Token must have genuinely expired.
-                    console.log(`Verification link expired for user ${potentialUser.brukerId} (${potentialUser.email}). Token: ${token}`);
-                    // Provide a specific message for expired links if possible
                     return res.status(400).send('Your verification link has expired. Please try signing up again or request a password reset to potentially get a new verification if implemented.'); // Adjust message as needed
                 }
             } else {
@@ -458,7 +439,6 @@ router.get('/verify-email', async (req, res, next) => {
                 // It's either genuinely invalid (never existed, typo) OR
                 // it was valid, used successfully, cleared, AND this check ran *after* the clear.
                 // This second possibility is less likely but covered by treating it as invalid/used.
-                console.log(`Verification token not found or already used and cleared: ${token}`);
                 return res.status(400).send('Invalid verification link. It may have already been used, is incorrect, or has expired.');
             }
         }

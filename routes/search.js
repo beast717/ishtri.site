@@ -47,8 +47,6 @@ router.get('/search', (req, res) => {
     pool.query(sql, values, (err, results) => {
         if (err) return next(err);
 
-        console.log("Search results:", results); // Debugging: Log the search results
-
         if (results.length > 0) {
             // Pass all matching products to a selection page
             res.render ('SearchResults');

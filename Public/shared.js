@@ -81,8 +81,6 @@ function updateNotificationBadge() {
 
 // --- Function to Load Non-Essential Scripts (for Cookie Consent) ---
 function loadNonEssentialScripts() {
-    console.log("Consent granted: Loading non-essential scripts.");
-
     // Load Google AdSense dynamically
     if (!document.getElementById('adsbygoogle-script')) { // Check if already loaded
         const adsenseScript = document.createElement('script');
@@ -92,9 +90,6 @@ function loadNonEssentialScripts() {
         adsenseScript.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_PUB_ID";
         adsenseScript.crossOrigin = "anonymous";
         document.head.appendChild(adsenseScript);
-        console.log('AdSense script loaded dynamically.');
-    } else {
-        console.log('AdSense script already present.');
     }
 
     // --- Add other non-essential scripts here ---
@@ -112,10 +107,7 @@ function loadNonEssentialScripts() {
             function gtag(){dataLayer.push(arguments);}
             gtag('js', new Date());
             gtag('config', gaId);
-            console.log('Google Analytics loaded dynamically.');
         }
-    } else if (gaId !== 'YOUR_GA_ID') {
-         console.log('Google Analytics already present.');
     }
     */
 }
@@ -213,7 +205,6 @@ document.addEventListener('DOMContentLoaded', () => {
                  // --- Socket Event Listeners (for real-time updates) ---
                  // Listen for new notifications
                  socket.on('new_notification', (notificationData) => {
-                     console.log('Received new notification via socket:', notificationData);
                      updateNotificationBadge(); // Update badge when a new notification arrives
                      if (window.toast) {
                          const productLink = notificationData.productdID
@@ -225,19 +216,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
                  // Listen for updates when a notification is read elsewhere
                  socket.on('notification_read', (data) => {
-                     console.log('Socket event: notification_read received:', data);
                      updateNotificationBadge(); // Update badge count
                  });
 
                  // Listen for updates when all notifications are read elsewhere
                  socket.on('all_notifications_read', () => {
-                     console.log('Socket event: all_notifications_read received.');
                      updateNotificationBadge(); // Update badge count
                  });
 
                  // Listen for new messages to update message badge (optional, but good practice)
                  socket.on('messageReceived', (messageData) => {
-                     console.log('Received new message via socket:', messageData);
                      // Avoid incrementing if user is currently on the messages page
                      if (!document.getElementById('messagesPageContainer')) {
                          checkUnreadMessages(); // Re-fetch message count
@@ -334,10 +322,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentStatus = localStorage.getItem(consentStatusKey);
 
         if (currentStatus === 'accepted') {
-            console.log('Cookie consent previously accepted.');
             loadNonEssentialScripts(); // Load scripts immediately
         } else if (currentStatus === 'rejected') {
-            console.log('Cookie consent previously rejected.');
             // Non-essential scripts should NOT load.
         } else {
             // No status set or invalid status, show the banner
@@ -355,7 +341,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const newStatus = accepted ? 'accepted' : 'rejected';
             try {
                 localStorage.setItem(consentStatusKey, newStatus);
-                console.log(`Cookie consent set to: ${newStatus}.`);
             } catch (e) {
                 console.error("Could not save consent status to localStorage:", e);
                  // Inform user? Maybe an alert.

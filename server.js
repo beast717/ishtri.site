@@ -32,7 +32,15 @@ app.set('io', io);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(require('cors')());
+
+const cors = require('cors');
+const corsOptions = {
+  origin: process.env.NODE_ENV === 'production' 
+            ? 'https://ishtri.site' // Replace with your actual frontend URL
+            : '*', // Or specify allowed origins for dev if needed
+  credentials: true, // Important if you need to send cookies across domains
+};
+app.use(cors(corsOptions));
 
 const sessionStore = new MySQLStore({}, pool);
 app.use(session({
@@ -116,10 +124,14 @@ app.use('/api/settings', settingsRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack);
+    console.error(err.stack); // Log the error regardless of environment
+    if (process.env.NODE_ENV === 'production') {
+        Sentry.captureException(err); // Send error to Sentry in production
+    }
     res.status(500).json({
         error: 'Internal Server Error',
-        message: process.env.NODE_ENV === 'development' ? err.message : null
+        // Only include message in development
+        message: process.env.NODE_ENV === 'development' ? err.message : undefined 
     });
 });
 

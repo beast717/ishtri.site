@@ -48,7 +48,6 @@ async function createMatchNotification(userId, searchName, product, io, activeUs
             [userId, message, productId]
         );
         const newNotificationId = result.insertId;
-        console.log(`Notification created (ID: ${newNotificationId}) for user ${userId}, search '${searchName}', product ${productId}`);
 
 
         // Emit real-time notification if io and activeUsers map are available
@@ -70,20 +69,13 @@ async function createMatchNotification(userId, searchName, product, io, activeUs
                     firstImage: product.Images ? `/uploads/${product.Images.split(',')[0].trim()}` : '/images/default-product.png'
                 };
                 io.to(userSocketId).emit('new_notification', newNotificationData);
-                console.log(`Emitted new_notification to user ${userId} (Socket ID: ${userSocketId})`);
-           } else {
-                console.log(`User ${userId} not connected for real-time notification.`);
-            }
+           }
         }
 
         // 3. Send Email Notification (Conditionally)
         if (shouldSendEmail && userEmail && userName) {
             // Call the email sending function (no need to await if you don't need to block)
             sendMatchEmail(userEmail, userName, searchName, product);
-        } else if (shouldSendEmail) {
-            console.log(`Skipping email for user ${userId}: Preference enabled but email/username missing.`);
-        } else {
-             console.log(`Skipping email for user ${userId}: Preference disabled.`);
         }
 
 
@@ -146,7 +138,6 @@ async function sendMatchEmail(userEmail, userName, searchName, product) {
     // Send email
     try {
         const info = await transporter.sendMail(mailOptions);
-        console.log(`Match notification email sent successfully to ${userEmail}. Message ID: ${info.messageId}`);
     } catch (error) {
         console.error(`FAILED to send match notification email to ${userEmail}:`, error);
     }
