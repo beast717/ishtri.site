@@ -9,7 +9,7 @@ const { body, query, param, validationResult, check } = require('express-validat
 
 // GET /api/products (Query Params)
 const getProductsValidation = [
-    query('category').optional().trim().isIn(['Bil', 'Jobb', 'Eiendom', 'default', '']).withMessage('Invalid category specified'),
+    query('category').optional().trim().isIn(['Bil', 'Jobb', 'Eiendom', 'Torget', 'Båt', 'Mc', 'default', '']).withMessage('Invalid category specified'),
     query('subCategory').optional().trim(),
     query('carBrand').optional().trim(), // Further validation if needed (e.g., check if comma-separated numbers)
     query('countries').optional().trim(),
