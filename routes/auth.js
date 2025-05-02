@@ -377,7 +377,12 @@ router.post('/forgot-password', forgotPasswordValidation, async (req, res, next)
         if (!errors.isEmpty()) {
             // Maybe render an error page or send a specific response for UI
             // For now, sending JSON, but the original sends HTML. Adjust as needed.
-            return res.status(400).json({ message: errors.array()[0].msg });
+            // Still send the generic success HTML even on validation error for security? Or show validation error?
+            // Let's show validation error for now, but keep the user-not-found case silent.
+            const htmlPath = path.join(__dirname, '../Public/ResetEmailSent.html'); // Or an error page
+            const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+            // Inject error message if needed, or just show generic page
+            return res.status(400).send(htmlContent.replace('{{email}}', req.body.email || '')); // Send generic page even on validation fail?
         }
         // --- End Validation Check ---
 
@@ -387,27 +392,44 @@ router.post('/forgot-password', forgotPasswordValidation, async (req, res, next)
             [email]
         );
 
-        if (!results.length) throw new Error('User not found');
-        
-        const user = results[0];
-        const resetLink = `https://ishtri.site/api/auth/reset-password?email=${email}`; // ← Add /api/auth
-        
-        await transporter.sendMail({
-            from: process.env.GMAIL_USER,
-            to: email,
-            subject: 'Password Reset',
-            html: `<p>Hello ${user.brukernavn},</p>
-                   <p>Reset your password: <a href="${resetLink}">${resetLink}</a></p>`
-        });
+        // --- MODIFICATION START ---
+        // If user exists, send the email. If not, do nothing but proceed to the generic response.
+        if (results.length > 0) {
+            const user = results[0];
+            const resetLink = `https://ishtri.site/api/auth/reset-password?email=${email}`; // ← Add /api/auth
 
-        // Send styled HTML response instead of JSON
+            // Send email only if user was found
+            try {
+                await transporter.sendMail({
+                    from: process.env.GMAIL_USER,
+                    to: email,
+                    subject: 'Password Reset',
+                    html: `<p>Hello ${user.brukernavn},</p>
+                           <p>Reset your password: <a href="${resetLink}">${resetLink}</a></p>`
+                });
+            } catch (mailError) {
+                // Log email sending failure but still send generic success response to user
+                console.error(`Failed to send password reset email to ${email}:`, mailError);
+                // Do NOT throw or call next(mailError) here if you want the generic response below
+            }
+        }
+        // --- MODIFICATION END ---
+
+        // Send styled HTML response regardless of whether the user was found or email sent successfully.
+        // This prevents leaking information about registered emails.
         const htmlPath = path.join(__dirname, '../Public/ResetEmailSent.html');
         const htmlContent = fs.readFileSync(htmlPath, 'utf8');
         const populatedContent = htmlContent.replace('{{email}}', email);
         res.send(populatedContent);
-        
+
     } catch (err) {
-        next(err);
+        // Catch unexpected errors (DB connection issues, etc.), but not the "user not found" case.
+        console.error("Unexpected error in /forgot-password:", err); // Log unexpected errors
+        // Send a generic error page or response without revealing details
+        const htmlPath = path.join(__dirname, '../Public/ResetEmailSent.html'); // Or a generic error page
+        const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+        res.status(500).send(htmlContent.replace('{{email}}', req.body.email || '')); // Still show generic page on server error?
+        // next(err); // Optionally pass to global error handler if needed, but response is sent.
     }
 });
 

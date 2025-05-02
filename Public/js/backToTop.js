@@ -12,8 +12,8 @@ class BackToTop {
         document.body.appendChild(this.button);
 
         // Add styles
-        const style = document.createElement('style');
-        style.textContent = `
+        const backToTopStyle = document.createElement('style');
+        backToTopStyle.textContent = `
             .back-to-top {
                 position: fixed;
                 bottom: 30px;
@@ -54,7 +54,7 @@ class BackToTop {
                 }
             }
         `;
-        document.head.appendChild(style);
+        document.head.appendChild(backToTopStyle);
 
         // Add scroll event listener
         window.addEventListener('scroll', () => this.toggleButton());
@@ -78,4 +78,4 @@ class BackToTop {
 }
 
 // Create global back to top instance
-window.backToTop = new BackToTop(); 
+window.backToTop = new BackToTop();

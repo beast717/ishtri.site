@@ -61,9 +61,14 @@ class SkeletonLoader {
     }
 
     addStyles() {
-        const style = document.createElement('style');
-        style.textContent = this.skeletonStyles;
-        document.head.appendChild(style);
+        // Check if styles already exist
+        if (document.getElementById('skeleton-styles')) {
+            return;
+        }
+        const skeletonStyleElement = document.createElement('style'); // Renamed variable
+        skeletonStyleElement.id = 'skeleton-styles'; // Add an ID for checking
+        skeletonStyleElement.textContent = this.skeletonStyles;
+        document.head.appendChild(skeletonStyleElement); // Use renamed variable
     }
 
     createProductSkeleton() {
@@ -95,4 +100,4 @@ class SkeletonLoader {
 }
 
 // Create global skeleton loader instance
-window.skeletonLoader = new SkeletonLoader(); 
+window.skeletonLoader = new SkeletonLoader();

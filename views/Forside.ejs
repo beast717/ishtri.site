@@ -158,8 +158,9 @@
     </style>
 </head>
 <body>
-    <script src="/shared.js"></script>
-    <%- include('partials/navbar') %>
+    <%- include('partials/navbar') %> <!-- Move navbar include before shared.js -->
+    <script src="/shared.js"></script> <!-- shared.js now loads after navbar (and socket.io.js) -->
+
     <div class="søkeBarContainer">
         <form action="/search" method="GET">
             <div class="search-bar">

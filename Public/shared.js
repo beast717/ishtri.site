@@ -176,6 +176,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Socket.IO Setup Function ---
     let socket; // Declare socket variable in wider scope if needed elsewhere
     function setupSocketIO(userId) {
+        // --- ADD THIS CHECK ---
+        if (typeof io === 'undefined') {
+            console.error("Socket.IO client library (io) not loaded. Real-time features disabled.");
+            // Optionally display a message to the user or disable UI elements
+            return; // Stop execution if io is not available
+        }
+        // --- END CHECK ---
+
         try {
             // Connect only if not already connected (or handle reconnection logic if needed)
             if (!socket || !socket.connected) {
@@ -319,48 +327,51 @@ document.addEventListener('DOMContentLoaded', () => {
     const consentStatusKey = 'cookieConsentStatus_ishtri_v1'; // Unique key
 
     if (consentBanner && acceptBtn && rejectBtn) { // Check all elements exist
-        const currentStatus = localStorage.getItem(consentStatusKey);
+        let currentStatus = null; // Default to null if localStorage is inaccessible
+        try {
+            currentStatus = localStorage.getItem(consentStatusKey);
+        } catch (e) {
+            console.warn("Could not access localStorage to get cookie consent status:", e);
+            // Optionally inform the user or proceed with default behavior (showing the banner)
+        }
+
 
         if (currentStatus === 'accepted') {
             loadNonEssentialScripts(); // Load scripts immediately
         } else if (currentStatus === 'rejected') {
             // Non-essential scripts should NOT load.
         } else {
-            // No status set or invalid status, show the banner
+            // No status set, invalid status, or localStorage inaccessible, show the banner
             consentBanner.style.display = 'block'; // Use display 'block' or 'flex' based on CSS
             // Optional: Add class for transition after display is set
             // setTimeout(() => { consentBanner.classList.add('show'); }, 50);
         }
 
-        // Event Listeners
-        acceptBtn.addEventListener('click', () => handleConsent(true));
-        rejectBtn.addEventListener('click', () => handleConsent(false));
-
-        // Handle Consent Action
-        function handleConsent(accepted) {
-            const newStatus = accepted ? 'accepted' : 'rejected';
+         // Event Listeners
+         acceptBtn.addEventListener('click', () => {
             try {
-                localStorage.setItem(consentStatusKey, newStatus);
+                localStorage.setItem(consentStatusKey, 'accepted');
             } catch (e) {
-                console.error("Could not save consent status to localStorage:", e);
-                 // Inform user? Maybe an alert.
-                 alert("Could not save your cookie preference due to a browser issue.");
+                console.warn("Could not access localStorage to set cookie consent status:", e);
+                // Optionally inform the user that their preference might not be saved
             }
-
-            // Hide banner smoothly if using transition classes
-            // consentBanner.classList.remove('show');
-            // Or hide directly
             consentBanner.style.display = 'none';
+            loadNonEssentialScripts();
+        });
 
-            if (accepted) {
-                loadNonEssentialScripts();
+        rejectBtn.addEventListener('click', () => {
+            try {
+                localStorage.setItem(consentStatusKey, 'rejected');
+            } catch (e) {
+                console.warn("Could not access localStorage to set cookie consent status:", e);
+                 // Optionally inform the user that their preference might not be saved
             }
-        }
+            consentBanner.style.display = 'none';
+            // Ensure non-essential scripts are not loaded if they haven't been already
+        });
 
-    } else {
-        // console.warn("Cookie consent elements not found on this page."); // Optional warning
+
     }
-    // --- End Cookie Consent ---
 
 
     // --- Language Selector Logic ---
