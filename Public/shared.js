@@ -329,13 +329,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const rejectBtn = document.getElementById('cookieRejectBtn');
     const consentStatusKey = 'cookieConsentStatus_ishtri_v1'; // Unique key
 
-    // --- DEBUGGING: Check if banner elements are found ---
-    console.log("Checking for cookie banner elements:", {
-        banner: consentBanner,
-        accept: acceptBtn,
-        reject: rejectBtn
-    });
-
     if (consentBanner && acceptBtn && rejectBtn) { // Check all elements exist
         let currentStatus = null; // Default to null if localStorage is inaccessible
         try {
@@ -381,8 +374,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
 
-    } else {
-        console.warn("Cookie consent banner elements not found on this page. The banner will not be displayed.");
     }
 
 
