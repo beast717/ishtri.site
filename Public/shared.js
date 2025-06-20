@@ -114,6 +114,11 @@ function loadNonEssentialScripts() {
 
 // --- Main DOMContentLoaded Listener ---
 document.addEventListener('DOMContentLoaded', () => {
+    const adsenseScript = document.createElement('script');
+    adsenseScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4798087235374147';
+    adsenseScript.crossOrigin = 'anonymous';
+    adsenseScript.async = true;
+    document.head.appendChild(adsenseScript);
 
     // --- Authentication Check ---
     // Fetch user status first to determine if authenticated calls should proceed
