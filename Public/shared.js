@@ -354,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // No status set, invalid status, or localStorage inaccessible, show the banner
             consentBanner.style.display = 'block'; // Use display 'block' or 'flex' based on CSS
             // Optional: Add class for transition after display is set
-            // setTimeout(() => { consentBanner.classList.add('show'); }, 50);
+            setTimeout(() => { consentBanner.classList.add('show'); }, 50);
         }
 
          // Event Listeners
@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.warn("Could not access localStorage to set cookie consent status:", e);
                  // Optionally inform the user that their preference might not be saved
             }
-            consentBanner.style.display = 'none';
+            consentBanner.classList.remove('show'); // Hide with animation
             // Ensure non-essential scripts are not loaded if they haven't been already
         });
 
