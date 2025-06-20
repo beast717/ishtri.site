@@ -86,8 +86,8 @@ function loadNonEssentialScripts() {
         const adsenseScript = document.createElement('script');
         adsenseScript.id = 'adsbygoogle-script';
         adsenseScript.async = true;
-        // *** IMPORTANT: REPLACE WITH YOUR ACTUAL ADSENSE CLIENT ID ***
-        adsenseScript.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-YOUR_PUB_ID";
+        // Use your actual AdSense client ID
+        adsenseScript.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4798087235374147";
         adsenseScript.crossOrigin = "anonymous";
         document.head.appendChild(adsenseScript);
     }
@@ -114,11 +114,9 @@ function loadNonEssentialScripts() {
 
 // --- Main DOMContentLoaded Listener ---
 document.addEventListener('DOMContentLoaded', () => {
-    const adsenseScript = document.createElement('script');
-    adsenseScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4798087235374147';
-    adsenseScript.crossOrigin = 'anonymous';
-    adsenseScript.async = true;
-    document.head.appendChild(adsenseScript);
+    // The AdSense script that was here has been removed.
+    // It is now correctly loaded via the loadNonEssentialScripts() function,
+    // which is triggered by the cookie consent logic.
 
     // --- Authentication Check ---
     // Fetch user status first to determine if authenticated calls should proceed
