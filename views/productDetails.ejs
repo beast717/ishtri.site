@@ -8,10 +8,10 @@
 
     <!-- SEO and Social Media Meta Tags -->
     <!-- Title Tag: Be concise and descriptive. Use product name if available. -->
-    <title><%= typeof product !== 'undefined' ? product.ProductName + ' | Ishtri' : 'Product Details | Ishtri' %></title>
+    <title><%= typeof product !== 'undefined' ? `${product.ProductName} in ${product.Location} - ${product.category} | Ishtri` : 'Product Details | Ishtri' %></title>
 
     <!-- Meta Description: Summarize the page content for search engines. -->
-    <meta name="description" content="<%= typeof product !== 'undefined' ? 'View details for ' + product.ProductName + ' on Ishtri. Find price, location, description, and contact the owner.' : 'Explore product details on Ishtri. Find information about various items available on our marketplace.' %>">
+    <meta name="description" content="<%= typeof product !== 'undefined' ? `Find a great deal on a ${product.ProductName} located in ${product.Location}. See photos, price of ${product.Price}$, and contact the seller directly on Ishtri.` : 'Explore product details on Ishtri.' %>">
 
     <!-- Keywords: Relevant terms for search. -->
     <meta name="keywords" content="<%= typeof product !== 'undefined' ? product.ProductName + ', ' + product.category + ', buy, sell, marketplace, Ishtri' : 'product details, marketplace, buy, sell, Ishtri' %>">
@@ -22,7 +22,7 @@
     <meta property="og:title" content="<%= typeof product !== 'undefined' ? product.ProductName + ' | Ishtri' : 'Product Details | Ishtri' %>">
     <meta property="og:description" content="<%= typeof product !== 'undefined' ? 'View details for ' + product.ProductName + '.' : 'Explore product details on Ishtri.' %>">
     <!-- Use the first product image for OG image if available -->
-    <meta property="og:image" content="<%= typeof product !== 'undefined' && product.Images && product.Images.split(',').length > 0 ? '/uploads/' + product.Images.split(',')[0].trim() : '/images/default-product.png' %>"> <!-- Replace with actual domain/path -->
+    <meta property="og:image" content="<%= typeof product !== 'undefined' && product.Images && product.Images.split(',').length > 0 ? baseUrl + '/uploads/' + product.Images.split(',')[0].trim() : baseUrl + '/images/default-product.png' %>"> <!-- Replace with actual domain/path -->
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
@@ -34,7 +34,7 @@
 
     <!-- Other Meta Tags -->
     <meta name="robots" content="index, follow"> <!-- Allow search engines to index -->
-    <link rel="canonical" href="<%= typeof product !== 'undefined' ? 'https://ishtri.site/productDetails?productdID=' + product.ProductdID : 'https://ishtri.site' %>" /> <!-- Replace with actual domain and URL -->
+    <link rel="canonical" href="<%= typeof product !== 'undefined' ? baseUrl + '/productDetails?productdID=' + product.ProductdID : baseUrl %>" /> <!-- Replace with actual domain and URL -->
 
     <!-- Stylesheets and Scripts -->
     <link rel="stylesheet" href="/css/style.css"> <!-- Use root-relative path -->
@@ -42,8 +42,46 @@
     <script src="/js/skeleton.js" defer></script>
     <script src="/js/backToTop.js" defer></script>
     <script src="/js/lazyLoad.js" defer></script>
-    <style>
-        
+
+<!-- ADD THIS SCRIPT TO THE <head> of productDetails.html -->
+    <% if (typeof product !== 'undefined') { %>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": "<%= product.ProductName %>",
+      "image": [
+        <% const images = product.Images.split(',').filter(img => img.trim()); %>
+        <% images.forEach((img, index) => { %>
+          "<%= baseUrl %>/uploads/<%= img.trim() %>"<%= index < images.length - 1 ? ',' : '' %>
+        <% }); %>
+       ],
+      "description": "<%= product.Description.replace(/"/g, '\\"') %>",
+      "sku": "<%= product.ProductdID %>",
+      "mpn": "<%= product.ProductdID %>",
+      <% if (product.brand_name) { %>
+      "brand": {
+        "@type": "Brand",
+        "name": "<%= product.brand_name %>"
+      },
+      <% } %>
+      "offers": {
+        "@type": "Offer",
+        "url": "<%= baseUrl %>/productDetails?productdID=<%= product.ProductdID %>",
+        "priceCurrency": "USD", /* CHANGE TO YOUR CURRENCY (e.g., NOK) */
+        "price": "<%= product.Price %>",
+        "availability": "<%= product.Sold ? 'https://schema.org/SoldOut' : 'https://schema.org/InStock' %>",
+        "itemCondition": "https://schema.org/UsedCondition" /* Or NewCondition, etc. */
+      },
+      "seller": {
+        "@type": "Person", /* Or Organization */
+        "name": "Seller on Ishtri" /* If you have the seller's name, use it here */
+      }
+    }
+    </script>
+    <% } %>
+    
+    <style>    
       
 .productDetailsContainer {
     padding: 20px;
