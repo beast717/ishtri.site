@@ -115,8 +115,10 @@ function loadNonEssentialScripts() {
 // --- Main DOMContentLoaded Listener ---
 document.addEventListener('DOMContentLoaded', () => {
     // The AdSense script that was here has been removed.
-    // It is now correctly loaded via the loadNonEssentialScripts() function,
-    // which is triggered by the cookie consent logic.
+    // It is now correctly loaded via the loadNonEssentialScripts() function.
+
+    // Load non-essential scripts like AdSense. Google's own CMP will handle consent.
+    loadNonEssentialScripts();
 
     // --- Authentication Check ---
     // Fetch user status first to determine if authenticated calls should proceed
@@ -324,6 +326,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- Cookie Consent Logic ---
+    // This custom logic is being disabled to rely on Google's built-in
+    // Consent Management Platform (CMP), which is triggered by the AdSense script.
+    /*
     const consentBanner = document.getElementById('cookieConsentBanner');
     const acceptBtn = document.getElementById('cookieAcceptBtn');
     const rejectBtn = document.getElementById('cookieRejectBtn');
@@ -375,6 +380,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     }
+    */
 
 
     // --- Language Selector Logic ---
