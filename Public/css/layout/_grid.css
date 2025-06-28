@@ -1,0 +1,93 @@
+/* --- Main Page Layout --- */
+.page-container {
+    display: flex;
+    gap: 20px;
+    padding: 0 20px 20px 20px;
+    align-items: flex-start; /* Aligns items to the top */
+    max-width: 1400px;
+    margin: 0 auto;
+}
+.side-panel {
+    width: 250px;
+    flex-shrink: 0;
+    /* Styles moved to pages/_torget.css to be more specific */
+}
+.productsContainer {
+    flex: 1;
+}
+
+/* --- Loading Overlay --- */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+/* Spinner can be added here if you have one */
+
+/* --- Off-Canvas Filter Drawer (Mobile) --- */
+.offcanvas-filter-overlay {
+    display: none;
+    position: fixed;
+    z-index: 1200;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.35);
+    transition: opacity 0.3s;
+    opacity: 0;
+}
+.offcanvas-filter-overlay.active {
+    display: block;
+    opacity: 1;
+}
+.offcanvas-filter-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 85vw;
+    max-width: 340px;
+    background: var(--bg-white);
+    box-shadow: 2px 0 16px rgba(0,0,0,0.18);
+    z-index: 1300;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: 0;
+}
+.offcanvas-filter-drawer.active {
+    transform: translateX(0);
+}
+.offcanvas-filter-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 10px 20px;
+    border-bottom: 1px solid #eee;
+    background: var(--bg-light);
+}
+.offcanvas-filter-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+}
+.offcanvas-filter-close {
+    background: none;
+    border: none;
+    font-size: 1.7rem;
+    color: #888;
+    cursor: pointer;
+    line-height: 1;
+}
+.offcanvas-filter-content {
+    padding: 18px 20px 20px 20px;
+}
+body.offcanvas-open {
+    overflow: hidden !important;
+    touch-action: none;
+}

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <link rel="icon" href="/ishtri1.png" sizes="16x16 32x32" type="image/png"> <!-- Use root-relative path -->
-    <link rel="stylesheet" href="/css/style.css"> <!-- Use root-relative path -->
+    <link rel="stylesheet" href="/css/main.css"> <!-- Use root-relative path -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://js-de.sentry-cdn.com/4cb627e4e2cb38629abf1676342ede0f.min.js" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
@@ -31,123 +31,11 @@
     <meta name="robots" content="noindex, nofollow"> <!-- Generally, login pages aren't indexed -->
     <link rel="canonical" href="https://ishtri.site/Logg inn.html" /> <!-- Replace with actual domain -->
 
-    <style>
-        /* Modern styling */
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-        }
-
-        .social-login {
-  margin: 1.5rem 0;
-}
-
-.google-btn {
-  margin: 0 auto;
-  width: 240px;
-}
-
-.separator {
-  display: flex;
-  align-items: center;
-  margin: 1.5rem 0;
-}
-
-.line {
-  flex: 1;
-  height: 1px;
-  background: #ddd;
-}
-
-.separator .text {
-  padding: 0 1rem;
-  color: #636e72;
-  font-size: 0.9rem;
-}
-
-        .container {
-            width: 400px;
-            background: white;
-            padding: 2rem;
-            border-radius: 12px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
-            text-align: center;
-            position: relative;
-        }
-
-        .brand {
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: #2d3436;
-        }
-
-        h2 {
-            margin: 0 0 1rem 0;
-            font-weight: 600;
-            color: #2d3436;
-        }
-
-        .subtitle {
-            color: #636e72;
-            margin-bottom: 2rem;
-            font-size: 0.95rem;
-            line-height: 1.4;
-        }
-
-        .alert {
-            padding: 0.875rem;
-            margin-bottom: 1.5rem;
-            border-radius: 6px;
-            font-size: 0.9rem;
-        }
-
-        .alert-error {
-            background: #fee2e2;
-            border: 1px solid #fca5a5;
-            color: #dc2626;
-        }
-
-        .alert-success {
-            background: #dcfce7;
-            border: 1px solid #86efac;
-            color: #16a34a;
-        }
-
-        .toggle-link {
-            display: block;
-            margin-top: 1rem;
-            color: #6c5ce7;
-            text-decoration: none;
-            font-weight: 500;
-            cursor: pointer;
-            transition: color 0.2s ease;
-        }
-
-        .toggle-link:hover {
-            color: #5b4bc4;
-        }
-
-        .legal-text {
-            margin-top: 2rem;
-            font-size: 0.8rem;
-            color: #636e72;
-        }
-
-        .legal-text a {
-            color: #6c5ce7;
-            text-decoration: none;
-            font-weight: 500;
-        }
-    </style>
+    
 </head>
-<body>
+<body class="auth-page-body"> 
 
-<div class="container">
+<div class="auth-container"> 
     <div class="brand">Ishtri</div>
     
     <!-- Login Form -->
@@ -155,14 +43,15 @@
         <h2 data-i18n="logg_inn.logg_inn">Welcome Back</h2>
         <p class="subtitle" data-i18n="logg_inn.subtitle">Log in to contact sellers, save favorites, list ads, and access exclusive features.</p>
         <div id="errorMessage" class="alert alert-error error-message" style="display: none;"></div>
+        
         <form id="loginFormElement" action="/api/auth/login" method="POST">
             <div class="social-login">
-              <div id="googleSignIn" class="google-btn"></div>
-              <div class="separator">
-                <span class="line"></span>
-                <span class="text">or</span>
-                <span class="line"></span>
-              </div>
+              <div id="googleSignIn"></div>
+            </div>
+            <div class="separator">
+              <span class="line"></span>
+              <span class="text">or</span>
+              <span class="line"></span>
             </div>
             <div class="form-group">
                 <label for="loginUsername" data-i18n="logg_inn.brukernavn">Username or Email</label>
@@ -171,9 +60,7 @@
             <div class="form-group password-toggle">
                 <label for="loginPassword" data-i18n="logg_inn.passord">Password</label>
                 <input type="password" id="loginPassword" name="passord" required>
-                <span class="password-toggle-icon" role="button" aria-label="Toggle password visibility">
-                    <!-- SVG placeholder -->
-                </span>
+                <span class="password-toggle-icon" role="button" aria-label="Toggle password visibility"></span>
             </div>
             <button type="submit" class="btn btn-primary" data-i18n="logg_inn.logg_inn">Continue →</button>
             <a href="/forgot-password" class="toggle-link" data-i18n="logg_inn.forgot_password">Forgot Password?</a>
@@ -197,16 +84,12 @@
             <div class="form-group password-toggle">
                 <label for="signupPassword" data-i18n="logg_inn.passord">Password</label>
                 <input type="password" id="signupPassword" name="passord" required>
-                <span class="password-toggle-icon" role="button" aria-label="Toggle password visibility">
-                    <!-- SVG placeholder -->
-                </span>
+                <span class="password-toggle-icon" role="button" aria-label="Toggle password visibility"></span>
             </div>
             <div class="form-group password-toggle">
                 <label for="confirmPassword" data-i18n="logg_inn.confirm_password">Confirm Password</label>
                 <input type="password" id="confirmPassword" name="confirmPassword" required>
-                <span class="password-toggle-icon" role="button" aria-label="Toggle password visibility">
-                    <!-- SVG placeholder -->
-                </span>
+                <span class="password-toggle-icon" role="button" aria-label="Toggle password visibility"></span>
             </div>
             <div class="form-group honeypot" style="position: absolute; left: -5000px;" aria-hidden="true">
                 <label for="confirm_email">Do not fill this field</label>
@@ -219,7 +102,7 @@
 
     <div class="legal-text">
         <span data-i18n="logg_inn.terms_text">By continuing, you agree to our</span> 
-         <a href="/terms.html" data-i18n="logg_inn.terms">Terms of Service</a>
+        <a href="/terms.html" data-i18n="logg_inn.terms">Terms of Service</a>
         <span data-i18n="logg_inn.and">and</span> 
         <a href="/privacy.html" data-i18n="logg_inn.privacy">Privacy Policy</a>
     </div>

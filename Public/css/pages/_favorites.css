@@ -1,0 +1,10 @@
+.favorites-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+}
+.no-products {
+    text-align: center;
+    font-size: 18px;
+    margin-top: 20px;
+}

@@ -1,0 +1,39 @@
+:root {
+    /* Colors */
+    --primary-color: #007bff;
+    --primary-hover: #0056b3;
+    --secondary-color: #6c757d;
+    --secondary-hover: #5a6268;
+    --success-color: #28a745;
+    --success-hover: #218838;
+    --danger-color: #dc3545;
+    --danger-hover: #c82333;
+    --warning-color: #ffc107;
+    --warning-hover: #e0a800;
+    --info-color: #17a2b8;
+    --favorite-color: #ff4757;
+    --link-color: #6c5ce7;
+
+    /* Text */
+    --text-color: #333;
+    --text-color-light: #6c757d;
+    --heading-color: #2d3436;
+
+    /* Backgrounds */
+    --bg-light: #f8f9fa;
+    --bg-white: #ffffff;
+    --bg-dark: #2d3436;
+
+    /* Borders */
+    --border-color: #ced4da;
+    --border-color-light: #e9ecef;
+
+    /* Skeleton Loading */
+    --skeleton-bg-start: #f0f0f0;
+    --skeleton-bg-mid: #e0e0e0;
+
+    /* Sizing & Spacing */
+    --border-radius: 6px;
+    --navbar-height: 80px;
+    --navbar-height-mobile: 60px;
+}

@@ -1,0 +1,31 @@
+/* For privacy.html, terms.html */
+.legal-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: var(--bg-white);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+.legal-container h1 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+.legal-container h2 {
+    border-bottom: 1px solid var(--border-color-light);
+    padding-bottom: 0.5rem;
+    margin-top: 1.5rem;
+}
+.last-updated {
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--text-color-light);
+    margin-bottom: 2rem;
+}
+.disclaimer {
+    background-color: #fff3cd;
+    border: 1px solid #ffeeba;
+    color: #856404;
+    padding: 1rem;
+    border-radius: 4px;
+}

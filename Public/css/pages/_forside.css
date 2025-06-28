@@ -1,0 +1,65 @@
+.søkeBarContainer {
+    margin-top: 20px;
+    text-align: center;
+    /* ADDED: Add padding here to contain the search bar on mobile */
+    padding: 0 15px;
+    box-sizing: border-box; /* Ensure padding is calculated correctly */
+}
+
+.search-bar {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+    /* ADDED: Make the search bar itself take up full width on mobile */
+    width: 100%;
+    max-width: 740px; /* Set a max-width to match the original desktop look */
+    margin: 0 auto; /* Center the search bar */
+}
+
+.søkeBarContainer input[type="text"] {
+    padding: 12px;
+    /* CHANGED: Let the input grow to fill the flex container */
+    flex-grow: 1; 
+    height: 70px;
+    border: none;
+    font-size: 16px;
+    /* REMOVED: The fixed width: 700px; is gone */
+}
+
+.search-bar button {
+    padding: 12px 20px;
+    height: 70px;
+    border: none;
+    background-color: transparent;
+    color: var(--primary-color);
+}
+
+#randomProducts {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+     .søkeBarContainer {
+        padding: 0 15px; /* Add side padding to the container */
+    }
+
+    .søkeBarContainer input[type="text"] {
+        width: 100%; /* The input will now fill the padded container */
+        height: 50px;
+        /* Ensure box-sizing is set to handle padding correctly */
+        box-sizing: border-box; 
+    }
+    
+    .search-bar button {
+        height: 50px;
+    }
+
+    #randomProducts { flex-direction: column; align-items: center; }
+}

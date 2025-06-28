@@ -1,0 +1,47 @@
+.saved-searches-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+.search-item {
+    background: var(--bg-white);
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.search-item h3 { margin: 0 0 5px 0; font-size: 1.1em; }
+.search-item .category { font-size: 0.9em; color: #555; margin-bottom: 10px; }
+.search-item .filters-summary { font-size: 0.85em; color: var(--text-color-light); max-height: 40px; overflow: hidden; }
+.search-item-actions button { margin-left: 10px; }
+.no-searches { text-align: center; color: var(--text-color-light); margin-top: 2rem; }
+
+@media (max-width: 480px) {
+    /* Adjust layout for action buttons on small screens */
+    .search-item-actions {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        align-items: center;
+        margin-top: 10px;
+        width: 100%;
+        /* REMOVED: justify-content: flex-end; is not needed when buttons are full-width */
+    }
+
+    /* --- THIS IS THE FIX --- */
+    /* Target any .btn inside the actions container */
+    .search-item-actions .btn {
+        flex: 1; /* This makes both buttons grow equally to fill the space */
+        padding: 8px; /* Optional: Slightly adjust padding for a better fit */
+    }
+    
+    .search-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+}

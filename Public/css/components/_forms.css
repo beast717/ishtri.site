@@ -1,0 +1,238 @@
+/* --- Global Form Styles --- */
+.form-group {
+    margin-bottom: 1.25rem;
+    text-align: left;
+    position: relative;
+}
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+    color: #495057;
+}
+input[type="text"], input[type="email"], input[type="password"],
+input[type="number"], input[type="url"], input[type="date"],
+input[type="search"], select, textarea {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #495057;
+    background-color: var(--bg-white);
+    background-clip: padding-box;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    box-sizing: border-box;
+}
+input:focus, select:focus, textarea:focus {
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 16px 12px;
+    padding-right: 2.5rem;
+}
+select[multiple] {
+    background-image: none;
+    padding-right: 1rem;
+    height: auto;
+}
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Form Error States */
+input.invalid, select.invalid, textarea.invalid {
+    border-color: var(--danger-color) !important;
+    background-color: #fff8f8;
+}
+.error-message {
+    color: var(--danger-color);
+    font-size: 0.85em;
+    margin-top: 0.25rem;
+    display: block;
+    min-height: 1.2em;
+}
+
+/* Password Toggle Icon */
+.password-toggle { position: relative; }
+.password-toggle-icon {
+    position: absolute;
+    right: 12px;
+    top: 70%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #636e72;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.password-toggle-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+    vertical-align: middle;
+}
+.password-toggle input {
+    padding-right: 40px !important;
+}
+
+/* --- Filter Specific Controls --- */
+.filter-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+.filter-container label {
+    display: inline-block;
+    margin-bottom: 0;
+    margin-right: 6px;
+    font-weight: 500;
+    vertical-align: middle;
+}
+.filter-container select {
+    max-width: 180px;
+    width: auto;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 8px;
+    height: 38px;
+    padding-top: 0.375rem;
+    padding-bottom: 0.375rem;
+}
+.filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 20px;
+}
+.save-search-button,
+.reset-filters-btn {
+    /* Size & Layout */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Space between icon and text */
+    padding: 8px 16px;
+    min-width: 160px; /* Ensures both buttons have the same minimum width */
+    box-sizing: border-box; /* Important for consistent sizing */
+
+    /* Typography & Appearance */
+    font-size: 0.95rem;
+    font-weight: 500;
+    white-space: nowrap;
+    border-radius: 6px !important; /* Override other button styles if needed */
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+/* Specific styling for the Save button */
+.save-search-button {
+    background-color: #9fc5e8; /* Blue color */
+    color: var(--heading-color);
+    border: 1px solid #dee2e6;
+}
+.save-search-button:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+/* Specific styling for the Reset button */
+.reset-filters-btn {
+    background-color: #9fc5e8; /* Light gray color */
+    color: var(--heading-color);
+    border: 1px solid #dee2e6;
+}
+.reset-filters-btn:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+/* --- THIS IS THE FIX FOR THE ICON --- */
+.reset-filters-btn::before {
+    content: '⟳'; /* Use the pseudo-element for the icon */
+    font-size: 1.5em; /* Make the icon bigger relative to the text */
+    line-height: 1; /* Keep it vertically centered */
+}
+
+.btn-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.btn-text {
+    font-size: 0.95rem; /* Control text size independently */
+}
+
+/* Range Slider */
+.range-slider {
+    height: 8px;
+    margin: 20px 0;
+    background: #e2e8f0;
+    border-radius: 4px;
+}
+.range-slider .noUi-connect {
+    background: var(--primary-color);
+}
+.range-slider .noUi-handle {
+    height: 18px;
+    width: 18px;
+    top: -5px;
+    right: -9px;
+    border-radius: 50%;
+    background: var(--bg-white);
+    border: 2px solid var(--primary-color);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+.noUi-handle:focus { outline: none; }
+.noUi-handle::before, .noUi-handle::after { display: none; }
+.slider-values {
+    font-size: 0.9em;
+    color: #555;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+/* Active Filter Tags */
+.active-filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px 20px;
+}
+.active-filter-tag {
+    display: inline-flex;
+    align-items: center;
+    background-color: #e2e8f0;
+    color: #4a5568;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.85em;
+    font-weight: 500;
+}
+.active-filter-tag .remove-filter-btn {
+    background: none;
+    border: none;
+    color: #718096;
+    margin-left: 8px;
+    cursor: pointer;
+    padding: 0;
+    font-size: 1.1em;
+    line-height: 1;
+}
+.active-filter-tag .remove-filter-btn:hover {
+     color: #2d3748;
+}

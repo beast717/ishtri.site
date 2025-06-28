@@ -1,0 +1,68 @@
+.kategorierContainer {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    margin-top: 40px;
+    gap: 30px;
+}
+
+/* Style for the individual category box */
+.kategori {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    background-color: var(--bg-white);
+    padding: 15px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    width: 55px; /* Set a consistent width */
+}
+
+.kategori:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.12);
+}
+
+/* Style for the icon inside the box */
+.kategori i {
+    font-size: 32px;
+    color: var(--primary-color); /* The desired blue color */
+    margin-bottom: 12px; /* More space below the icon */
+}
+
+/* Style for the link and text inside the box */
+.kategori a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-size: 16px;
+    font-weight: 500;
+}
+
+@media (max-width: 768px) {
+    .kategorierContainer {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 15px; 
+        padding: 0 15px;           
+        justify-content: initial; 
+        overflow-x: initial; 
+    }
+
+    .kategori {
+        width: auto; 
+        padding: 15px 10px; 
+        flex: initial; 
+    }
+
+    .kategori i {
+        font-size: 28px; 
+        margin-bottom: 10px;
+    }
+
+    .kategori span {
+        font-size: 13px; 
+    }
+}

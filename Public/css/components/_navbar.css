@@ -1,0 +1,181 @@
+/* --- Navbar --- */
+.navBar {
+    width: 100%;
+    height: var(--navbar-height);
+    background-color: var(--bg-white);
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    padding: 0 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.logoOgTittel {
+    flex-shrink: 0;
+}
+
+.logoOgTittel img {
+    height: 50px;
+    width: auto;
+    display: block;
+}
+
+.navBarButtons {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+}
+
+.navBarButtons a {
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 16px;
+    transition: color 0.3s ease;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.navBarButtons a:hover {
+    color: var(--primary-color);
+}
+
+.navBarButtons i {
+    font-size: 20px;
+    color: var(--text-color-light);
+    flex-shrink: 0;
+}
+
+
+/* Profile Dropdown */
+#profileContainer {
+    display: none;
+    align-items: center;
+    gap: 5px;
+    position: relative;
+    cursor: pointer;
+}
+#profileIcon {
+    width: 30px;
+    height: 25px;
+    vertical-align: middle;
+}
+#profileUsername {
+    margin-top: 3px;
+    font-size: 16px;
+    color: var(--text-color);
+    vertical-align: middle;
+}
+#profileDropdownArrow {
+    font-size: 14px;
+    margin-left: 5px;
+    color: var(--text-color);
+    transition: transform 0.2s ease-in-out;
+}
+#profileContainer.dropdown-open #profileDropdownArrow {
+    transform: rotate(180deg);
+}
+#dropdownMenu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: auto;
+    background-color: var(--bg-white);
+    border: 1px solid #ccc;
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    padding: 10px;
+    min-width: 150px;
+    margin-top: 5px;
+}
+#dropdownMenu button, #dropdownMenu a {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 10px;
+    text-align: left;
+    background-color: var(--bg-white);
+    color: var(--text-color);
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-sizing: border-box;
+}
+#dropdownMenu button:hover, #dropdownMenu a:hover {
+    background-color: #f1f1f1;
+}
+#dropdownMenu a {
+    text-decoration: none;
+    border-top: 1px solid #ccc;
+}
+#dropdownMenu i {
+    margin-right: 8px;
+    width: 18px;
+    text-align: center;
+}
+
+/* Badges */
+.nav-badge {
+    position: absolute;
+    top: -5px;
+    left: 13px;
+    background: var(--favorite-color);
+    color: var(--bg-white);
+    border-radius: 50%;
+    padding: 1px 2px;
+    font-size: 10px;
+    min-width: 14px;
+    line-height: 1.4;
+    text-align: center;
+    display: none;
+    z-index: 20;
+    box-sizing: border-box;
+}
+
+/* Language Select */
+#languageSelect {
+    padding: 8px 30px 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: var(--bg-white);
+    color: var(--text-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333"><path d="M7 10l5 5 5-5z"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 15px;
+}
+#languageSelect:hover {
+    border-color: var(--primary-color);
+}
+
+/* --- THIS IS THE NEW CSS TO ADD --- */
+.language-switcher {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Defines the small space between the icon and the dropdown */
+}
+/* --- END OF NEW CSS --- */
+
+
+/* --- Mobile Styles --- */
+@media (max-width: 768px) {
+    .navBar { height: var(--navbar-height-mobile); padding: 0 5%; }
+    .logoOgTittel img { height: 35px; }
+    .navBarButtons { gap: 20px; }
+    .navBarButtons a span[data-i18n] { display: none; }
+    #profileUsername { display: none; }
+    /* Hide the entire language switcher on mobile */
+    .language-switcher { display: none; }
+    .navBarButtons i { font-size: 22px; }
+    #dropdownMenu { min-width: 120px; }
+}

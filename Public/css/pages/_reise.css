@@ -1,0 +1,48 @@
+.reise-container {
+    /* This container centers the form on the page */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; /* Align to the top, not middle */
+    padding: 3rem 1rem; /* Add generous padding top/bottom */
+    min-height: calc(100vh - var(--navbar-height) - 6rem); /* Ensure it takes up space */
+}
+
+.flight-search-form {
+    /* This is the white box with the form inside */
+    max-width: 500px;
+    width: 100%;
+    background: var(--bg-white);
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px S15px rgba(0, 0, 0, 0.1);
+}
+
+.flight-search-form h2 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+/* Suggestions dropdown for airport search */
+.suggestions-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    background-color: var(--bg-white);
+    position: absolute;
+    width: calc(100% - 2px); /* Adjust for parent's border */
+    z-index: 10;
+    border-radius: var(--border-radius);
+    display: none;
+}
+.suggestions-list li {
+    padding: 10px;
+    cursor: pointer;
+}
+.suggestions-list li:hover {
+    background-color: #f1f1f1;
+}

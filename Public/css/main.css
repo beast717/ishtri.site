@@ -1,0 +1,29 @@
+/* 1. BASE - Variables and foundational styles */
+@import url("base/_variables.css");
+@import url("base/_typography.css");
+
+/* 2. LAYOUT - Main page structure */
+@import url("layout/_grid.css");
+
+/* 3. COMPONENTS - Reusable elements */
+@import url("components/_buttons.css");
+@import url("components/_cards.css");
+@import url("components/_categories.css");
+@import url("components/_forms.css");
+@import url("components/_modals.css");
+@import url("components/_navbar.css");
+@import url("components/_notifications.css");
+@import url("components/_skeleton.css");
+
+/* 4. PAGES - Specific styles for individual pages */
+@import url("pages/_auth.css");
+@import url("pages/_favorites.css");
+@import url("pages/_forside.css");
+@import url("pages/_legal.css");
+@import url("pages/_messages.css");
+@import url("pages/_mine-annonser.css");
+@import url("pages/_ny-annonse.css");
+@import url("pages/_productDetails.css");
+@import url("pages/_reise.css");
+@import url("pages/_saved-searches.css");
+@import url("pages/_torget.css");

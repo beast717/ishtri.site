@@ -1,0 +1,184 @@
+.toast-container {
+    position: fixed; /* Stick to the viewport */
+    top: 20px;       /* 20px from the top */
+    right: 20px;     /* 20px from the right */
+    z-index: 2000;   /* Ensure it's on top of everything */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.toast {
+    background: var(--bg-white);
+    border-radius: 8px; /* Slightly more rounded */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    min-width: 280px;
+    animation: slideIn 0.3s ease-out;
+}
+@keyframes slideIn {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+}
+/* Add a visual indicator for different toast types */
+.toast-success { border-left: 4px solid var(--success-color); }
+.toast-error { border-left: 4px solid var(--danger-color); }
+.toast-warning { border-left: 4px solid var(--warning-color); }
+.toast-info { border-left: 4px solid var(--info-color); }
+
+.toast-fade-out { animation: slideOut 0.3s ease forwards; }
+
+@keyframes slideOut {
+    to { transform: translateX(100%); opacity: 0; }
+}
+
+.toast-close-btn {
+    background: #e9ecef;
+    border: none;
+    color: #6c757d;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto; /* Push it to the far right */
+    transition: background-color 0.2s, color 0.2s;
+}
+.toast-close-btn:hover {
+    background-color: #dee2e6;
+    color: #495057;
+}
+
+/* --- Cookie Consent Banner --- */
+.cookie-consent-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--bg-dark);
+    color: var(--border-color-light);
+    padding: 20px 30px;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.15);
+    z-index: 1050;
+    opacity: 0;
+    transform: translateY(100%);
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+    display: none;
+}
+.cookie-consent-banner.show {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+.cookie-consent-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 15px;
+}
+.cookie-consent-text {
+    flex-grow: 1;
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-right: 20px;
+}
+.cookie-consent-link {
+    color: #74b9ff;
+    text-decoration: underline;
+    font-weight: 500;
+}
+.cookie-consent-buttons {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}
+.cookie-btn { /* Re-using .btn structure */
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    font-weight: 500;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+.cookie-btn-accept {
+    background-color: var(--link-color);
+    color: var(--bg-white);
+    border: none;
+}
+.cookie-btn-reject {
+    background-color: #b2bec3;
+    color: var(--bg-dark);
+    border: none;
+}
+
+/* --- Notification Page Items --- */
+.notifications-container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+    background-color: var(--bg-white);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+.notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+.notifications-header h1 {
+    margin: 0;
+    font-size: 1.8em;
+}
+.notification-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+.notification-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem 0;
+    border-bottom: 1px solid #eee;
+    gap: 15px;
+    transition: background-color 0.2s ease;
+}
+.notification-item:last-child { border-bottom: none; }
+.notification-item.unread {
+    background-color: var(--bg-light);
+    font-weight: 500;
+}
+.notification-item:hover { background-color: #f1f1f1; }
+.notification-icon { flex-shrink: 0; margin-top: 4px; }
+.notification-icon .fa-envelope { color: var(--primary-color); }
+.notification-icon .fa-tags { color: var(--success-color); }
+.notification-content { flex-grow: 1; }
+.notification-message { margin: 0 0 5px 0; line-height: 1.4; }
+.notification-message a { color: var(--primary-hover); text-decoration: none; font-weight: 500; }
+.notification-message a:hover { text-decoration: underline; }
+.notification-meta { font-size: 0.8em; color: var(--text-color-light); }
+.notification-actions { flex-shrink: 0; margin-left: auto; align-self: center; }
+.mark-read-btn { background: none; border: none; color: var(--primary-color); cursor: pointer; font-size: 1.1em; padding: 5px; }
+.mark-read-btn:hover { color: var(--primary-hover); }
+.mark-read-btn.read { color: var(--text-color-light); cursor: default; }
+.notification-product-link img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; margin-right: 10px; vertical-align: middle; }
+.notification-product-link span { vertical-align: middle; }
+.no-notifications { text-align: center; color: var(--text-color-light); padding: 2rem; }
+
+#markAllReadBtn:disabled {
+    background-color: #cccccc;
+    border-color: #cccccc;
+    cursor: not-allowed;
+    opacity: 1; /* Override the default disabled opacity */
+}   

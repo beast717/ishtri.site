@@ -4,148 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Notifications</title>
-    <link rel="stylesheet" href="/css/style.css"> <!-- Your main stylesheet -->
+    <link rel="stylesheet" href="/css/main.css"> <!-- Your main stylesheet -->
      <link rel="icon" href="/ishtri1.png" sizes="16x16 32x32" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="/js/toast.js" defer></script>
     <script src="/js/skeleton.js" defer></script>
     <script src="/js/lazyLoad.js" defer></script>
 
-    <style>
-        body {
-            background-color: #f8f9fa;
-        }
-        .notifications-container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 1.5rem;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        .notifications-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        .notifications-header h1 {
-            margin: 0;
-            font-size: 1.8em;
-            color: #333;
-        }
-        #markAllReadBtn {
-            padding: 8px 15px;
-            font-size: 0.9em;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        #markAllReadBtn:hover:not(:disabled) {
-            background-color: #0056b3;
-        }
-         #markAllReadBtn:disabled {
-            background-color: #cccccc;
-            cursor: not-allowed;
-        }
-
-        .notification-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .notification-item {
-            display: flex;
-            align-items: flex-start; /* Align items to the top */
-            padding: 1rem 0;
-            border-bottom: 1px solid #eee;
-            gap: 15px;
-            transition: background-color 0.2s ease;
-        }
-        .notification-item:last-child {
-            border-bottom: none;
-        }
-        .notification-item.unread {
-            background-color: #f8f9fa; /* Subtle background for unread */
-            font-weight: 500; /* Slightly bolder text */
-        }
-         .notification-item:hover {
-             background-color: #f1f1f1;
-         }
-        .notification-icon {
-            flex-shrink: 0;
-            margin-top: 4px; /* Align icon slightly lower */
-        }
-        .notification-icon .fa-envelope { color: #007bff; } /* Example icon styling */
-        .notification-icon .fa-tags { color: #28a745; } /* Icon for 'new_match' */
-
-        .notification-content {
-            flex-grow: 1;
-        }
-        .notification-message {
-            margin: 0 0 5px 0;
-            color: #333;
-            line-height: 1.4;
-        }
-         .notification-message a { /* Style links within message */
-             color: #0056b3;
-             text-decoration: none;
-             font-weight: 500;
-         }
-          .notification-message a:hover {
-              text-decoration: underline;
-          }
-
-        .notification-meta {
-            font-size: 0.8em;
-            color: #777;
-        }
-        .notification-actions {
-             flex-shrink: 0;
-             margin-left: auto; /* Push actions to the right */
-             align-self: center; /* Center actions vertically */
-        }
-        .mark-read-btn {
-             background: none;
-             border: none;
-             color: #007bff;
-             cursor: pointer;
-             font-size: 1.1em; /* Make icon clickable */
-             padding: 5px;
-        }
-         .mark-read-btn:hover {
-             color: #0056b3;
-         }
-          .mark-read-btn.read {
-             color: #6c757d; /* Grey out when read */
-             cursor: default;
-         }
-
-          /* Style for product link within notification */
-          .notification-product-link img {
-              width: 50px; /* Small thumbnail */
-              height: 50px;
-              object-fit: cover;
-              border-radius: 4px;
-              margin-right: 10px;
-              vertical-align: middle;
-          }
-           .notification-product-link span {
-               vertical-align: middle;
-           }
-
-
-        .no-notifications {
-            text-align: center;
-            color: #777;
-            padding: 2rem;
-        }
-    </style>
+   
 </head>
 <body>
     <%- include('partials/navbar') %> <!-- Include your navbar -->
@@ -153,7 +19,7 @@
     <div class="notifications-container">
         <div class="notifications-header">
              <h1>My Notifications</h1>
-             <button id="markAllReadBtn" disabled>Mark All as Read</button>
+             <button id="markAllReadBtn" class="btn btn-primary" disabled>Mark All as Read</button>
         </div>
 
         <ul class="notification-list" id="notificationList">

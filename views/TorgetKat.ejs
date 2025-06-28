@@ -36,7 +36,7 @@
     <link rel="canonical" href="<%= typeof product !== 'undefined' ? baseUrl + '/productDetails?productdID=' + product.ProductdID : baseUrl %>" /> <!-- Replace with actual domain -->
 
     <!-- Stylesheets and Scripts -->
-    <link rel="stylesheet" href="/css/style.css"> <!-- Use root-relative path -->
+    <link rel="stylesheet" href="/css/main.css"> 
     <script src="/js/toast.js" defer></script>
     <script src="/js/skeleton.js" defer></script>
     <script src="/js/backToTop.js" defer></script>
@@ -69,12 +69,13 @@
 <body>
     <%- include('partials/navbar') %>
     <script src="/shared.js"></script>
-     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js" integrity="sha512-UOJe4paV6hYWBnS0c9GnIRH8PLm2nFK22uhfAvsTIqd3uwnWsVri1OPn5fJYdLtGY3wB11LGHJ4yPU1WFJeBYQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.1/nouislider.min.js" integrity="sha512-UOJe4paV6hYWBnS0c9GnIRH8PLm2nFK22uhfAvsTIqd3uwnWsVri1OPn5fJYdLtGY3wB11LGHJ4yPU1WFJeBYQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-    <!-- Wrap the original filter container for easier hiding on mobile -->
+    <!-- Filter/Sort Bar (This section is OUTSIDE the main two-column layout) -->
     <div class="filter-container-wrapper" style="margin-bottom: 20px; padding-left: 25px;">
-        <!-- This container will be hidden on mobile -->
-        <!-- MOVED FILTERS BACK HERE -->
+        <button class="offcanvas-filter-btn" id="offcanvasFilterBtn" type="button">
+        <i class="fas fa-filter"></i> Filter
+    </button>
         <div class="filter-container">
             <label for="priceFilter" data-i18n="filter.sorter_etter">Sort By:</label>
             <select id="priceFilter" onchange="applyFilters()">
@@ -100,26 +101,32 @@
                 </select>
             </div>
             <div class="filter-actions">
-                <button id="saveSearchBtn" class="save-search-button">
-                    <i class="fas fa-save"></i> Save This Search
+                      
+                <button id="saveSearchBtn" class="btn btn-primary save-search-button">
+                    <span class="btn-icon"><i class="fas fa-save"></i></span>
+                    <span class="btn-text">Save This Search</span>
                 </button>
-                <button onclick="resetFilters()" class="reset-filters-btn" id="resetFiltersBtn">
-                    ⟳ Reset Filters
+                      
+                <button onclick="resetFilters()" class="btn btn-secondary reset-filters-btn" id="resetFiltersBtn">
+                    <span class="btn-icon"></span>
+                    <span class="btn-text">Reset Filters</span>
                 </button>
+
+    
             </div>
         </div>
-        <!-- END MOVED FILTERS -->
     </div>
 
+    <!-- Active Filters Display (This is also OUTSIDE the main two-column layout) -->
     <div class="active-filters-container" id="activeFiltersDisplay" style="display: none; margin-bottom: 15px; padding: 10px 20px;">
         <!-- Active filters will be shown here by JS -->
     </div>
 
+    <!-- THIS IS THE MAIN TWO-COLUMN LAYOUT CONTAINER -->
     <div class="page-container">
-        <!-- Side panel: visible on desktop, hidden on mobile -->
-        <div class="side-panel" id="mainSidePanel">
-            <!-- Filters are NO LONGER here -->
 
+        <!-- Child 1: The Side Panel (Left Column) -->
+        <div class="side-panel" id="mainSidePanel">
             <h3 data-i18n="filter.filter_land">Filter by Country</h3>
             <ul class="country-list">
                 <!-- Countries will be populated here -->
@@ -130,25 +137,22 @@
                 <!-- Car brands will be populated here -->
             </ul>
 
-            <!-- Car Specific Filters Update -->
-        <div id="carSpecificFilters" style="display: none;">
-            <div class="filter-section">
-                <h4 data-i18n="filter.year_range">Year Range</h4>
-                <div class="slider-values"><span id="year-slider-val-min"></span> - <span id="year-slider-val-max"></span></div>
-                <div id="year-slider" class="range-slider"></div>
-                <!-- Hidden inputs to store values for the form/JS -->
-                <input type="hidden" id="yearFrom">
-                <input type="hidden" id="yearTo">
-            </div>
-            <div class="filter-section">
-                <h4 data-i18n="filter.mileage_range">Mileage (km)</h4>
-                 <div class="slider-values"><span id="mileage-slider-val-min"></span> - <span id="mileage-slider-val-max"></span></div>
-                <div id="mileage-slider" class="range-slider"></div>
-                <input type="hidden" id="mileageFrom">
-                <input type="hidden" id="mileageTo">
-            </div>
-
-                <!-- Fuel Type Filter -->
+            <!-- Car Specific Filters -->
+            <div id="carSpecificFilters" style="display: none;">
+                <div class="filter-section">
+                    <h4 data-i18n="filter.year_range">Year Range</h4>
+                    <div class="slider-values"><span id="year-slider-val-min"></span> - <span id="year-slider-val-max"></span></div>
+                    <div id="year-slider" class="range-slider"></div>
+                    <input type="hidden" id="yearFrom">
+                    <input type="hidden" id="yearTo">
+                </div>
+                <div class="filter-section">
+                    <h4 data-i18n="filter.mileage_range">Mileage (km)</h4>
+                    <div class="slider-values"><span id="mileage-slider-val-min"></span> - <span id="mileage-slider-val-max"></span></div>
+                    <div id="mileage-slider" class="range-slider"></div>
+                    <input type="hidden" id="mileageFrom">
+                    <input type="hidden" id="mileageTo">
+                </div>
                 <div class="filter-section">
                     <h4 data-i18n="filter.fuel_type">Fuel Type</h4>
                     <select id="fuelTypeFilter" multiple>
@@ -159,8 +163,6 @@
                         <option value="Other" data-i18n="filter.other">Other</option>
                     </select>
                 </div>
-
-                <!-- Transmission Filter -->
                 <div class="filter-section">
                     <h4>Transmission</h4>
                     <select id="transmissionFilter" multiple>
@@ -170,9 +172,8 @@
                 </div>
             </div>
 
-            <!-- Property Specific Filters Update -->
+            <!-- Property Specific Filters -->
             <div id="propertySpecificFilters" style="display: none;">
-                <!-- Property Type Filter -->
                 <div class="filter-section">
                     <h4>Property Type</h4>
                     <select id="propertyTypeFilter" multiple>
@@ -183,30 +184,27 @@
                         <option value="Commercial">Commercial</option>
                     </select>
                 </div>
-
                 <div class="filter-section">
-                <h4>Size (m²)</h4>
-                 <div class="slider-values"><span id="size-slider-val-min"></span> - <span id="size-slider-val-max"></span></div>
-                <div id="size-slider" class="range-slider"></div>
-                <input type="hidden" id="sizeSqmFrom">
-                <input type="hidden" id="sizeSqmTo">
-            </div>
-             <div class="filter-section">
-                <h4>Number of Rooms</h4>
-                 <div class="slider-values"><span id="rooms-slider-val-min"></span> - <span id="rooms-slider-val-max"></span></div>
-                <div id="rooms-slider" class="range-slider"></div>
-                <input type="hidden" id="numRoomsFrom">
-                <input type="hidden" id="numRoomsTo">
-            </div>
-            <div class="filter-section">
-                <h4>Number of Bathrooms</h4>
-                <div class="slider-values"><span id="bathrooms-slider-val-min"></span> - <span id="bathrooms-slider-val-max"></span></div>
-                <div id="bathrooms-slider" class="range-slider"></div>
-                <input type="hidden" id="numBathroomsFrom">
-                <input type="hidden" id="numBathroomsTo">
-            </div>
-
-                <!-- Energy Class Filter -->
+                    <h4>Size (m²)</h4>
+                    <div class="slider-values"><span id="size-slider-val-min"></span> - <span id="size-slider-val-max"></span></div>
+                    <div id="size-slider" class="range-slider"></div>
+                    <input type="hidden" id="sizeSqmFrom">
+                    <input type="hidden" id="sizeSqmTo">
+                </div>
+                <div class="filter-section">
+                    <h4>Number of Rooms</h4>
+                    <div class="slider-values"><span id="rooms-slider-val-min"></span> - <span id="rooms-slider-val-max"></span></div>
+                    <div id="rooms-slider" class="range-slider"></div>
+                    <input type="hidden" id="numRoomsFrom">
+                    <input type="hidden" id="numRoomsTo">
+                </div>
+                <div class="filter-section">
+                    <h4>Number of Bathrooms</h4>
+                    <div class="slider-values"><span id="bathrooms-slider-val-min"></span> - <span id="bathrooms-slider-val-max"></span></div>
+                    <div id="bathrooms-slider" class="range-slider"></div>
+                    <input type="hidden" id="numBathroomsFrom">
+                    <input type="hidden" id="numBathroomsTo">
+                </div>
                 <div class="filter-section">
                     <h4>Energy Class</h4>
                     <select id="energyClassFilter" multiple>
@@ -221,9 +219,8 @@
                 </div>
             </div>
 
-            <!-- Add Work Specific Filters -->
+            <!-- Work Specific Filters -->
             <div id="workSpecificFilters" style="display: none;">
-                <!-- Employment Type Filter -->
                 <div class="filter-section">
                     <h4>Employment Type</h4>
                     <select id="employmentTypeFilter" multiple>
@@ -234,8 +231,6 @@
                         <option value="Internship">Internship</option>
                     </select>
                 </div>
-
-                <!-- Salary Range Filter -->
                 <div class="filter-section">
                     <h4>Salary Range (NOK)</h4>
                     <div class="range-inputs">
@@ -243,8 +238,6 @@
                         <input type="number" id="salaryTo" placeholder="To">
                     </div>
                 </div>
-
-                <!-- Application Deadline Filter -->
                 <div class="filter-section">
                     <h4>Application Deadline</h4>
                     <div class="date-input">
@@ -252,39 +245,53 @@
                     </div>
                 </div>
             </div>
+             <!-- START: Added Action Buttons for Mobile -->
+            <div class="offcanvas-actions">
+                      
+            <button id="saveSearchBtn-mobile" class="btn btn-primary save-search-button">
+                <span class="btn-icon"><i class="fas fa-save"></i></span>
+                <span class="btn-text">Save This Search</span>
+            </button>
+
+                     
+                      
+            <button onclick="resetFilters()" class="btn btn-secondary reset-filters-btn" id="resetFiltersBtn-mobile">
+                <span class="btn-icon"></span>
+                <span class="btn-text">Reset Filters</span>
+            </button>
+
+    
+            </div>
         </div>
 
+        <!-- Child 2: The Products Container (Right Column) -->
         <div class="productsContainer" id="productsContainer">
             <!-- Skeleton loading will be shown here -->
         </div>
-    </div>
 
-    <!-- Off-Canvas Filter Overlay & Drawer (MOBILE ONLY) -->
+    </div> <!-- End of .page-container -->
+
+    <!-- Off-Canvas and other utility elements -->
     <div class="offcanvas-filter-overlay" id="offcanvasFilterOverlay"></div>
     <aside class="offcanvas-filter-drawer" id="offcanvasFilterDrawer" aria-modal="true" role="dialog" tabindex="-1">
         <div class="offcanvas-filter-header">
             <span class="offcanvas-filter-title"><i class="fas fa-filter"></i> Filters</span>
-            <button class="offcanvas-filter-close" id="offcanvasFilterClose" aria-label="Close Filters">&times;</button>
+            <button class="offcanvas-filter-close" id="offcanvasFilterClose" aria-label="Close Filters">×</button>
         </div>
         <div class="offcanvas-filter-content">
-            <!-- Move the side-panel content here for mobile -->
             <div id="offcanvasSidePanel">
                 <!-- Will be filled by JS with .side-panel content -->
             </div>
         </div>
     </aside>
-    <button class="offcanvas-filter-btn" id="offcanvasFilterBtn" type="button">
-        <i class="fas fa-filter"></i> Filter
-    </button>
-
     <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-spinner"></div>
-</div>
-
+        <div class="loading-spinner"></div>
+    </div>
     <div class="toast-container" id="toastContainer"></div>
     <div class="back-to-top" id="backToTop">
         <i class="fas fa-arrow-up"></i>
     </div>
+
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {      
@@ -1005,35 +1012,38 @@ function initializeSliders() {
 
         // --- NEW: Helper to Update currentFilters Object from UI ---
 function updateCurrentFiltersFromUI() {
-     const urlParams = new URLSearchParams(window.location.search);
-     const category = urlParams.get('category') || 'default';
+    const urlParams = new URLSearchParams(window.location.search);
+    const category = urlParams.get('category') || 'default';
 
-     currentFilters = {
+    currentFilters = {
         priceOrder: document.getElementById('priceFilter')?.value || '',
         dateOrder: document.getElementById('dateFilter')?.value || '',
         subCategory: category === 'Torget' ? document.getElementById('subCategoryFilter')?.value || '' : '',
+        
+        // CORRECTED SELECTOR: Removed the incorrect '> div >' part
         selectedCountries: Array.from(
-            document.querySelectorAll('#mainSidePanel .country-list > li > div > input[type="checkbox"]:checked')
+            document.querySelectorAll('#mainSidePanel .country-list > li > input[type="checkbox"]:checked')
         ).map(cb => cb.value),
+        
         selectedCities: Array.from(document.querySelectorAll('#mainSidePanel .city-list input[type="checkbox"]:checked')).map(cb => cb.value),
-        // Car Filters
-        selectedCarBrands: category === 'Bil' ? Array.from(document.querySelectorAll('.car-brand-list input[type="checkbox"]:checked')).map(cb => cb.value) : [],
+
+        // CORRECTED SELECTOR: Also fixed it here for car brands for consistency
+        selectedCarBrands: category === 'Bil' ? Array.from(document.querySelectorAll('#mainSidePanel .car-brand-list li > input[type="checkbox"]:checked')).map(cb => cb.value) : [],
+        
         yearRange: { from: document.getElementById('yearFrom')?.value || null, to: document.getElementById('yearTo')?.value || null },
         mileageRange: { from: document.getElementById('mileageFrom')?.value || null, to: document.getElementById('mileageTo')?.value || null },
         fuelTypes: category === 'Bil' ? Array.from(document.getElementById('fuelTypeFilter')?.selectedOptions || []).map(opt => opt.value) : [],
         transmissionTypes: category === 'Bil' ? Array.from(document.getElementById('transmissionFilter')?.selectedOptions || []).map(opt => opt.value) : [],
-        // Property Filters
         propertyTypes: category === 'Eiendom' ? Array.from(document.getElementById('propertyTypeFilter')?.selectedOptions || []).map(opt => opt.value) : [],
         sizeRange: { from: document.getElementById('sizeSqmFrom')?.value || null, to: document.getElementById('sizeSqmTo')?.value || null },
         roomsRange: { from: document.getElementById('numRoomsFrom')?.value || null, to: document.getElementById('numRoomsTo')?.value || null },
         bathroomsRange: { from: document.getElementById('numBathroomsFrom')?.value || null, to: document.getElementById('numBathroomsTo')?.value || null },
         energyClasses: category === 'Eiendom' ? Array.from(document.getElementById('energyClassFilter')?.selectedOptions || []).map(opt => opt.value) : [],
-        // Work Filters (Example - Adjust based on actual IDs if different)
         employmentTypes: category === 'Jobb' ? Array.from(document.getElementById('employmentTypeFilter')?.selectedOptions || []).map(opt => opt.value) : [],
         salaryRange: { from: document.getElementById('salaryFrom')?.value || null, to: document.getElementById('salaryTo')?.value || null },
         applicationDeadline: category === 'Jobb' ? document.getElementById('deadlineDate')?.value || null : null
     };
-    // Clean null/empty values from range objects if needed by backend
+
     Object.keys(currentFilters).forEach(key => {
         if (typeof currentFilters[key] === 'object' && currentFilters[key] !== null && !Array.isArray(currentFilters[key])) {
             if (currentFilters[key].from === null || currentFilters[key].from === '') delete currentFilters[key].from;
@@ -1044,28 +1054,18 @@ function updateCurrentFiltersFromUI() {
 
 
 // --- NEW: Function to Update Active Filters Display ---
+// --- NEW: Function to Update Active Filters Display ---
 function updateActiveFiltersDisplay() {
     const displayContainer = document.getElementById('activeFiltersDisplay');
     if (!displayContainer) return;
-    displayContainer.innerHTML = ''; // Clear previous tags
+    displayContainer.innerHTML = '';
 
-    let hasActiveFilters = false; // Flag to check if any filter is set
+    let hasActiveFilters = false;
 
-    // --- GET CURRENT CATEGORY ---
     const urlParams = new URLSearchParams(window.location.search);
-    const currentCategory = urlParams.get('category') || 'default'; // Get active category
+    const currentCategory = urlParams.get('category') || 'default';
 
-    // --- START: Subcategory Translation Map ---
-    const subCategoryTranslations = {
-        'Klær': 'Clothes',
-        'Elektronikk': 'Electronics',
-        'Hvitvarer': 'White Goods',
-        'Møbler': 'Furniture',
-        'Annet': 'Else'
-        // Add more translations if needed
-    };
-    // --- END: Subcategory Translation Map ---
-
+    const subCategoryTranslations = { 'Klær': 'Clothes', 'Elektronikk': 'Electronics', 'Hvitvarer': 'White Goods', 'Møbler': 'Furniture', 'Annet': 'Else' };
 
     const addFilterTag = (label, value, removeCallback) => {
         hasActiveFilters = true;
@@ -1076,80 +1076,83 @@ function updateActiveFiltersDisplay() {
         displayContainer.appendChild(tag);
     };
 
-    // --- Check and Add Tags for Each Filter Type (with Category Check) ---
-
-    // Price Sort (Applies to all categories with products)
     if (currentFilters.priceOrder) {
         const priceText = currentFilters.priceOrder === 'asc' ? 'Lowest First' : 'Highest First';
         addFilterTag('Sort Price', priceText, () => {
-            document.getElementById('priceFilter').value = ''; // Or set to a default
+            document.getElementById('priceFilter').value = '';
             applyFilters();
         });
     }
-    // Date Sort (Applies to all categories with products)
+
     if (currentFilters.dateOrder) {
         const dateText = currentFilters.dateOrder === 'asc' ? 'Oldest First' : 'Newest First';
-         addFilterTag('Sort Date', dateText, () => {
+        addFilterTag('Sort Date', dateText, () => {
             document.getElementById('dateFilter').value = '';
             applyFilters();
         });
     }
 
-    // SubCategory (Only show if category is 'Torget')
     if (currentCategory === 'Torget' && currentFilters.subCategory) {
-        // --- START: Use translated value ---
         const displayValue = subCategoryTranslations[currentFilters.subCategory] || currentFilters.subCategory;
         addFilterTag('Subcategory', displayValue, () => {
-        // --- END: Use translated value ---
             document.getElementById('subCategoryFilter').value = '';
             applyFilters();
         });
     }
 
-    // Countries (Applies to all)
-    currentFilters.selectedCountries.forEach(countryVal => {
-        // find the corresponding checkbox in main panel and its label
-        const cb = document.querySelector(
-            `#mainSidePanel .country-list input[value="${countryVal}"]`
-        );
-        const labelText = cb?.nextElementSibling?.textContent || countryVal;
-        addFilterTag('Country', labelText, () => {
-            if (cb) cb.checked = false;
-            // Also uncheck and hide cities for this country
-            const cityList = document.getElementById(`${countryVal}-cities`);
-            if (cityList) {
-                cityList.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
-                cityList.style.display = 'none';
+    // --- START: MODIFIED COUNTRY/CITY LOGIC ---
+
+    // Create a map to hold the final location tags to be displayed
+    const locationTags = new Map();
+
+    // First, add all selected countries to the map as the default tag
+    currentFilters.selectedCountries.forEach(countryValue => {
+        const countryCheckbox = document.getElementById(countryValue);
+        const countryLabel = countryCheckbox ? countryCheckbox.nextElementSibling.textContent : countryValue;
+        locationTags.set(countryValue, { label: countryLabel, type: 'country' });
+    });
+
+    // Now, go through selected cities. If a city is found, it OVERWRITES its parent country's tag.
+    currentFilters.selectedCities.forEach(cityId => {
+        const cityCheckbox = document.getElementById(`city_${cityId}`);
+        const countryListItem = cityCheckbox?.closest('.country-list > li');
+        if (countryListItem) {
+            const parentCountryCheckbox = countryListItem.querySelector('input[type="checkbox"]');
+            if (parentCountryCheckbox) {
+                const countryValue = parentCountryCheckbox.value;
+                const cityName = cityCheckbox.nextElementSibling.textContent;
+                const fullLocation = `${cityName}, ${countryValue}`;
+                // Overwrite the simple country tag with the more specific city tag
+                locationTags.set(countryValue, { label: fullLocation, type: 'city', cityId: cityId });
+            }
+        }
+    });
+
+    // Finally, create the HTML tags from our processed map
+    for (const [key, tagInfo] of locationTags.entries()) {
+        addFilterTag('Location', tagInfo.label, () => {
+            if (tagInfo.type === 'city') {
+                const cityCheckbox = document.getElementById(`city_${tagInfo.cityId}`);
+                if (cityCheckbox) cityCheckbox.checked = false;
+            } else { // type is 'country'
+                const countryCheckbox = document.getElementById(key);
+                if (countryCheckbox) {
+                    countryCheckbox.checked = false;
+                    const cityList = document.getElementById(`${key}-cities`);
+                    if (cityList) {
+                        cityList.querySelectorAll('input[type="checkbox"]').forEach(c => c.checked = false);
+                        cityList.style.display = 'none';
+                    }
+                }
             }
             applyFilters();
         });
-    });
+    }
+    // --- END: MODIFIED COUNTRY/CITY LOGIC ---
 
-    // Cities (Applies to all)
-    // build unique list of city IDs
-    var uniqCities = [];
-    currentFilters.selectedCities.forEach(function(cityId) {
-        if (uniqCities.indexOf(cityId) === -1) {
-            uniqCities.push(cityId);
-        }
-    });
-    // render each unique city tag
-    uniqCities.forEach(function(cityId) {
-        var cityCheckbox = document.getElementById('city_' + cityId);
-        var cityName = cityCheckbox
-            ? cityCheckbox.nextElementSibling.textContent
-            : cityId;
-        addFilterTag('City', cityName, function() {
-            if (cityCheckbox) cityCheckbox.checked = false;
-            applyFilters();
-        });
-    });
 
-    // --- Category Specific Tags ---
-
-    // Car Filters (Only show if category is 'Bil')
+    // --- Category Specific Tags (No changes needed below this line) ---
     if (currentCategory === 'Bil') {
-        // Car Brands
         currentFilters.selectedCarBrands.forEach(brandId => {
             const brandCheckbox = document.getElementById(`brand_${brandId}`);
             const brandName = brandCheckbox ? brandCheckbox.nextElementSibling.textContent : `Brand ${brandId}`;
@@ -1158,16 +1161,13 @@ function updateActiveFiltersDisplay() {
                 applyFilters();
             });
         });
-        // Year Range
         if (currentFilters.yearRange.from !== sliderConfigs['year-slider'].start[0] || currentFilters.yearRange.to !== sliderConfigs['year-slider'].start[1]) {
             const label = `${currentFilters.yearRange.from || sliderConfigs['year-slider'].range.min} - ${currentFilters.yearRange.to || sliderConfigs['year-slider'].range.max}`;
             addFilterTag('Year', label, () => {
-                const slider = document.getElementById('year-slider').noUiSlider;
-                slider.set(sliderConfigs['year-slider'].start);
+                document.getElementById('year-slider').noUiSlider.set(sliderConfigs['year-slider'].start);
                 applyFilters();
             });
         }
-        // Mileage Range
         if (currentFilters.mileageRange.from !== sliderConfigs['mileage-slider'].start[0] || currentFilters.mileageRange.to !== sliderConfigs['mileage-slider'].start[1]) {
              const label = `${currentFilters.mileageRange.from || sliderConfigs['mileage-slider'].range.min} - ${currentFilters.mileageRange.to || sliderConfigs['mileage-slider'].range.max} km`;
             addFilterTag('Mileage', label, () => {
@@ -1175,27 +1175,23 @@ function updateActiveFiltersDisplay() {
                 applyFilters();
             });
         }
-        // Fuel Types
-         if (currentFilters.fuelTypes && currentFilters.fuelTypes.length > 0) {
+        if (currentFilters.fuelTypes && currentFilters.fuelTypes.length > 0) {
             addFilterTag('Fuel Types', currentFilters.fuelTypes.join(', '), () => {
                 const selectElement = document.getElementById('fuelTypeFilter');
                 if (selectElement) Array.from(selectElement.options).forEach(option => option.selected = false);
                 applyFilters();
             });
         }
-        // Transmission Types
-         if (currentFilters.transmissionTypes && currentFilters.transmissionTypes.length > 0) {
+        if (currentFilters.transmissionTypes && currentFilters.transmissionTypes.length > 0) {
             addFilterTag('Transmission', currentFilters.transmissionTypes.join(', '), () => {
                 const selectElement = document.getElementById('transmissionFilter');
                 if (selectElement) Array.from(selectElement.options).forEach(option => option.selected = false);
                 applyFilters();
             });
         }
-    } // End of if (currentCategory === 'Bil')
+    } 
 
-    // Property Filters (Only show if category is 'Eiendom')
     if (currentCategory === 'Eiendom') {
-        // Property Types
         if (currentFilters.propertyTypes && currentFilters.propertyTypes.length > 0) {
              addFilterTag('Property Types', currentFilters.propertyTypes.join(', '), () => {
                  const selectElement = document.getElementById('propertyTypeFilter');
@@ -1203,7 +1199,6 @@ function updateActiveFiltersDisplay() {
                  applyFilters();
              });
          }
-        // Size Range
         if (currentFilters.sizeRange.from !== sliderConfigs['size-slider'].start[0] || currentFilters.sizeRange.to !== sliderConfigs['size-slider'].start[1]) {
             const label = `${currentFilters.sizeRange.from || sliderConfigs['size-slider'].range.min} - ${currentFilters.sizeRange.to || sliderConfigs['size-slider'].range.max} m²`;
             addFilterTag('Size', label, () => {
@@ -1211,7 +1206,6 @@ function updateActiveFiltersDisplay() {
                 applyFilters();
             });
         }
-        // Rooms Range
         if (currentFilters.roomsRange.from !== sliderConfigs['rooms-slider'].start[0] || currentFilters.roomsRange.to !== sliderConfigs['rooms-slider'].start[1]) {
              const label = `${currentFilters.roomsRange.from || sliderConfigs['rooms-slider'].range.min} - ${currentFilters.roomsRange.to || sliderConfigs['rooms-slider'].range.max}`;
             addFilterTag('Rooms', label, () => {
@@ -1219,7 +1213,6 @@ function updateActiveFiltersDisplay() {
                 applyFilters();
             });
         }
-        // Bathrooms Range
         if (currentFilters.bathroomsRange.from !== sliderConfigs['bathrooms-slider'].start[0] || currentFilters.bathroomsRange.to !== sliderConfigs['bathrooms-slider'].start[1]) {
              const label = `${currentFilters.bathroomsRange.from || sliderConfigs['bathrooms-slider'].range.min} - ${currentFilters.bathroomsRange.to || sliderConfigs['bathrooms-slider'].range.max}`;
             addFilterTag('Bathrooms', label, () => {
@@ -1227,38 +1220,25 @@ function updateActiveFiltersDisplay() {
                 applyFilters();
             });
         }
-        // Energy Classes
-         if (currentFilters.energyClasses && currentFilters.energyClasses.length > 0) {
+        if (currentFilters.energyClasses && currentFilters.energyClasses.length > 0) {
              addFilterTag('Energy Classes', currentFilters.energyClasses.join(', '), () => {
                  const selectElement = document.getElementById('energyClassFilter');
                  if (selectElement) Array.from(selectElement.options).forEach(option => option.selected = false);
                  applyFilters();
              });
          }
-    } // End of if (currentCategory === 'Eiendom')
+    } 
 
-     // Job Filters (Only show if category is 'Jobb')
      if (currentCategory === 'Jobb') {
-        // Employment Types
-         if (currentFilters.employmentTypes && currentFilters.employmentTypes.length > 0) {
+        if (currentFilters.employmentTypes && currentFilters.employmentTypes.length > 0) {
              addFilterTag('Employment Types', currentFilters.employmentTypes.join(', '), () => {
                  const selectElement = document.getElementById('employmentTypeFilter');
                  if (selectElement) Array.from(selectElement.options).forEach(option => option.selected = false);
                  applyFilters();
              });
          }
-         // Add Salary Range and Deadline if needed (assuming no sliders for these yet)
-         // Example for Deadline:
-         // if (currentFilters.applicationDeadline) {
-         //    addFilterTag('Deadline Before', currentFilters.applicationDeadline, () => {
-         //       document.getElementById('deadlineDate').value = '';
-         //       applyFilters();
-         //    });
-         // }
-     } // End of if (currentCategory === 'Jobb')
+     }
 
-
-    // Show container only if there are active filters
     displayContainer.style.display = hasActiveFilters ? 'flex' : 'none';
 }
 
@@ -1727,11 +1707,10 @@ function applyFiltersFromURL() {
 
                     countries.forEach(countryData => {
                         const countryItem = document.createElement('li');
+                        // The input and label are now direct children of the <li>
                         countryItem.innerHTML = `
-                            <div>
-                                <input type="checkbox" id="${countryData.country}" value="${countryData.country}">
-                                <label for="${countryData.country}">${countryData.country}</label>
-                            </div>
+                            <input type="checkbox" id="${countryData.country}" value="${countryData.country}">
+                            <label for="${countryData.country}">${countryData.country}</label>
                             <ul class="city-list" id="${countryData.country}-cities" style="display: none;"></ul>
                         `;
                         
@@ -1750,6 +1729,7 @@ function applyFiltersFromURL() {
                             `;
                         });
 
+                        /*
                         const countryCheckbox = countryItem.querySelector('input[type="checkbox"]');
                         countryCheckbox.addEventListener('change', function() {
                             const cityList = countryItem.querySelector('.city-list');
@@ -1760,13 +1740,15 @@ function applyFiltersFromURL() {
                             cityList.style.display = this.checked ? 'block' : 'none';
                             applyFilters();
                         });
+                        */
 
                         countryList.appendChild(countryItem);
                     });
 
-                    document.querySelectorAll('.city-list input').forEach(cityCheckbox => {
+                    /*document.querySelectorAll('.city-list input').forEach(cityCheckbox => {
                         cityCheckbox.addEventListener('change', applyFilters);
                     });
+                    */
                 })
                 .catch(error => {
                 countryList.innerHTML = `<li style="color: red;">Error: ${error.message}.</li>`;
@@ -1800,10 +1782,9 @@ function applyFiltersFromURL() {
                     brands.forEach(brand => {
                         const li = document.createElement('li');
                         li.innerHTML = `
-                            <div>
                                 <input type="checkbox" id="brand_${brand.brand_id}" value="${brand.brand_id}">
                                 <label for="brand_${brand.brand_id}">${brand.brand_name}</label>
-                            </div>
+                            
                         `;
                         container.appendChild(li);
 
@@ -1909,6 +1890,58 @@ function applyFiltersFromURL() {
         const mainSidePanel = document.getElementById('mainSidePanel');
         const offcanvasSidePanel = document.getElementById('offcanvasSidePanel');
         const topFilterContainer = document.querySelector('.filter-container-wrapper .filter-container'); // Get the top filter container
+
+          // --- START: NEW DELEGATED EVENT LISTENER ---
+    
+    // This function will handle clicks from BOTH the main panel and the drawer
+    function handleFilterChange(event) {
+        const target = event.target;
+
+        // Exit if the clicked element is not a checkbox inside a filter list
+        if (target.type !== 'checkbox' || !target.closest('.country-list, .car-brand-list, .city-list')) {
+            return;
+        }
+
+        // --- Logic for Country Checkbox Clicks ---
+        const countryListItem = target.closest('.country-list > li');
+        if (countryListItem && target.id === countryListItem.querySelector('input[type="checkbox"]')?.id) {
+            
+            // Find the city list associated with THIS checkbox
+            const cityList = countryListItem.querySelector('.city-list');
+            if (cityList) {
+                cityList.style.display = target.checked ? 'block' : 'none';
+                
+                // If unchecking the country, also uncheck all its cities
+                if (!target.checked) {
+                    cityList.querySelectorAll('input[type="checkbox"]').forEach(cityCB => {
+                        cityCB.checked = false;
+                    });
+                }
+            }
+        }
+        
+        // --- Sync state back to the other panel (if inside drawer) ---
+        if (drawer.contains(target)) {
+            const mainId = target.dataset.syncId || target.id.replace('-drawer', '');
+            const mainElement = document.getElementById(mainId);
+            if (mainElement) {
+                mainElement.checked = target.checked;
+            }
+        }
+
+        // Finally, apply the filters after any change
+        applyFilters();
+    }
+
+    // Attach the single listener to both containers
+    if (mainSidePanel) {
+        mainSidePanel.addEventListener('change', handleFilterChange);
+    }
+    if (drawer) {
+        drawer.addEventListener('change', handleFilterChange);
+    }
+    
+    // --- END: NEW DELEGATED EVENT LISTENER ---
 
         // Always sync side-panel content AND top filters into drawer on open
         function syncSidePanelToDrawer() {

@@ -2,13 +2,16 @@ class Toast {
     constructor() {
         this.container = null;
         this.init();
+        // REMOVED: The call to this.addStyles() is gone.
     }
 
     init() {
-        // Create container if it doesn't exist
+        // This part is still necessary to create the main container div
         if (!document.getElementById('toast-container')) {
             this.container = document.createElement('div');
             this.container.id = 'toast-container';
+            // We can even add the class here for consistency
+            this.container.className = 'toast-container';
             document.body.appendChild(this.container);
         } else {
             this.container = document.getElementById('toast-container');
@@ -18,18 +21,28 @@ class Toast {
     show(message, type = 'info', duration = 5000) {
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
-        toast.innerHTML = `
-            <div class="toast-content">
-                <i class="fas ${this.getIcon(type)}"></i>
-                <span>${message}</span>
-            </div>
-            <button class="toast-close">&times;</button>
-        `;
+
+        // Use a proper <span> for the message content to avoid layout issues
+        const messageSpan = document.createElement('span');
+        messageSpan.innerHTML = message; // Use innerHTML to allow for links (e.g., in login prompts)
+
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'toast-content';
+        contentDiv.innerHTML = `<i class="fas ${this.getIcon(type)}"></i>`;
+        contentDiv.appendChild(messageSpan);
+        
+        toast.appendChild(contentDiv);
+
+        // Create and append the close button
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'toast-close-btn'; // Use the new, better class name
+        closeBtn.innerHTML = '×';
+        closeBtn.setAttribute('aria-label', 'Close');
+        toast.appendChild(closeBtn);
 
         this.container.appendChild(toast);
 
         // Add close button functionality
-        const closeBtn = toast.querySelector('.toast-close');
         closeBtn.addEventListener('click', () => this.removeToast(toast));
 
         // Auto remove after duration
@@ -37,8 +50,13 @@ class Toast {
     }
 
     removeToast(toast) {
-        toast.classList.add('toast-fade-out');
-        setTimeout(() => toast.remove(), 300);
+        if (toast && toast.parentElement) {
+            toast.classList.add('toast-fade-out');
+            // Wait for the animation to finish before removing the element
+            toast.addEventListener('animationend', () => {
+                toast.remove();
+            });
+        }
     }
 
     getIcon(type) {
@@ -51,104 +69,9 @@ class Toast {
         return icons[type] || icons.info;
     }
 
-    addStyles() {
-        // Check if styles already exist
-        if (document.getElementById('toast-styles')) {
-            return;
-        }
-        const toastStyleElement = document.createElement('style'); // Renamed variable
-        toastStyleElement.id = 'toast-styles'; // Add an ID for checking
-        toastStyleElement.textContent = `
-            #toast-container {
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                z-index: 9999;
-                display: flex;
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .toast {
-                background: white;
-                padding: 15px 25px;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                min-width: 300px;
-                max-width: 400px;
-                animation: slideIn 0.3s ease;
-            }
-
-            .toast-content {
-                display: flex;
-                align-items: center;
-                gap: 10px;
-            }
-
-            .toast i {
-                font-size: 1.2em;
-            }
-
-            .toast-success {
-                border-left: 4px solid #28a745;
-            }
-
-            .toast-error {
-                border-left: 4px solid #dc3545;
-            }
-
-            .toast-warning {
-                border-left: 4px solid #ffc107;
-            }
-
-            .toast-info {
-                border-left: 4px solid #17a2b8;
-            }
-
-            .toast-close {
-                background: none;
-                border: none;
-                font-size: 1.2em;
-                cursor: pointer;
-                padding: 0 5px;
-                color: #666;
-            }
-
-            .toast-close:hover {
-                color: #333;
-            }
-
-            .toast-fade-out {
-                animation: slideOut 0.3s ease forwards;
-            }
-
-            @keyframes slideIn {
-                from {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-
-            @keyframes slideOut {
-                from {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-                to {
-                    transform: translateX(100%);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(toastStyleElement); // Use renamed variable
-    }
+    // --- DELETED ---
+    // The entire addStyles() method has been removed from here.
+    // --- DELETED ---
 }
 
 // Create global toast instance

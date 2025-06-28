@@ -6,76 +6,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search results</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/main.css">
     <script src="/js/toast.js" defer></script>
     <script src="/js/skeleton.js" defer></script>
     <script src="/js/backToTop.js" defer></script>
     <script src="/js/lazyLoad.js" defer></script>
     
-    <style>
-/* Only keep unique layout/filter styles */
-h1 {
-    text-align: center; /* Keep specific alignment */
-    margin-bottom: 20px;
-}
-
-.productsContainer {
-    margin-top: -27px;
-    padding: 20px;
-    flex: 1;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-}
-
-.filter-container {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-top: 10px;
-}
-
-.loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.8);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-
-@media (max-width: 768px) {
-    /* .page-container styles removed */
-    /* .side-panel styles removed */
-
-    .productsContainer {
-        grid-template-columns: 1fr; /* Keep specific grid adjustment */
-        padding: 10px;
-        margin-top: 0;
-    }
-
-    /* Filter Container Adjustments */
-    .filter-container {
-        flex-wrap: wrap;
-        gap: 8px;
-        margin: 10px 0;
-        padding: 0 10px;
-    }
-}
-
-@media (max-width: 480px) {
-    /* .side-panel h3 font-size override removed (handled globally) */
-
-    .reset-filters-btn {
-        bottom: 60px; /* Keep specific positioning */
-        right: 8px; /* Keep specific positioning */
-        padding: 6px 12px; /* Keep specific padding override */
-    }
-}
-    </style>
+   
 </head>
 <body>
     <script src="/shared.js"></script>
@@ -110,15 +47,13 @@ h1 {
         </div> 
     </div>  
 
-    <div class="page-container">
+    <div class="page-container">        
         <div class="side-panel">
             <h3 data-i18n="filter.filter_land">Filter by Country</h3>
             <ul class="country-list">
-                <ul class="country-list">
+                <!-- The list items will be populated by JavaScript -->
             </ul>
-        </ul>
         </div>
-
 
         <div class="productsContainer" id="productsContainer">
             <!-- Skeleton loading will be shown here -->
@@ -472,53 +407,56 @@ function handleCategoryVisibility() {
             }
 
              // Fetch countries and cities from the API
-    fetch('/api/utils/countries')
-        .then(response => response.json())
-        .then(countries => {
-            const countryList = document.querySelector('.country-list');
-            
-            countries.forEach(countryData => {
-                // Create country checkbox
-                const countryItem = document.createElement('li');
-                countryItem.innerHTML = `
-                    <div>
+            fetch('/api/utils/countries')
+            .then(response => response.json())
+            .then(countries => {
+                const countryList = document.querySelector('.side-panel .country-list');
+                if (!countryList) return; // Exit if the container isn't on the page
+
+                countryList.innerHTML = ''; // Clear any existing items
+
+                countries.forEach(countryData => {
+                    const countryItem = document.createElement('li');
+                    
+                    // This is the clean structure WITHOUT the extra div
+                    countryItem.innerHTML = `
                         <input type="checkbox" id="${countryData.country}" value="${countryData.country}">
                         <label for="${countryData.country}">${countryData.country}</label>
-                    </div>
-                    <ul class="city-list" id="${countryData.country}-cities" style="display: none;"></ul>
-                `;
-                
-                // Populate cities for this country
-                const cityList = countryItem.querySelector('.city-list');
-                countryData.cities.forEach((cityName, index) => {
-                    const cityId = countryData.city_ids[index];
-                    cityList.innerHTML += `
-                        <li>
-                            <input type="checkbox" id="city_${cityId}" value="${cityId}">
-                            <label for="city_${cityId}">${cityName}</label>
-                        </li>
+                        <ul class="city-list" id="${countryData.country}-cities" style="display: none;"></ul>
                     `;
+                    
+                    const cityList = countryItem.querySelector('.city-list');
+                    countryData.cities.forEach((cityName, index) => {
+                        const cityId = countryData.city_ids[index];
+                        cityList.innerHTML += `
+                            <li>
+                                <input type="checkbox" id="city_${cityId}" value="${cityId}">
+                                <label for="city_${cityId}">${cityName}</label>
+                            </li>
+                        `;
+                    });
+
+                    countryList.appendChild(countryItem);
                 });
 
-                // Add event listener to country checkbox
-                const countryCheckbox = countryItem.querySelector('input[type="checkbox"]');
-                countryCheckbox.addEventListener('change', function() {
-                    const cityList = this.closest('li').querySelector('.city-list');
-                    cityList.style.display = this.checked ? 'block' : 'none';
-                    applyFilters();
+                // Now that the list is created, attach the delegated event listener
+                countryList.addEventListener('change', function(event) {
+                    const target = event.target;
+                    if (target.type === 'checkbox') {
+                        // Check if it's a country checkbox
+                        const parentLi = target.closest('li');
+                        const cityList = parentLi.querySelector('.city-list');
+                        if (cityList) { // This confirms it's a country checkbox
+                            cityList.style.display = target.checked ? 'block' : 'none';
+                        }
+                        // Always apply filters on any change
+                        applyFilters(); 
+                    }
                 });
-
-                countryList.appendChild(countryItem);
+            })
+            .catch(error => {
+                console.error("Error loading countries and cities:", error);
             });
-
-            // Add event listeners to city checkboxes after they are created
-            document.querySelectorAll('.city-list input').forEach(cityCheckbox => {
-                cityCheckbox.addEventListener('change', applyFilters);
-            });
-        })
-        .catch(error => {
-            console.error("Error loading countries and cities:", error);
-        });
 }
 
         function initializeFavorites() {

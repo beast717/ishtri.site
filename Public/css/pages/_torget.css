@@ -1,0 +1,167 @@
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.page-container {
+    display: flex;
+    gap: 20px;
+    padding: 0 20px 20px 20px;
+    align-items: flex-start;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Left Column: The Filter Panel */
+.side-panel {
+    width: 280px;
+    flex-shrink: 0;
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+/* Right Column: The Product Listings */
+.productsContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+}
+
+.side-panel h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.country-list, .car-brand-list, .city-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0 0 15px 0;
+}
+
+.country-list li {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.city-list {
+    width: 100%;
+    padding-left: 30px;
+    margin-top: 10px;
+    display: none;
+}
+.car-brand-list li, .city-list li {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+.country-list input[type="checkbox"],
+.car-brand-list input[type="checkbox"],
+.city-list input[type="checkbox"] {
+    width: 1.1em;
+    height: 1.1em;
+    flex-shrink: 0;
+}
+.country-list label, .car-brand-list label, .city-list label {
+    cursor: pointer;
+}
+
+.filter-section {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color-light);
+}
+
+.filter-section h4 {
+    margin: 0 0 10px 0;
+    font-size: 1rem;
+}
+
+
+/* --- START: CORE FIX FOR VISIBILITY --- */
+
+/* By default (desktop view), hide mobile-only elements */
+#offcanvasFilterBtn {
+    display: none;
+}
+.offcanvas-actions {
+    display: none; 
+}
+/* By default (desktop view), show desktop-only elements */
+.filter-container {
+    display: flex;
+}
+
+
+/* --- Mobile and Tablet Adjustments --- */
+@media (max-width: 900px) {
+    /* Hide desktop elements */
+    .side-panel { display: none !important; }
+    .filter-container { display: none; }
+    
+    /* Turn the main filter wrapper into a vertical flex container on mobile */
+    .filter-container-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start; /* Align items to the left */
+        gap: 15px; /* This creates the space between the button and the tags */
+        padding: 15px; /* Consistent padding */
+        margin-bottom: 0; /* Reset margin */
+    }
+    
+    /* Show the mobile filter button */
+    #offcanvasFilterBtn {
+        display: inline-flex;
+        /* REMOVED: All positioning rules (position, top, left, z-index) */
+        align-items: center;
+        gap: 8px;
+        background-color: var(--heading-color);
+        color: var(--bg-white);
+        padding: 8px 16px;
+        border: none;
+        border-radius: 50px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        font-weight: 600;
+        cursor: pointer;
+    }
+
+    /* Style the active filters container on mobile */
+    .active-filters-container {
+        width: 100%; /* Make it take the full width of the parent */
+        padding: 0; /* Reset padding as the parent has it now */
+        margin: 0; /* Reset margin */
+    }
+
+    .page-container {
+        flex-direction: column;
+        padding-top: 0; /* No extra padding needed at the top of the products */
+    }
+
+    /* Style the action buttons inside the off-canvas drawer */
+    .offcanvas-actions {
+        display: flex;
+        flex-direction: column; 
+        gap: 10px;
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border-color-light);
+    }
+    
+    .offcanvas-actions .btn,
+    .offcanvas-actions .save-search-button,
+    .offcanvas-actions .reset-filters-btn {
+        width: 100%;
+        text-align: center;
+    }
+}

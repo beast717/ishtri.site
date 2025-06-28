@@ -1,0 +1,100 @@
+.auth-page-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    background: var(--bg-light); /* Use a solid light gray, not the gradient */
+}
+
+.auth-container {
+    width: 100%; /* Take full width on small screens */
+    max-width: 420px; /* Set a max-width for larger screens */
+    background: var(--bg-white);
+    padding: 2.5rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    position: relative;
+    margin: 1rem; /* Add margin for small screens */
+}
+
+.auth-container .brand {
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--heading-color);
+}
+
+.auth-container h2 {
+    margin: 0 0 0.5rem 0; /* Reduced bottom margin */
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.auth-container .subtitle {
+    color: var(--text-color-light);
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.auth-container .alert {
+    padding: 0.875rem;
+    margin-bottom: 1.5rem;
+    border-radius: var(--border-radius);
+    font-size: 0.9rem;
+    text-align: left;
+}
+.alert-error {
+    background: #fee2e2;
+    border: 1px solid #fca5a5;
+    color: var(--danger-color);
+}
+.alert-success {
+    background: #dcfce7;
+    border: 1px solid #86efac;
+    color: var(--success-color);
+}
+
+.social-login {
+    margin: 1.5rem;
+    /* ADDED: This will center the Google button inside */
+    display: flex;
+    justify-content: center;
+}
+
+.separator {
+    display: flex;
+    align-items: center;
+    margin: 1.5rem 0;
+}
+.separator .line {
+    flex: 1;
+    height: 1px;
+    background: #ddd;
+}
+.separator .text {
+    padding: 0 1rem;
+    color: #636e72;
+    font-size: 0.9rem;
+}
+
+.toggle-link {
+    display: block;
+    margin-top: 1rem;
+    color: var(--link-color);
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+.legal-text {
+    margin-top: 2rem;
+    font-size: 0.8rem;
+    color: #636e72;
+}
+
+.legal-text a {
+    color: var(--link-color);
+}

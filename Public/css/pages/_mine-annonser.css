@@ -1,0 +1,31 @@
+.productsContainer .product .button-container {
+    display: flex; /* Establishes the flex layout */
+    gap: 10px;
+    margin-top: 10px;
+}
+
+/* --- THIS IS THE DEFINITIVE FIX --- */
+
+/* Target any button that is a direct child of the container */
+.button-container > .btn {
+    /* 
+      1. Use flex: 1 as a base instruction to grow and shrink.
+    */
+    flex: 1;
+
+    /* 
+      2. Explicitly set the width to a percentage. 
+         For two buttons, 50% would be perfect, but `calc` gives us flexibility
+         and accounts for the `gap`. `(100% - gap) / number_of_buttons`
+         A simple percentage often works just as well.
+    */
+    width: 50%;
+
+    /* 
+      3. Ensure padding doesn't break the layout.
+    */
+    box-sizing: border-box;
+
+    /* Optional: Slightly reduce padding on mobile if text still overflows */
+    padding: 8px 5px;
+}

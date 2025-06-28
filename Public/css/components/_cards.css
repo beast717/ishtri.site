@@ -1,0 +1,119 @@
+/* --- Product List Item Style (List View) --- */
+.product {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+.product:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+.product img.product-image {
+    width: 150px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.product > div {
+   flex-grow: 1;
+}
+.product h3 {
+    margin: 0 0 8px 0;
+    font-size: 1.1rem;
+    color: var(--text-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.product p {
+    margin: 5px 0;
+    color: #555;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+.product strong {
+   color: var(--text-color);
+}
+
+/* --- Product Card Style (Grid View) --- */
+.product-card {
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    text-align: center;
+    min-width: 180px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    background-color: var(--bg-white);
+    flex-shrink: 0;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+.product-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+.product-card .product-image {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+.product-card h4 {
+    margin: 0 0 8px 0;
+    font-size: 1rem;
+    color: var(--text-color);
+    font-weight: 600;
+    flex-grow: 1;
+    min-height: 2.4em;
+}
+.product-card p {
+    color: var(--primary-color);
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin: 10px 0 0 0;
+}
+
+/* --- Shared Card Elements --- */
+.favorite-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.2em;
+    cursor: pointer;
+    color: #ccc;
+    transition: color 0.2s ease, transform 0.2s ease;
+    z-index: 1;
+    background: none;
+    border: none;
+    padding: 5px;
+    -webkit-tap-highlight-color: transparent;
+}
+.favorite-icon:hover {
+     transform: scale(1.15);
+}
+.favorite-icon.favorited {
+     color: var(--favorite-color);
+}
+.sold-label {
+    color: var(--bg-white);
+    background-color: var(--danger-color);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    font-weight: 500;
+    margin-left: 8px;
+    display: inline-block;
+    vertical-align: middle;
+}
