@@ -15,7 +15,7 @@ const loadAirportsData = async () => {
     }
     try {
         // Correctly resolve the path from the project's root directory
-        const dataPath = path.join(__dirname, '..', 'public', 'data', 'airports.json');
+        const dataPath = path.join(__dirname, '..', 'Public', 'data', 'airports.json');
         const data = await fs.readFile(dataPath, 'utf8');
         airportsData = JSON.parse(data);
     } catch (err) {
