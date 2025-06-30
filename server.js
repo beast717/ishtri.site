@@ -100,6 +100,10 @@ app.use('/api/products', statusRoutes);
 const productRoutes = require('./routes/products');
 app.use('/api/products', productRoutes);
 
+// Airport routes (for the travel page search)
+const airportRoutes = require('./routes/airports');
+app.use('/api/airports', airportRoutes);
+
 // Search routes
 const searchRoutes = require('./routes/search');
 app.use('/api/search', searchRoutes);

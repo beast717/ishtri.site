@@ -65,125 +65,122 @@
     </div>
       </div>
 
-    <script>
-        let airports = [];
-        let departureIataCode = '';
-        let arrivalIataCode = '';
+          
+<script>
+    
+    let departureIataCode = '';
+    let arrivalIataCode = '';
+    let searchTimeout;
 
-        // Load airports data from JSON file
-        function loadAirports() {
-            fetch('/data/airports.json')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    airports = data;
-                    console.log('Loaded Airports Data:', airports);
-                })
-                .catch(error => {
-                    console.error('Error loading airports:', error);
-                });
+    const departureInput = document.getElementById('departure');
+    const arrivalInput = document.getElementById('arrival');
+    const departureSuggestions = document.getElementById('departure-suggestions');
+    const arrivalSuggestions = document.getElementById('arrival-suggestions');
+
+    // Function to fetch suggestions 
+    function fetchAirportSuggestions(inputElement, suggestionsElement) {
+        const query = inputElement.value.trim();
+
+        if (query.length < 2) { // Don't search for less than 2 characters
+            suggestionsElement.innerHTML = '';
+            suggestionsElement.style.display = 'none';
+            return;
         }
 
-        // Filter airports based on user input
-        function filterAirports(input, isDeparture) {
-            const searchTerm = input.toLowerCase();
-            console.log('Search Term:', searchTerm);
-
-            const filteredAirports = airports.filter(airport => {
-                const name = airport.name.toLowerCase();
-                const city = airport.city.toLowerCase();
-                return name.includes(searchTerm) || city.includes(searchTerm);
+        // Use the new server endpoint
+        fetch(`/api/airports/search?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                displaySuggestions(data, suggestionsElement, inputElement === departureInput);
+            })
+            .catch(error => {
+                console.error('Error fetching airport suggestions:', error);
             });
+    }
 
-            console.log('Filtered Airports:', filteredAirports);
-            displaySuggestions(filteredAirports, isDeparture);
+    // Display the suggestions returned from the server
+    function displaySuggestions(suggestions, suggestionsElement, isDeparture) {
+        suggestionsElement.innerHTML = '';
+
+        if (suggestions.length > 0) {
+            suggestions.forEach(airport => {
+                const suggestionItem = document.createElement('li');
+                suggestionItem.textContent = `${airport.name} (${airport.iata}) - ${airport.city}`;
+                suggestionItem.onclick = () => {
+                    selectAirport(airport, isDeparture);
+                };
+                suggestionsElement.appendChild(suggestionItem);
+            });
+            suggestionsElement.style.display = 'block';
+        } else {
+            suggestionsElement.style.display = 'none';
+        }
+    }
+
+    
+    function selectAirport(airport, isDeparture) {
+        const input = isDeparture ? departureInput : arrivalInput;
+        const suggestionsList = isDeparture ? departureSuggestions : arrivalSuggestions;
+
+        input.value = `${airport.name} (${airport.iata}) - ${airport.city}`;
+        suggestionsList.innerHTML = '';
+        suggestionsList.style.display = 'none';
+
+        if (isDeparture) {
+            departureIataCode = airport.iata;
+        } else {
+            arrivalIataCode = airport.iata;
+        }
+    }
+
+    // Attach debounced event listeners to the input fields
+    departureInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            fetchAirportSuggestions(departureInput, departureSuggestions);
+        }, 300); // Debounce: wait 300ms after user stops typing
+    });
+
+    arrivalInput.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            fetchAirportSuggestions(arrivalInput, arrivalSuggestions);
+        }, 300);
+    });
+    
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!departureInput.contains(e.target)) departureSuggestions.style.display = 'none';
+        if (!arrivalInput.contains(e.target)) arrivalSuggestions.style.display = 'none';
+    });
+
+    // Form submission logic 
+    document.getElementById('flightSearchForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        if (!departureIataCode || !arrivalIataCode) {
+            alert('Please select a valid departure and arrival airport from the suggestions.');
+            return;
         }
 
-        // Display filtered suggestions in the dropdown
-        function displaySuggestions(filteredAirports, isDeparture) {
-            const suggestionsList = isDeparture
-                ? document.getElementById('departure-suggestions')
-                : document.getElementById('arrival-suggestions');
-            suggestionsList.innerHTML = '';
+        const tripType = document.getElementById('tripType').value;
+        const departureDate = document.getElementById('departureDate').value.replace(/-/g, '');
+        const returnDate = tripType === 'roundtrip' ? document.getElementById('returnDate').value.replace(/-/g, '') : '';
+        const passengers = document.getElementById('passengers').value;
 
-            if (filteredAirports.length > 0) {
-                filteredAirports.forEach(airport => {
-                    const suggestionItem = document.createElement('li');
-                    suggestionItem.textContent = `${airport.name} (${airport.iata}) - ${airport.city}`;
-                    suggestionItem.onclick = () => {
-                        selectAirport(airport, isDeparture);
-                    };
-                    suggestionsList.appendChild(suggestionItem);
-                });
-                suggestionsList.style.display = 'block';
-            } else {
-                suggestionsList.style.display = 'none';
-            }
+        let skyscannerUrl = `https://www.skyscanner.com/transport/flights/${departureIataCode}/${arrivalIataCode}/${departureDate}/`;
+        if (tripType === 'roundtrip' && returnDate) {
+            skyscannerUrl += `${returnDate}/`;
         }
+        skyscannerUrl += `?adults=${passengers}`;
+        window.open(skyscannerUrl, '_blank');
+    });
 
-        // Select an airport from the suggestions
-        function selectAirport(airport, isDeparture) {
-            const input = isDeparture ? document.getElementById('departure') : document.getElementById('arrival');
-            const iataCode = airport.iata;
+    // Trip type toggle logic 
+    document.getElementById('tripType').addEventListener('change', (e) => {
+        document.getElementById('returnDateGroup').style.display = e.target.value === 'roundtrip' ? 'block' : 'none';
+    });
 
-            input.value = `${airport.name} (${iataCode}) - ${airport.city}`;
-            const suggestionsList = isDeparture
-                ? document.getElementById('departure-suggestions')
-                : document.getElementById('arrival-suggestions');
-            suggestionsList.innerHTML = '';
-            suggestionsList.style.display = 'none';
-
-            if (isDeparture) {
-                departureIataCode = iataCode;
-            } else {
-                arrivalIataCode = iataCode;
-            }
-        }
-
-        // Handle form submission
-        document.getElementById('flightSearchForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const tripType = document.getElementById('tripType').value;
-            const departureDate = document.getElementById('departureDate').value.replace(/-/g, '');
-            const returnDate = tripType === 'roundtrip' ? document.getElementById('returnDate').value.replace(/-/g, '') : '';
-            const passengers = document.getElementById('passengers').value;
-
-            let skyscannerUrl = `https://www.skyscanner.com/transport/flights/${departureIataCode}/${arrivalIataCode}/${departureDate}/`;
-
-            if (tripType === 'roundtrip' && returnDate) {
-                skyscannerUrl += `${returnDate}/`;
-            }
-
-            skyscannerUrl += `?adults=${passengers}`;
-            console.log('Redirecting to:', skyscannerUrl);
-            window.open(skyscannerUrl, '_blank');
-        });
-
-        // Handle trip type toggle
-        document.getElementById('tripType').addEventListener('change', (e) => {
-            const returnDateGroup = document.getElementById('returnDateGroup');
-            returnDateGroup.style.display = e.target.value === 'roundtrip' ? 'block' : 'none';
-        });
-
-        // Attach input event listeners
-        document.getElementById('departure').addEventListener('input', (e) => {
-            filterAirports(e.target.value, true);
-        });
-
-        document.getElementById('arrival').addEventListener('input', (e) => {
-            filterAirports(e.target.value, false);
-        });
-
-        // Search page logic (e.g., airport loading or other functions)
-        window.addEventListener('load', () => {
-            loadAirports(); // Example: Load airports for autocomplete
-            console.log("Search page logic executed.");
-        });
-    </script>
+</script>
 </body>
 </html>
