@@ -76,7 +76,7 @@ app.use('/.well-known', express.static(path.join(__dirname, '.well-known')));
 // Routes
 app.get('/', (req, res) => res.render('Forside'));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'Logg inn.html')));
-app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'lag konto.html')));
+app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'Logg inn.html')));
 app.get('/forgot-password', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'ForgotPassword.html')));
 app.get('/torget', (req, res) => res.render('Torget'));
 app.get('/reise', (req, res) => res.render('reise'));
