@@ -84,12 +84,10 @@
    
 </head>
 <body>
+    <%- include('partials/navbar') %>
+    <script src="/shared.js"></script>
+
     <div class="page-content">
-
-     <%- include('partials/navbar') %>
-     <script src="/shared.js"></script>
-
-    <!-- Custom Modal for Sending Messages -->
     <div id="messageModal">
         <h3>Send Message to Owner</h3>
         <textarea id="messageInput" rows="5" cols="40" placeholder="Type your message here..."></textarea>

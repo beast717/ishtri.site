@@ -14,7 +14,8 @@
    
 </head>
 <body>
-    <%- include('partials/navbar') %> <!-- Include your navbar -->
+    <%- include('partials/navbar') %> 
+    <script src="/shared.js"></script> 
 
     <div class="notifications-container">
         <div class="notifications-header">
@@ -29,7 +30,6 @@
     </div>
 
     <script src="/socket.io/socket.io.js"></script> <!-- Include Socket.IO client -->
-    <script src="/shared.js"></script> <!-- Include shared JS if needed -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const notificationList = document.getElementById('notificationList');
