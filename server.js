@@ -12,6 +12,7 @@ const dotenv = require('dotenv');
 const nodemailer = require('nodemailer');
 const http = require('http');
 const cron = require('node-cron');
+const helmet = require('helmet');
 dotenv.config();
 
 const app = express();
@@ -43,6 +44,33 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: [
+        "'self'", 
+        "https://accounts.google.com/gsi/client", 
+        "https://js-de.sentry-cdn.com",
+        "https://browser.sentry-cdn.com",
+        "'unsafe-inline'" 
+      ],
+      
+      workerSrc: ["'self'", "blob:"], 
+      frameSrc: ["https://accounts.google.com/"],
+      connectSrc: ["'self'", "https://*.sentry.io", "https://accounts.google.com/"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:"],
+    },
+  })
+);
+
+// Static files
+app.use('/data', express.static(path.join(__dirname, 'data')));
+app.use(express.static(path.join(__dirname, 'Public')));
+app.use('/uploads', express.static('uploads'));
+app.use('/.well-known', express.static(path.join(__dirname, '.well-known')));
+
 const sessionStore = new MySQLStore({}, pool);
 app.use(session({
     store: sessionStore,
@@ -67,16 +95,9 @@ app.use((req, res, next) => {
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Static files
-app.use('/data', express.static(path.join(__dirname, 'data')));
-app.use(express.static(path.join(__dirname, 'Public')));
-app.use('/uploads', express.static('uploads'));
-app.use('/.well-known', express.static(path.join(__dirname, '.well-known')));
-
 // Routes
 app.get('/', (req, res) => res.render('Forside'));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'Logg inn.html')));
-app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'Logg inn.html')));
 app.get('/forgot-password', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'ForgotPassword.html')));
 app.get('/torget', (req, res) => res.render('Torget'));
 app.get('/reise', (req, res) => res.render('reise'));

@@ -1,4 +1,4 @@
-class SkeletonLoader {
+export default class SkeletonLoader {
     constructor() {
         this.skeletonStyles = `
             .skeleton {
@@ -98,6 +98,3 @@ class SkeletonLoader {
         return container;
     }
 }
-
-// Create global skeleton loader instance
-window.skeletonLoader = new SkeletonLoader();

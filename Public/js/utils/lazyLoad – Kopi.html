@@ -1,4 +1,4 @@
-class LazyLoader {
+export default class LazyLoader {
     constructor() {
         this.observer = null;
         this.init();
@@ -89,9 +89,6 @@ class LazyLoader {
         });
     }
 }
-
-// Create global lazy loader instance
-window.lazyLoader = new LazyLoader();
 
 // Initialize lazy loading when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {

@@ -64,7 +64,10 @@
             </div>
             <button type="submit" class="btn btn-primary" data-i18n="logg_inn.logg_inn">Continue →</button>
             <a href="/forgot-password" class="toggle-link" data-i18n="logg_inn.forgot_password">Forgot Password?</a>
-            <span class="toggle-link" onclick="toggleForms()" data-i18n="logg_inn.lag_konto">Create Account</span>
+                  
+<span id="showSignupLink" class="toggle-link" data-i18n="logg_inn.lag_konto">Create Account</span>
+
+    
         </form>
     </div>
 
@@ -96,7 +99,10 @@
                 <input type="text" id="confirm_email" name="confirm_email" tabindex="-1" autocomplete="off">
             </div>
             <button type="submit" class="btn btn-primary" data-i18n="logg_inn.lag_konto">Create Account</button>
-            <span class="toggle-link" onclick="toggleForms()" data-i18n="logg_inn.har_allerede_konto_logg_inn">Already have an account? Log In</span>
+                  
+<span id="showLoginLink" class="toggle-link" data-i18n="logg_inn.har_allerede_konto_logg_inn">Already have an account? Log In</span>
+
+    
         </form>
     </div>
 
@@ -117,6 +123,12 @@
     document.addEventListener('DOMContentLoaded', () => {
         initializePasswordToggles();
         attachFormHandlers();
+
+        // --- V. ADD OR VERIFY THESE TWO LINES ARE HERE V ---
+        document.getElementById('showSignupLink').addEventListener('click', toggleForms);
+        document.getElementById('showLoginLink').addEventListener('click', toggleForms);
+        // --- ^ END OF ADDITION ^ ---
+
         // Set initial icons
         document.querySelectorAll('.password-toggle-icon').forEach(icon => {
             icon.innerHTML = svgIconShow;
