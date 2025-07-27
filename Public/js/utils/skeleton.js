@@ -1,85 +1,19 @@
 export default class SkeletonLoader {
     constructor() {
-        this.skeletonStyles = `
-            .skeleton {
-                background: #e2e5e7;
-                background: linear-gradient(
-                    110deg,
-                    #ececec 8%,
-                    #f5f5f5 18%,
-                    #ececec 33%
-                );
-                background-size: 200% 100%;
-                animation: 1.5s shine linear infinite;
-            }
-
-            @keyframes shine {
-                to {
-                    background-position-x: -200%;
-                }
-            }
-
-            .skeleton-card {
-                background: white;
-                border-radius: 8px;
-                padding: 15px;
-                margin-bottom: 20px;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            }
-
-            .skeleton-image {
-                width: 100%;
-                height: 200px;
-                border-radius: 4px;
-                margin-bottom: 15px;
-            }
-
-            .skeleton-title {
-                height: 20px;
-                width: 70%;
-                margin-bottom: 10px;
-            }
-
-            .skeleton-text {
-                height: 15px;
-                width: 100%;
-                margin-bottom: 8px;
-            }
-
-            .skeleton-text:last-child {
-                width: 60%;
-            }
-
-            .skeleton-price {
-                height: 25px;
-                width: 40%;
-                margin-top: 10px;
-            }
-        `;
-
-        this.addStyles();
-    }
-
-    addStyles() {
-        // Check if styles already exist
-        if (document.getElementById('skeleton-styles')) {
-            return;
-        }
-        const skeletonStyleElement = document.createElement('style'); // Renamed variable
-        skeletonStyleElement.id = 'skeleton-styles'; // Add an ID for checking
-        skeletonStyleElement.textContent = this.skeletonStyles;
-        document.head.appendChild(skeletonStyleElement); // Use renamed variable
+        // Removed inline styles - using modular CSS system instead
+        // Styles are now handled by components/_skeleton.css
     }
 
     createProductSkeleton() {
         const skeleton = document.createElement('div');
-        skeleton.className = 'skeleton-card';
+        skeleton.className = 'product skeleton-product';
         skeleton.innerHTML = `
             <div class="skeleton skeleton-image"></div>
-            <div class="skeleton skeleton-title"></div>
-            <div class="skeleton skeleton-text"></div>
-            <div class="skeleton skeleton-text"></div>
-            <div class="skeleton skeleton-price"></div>
+            <div>
+                <div class="skeleton skeleton-text skeleton-title"></div>
+                <div class="skeleton skeleton-text skeleton-price"></div>
+                <div class="skeleton skeleton-text skeleton-location"></div>
+            </div>
         `;
         return skeleton;
     }

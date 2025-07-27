@@ -81,18 +81,22 @@ export default function initProductListPage() {
     function showSkeletonLoading() {
         const container = getEl('productsContainer');
         if (!container) return;
+        
         container.innerHTML = '';
-        const skeletonHTML = `
-            <div class="product skeleton">
-                <div class="skeleton-image"></div>
-                <div>
-                    <div class="skeleton-text skeleton-title"></div>
-                    <div class="skeleton-text skeleton-price"></div>
-                    <div class="skeleton-text skeleton-location"></div>
-                </div>
-            </div>`;
+        
+        // Create 8 skeleton product cards
         for (let i = 0; i < 8; i++) {
-            container.insertAdjacentHTML('beforeend', skeletonHTML);
+            const skeleton = document.createElement('div');
+            skeleton.className = 'skeleton-product';
+            skeleton.innerHTML = `
+                <div class="skeleton skeleton-image"></div>
+                <div>
+                    <div class="skeleton skeleton-text skeleton-title"></div>
+                    <div class="skeleton skeleton-text skeleton-price"></div>
+                    <div class="skeleton skeleton-text skeleton-location"></div>
+                </div>
+            `;
+            container.appendChild(skeleton);
         }
     }
 
@@ -100,11 +104,13 @@ export default function initProductListPage() {
         const container = getEl('productsContainer');
         if (!container || getEl('loadMoreButton')) return;
 
+        // Create a dedicated container for the load more button
         const buttonWrapper = document.createElement('div');
-        buttonWrapper.style.textAlign = 'center';
-        buttonWrapper.style.width = '100%';
+        buttonWrapper.className = 'load-more-container';
         buttonWrapper.innerHTML = `<button id="loadMoreButton" class="load-more-btn">Load More</button>`;
-        container.insertAdjacentElement('afterend', buttonWrapper);
+        
+        // Append to the products container instead of after it
+        container.appendChild(buttonWrapper);
         
         getEl('loadMoreButton').addEventListener('click', () => fetchProducts(true));
     }
@@ -184,6 +190,11 @@ export default function initProductListPage() {
             container.appendChild(createProductElement(product));
         });
 
+        // Add load more button only after first successful product load
+        if (!loadMore && products.length > 0 && !getEl('loadMoreButton')) {
+            addLoadMoreButton();
+        }
+
         initializeFavorites();
         if (window.ishtri?.lazyLoader) {
             window.ishtri.lazyLoader.observe();
@@ -200,8 +211,14 @@ export default function initProductListPage() {
         if (!hasMore && loadMore) return;
 
         isLoading = true;
-        showLoading();
-        if (!loadMore) showSkeletonLoading();
+        
+        // Show skeleton loading for initial load, loading overlay for load more
+        if (!loadMore) {
+            showSkeletonLoading();
+        } else {
+            showLoading();
+        }
+        
         updateLoadMoreButton();
 
         const offset = (currentPage - 1) * limit;
@@ -454,7 +471,7 @@ export default function initProductListPage() {
             brands.forEach(brand => {
                 const brandItem = document.createElement('li');
                 brandItem.innerHTML = `
-                    <input type="checkbox" id="brand_${brand.brand_id}" value="${brand.brand_name}">
+                    <input type="checkbox" id="brand_${brand.brand_id}" value="${brand.brand_id}">
                     <label for="brand_${brand.brand_id}">${brand.brand_name}</label>`;
                 carBrandList.appendChild(brandItem);
             });
@@ -576,7 +593,6 @@ export default function initProductListPage() {
         }
         
         setupEventListeners();
-        addLoadMoreButton();
 
         // Perform initializations
         await initializeCountries();

@@ -8,19 +8,23 @@ h1 {
     gap: 20px;
     padding: 0 20px 20px 20px;
     align-items: flex-start;
-    max-width: 1400px;
+    max-width: 1400px; /* Reduced back to prevent overflow */
     margin: 0 auto;
+    min-height: 100vh; /* Ensure full height */
 }
 
 /* Left Column: The Filter Panel */
 .side-panel {
-    width: 280px;
+    width: 260px; /* Slightly reduced width */
     flex-shrink: 0;
     background-color: var(--bg-white);
     border: 1px solid var(--border-color-light);
     border-radius: var(--border-radius);
     padding: 20px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    max-height: fit-content; /* Allow natural height */
+    position: sticky;
+    top: 20px; /* Stick to top with some margin */
 }
 
 /* Right Column: The Product Listings */
@@ -28,9 +32,21 @@ h1 {
     flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 0; /* Remove gap since products have their own margins */
     margin-top: 0 !important;
     padding-top: 0 !important;
+    min-width: 0; /* Prevents overflow issues */
+}
+
+/* Main content wrapper for better structure */
+.page-content {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.page-content .page-container {
+    flex: 1; /* Takes remaining space */
 }
 
 .side-panel h3 {
@@ -145,7 +161,30 @@ h1 {
 
     .page-container {
         flex-direction: column;
-        padding-top: 0; /* No extra padding needed at the top of the products */
+        padding: 0 15px 20px 15px; /* Reduced horizontal padding on mobile */
+        gap: 15px;
+        max-width: 100%;
+    }
+
+    .productsContainer {
+        width: 100%;
+    }
+
+    /* Adjust product cards for mobile */
+    .product {
+        flex-direction: column;
+        text-align: center;
+        padding: 15px;
+    }
+
+    .product img.product-image {
+        width: 100%;
+        height: 200px;
+        margin-bottom: 15px;
+    }
+
+    .product > div {
+        width: 100%;
     }
 
     /* Style the action buttons inside the off-canvas drawer */
@@ -163,5 +202,15 @@ h1 {
     .offcanvas-actions .reset-filters-btn {
         width: 100%;
         text-align: center;
+    }
+
+    /* Load more button adjustments for mobile */
+    .load-more-container {
+        padding: 20px 0;
+    }
+
+    .load-more-btn {
+        padding: 12px 30px;
+        font-size: 0.95rem;
     }
 }

@@ -4,16 +4,31 @@
     gap: 20px;
     padding: 0 20px 20px 20px;
     align-items: flex-start; /* Aligns items to the top */
-    max-width: 1400px;
+    max-width: 1400px; /* Balanced width to prevent overflow */
     margin: 0 auto;
+    min-height: calc(100vh - 80px); /* Account for navbar height */
 }
 .side-panel {
-    width: 250px;
+    width: 260px;
     flex-shrink: 0;
     /* Styles moved to pages/_torget.css to be more specific */
 }
 .productsContainer {
     flex: 1;
+    min-width: 0; /* Prevents overflow issues */
+    max-width: 100%; /* Ensure it doesn't exceed container */
+}
+
+/* Product Details Page Layout Overrides */
+body[data-page="productDetails"] .page-content {
+    max-width: none;
+    width: 100%;
+    padding: 0;
+}
+
+body[data-page="productDetails"] .page-container {
+    max-width: none;
+    width: 100%;
 }
 
 /* --- Loading Overlay --- */
