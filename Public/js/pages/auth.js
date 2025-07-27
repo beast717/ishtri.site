@@ -45,35 +45,89 @@ async function handleGoogleResponse(response) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ credential: response.credential })
         });
+
         const data = await res.json();
+        
         if (res.ok) {
+            // Force reload all auth-related elements
             window.location.href = '/';
+            setTimeout(() => window.location.reload(true), 500); // Hard reload
         } else {
-            if (errorMessage) {
-                errorMessage.textContent = data.error || 'Google login failed';
-                errorMessage.style.display = 'block';
-            }
+            showErrorMessage(errorMessage, data.error || 'Google login failed');
         }
     } catch (error) {
-        if (errorMessage) {
-            errorMessage.textContent = 'Connection error. Please try again.';
-            errorMessage.style.display = 'block';
-        }
+        console.error('Google auth error:', error);
+        showErrorMessage(errorMessage, 'Connection error. Please try again');
     }
 }
 
 function initializeGoogleAuth() {
+    console.log('Initializing Google Auth...');
+    
     if (typeof google === 'undefined') {
+        console.log('Google API not loaded yet, retrying...');
         setTimeout(initializeGoogleAuth, 100);
         return;
     }
-    google.accounts.id.initialize({
-        client_id: '502881498259-u0g6k4se00su93ocksenfrh96jv8j9bn.apps.googleusercontent.com',
-        callback: handleGoogleResponse,
-    });
+    
     const googleSignInButton = document.getElementById('googleSignIn');
-    if (googleSignInButton) {
-        google.accounts.id.renderButton(googleSignInButton, { theme: 'outline', size: 'large' });
+    
+    if (!googleSignInButton) {
+        console.error('Google Sign-In button element not found!');
+        return;
+    }
+    
+    try {
+        // Clear any existing content
+        googleSignInButton.innerHTML = '';
+        
+        google.accounts.id.initialize({
+            client_id: '502881498259-u0g6k4se00su93ocksenfrh96jv8j9bn.apps.googleusercontent.com',
+            callback: handleGoogleResponse,
+            auto_select: false,
+            context: 'signin'
+        });
+        
+        google.accounts.id.renderButton(
+            googleSignInButton,
+            { 
+                type: 'standard', 
+                theme: 'outline', 
+                size: 'large', 
+                width: '240',
+                text: 'signin_with'
+            }
+        );
+        
+        console.log('Google Sign-In button rendered');
+        
+        // Check if button was actually rendered
+        setTimeout(() => {
+            const iframe = googleSignInButton.querySelector('iframe');
+            if (iframe) {
+                console.log('✅ Google Sign-In button successfully loaded');
+            } else {
+                console.warn('⚠️ Google Sign-In button not rendered - check domain/client ID');
+                // Add fallback message
+                googleSignInButton.innerHTML = `
+                    <div class="google-signin-fallback">
+                        Google Sign-In temporarily unavailable<br>
+                        <small>Please use regular login below</small>
+                    </div>
+                `;
+            }
+        }, 1000);
+        
+    } catch (error) {
+        console.error('Error initializing Google Auth:', error);
+        
+        // Show error message in the button container
+        googleSignInButton.innerHTML = `
+            <div class="google-signin-error">
+                Google Sign-In Error<br>
+                <small>Please use regular login</small>
+            </div>
+        `;
     }
 }
 
@@ -84,20 +138,36 @@ function handleFormSubmissions() {
     if(loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const formData = new FormData(loginForm);
-            const data = Object.fromEntries(formData.entries());
-            const response = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-            });
-            if (response.ok) {
-                window.location.href = '/';
-            } else {
-                const errorData = await response.json();
-                const errorMessage = document.getElementById('errorMessage');
-                errorMessage.textContent = errorData.message || 'Invalid credentials.';
-                errorMessage.style.display = 'block';
+            const button = loginForm.querySelector('button');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            // Show loading state
+            button.innerHTML = 'Processing...';
+            button.disabled = true;
+            errorMessage.style.display = 'none';
+
+            try {
+                const formData = new FormData(loginForm);
+                const data = Object.fromEntries(formData.entries());
+                
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+
+                const responseData = await response.json();
+                
+                if (response.ok) {
+                    window.location.href = '/';
+                } else {
+                    showErrorMessage(errorMessage, responseData.message || 'Invalid credentials', loginForm.querySelector('#loginPassword'));
+                    resetButton(button, 'Continue →');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showErrorMessage(errorMessage, 'Connection error. Please try again later', loginForm.querySelector('#loginPassword'));
+                resetButton(button, 'Continue →');
             }
         });
     }
@@ -107,42 +177,104 @@ function handleFormSubmissions() {
         if (!messageArea) {
             messageArea = document.createElement('div');
             messageArea.id = 'signupMessageArea';
-            signupForm.parentNode.insertBefore(messageArea, signupForm);
+            signupForm.insertBefore(messageArea, signupForm.querySelector('button'));
         }
-        
+
         signupForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const formData = new FormData(signupForm);
-            const data = Object.fromEntries(formData.entries());
+            const button = signupForm.querySelector('button');
+            const password = signupForm.querySelector('#signupPassword').value;
+            const confirmPassword = signupForm.querySelector('#confirmPassword').value;
+            
+            // Clear any existing messages
+            messageArea.innerHTML = '';
+            messageArea.style.display = 'none';
 
-            if (data.passord !== data.confirmPassword) {
-                messageArea.className = 'alert alert-error';
-                messageArea.textContent = 'Passwords do not match.';
-                messageArea.style.display = 'block';
+            // Validate passwords match
+            if (password !== confirmPassword) {
+                showErrorMessage(messageArea, 'Passwords do not match', signupForm.querySelector('#confirmPassword'));
                 return;
             }
-            
-            const response = await fetch('/api/auth/signup', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data),
-            });
-            
-            const responseData = await response.json();
-            messageArea.className = response.ok ? 'alert alert-success' : 'alert alert-error';
-            messageArea.textContent = responseData.message;
-            messageArea.style.display = 'block';
 
-            if(response.ok) {
-                signupForm.reset();
+            // Show loading state
+            button.innerHTML = 'Creating Account...';
+            button.disabled = true;
+
+            try {
+                const formData = new FormData(signupForm);
+                const data = Object.fromEntries(formData.entries());
+                
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data),
+                });
+
+                const responseData = await response.json();
+                
+                if (response.ok) {
+                    // Show success message and redirect
+                    showSuccessMessage(messageArea, 'Account created successfully! Redirecting...');
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 1500);
+                } else {
+                    showErrorMessage(messageArea, responseData.message || 'Failed to create account');
+                    resetButton(button, 'Create Account');
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                showErrorMessage(messageArea, 'Connection error. Please try again later');
+                resetButton(button, 'Create Account');
             }
         });
     }
 }
 
+function showErrorMessage(element, message, focusElement = null) {
+    element.innerHTML = message;
+    element.className = 'alert alert-error error-message';
+    element.style.display = 'block';
+    
+    if (focusElement) {
+        focusElement.classList.add('invalid');
+        focusElement.focus();
+    }
+}
+
+function showSuccessMessage(element, message) {
+    element.innerHTML = message;
+    element.className = 'alert alert-success success-message';
+    element.style.display = 'block';
+}
+
+function resetButton(button, text) {
+    button.innerHTML = text;
+    button.disabled = false;
+}
+
+function setupInputValidation() {
+    // Remove invalid class on input change
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('input', () => input.classList.remove('invalid'));
+    });
+}
+
 export default function initAuthPage() {
+    console.log('Initializing auth page...');
+    
+    // Check if on the correct page
+    if (!document.querySelector('.auth-page-body')) return;
+
     handleFormToggle();
     handlePasswordVisibility();
-    initializeGoogleAuth();
     handleFormSubmissions();
+    setupInputValidation();
+    
+    // Initialize Google Auth with a delay to ensure DOM and Google API are ready
+    setTimeout(() => {
+        initializeGoogleAuth();
+    }, 500);
+    
+    console.log('Auth page initialized successfully');
 }

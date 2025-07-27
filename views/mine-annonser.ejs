@@ -1,23 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" href="ishtri1.png" sizes="16x16 32x32" type="image/png">
+    <link rel="icon" href="/ishtri1.png" sizes="16x16 32x32" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mine Annonser</title>
+    <title data-i18n="navbar.mine_annonser">My Ads</title>
     <link rel="stylesheet" href="/css/main.css">
-    <script src="/js/toast.js"></script>
-    <script src="/js/skeleton.js" defer></script>
-    <script src="/js/backToTop.js" defer></script>
-    <script src="/js/lazyLoad.js" defer></script>
-   
 </head>
-<body>
-     <%- include('partials/navbar') %>
-     <script src="/shared.js"></script>
+<body data-page="myAds">
+    <%- include('partials/navbar') %>
 
     <h1 data-i18n="navbar.mine_annonser">My Ads</h1>
+    
     <div id="productsContainer">
         <!-- Skeleton loading -->
         <div id="skeletonContainer">
@@ -42,159 +37,8 @@
         </div>
     </div>
 
-    <div class="toast-container" id="toastContainer"></div>
-    <div class="back-to-top" id="backToTop">
-        <i class="fas fa-arrow-up"></i>
-    </div>
-
-    <script>
-        // Fetch user's products
-        fetch('/api/utils/users')
-            .then(response => response.json())
-            .then(products => {
-                const container = document.getElementById('productsContainer');
-                const skeletonContainer = document.getElementById('skeletonContainer');
-                skeletonContainer.style.display = 'none';
-                container.innerHTML = ''; // Clear loading message
-
-                if (products.length === 0) {
-                    container.innerHTML = '<p>You have not uploaded any products.</p>';
-                    return;
-                }
-
-                products.forEach(product => {
-                    const productDiv = document.createElement('div');
-                    productDiv.className = 'product';
-
-                    // Handle image with proper error handling and default image
-                    const firstImage = product.Images && product.Images !== 'default.jpg' 
-                        ? `/uploads/${product.Images.split(',')[0].trim()}` 
-                        : '/uploads/default.jpg';
-
-                    productDiv.innerHTML = `
-                      <img src="${firstImage}" 
-                           alt="${product.ProductName}" 
-                           class="product-image"
-                           onerror="this.src='/uploads/default.jpg'">
-                        <div>
-                            <h3>
-                                ${product.ProductName} 
-                                ${product.Sold ? `<span class="sold-label" data-i18n="product_details.sold">(Sold)</span>` : ''}
-                            </h3>
-                            <p><strong data-i18n="product_details.price">Price:</strong> ${product.Price ? `$${product.Price.toLocaleString('en-US')}` : 'Contact for price'}</p>
-                            <p><strong data-i18n="product_details.location">Location:</strong> ${product.Location}</p>
-                            <p><strong data-i18n="product_details.dato">Date:</strong> ${product.Date}</p>
-                            <div class="button-container">
-                                <button class="btn btn-danger delete-button" data-id="${product.ProductdID}" data-i18n="product_details.slett">Delete</button>
-                                ${product.Sold 
-                                    ? `<button class="btn btn-warning unsold-button" data-id="${product.ProductdID}" data-i18n="product_details.mark_unsold">Mark as Unsold</button>`
-                                    : `<button class="btn btn-success sold-button" data-id="${product.ProductdID}" data-i18n="product_details.mark_sold">Mark as Sold</button>`
-                                }
-                            </div>
-                        </div>
-                    `;
-
-                    // Add click event to redirect to product details page
-                    productDiv.addEventListener('click', () => {
-                        window.location.href = `/productDetails?productdID=${product.ProductdID}`;
-                    });
-
-                    container.appendChild(productDiv);
-                });
-
-                // Initialize lazy loading for images
-                if (window.lazyLoader) {
-                    window.lazyLoader.observe();
-                }
-
-                // Attach "Mark as Sold" event listeners
-                document.querySelectorAll('.sold-button').forEach(button => {
-                    button.addEventListener('click', (event) => {
-                        event.stopPropagation();
-                        const ProductdID = button.getAttribute('data-id');
-                        if (confirm('Are you sure you want to mark this product as sold?')) {
-                            fetch(`/api/products/sold/${ProductdID}`, { method: 'PUT' })
-                                .then(response => response.json())
-                                .then(result => {
-                                    window.toast.show(result.message || 'Product marked as sold.', 'success');
-                                    location.reload(); // Reload the page to show the updated status
-                                })
-                                .catch(error => {
-                                    console.error('Error marking product as sold:', error);
-                                    window.toast.show('Failed to mark the product as sold.', 'error');
-                                });
-                        }
-                    });
-                });
-            
-                // Attach "Mark as Unsold" event listeners
-                document.querySelectorAll('.unsold-button').forEach(button => {
-                    button.addEventListener('click', (event) => {
-                        event.stopPropagation(); 
-                        const ProductdID = button.getAttribute('data-id');
-                        if (confirm('Are you sure you want to mark this product as unsold?')) {
-                            fetch(`/api/products/unsold/${ProductdID}`, { method: 'PUT' })
-                                .then(response => response.json())
-                                .then(result => {
-                                    window.toast.show(result.message || 'Product marked as unsold.', 'success');
-                                    location.reload(); 
-                                })
-                                .catch(error => {
-                                    console.error('Error marking product as unsold:', error);
-                                    window.toast.show('Failed to mark the product as unsold.', 'error');
-                                });
-                        }
-                    });
-                });
-
-                // Attach delete event listeners
-                document.querySelectorAll('.delete-button').forEach(button => {
-                    button.addEventListener('click', (event) => {
-                        event.stopPropagation(); 
-                        const ProductdID = button.getAttribute('data-id');
-                        if (confirm('Are you sure you want to delete this product?')) {
-                            fetch(`/api/products/delete-product/${ProductdID}`, { method: 'DELETE' })
-                                .then(response => response.json())
-                                .then(result => {
-                                    window.toast.show(result.message || 'Product deleted.', 'success');
-                                    button.closest('.product').remove();
-                                })
-                                .catch(error => {
-                                    console.error('Error deleting product:', error);
-                                    window.toast.show('Failed to delete the product.', 'error');
-                                });
-                        }
-                    });
-                });
-            })
-            .catch(error => {
-                console.error('Error fetching products:', error);
-                const container = document.getElementById('productsContainer');
-                container.innerHTML = `<p>Error loading your products: ${error.message}</p>`;
-                window.toast.show('Failed to load your products.', 'error');
-            });
-
-        // Initialize back to top button
-        const backToTopButton = document.getElementById('backToTop');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                backToTopButton.classList.add('visible');
-            } else {
-                backToTopButton.classList.remove('visible');
-            }
-        });
-
-        backToTopButton.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-
-        // Initialize lazy loading
-        if (window.lazyLoader) {
-            window.lazyLoader.observe();
-        }
-    </script>
+    <!-- Load Socket.IO and modular app.js -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="module" src="/js/app.js"></script>
 </body>
 </html>

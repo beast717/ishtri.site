@@ -1,17 +1,34 @@
 export default class BackToTop {
-    constructor() {
+    constructor(selector = null) {
         this.button = null;
+        this.selector = selector;
         this.init();
     }
 
     init() {
-        // Create button
+        // Try to use existing button first
+        if (this.selector) {
+            this.button = document.querySelector(this.selector);
+        }
+        
+        // If no existing button found, create one
+        if (!this.button) {
+            this.createButton();
+        }
+
+        // Add event listeners
+        window.addEventListener('scroll', () => this.toggleButton());
+        this.button.addEventListener('click', () => this.scrollToTop());
+    }
+
+    createButton() {
         this.button = document.createElement('button');
         this.button.innerHTML = '<i class="fas fa-arrow-up"></i>';
         this.button.className = 'back-to-top';
+        this.button.id = 'backToTop';
         document.body.appendChild(this.button);
 
-        // Add styles
+        // Add styles only if we created the button
         const backToTopStyle = document.createElement('style');
         backToTopStyle.textContent = `
             .back-to-top {
@@ -55,10 +72,6 @@ export default class BackToTop {
             }
         `;
         document.head.appendChild(backToTopStyle);
-
-        // Add scroll event listener
-        window.addEventListener('scroll', () => this.toggleButton());
-        this.button.addEventListener('click', () => this.scrollToTop());
     }
 
     toggleButton() {

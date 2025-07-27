@@ -12,7 +12,7 @@ const dotenv = require('dotenv');
 const nodemailer = require('nodemailer');
 const http = require('http');
 const cron = require('node-cron');
-const helmet = require('helmet');
+//const helmet = require('helmet');
 dotenv.config();
 
 const app = express();
@@ -44,7 +44,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-app.use(
+/*app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
@@ -64,7 +64,7 @@ app.use(
     },
   })
 );
-
+*/
 // Static files
 app.use('/data', express.static(path.join(__dirname, 'data')));
 app.use(express.static(path.join(__dirname, 'Public')));

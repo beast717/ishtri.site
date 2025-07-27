@@ -1,10 +1,10 @@
 // public/js/pages/productList.js
-
+import { initFavoriteButton } from '../components/favoriteButton.js';
 export default function initProductListPage() {
     // --- Page Context Detection ---
     // Determine which page we are on to tailor API calls and UI initialization.
     const isTorgetKatPage = window.location.pathname.includes('/torgetkat');
-    const isSearchPage = window.location.pathname.includes('/SearchResults');
+    const isSearchPage = window.location.pathname.includes('/SearchResults') || window.location.pathname.includes('/search');
 
     // If we're not on either of these pages, do nothing.
     if (!isTorgetKatPage && !isSearchPage) {
@@ -163,6 +163,9 @@ export default function initProductListPage() {
                 window.location.href = `/productDetails?productdID=${product.ProductdID}`;
             }
         });
+
+        const favoriteButton = div.querySelector('.favorite-icon');
+        initFavoriteButton(favoriteButton); // Initialize the button using our component logic
 
         return div;
     }
@@ -330,6 +333,52 @@ export default function initProductListPage() {
         // Trigger a fresh fetch with reset filters
         applyFilters();
     }
+
+     function handleCategoryVisibility() {
+        if (!isTorgetKatPage) return; // Only run on the category page
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('category');
+
+        // Get references to all category-specific filter sections
+        const subcategoryContainer = getEl('subcategoryFilterContainer');
+        const carBrandList = getEl('carBrandList');
+        const carBrandLabel = getEl('filterCar');
+        const carSpecificFilters = getEl('carSpecificFilters');
+        const propertySpecificFilters = getEl('propertySpecificFilters');
+        const workSpecificFilters = getEl('workSpecificFilters');
+
+        // First, hide all of them to ensure a clean state
+        if (subcategoryContainer) subcategoryContainer.style.display = 'none';
+        if (carBrandList) carBrandList.style.display = 'none';
+        if (carBrandLabel) carBrandLabel.style.display = 'none';
+        if (carSpecificFilters) carSpecificFilters.style.display = 'none';
+        if (propertySpecificFilters) propertySpecificFilters.style.display = 'none';
+        if (workSpecificFilters) workSpecificFilters.style.display = 'none';
+        // Add other categories here if you have them (e.g., 'Båt', 'MC')
+
+        // Now, show the correct section based on the category
+        switch (category) {
+            case 'Torget':
+                if (subcategoryContainer) subcategoryContainer.style.display = 'block';
+                break;
+            case 'Bil':
+                if (carBrandList) carBrandList.style.display = 'block';
+                if (carBrandLabel) carBrandLabel.style.display = 'block';
+                if (carSpecificFilters) carSpecificFilters.style.display = 'block';
+                break;
+            case 'Eiendom': // "Property"
+                if (propertySpecificFilters) propertySpecificFilters.style.display = 'block';
+                break;
+            case 'Jobb':
+                if (workSpecificFilters) workSpecificFilters.style.display = 'block';
+                break;
+            // Add more cases for 'Båt', 'MC', etc.
+            default:
+                // No specific filters to show for other categories
+                break;
+        }
+    }
     
     // --- Active Filter Tags UI (TorgetKat Only) ---
     function updateActiveFiltersDisplay() {
@@ -394,20 +443,48 @@ export default function initProductListPage() {
         }
     }
 
-    function initializeFavorites() {
+    async function initializeCarBrands() {
+        const carBrandList = queryEl('.car-brand-list');
+        if (!carBrandList || carBrandList.dataset.initialized) return;
+
+        try {
+            const response = await fetch('/api/utils/car-brands');
+            const brands = await response.json();
+            
+            brands.forEach(brand => {
+                const brandItem = document.createElement('li');
+                brandItem.innerHTML = `
+                    <input type="checkbox" id="brand_${brand.brand_id}" value="${brand.brand_name}">
+                    <label for="brand_${brand.brand_id}">${brand.brand_name}</label>`;
+                carBrandList.appendChild(brandItem);
+            });
+            carBrandList.dataset.initialized = 'true';
+        } catch (error) {
+            console.error("Error loading car brands:", error);
+            carBrandList.innerHTML = '<li>Error loading car brands.</li>';
+        }
+    }
+
+     function initializeFavorites() {
         fetch('/api/favorites', { credentials: 'include' })
-            .then(res => res.ok ? res.json() : Promise.reject())
+            .then(res => res.ok ? res.json() : Promise.reject('Not logged in or API error'))
             .then(favorites => {
                 const favoriteIds = new Set(favorites.map(f => f.ProductdID));
-                queryAll('.favorite-icon').forEach(icon => {
+                
+                document.querySelectorAll('.favorite-icon').forEach(icon => {
                     const productId = Number(icon.dataset.productId);
                     const isFavorited = favoriteIds.has(productId);
+                    
+                    // Set the initial visual state
                     icon.classList.toggle('favorited', isFavorited);
                     icon.setAttribute('aria-pressed', isFavorited);
                     icon.style.color = isFavorited ? '#ff4757' : '#ccc';
                 });
             })
-            .catch(() => { /* Fail silently if not logged in */ });
+            .catch(() => {
+                // Fail silently if the user is not logged in.
+                // The buttons will just appear in their default (unfavorited) state.
+            });
     }
 
     function setupEventListeners() {
@@ -493,25 +570,28 @@ export default function initProductListPage() {
 
     // --- Main Execution Block ---
     async function run() {
+        // --- MODIFIED: Call the new visibility handler ---
+        if (isTorgetKatPage) {
+            handleCategoryVisibility();
+        }
+        
         setupEventListeners();
         addLoadMoreButton();
 
         // Perform initializations
         await initializeCountries();
+        await initializeCarBrands();
 
         if (isTorgetKatPage) {
-            await Promise.all([
-                // initializeCarBrands(), // Add this if you have car brands
-            ]);
             initializeSliders();
-            // handleCategoryVisibility(); // Add this to show/hide filter blocks
-            // applyFiltersFromURL(); // Add this to apply filters from saved searches
             updateActiveFiltersDisplay();
+            // Other TorgetKat specific initializations would go here
         }
 
         // Initial fetch of products
         fetchProducts();
     }
 
+    // Run the main initialization logic for the page
     run();
 }

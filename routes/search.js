@@ -1,59 +1,91 @@
-// routes/products.js
+// routes/search.js
 const express = require('express');
 const router = express.Router();
 const pool = require('../config/db');
-const upload = require('../config/upload');
 
-
-
-// Example of the correct endpoint implementation
+// Search API endpoint - handles product search with filters
 router.get('/', async (req, res, next) => {
-    try{
+    try {
+        const { 
+            query = '', 
+            limit = 20, 
+            offset = 0,
+            sortPrice, 
+            sortDate, 
+            countries,
+            cities,
+            subCategory 
+        } = req.query;
 
+        // Start with a simple query first to test database connection
+        let sqlQuery = `SELECT p.*, ci.cityName, ci.country FROM products p LEFT JOIN cities ci ON p.city_id = ci.cityid WHERE 1=1`;
+        const params = [];
 
-    const { query, sortPrice, sortDate, countries } = req.query;
+        // Add search query filter - search in ProductName only for now
+        if (query && query.trim()) {
+            sqlQuery += ` AND p.ProductName LIKE ?`;
+            const searchTerm = `%${query.trim()}%`;
+            params.push(searchTerm);
+        }
 
-    let sqlQuery = "SELECT * FROM products WHERE ProductName LIKE ?";
-    const params = [`%${query}%`];
+        // Add country filter
+        if (countries) {
+            const countryList = countries.split(',').map(c => c.trim()).filter(c => c);
+            if (countryList.length > 0) {
+                const placeholders = countryList.map(() => '?').join(',');
+                sqlQuery += ` AND ci.country IN (${placeholders})`;
+                params.push(...countryList);
+            }
+        }
 
-    if (countries) {
-        const countryList = countries.split(',');
-        const placeholders = countryList.map(() => '?').join(',');
-        sqlQuery += ` AND Country IN (${placeholders})`;
-        params.push(...countryList);
-    }
+        // Add city filter
+        if (cities) {
+            const cityList = cities.split(',').map(c => c.trim()).filter(c => c);
+            if (cityList.length > 0) {
+                const placeholders = cityList.map(() => '?').join(',');
+                sqlQuery += ` AND ci.cityid IN (${placeholders})`;
+                params.push(...cityList);
+            }
+        }
 
-    const orderClauses = [];
-    if (sortPrice) orderClauses.push(`Price ${sortPrice.toUpperCase()}`);
-    if (sortDate) orderClauses.push(`COALESCE(Date, '1970-01-01') ${sortDate.toUpperCase()}`);
-    if (orderClauses.length > 0) sqlQuery += ` ORDER BY ${orderClauses.join(', ')}`;
+        // Add subcategory filter
+        if (subCategory) {
+            sqlQuery += ` AND p.SubCategory = ?`;
+            params.push(subCategory);
+        }
 
-    pool.query(sqlQuery, params, (err, results) => {
-        res.json(results);
-    });
+        // Add sorting
+        const orderClauses = [];
+        if (sortPrice && ['asc', 'desc'].includes(sortPrice.toLowerCase())) {
+            orderClauses.push(`p.Price ${sortPrice.toUpperCase()}`);
+        }
+        if (sortDate && ['asc', 'desc'].includes(sortDate.toLowerCase())) {
+            orderClauses.push(`p.Date ${sortDate.toUpperCase()}`);
+        }
+        
+        // Default sorting by date if no sort specified
+        if (orderClauses.length === 0) {
+            orderClauses.push('p.Date DESC');
+        }
+        
+        sqlQuery += ` ORDER BY ${orderClauses.join(', ')}`;
+        
+        // Add pagination
+        sqlQuery += ` LIMIT ? OFFSET ?`;
+        params.push(parseInt(limit), parseInt(offset));
+
+        const [results] = await pool.promise().query(sqlQuery, params);
+        
+        res.json({
+            products: results,
+            query: query,
+            total: results.length
+        });
         
     } catch (err) {
+        console.error('Search API error:', err);
         next(err);
     }
-    
-});
-
-// Search Route
-router.get('/search', (req, res) => {
-    const searchQuery = req.query.query.trim();
-    const sql = "SELECT * FROM products WHERE LOWER(ProductName) LIKE LOWER(?)";
-    const values = [`%${searchQuery}%`];
-
-    pool.query(sql, values, (err, results) => {
-        if (err) return next(err);
-
-        if (results.length > 0) {
-            // Pass all matching products to a selection page
-            res.render ('SearchResults');
-        } else {
-            return res.status(404).send("No products found.");
-        }
-    });
 });
 
 module.exports = router;

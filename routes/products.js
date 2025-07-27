@@ -48,7 +48,7 @@ const getProductByIdValidation = [
 
 // POST /api/products (Body) - More complex due to categories
 const createProductValidation = [
-    body('Category').trim().isIn(['Bil', 'Jobb', 'Eiendom']).withMessage('Invalid category selected'),
+    body('Category').trim().isIn(['Bil', 'Jobb', 'Eiendom', 'Torget', 'Båt', 'MC']).withMessage('Invalid category selected'),
     body('ProductName').trim().notEmpty().withMessage('Product name is required').isLength({ max: 255 }).withMessage('Product name too long'),
     body('Location').optional().trim().isLength({ max: 255 }).withMessage('Location too long'),
     body('City').trim().notEmpty().withMessage('City is required'),

@@ -1,4 +1,4 @@
-// --- START OF FILE Public/shared.js ---
+/*// --- START OF FILE Public/shared.js ---
 
 // Function to check UNREAD MESSAGES (for message icon badge)
 function checkUnreadMessages() {
@@ -109,7 +109,7 @@ function loadNonEssentialScripts() {
             gtag('config', gaId);
         }
     }
-    */
+    
 }
 
 // --- Main DOMContentLoaded Listener ---
@@ -324,7 +324,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-
+/*
     // --- Cookie Consent Logic ---
     // This custom logic is being disabled to rely on Google's built-in
     // Consent Management Platform (CMP), which is triggered by the AdSense script.
@@ -416,6 +416,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
-    } */
+    } 
 
 });
+

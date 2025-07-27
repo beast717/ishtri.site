@@ -89,3 +89,17 @@
 .error-message-container { background-color: #fff8f8; border: 1px solid #ffcccc; color: var(--danger-color); }
 .success-message-container { background-color: #e8f5e9; border: 1px solid #a5d6a7; color: var(--success-color); }
 .error-message-container.active, .success-message-container.active { display: flex; }
+
+/* Submit Button Container */
+.submit-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 20px;
+    gap: 15px;
+}
+
+/* When only submit button is present (before clear button is added by JS) */
+.submit-container:has(button:only-child) {
+    justify-content: flex-end;
+}

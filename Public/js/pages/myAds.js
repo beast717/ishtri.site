@@ -80,16 +80,16 @@ export default function initMyAdsPage() {
                     <div>
                         <h3>
                             ${product.ProductName} 
-                            ${product.Sold ? `<span class="sold-label">(Sold)</span>` : ''}
+                            ${product.Sold ? `<span class="sold-label" data-i18n="product_details.sold">(Sold)</span>` : ''}
                         </h3>
-                        <p><strong>Price:</strong> ${product.Price ? `$${product.Price.toLocaleString('en-US')}` : 'Contact for price'}</p>
-                        <p><strong>Location:</strong> ${product.Location}</p>
-                        <p><strong>Date:</strong> ${product.Date}</p>
+                        <p><strong data-i18n="product_details.price">Price:</strong> ${product.Price ? `$${product.Price.toLocaleString('en-US')}` : 'Contact for price'}</p>
+                        <p><strong data-i18n="product_details.location">Location:</strong> ${product.Location}</p>
+                        <p><strong data-i18n="product_details.dato">Date:</strong> ${product.Date}</p>
                         <div class="button-container">
-                            <button class="btn btn-danger" data-action="delete" data-id="${product.ProductdID}">Delete</button>
+                            <button class="btn btn-danger" data-action="delete" data-id="${product.ProductdID}" data-i18n="product_details.slett">Delete</button>
                             ${product.Sold 
-                                ? `<button class="btn btn-warning" data-action="mark-unsold" data-id="${product.ProductdID}">Mark as Unsold</button>`
-                                : `<button class="btn btn-success" data-action="mark-sold" data-id="${product.ProductdID}">Mark as Sold</button>`
+                                ? `<button class="btn btn-warning" data-action="mark-unsold" data-id="${product.ProductdID}" data-i18n="product_details.mark_unsold">Mark as Unsold</button>`
+                                : `<button class="btn btn-success" data-action="mark-sold" data-id="${product.ProductdID}" data-i18n="product_details.mark_sold">Mark as Sold</button>`
                             }
                         </div>
                     </div>

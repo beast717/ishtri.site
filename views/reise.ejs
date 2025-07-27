@@ -2,20 +2,15 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="/css/main.css">
-    <link rel="icon" href="ishtri1.png" sizes="16x16 32x32" type="image/png">
+    <link rel="icon" href="/ishtri1.png" sizes="16x16 32x32" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="flight_search.title">Flight Search</title>
-    <script src="/js/toast.js"></script>
-    <script src="/js/skeleton.js" defer></script>
-    <script src="/js/lazyLoad.js" defer></script>
-    
 </head>
 
-<body>
+<body data-page="reise">
     <%- include('partials/navbar') %>
-    <script src="/shared.js"></script>
     
     <div class= "reise-container">
     <div class="flight-search-form">
@@ -66,122 +61,8 @@
     </div>
       </div>
 
-          
-<script>
-    
-    let departureIataCode = '';
-    let arrivalIataCode = '';
-    let searchTimeout;
+<!-- Load the modular JavaScript application -->
+<script type="module" src="/js/app.js"></script>
 
-    const departureInput = document.getElementById('departure');
-    const arrivalInput = document.getElementById('arrival');
-    const departureSuggestions = document.getElementById('departure-suggestions');
-    const arrivalSuggestions = document.getElementById('arrival-suggestions');
-
-    // Function to fetch suggestions 
-    function fetchAirportSuggestions(inputElement, suggestionsElement) {
-        const query = inputElement.value.trim();
-
-        if (query.length < 2) { // Don't search for less than 2 characters
-            suggestionsElement.innerHTML = '';
-            suggestionsElement.style.display = 'none';
-            return;
-        }
-
-        // Use the new server endpoint
-        fetch(`/api/airports/search?q=${encodeURIComponent(query)}`)
-            .then(response => response.json())
-            .then(data => {
-                displaySuggestions(data, suggestionsElement, inputElement === departureInput);
-            })
-            .catch(error => {
-                console.error('Error fetching airport suggestions:', error);
-            });
-    }
-
-    // Display the suggestions returned from the server
-    function displaySuggestions(suggestions, suggestionsElement, isDeparture) {
-        suggestionsElement.innerHTML = '';
-
-        if (suggestions.length > 0) {
-            suggestions.forEach(airport => {
-                const suggestionItem = document.createElement('li');
-                suggestionItem.textContent = `${airport.name} (${airport.iata}) - ${airport.city}`;
-                suggestionItem.onclick = () => {
-                    selectAirport(airport, isDeparture);
-                };
-                suggestionsElement.appendChild(suggestionItem);
-            });
-            suggestionsElement.style.display = 'block';
-        } else {
-            suggestionsElement.style.display = 'none';
-        }
-    }
-
-    
-    function selectAirport(airport, isDeparture) {
-        const input = isDeparture ? departureInput : arrivalInput;
-        const suggestionsList = isDeparture ? departureSuggestions : arrivalSuggestions;
-
-        input.value = `${airport.name} (${airport.iata}) - ${airport.city}`;
-        suggestionsList.innerHTML = '';
-        suggestionsList.style.display = 'none';
-
-        if (isDeparture) {
-            departureIataCode = airport.iata;
-        } else {
-            arrivalIataCode = airport.iata;
-        }
-    }
-
-    // Attach debounced event listeners to the input fields
-    departureInput.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            fetchAirportSuggestions(departureInput, departureSuggestions);
-        }, 300); // Debounce: wait 300ms after user stops typing
-    });
-
-    arrivalInput.addEventListener('input', () => {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => {
-            fetchAirportSuggestions(arrivalInput, arrivalSuggestions);
-        }, 300);
-    });
-    
-    // Hide suggestions when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!departureInput.contains(e.target)) departureSuggestions.style.display = 'none';
-        if (!arrivalInput.contains(e.target)) arrivalSuggestions.style.display = 'none';
-    });
-
-    // Form submission logic 
-    document.getElementById('flightSearchForm').addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        if (!departureIataCode || !arrivalIataCode) {
-            alert('Please select a valid departure and arrival airport from the suggestions.');
-            return;
-        }
-
-        const tripType = document.getElementById('tripType').value;
-        const departureDate = document.getElementById('departureDate').value.replace(/-/g, '');
-        const returnDate = tripType === 'roundtrip' ? document.getElementById('returnDate').value.replace(/-/g, '') : '';
-        const passengers = document.getElementById('passengers').value;
-
-        let skyscannerUrl = `https://www.skyscanner.com/transport/flights/${departureIataCode}/${arrivalIataCode}/${departureDate}/`;
-        if (tripType === 'roundtrip' && returnDate) {
-            skyscannerUrl += `${returnDate}/`;
-        }
-        skyscannerUrl += `?adults=${passengers}`;
-        window.open(skyscannerUrl, '_blank');
-    });
-
-    // Trip type toggle logic 
-    document.getElementById('tripType').addEventListener('change', (e) => {
-        document.getElementById('returnDateGroup').style.display = e.target.value === 'roundtrip' ? 'block' : 'none';
-    });
-
-</script>
 </body>
 </html>

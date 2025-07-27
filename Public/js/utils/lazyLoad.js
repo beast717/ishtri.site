@@ -89,8 +89,3 @@ export default class LazyLoader {
         });
     }
 }
-
-// Initialize lazy loading when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.lazyLoader.observe();
-}); 

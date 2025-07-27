@@ -1,39 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="icon" href="ishtri1.png" sizes="16x16 32x32" type="image/png">
+    <link rel="icon" href="/ishtri1.png" sizes="16x16 32x32" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search results</title>
     <link rel="stylesheet" href="/css/main.css">
-    <script src="/js/toast.js"></script>
-    <script src="/js/skeleton.js" defer></script>
-    <script src="/js/backToTop.js" defer></script>
-    <script src="/js/lazyLoad.js" defer></script>
-    
-   
 </head>
-<body>
+
+<body data-page="productList">
     <%- include('partials/navbar') %>
-    <script src="/shared.js"></script>
 
    <div class="filter-container" style="margin-bottom: 20px; padding-left: 25px;">
         <label for="priceFilter" data-i18n="filter.sorter_etter">Sort By:</label>
-        <select id="priceFilter" onchange="applyFilters()">
-            <option value="asc" data-i18n="filter.lavest_pris">Heighest Price</option>
-            <option value="desc" data-i18n="filter.høyest_pris">Lowest Price</option>
+        <select id="priceFilter">
+            <option value="asc" data-i18n="filter.lavest_pris">Lowest Price</option>
+            <option value="desc" data-i18n="filter.høyest_pris">Highest Price</option>
             <option value="" data-i18n="filter.alle">All</option>
         </select>
         <label for="dateFilter" data-i18n="filter.utgitt">Date:</label>
-        <select id="dateFilter" onchange="applyFilters()">
+        <select id="dateFilter">
             <option value="" data-i18n="filter.alle">All</option>
             <option value="desc" data-i18n="filter.nylige">New</option>
             <option value="asc" data-i18n="filter.eldre">Old</option>
         </select>
         <div id="subcategoryFilterContainer" style="display: none;">
             <label for="subCategoryFilter" data-i18n="form.category">Category:</label>
-            <select id="subCategoryFilter" onchange="applyFilters()">
+            <select id="subCategoryFilter">
                 <option value="" data-i18n="filter.alle">All</option>
                 <option value="Klær" data-i18n="subkategori.klær">Clothes</option>
                 <option value="Elektronikk" data-i18n="subkategori.elektronikk">Electronics</option>
@@ -41,9 +35,9 @@
                 <option value="Møbler" data-i18n="subkategori.møbler">Furniture</option>
                 <option value="Annet" data-i18n="subkategori.annet">Other</option>
             </select>
-            <button onclick="resetFilters()" class="btn btn-danger reset-filters-btn">
-    ⟳ Reset Filters
-</button>
+            <button class="btn btn-danger reset-filters-btn">
+                ⟳ Reset Filters
+            </button>
         </div> 
     </div>  
 
@@ -59,452 +53,18 @@
             <!-- Skeleton loading will be shown here -->
         </div>
     </div>
+    
     <div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-spinner"></div>
-</div>
+        <div class="loading-spinner"></div>
+    </div>
 
     <div class="toast-container" id="toastContainer"></div>
     <div class="back-to-top" id="backToTop">
         <i class="fas fa-arrow-up"></i>
     </div>
 
-   <script>
+<!-- Load the modular JavaScript application -->
+<script type="module" src="/js/app.js"></script>
 
-    (function () {
-        let filterTimeout;
-        const DEBOUNCE_DELAY = 300; // ms
-
-
-        // Pagination variables
-        let currentPage = 1;
-        let isLoading = false;
-        let hasMore = true;
-        const limit = 20;
-
-        // Current filter state
-        let currentFilters = {
-            priceOrder: '',
-            selectedCountries: [],
-            dateOrder: '',
-            subCategory: '',
-            selectedCarBrands: [],
-            selectedCities: []
-        };
-
-        function showLoading() {
-            document.getElementById('loadingOverlay').style.display = 'flex';
-        }
-
-        function hideLoading() {
-            document.getElementById('loadingOverlay').style.display = 'none';
-        }
-
-        function showSkeletonLoading() {
-            const container = document.getElementById('productsContainer');
-            container.innerHTML = '';
-            for (let i = 0; i < 8; i++) {
-                const skeleton = document.createElement('div');
-                skeleton.className = 'product skeleton';
-                skeleton.innerHTML = `
-                    <div class="skeleton-image skeleton"></div>
-                    <div>
-                        <div class="skeleton-text skeleton-title skeleton"></div>
-                        <div class="skeleton-text skeleton-price skeleton"></div>
-                        <div class="skeleton-text skeleton-location skeleton"></div>
-                    </div>
-                `;
-                container.appendChild(skeleton);
-            }
-        }
-
-        function fetchProducts(loadMore = false, cacheBuster = null) {
-            if (isLoading || (!loadMore && !hasMore)) return;
-            
-            showLoading();
-            isLoading = true;
-
-            if (!loadMore) {
-                showSkeletonLoading();
-            }
-
-            const offset = (currentPage - 1) * limit;
-            const urlParams = new URLSearchParams(window.location.search);
-            const searchQuery = urlParams.get("query");
-
-            // Build API URL with current filters
-            let apiUrl = `/api/search?query=${searchQuery}&limit=${limit}&offset=${offset}`;
-                    // Add cache busting
-            if (cacheBuster) {
-                apiUrl += `&_=${cacheBuster}`;
-            }
-            if (currentFilters.subCategory) apiUrl += `&subCategory=${currentFilters.subCategory}`;
-            if (currentFilters.priceOrder) apiUrl += `&sortPrice=${currentFilters.priceOrder}`;
-            if (currentFilters.dateOrder) apiUrl += `&sortDate=${currentFilters.dateOrder}`;
-            if (currentFilters.selectedCountries.length) apiUrl += `&countries=${currentFilters.selectedCountries.join(',')}`;
-            if (currentFilters.selectedCarBrands.length) apiUrl += `&carBrand=${currentFilters.selectedCarBrands.join(',')}`;
-            if (currentFilters.selectedCities.length) apiUrl += `&cities=${currentFilters.selectedCities.join(',')}`;
-
-            // Show loading state
-            const container = document.getElementById('productsContainer');
-            const loadButton = document.getElementById('loadMoreButton');
-            if (!loadMore) container.innerHTML = '<p>Loading products...</p>';
-            if (loadButton) {
-                loadButton.disabled = true;
-                loadButton.textContent = 'Loading...';
-            }
-
-            fetch(apiUrl)
-                .then(response => response.json())
-                    .then(products => { // 👈 Directly receive the array
-                        console.log("[DEBUG] API Products:", products);
-                        hasMore = (currentPage * limit) < products.length; // 👈 Approximate total
-                        displayProducts(products, loadMore);
-                        currentPage++;
-                        isLoading = false;
-                        hideLoading();
-
-                    // Initialize lazy loading for new images
-                    if (window.lazyLoader) {
-                        window.lazyLoader.observe();
-                    }
-
-                    // Update load more button
-                    if (loadButton) {
-                        loadButton.disabled = false;
-                        loadButton.textContent = 'Load More';
-                        if (!hasMore) loadButton.remove();
-                    } else if (hasMore) {
-                        addLoadMoreButton();
-                    }
-                     hideLoading();
-                })
-                .catch(error => {
-                    console.error("[DEBUG] Error fetching products:", error); 
-                    console.error("Error fetching products:", error);
-                    isLoading = false;
-                    const container = document.getElementById('productsContainer');
-                    container.innerHTML = `
-                        <div class="error-message">
-                            <p>Error loading products. Please try again.</p>
-                            <button onclick="fetchProducts()">Retry</button>
-                        </div>
-                    `;
-                    window.toast.show('Error loading products. Please try again.', 'error');
-                    hideLoading();
-                    if (loadButton) {
-                        loadButton.disabled = false;
-                        loadButton.textContent = 'Load More';
-                    }
-                });
-        }
-
-        function resetFilters() {
-            
-            // 1. Reset UI elements
-            document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-            
-            document.getElementById('priceFilter').value = 'asc';
-            document.getElementById('dateFilter').value = '';
-            document.getElementById('subCategoryFilter').value = '';
-            
-            // 2. Clear city lists
-            document.querySelectorAll('.city-list').forEach(list => {
-                list.innerHTML = '';
-                list.style.display = 'none';
-            });
-
-            // 3. Reset internal state
-            currentFilters = {
-                priceOrder: 'asc',
-                dateOrder: '',
-                subCategory: '',
-                selectedCountries: [],
-                selectedCarBrands: [],
-                selectedCities: []
-            };
-
-            // 4. Reset pagination
-            currentPage = 1;
-            hasMore = true;
-            isLoading = false; 
-
-            // 5. Clear container and force fresh load
-            const container = document.getElementById('productsContainer');
-            container.innerHTML = '<p>Loading products...</p>';
-            
-            // 6. Fetch with cache busting
-            fetchProducts(false, Date.now());
-        };
-
-        window.resetFilters = resetFilters;
-        window.fetchProducts = fetchProducts;
-function displayProducts(products, append = false) {
-    const container = document.getElementById('productsContainer');
-    if (!container) return;
-
-    if (!append) {
-        container.innerHTML = '';
-        currentPage = 1;
-    }
-
-    if (!products || !Array.isArray(products)) {
-        container.innerHTML = '<p class="no-products">No products found.</p>';
-        return;
-    }
-
-    if (products.length === 0 && !append) {
-        container.innerHTML = '<p class="no-products">No products found for this search.</p>';
-        return;
-    }
-
-    products.forEach(product => {
-        const productDiv = document.createElement('div');
-        productDiv.className = 'product';
-
-        // 1. Fix image handling
-    const images = product.Images ? product.Images.split(',') : [];
-    const firstImage = images.length > 0 
-        ? `/uploads/${images[0].trim()}` 
-        : '/uploads/default-placeholder.png'; // 👈 Defined here
-
-    // 2. Use firstImage in template
-    productDiv.innerHTML = `
-        <img data-src="${firstImage}" alt="${product.ProductName}" class="product-image">
-        <i class="fas fa-heart favorite-icon" data-product-id="${product.ProductdID}"></i>
-        <div>
-            <h3>
-                ${product.ProductName} 
-                ${product.Sold === 1 ? `<span class="sold-label">(Sold)</span>` : ''}
-            </h3>
-            <p><strong>Price:</strong> ${product.Price} $</p>
-            <p><strong>Location:</strong>${product.Location}</p>
-        </div>
-    `;
-
-        productDiv.addEventListener('click', () => {
-            window.location.href = `/productDetails?productdID=${product.ProductdID}`;
-        });
-
-        container.appendChild(productDiv);
-    });
-
-    initializeFavorites();      
-
-            document.querySelectorAll('.favorite-icon').forEach(icon => {
-            icon.addEventListener('click', async (e) => {
-                e.stopPropagation();
-                const productdID = icon.getAttribute('data-product-id');
-                const isFavorited = icon.classList.contains('favorited');
-
-                try {
-                        const response = await fetch('/api/favorites', {
-                            method: 'POST',
-                            credentials: 'include',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ productdID }),
-                        });
-
-                        if (response.ok) {
-                            e.target.classList.toggle('favorited');
-                            e.target.style.color = isFavorited ? '#ccc' : '#ff4757';
-                            window.toast.show(
-                                isFavorited ? 'Product removed from favorites' : 'Product added to favorites',
-                                'success'
-                            );
-                        } else {
-                            window.toast.show('Failed to update favorites', 'error');
-                        }
-                    } catch (error) {
-                        console.error("Error handling favorite:", error);
-                        window.toast.show('An error occurred', 'error');
-                    }
-            });
-        });
-    }
-
-        function addLoadMoreButton() {
-            const existingButton = document.getElementById('loadMoreButton');
-            if (existingButton) return;
-
-            const button = document.createElement('button');
-            button.id = 'loadMoreButton';
-            button.className = 'load-more-btn';
-            button.textContent = 'Load More';
-            button.addEventListener('click', () => fetchProducts(true));
-            
-            const container = document.getElementById('productsContainer');
-            container.appendChild(button);
-        }
-
-        function applyFilters() {
-            clearTimeout(filterTimeout);
-            filterTimeout = setTimeout(() => {
-                // Update current filters
-                currentFilters = {
-                    priceOrder: document.getElementById('priceFilter').value,
-                    dateOrder: document.getElementById('dateFilter').value,
-                    subCategory: document.getElementById('subCategoryFilter')?.value || '',
-                    selectedCountries: Array.from(document.querySelectorAll('.country-list input[type="checkbox"]:checked'))
-                        .map(checkbox => checkbox.value),
-                    selectedCarBrands: Array.from(document.querySelectorAll('.car-brand-list input[type="checkbox"]:checked'))
-                        .map(checkbox => checkbox.value),
-                    selectedCities: Array.from(document.querySelectorAll('.city-list input[type="checkbox"]:checked'))
-                        .map(checkbox => checkbox.value)
-                };
-
-                // Reset pagination
-                currentPage = 1;
-                hasMore = true;
-            // Clear existing products
-                document.getElementById('productsContainer').innerHTML = '<p>Loading products...</p>';
-                
-                fetchProducts();
-            }, DEBOUNCE_DELAY);
-        }
-
-    document.getElementById('dateFilter').addEventListener('change', () => {
-    document.getElementById('priceFilter').value = '';
-    applyFilters();
-});
-    document.getElementById('priceFilter').addEventListener('change', () => {
-    document.getElementById('dateFilter').value = '';
-    applyFilters();
-});
-
-function handleCategoryVisibility() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const category = urlParams.get('category') || 'default';
-    const subcategoryContainer = document.getElementById('subcategoryFilterContainer');
-    const carBrandSection = document.getElementById('kjørr');
-    const carBrandLabel = document.getElementById('filterCar');
-
-    // Toggle subcategory filter
-    if (subcategoryContainer) {
-        subcategoryContainer.style.display = category === 'Torget' ? 'block' : 'none';
-    }
-
-    // Toggle car brand filter
-    if (carBrandSection && carBrandLabel) {
-        const shouldShow = category === 'Bil';
-        carBrandSection.style.display = shouldShow ? 'block' : 'none';
-        carBrandLabel.style.display = shouldShow ? 'block' : 'none';
-    }
-}
-
-        function initializeFilters() {
-            // Price and Date filters
-            document.getElementById('priceFilter').addEventListener('change', applyFilters);
-            document.getElementById('dateFilter').addEventListener('change', applyFilters);
-            
-            // Subcategory filter
-            const subCategoryFilter = document.getElementById('subCategoryFilter');
-            if (subCategoryFilter) {
-                subCategoryFilter.addEventListener('change', applyFilters);
-            }
-
-             // Fetch countries and cities from the API
-            fetch('/api/utils/countries')
-            .then(response => response.json())
-            .then(countries => {
-                const countryList = document.querySelector('.side-panel .country-list');
-                if (!countryList) return; // Exit if the container isn't on the page
-
-                countryList.innerHTML = ''; // Clear any existing items
-
-                countries.forEach(countryData => {
-                    const countryItem = document.createElement('li');
-                    
-                    // This is the clean structure WITHOUT the extra div
-                    countryItem.innerHTML = `
-                        <input type="checkbox" id="${countryData.country}" value="${countryData.country}">
-                        <label for="${countryData.country}">${countryData.country}</label>
-                        <ul class="city-list" id="${countryData.country}-cities" style="display: none;"></ul>
-                    `;
-                    
-                    const cityList = countryItem.querySelector('.city-list');
-                    countryData.cities.forEach((cityName, index) => {
-                        const cityId = countryData.city_ids[index];
-                        cityList.innerHTML += `
-                            <li>
-                                <input type="checkbox" id="city_${cityId}" value="${cityId}">
-                                <label for="city_${cityId}">${cityName}</label>
-                            </li>
-                        `;
-                    });
-
-                    countryList.appendChild(countryItem);
-                });
-
-                // Now that the list is created, attach the delegated event listener
-                countryList.addEventListener('change', function(event) {
-                    const target = event.target;
-                    if (target.type === 'checkbox') {
-                        // Check if it's a country checkbox
-                        const parentLi = target.closest('li');
-                        const cityList = parentLi.querySelector('.city-list');
-                        if (cityList) { // This confirms it's a country checkbox
-                            cityList.style.display = target.checked ? 'block' : 'none';
-                        }
-                        // Always apply filters on any change
-                        applyFilters(); 
-                    }
-                });
-            })
-            .catch(error => {
-                console.error("Error loading countries and cities:", error);
-            });
-}
-
-        function initializeFavorites() {
-            fetch('/api/favorites')
-                .then(response => response.json())
-                .then(favorites => {
-                    document.querySelectorAll('.favorite-icon').forEach(icon => {
-                        const productdID = icon.getAttribute('data-product-id');
-                        const isFavorited = favorites.some(product => product.ProductdID === Number(productdID));
-                        icon.classList.toggle('favorited', isFavorited);
-                        icon.style.color = isFavorited ? '#ff4757' : '#ccc';
-                    });
-                })
-                .catch(error => console.error("Error checking favorites:", error));
-        }
-
-        // Initialize back to top button
-        const backToTopButton = document.getElementById('backToTop');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
-                backToTopButton.classList.add('visible');
-            } else {
-                backToTopButton.classList.remove('visible');
-            }
-        });
-
-        backToTopButton.addEventListener('click', () => {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-
-        window.onload = function () {
-            fetchProducts();
-            checkUnreadMessages();
-            initializeFilters();
-            initializeFavorites();
-            applyFilters();
-            handleCategoryVisibility();
-            checkUnreadMessages();
-            
-            // Initialize lazy loading
-            if (window.lazyLoader) {
-                window.lazyLoader.observe();
-            }
-        };
-    })();
-</script>
 </body>
 </html>

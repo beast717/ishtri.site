@@ -3,249 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Notifications</title>
-    <link rel="stylesheet" href="/css/main.css"> <!-- Your main stylesheet -->
-     <link rel="icon" href="/ishtri1.png" sizes="16x16 32x32" type="image/png">
+    <title data-i18n="navbar.notifications">My Notifications</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="icon" href="/ishtri1.png" sizes="16x16 32x32" type="image/png">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <script src="/js/toast.js"></script>
-    <script src="/js/skeleton.js" defer></script>
-    <script src="/js/lazyLoad.js" defer></script>
-
-   
 </head>
-<body>
-    <%- include('partials/navbar') %> 
-    <script src="/shared.js"></script> 
+<body data-page="notifications">
+    <%- include('partials/navbar') %>
 
     <div class="notifications-container">
         <div class="notifications-header">
-             <h1>My Notifications</h1>
-             <button id="markAllReadBtn" class="btn btn-primary" disabled>Mark All as Read</button>
+            <h1 data-i18n="navbar.notifications">My Notifications</h1>
+            <button id="markAllReadBtn" class="btn btn-primary" disabled data-i18n="notifications.mark_all_read">Mark All as Read</button>
         </div>
 
         <ul class="notification-list" id="notificationList">
             <p>Loading notifications...</p>
-            <!-- Notifications will be loaded here -->
+            <!-- Notifications will be loaded here via JavaScript -->
         </ul>
     </div>
 
-    <script src="/socket.io/socket.io.js"></script> <!-- Include Socket.IO client -->
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const notificationList = document.getElementById('notificationList');
-            const markAllReadBtn = document.getElementById('markAllReadBtn');
-            let hasUnread = false; // Track if there are any unread items
-
-            async function fetchNotifications() {
-                try {
-                    const response = await fetch('/api/notifications', { credentials: 'include' });
-                    if (!response.ok) {
-                        if(response.status === 401) throw new Error('Please log in to view notifications.');
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const notifications = await response.json();
-                    renderNotifications(notifications);
-                } catch (error) {
-                    console.error('Failed to load notifications:', error);
-                    notificationList.innerHTML = `<p class="no-notifications">Error loading notifications: ${error.message}</p>`;
-                     markAllReadBtn.disabled = true; // Disable button on error
-                }
-            }
-
-            function renderNotifications(notifications) {
-                notificationList.innerHTML = ''; // Clear loading/previous
-                hasUnread = false; // Reset flag
-
-                if (!notifications || notifications.length === 0) {
-                    notificationList.innerHTML = '<p class="no-notifications">You have no notifications yet.</p>';
-                     markAllReadBtn.disabled = true;
-                    return;
-                }
-
-                notifications.forEach(n => {
-                    if (!n.isRead) hasUnread = true; // Check if any are unread
-
-                    const item = document.createElement('li');
-                    item.className = `notification-item ${n.isRead ? 'read' : 'unread'}`;
-                    item.dataset.notificationId = n.notificationId;
-
-                     // Determine icon based on type
-                    let iconClass = 'fa-envelope'; // Default
-                    if (n.notification_type === 'new_match') {
-                         iconClass = 'fa-tags'; // Icon for matches
-                    }
-
-                    // Construct message, linking product name if productdID exists
-                    let messageHtml = n.message; // Default message
-                    if (n.notification_type === 'new_match' && n.productdID && n.ProductName) {
-                        // Reconstruct message to include product link
-                        const searchNameMatch = n.message.match(/'([^']+)'/); // Extract search name
-                        const searchName = searchNameMatch ? searchNameMatch[1] : 'your search';
-                        messageHtml = `New match for '${searchName}': <a href="/productDetails?productdID=${n.productdID}" class="notification-product-link">`
-                           + `<img src="${n.firstImage || '/images/default-product.png'}" alt="Product thumbnail" onerror="this.src='/images/default-product.png'">`
-                           + `<span>${n.ProductName || 'Product'}</span></a>`;
-                    }
-
-                    item.innerHTML = `
-                        <div class="notification-icon">
-                            <i class="fas ${iconClass}"></i>
-                        </div>
-                        <div class="notification-content">
-                            <p class="notification-message">${messageHtml}</p>
-                            <span class="notification-meta">${formatDate(n.createdAt)}</span>
-                        </div>
-                        <div class="notification-actions">
-                            ${!n.isRead ? `<button class="mark-read-btn" title="Mark as read"><i class="fas fa-check-circle"></i></button>` : '<span class="mark-read-btn read" title="Read"><i class="fas fa-check-circle"></i></span>'}
-                        </div>
-                    `;
-
-                    // Add event listener for the mark read button (only if it exists)
-                    const btn = item.querySelector('.mark-read-btn:not(.read)');
-                    if (btn) {
-                        btn.addEventListener('click', () => markAsRead(n.notificationId, item));
-                    }
-
-                    notificationList.appendChild(item);
-                });
-
-                 // Enable/disable "Mark All Read" button
-                 markAllReadBtn.disabled = !hasUnread;
-
-            }
-
-            function formatDate(dateString) {
-                const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
-                return new Date(dateString).toLocaleDateString(undefined, options);
-            }
-
-            async function markAsRead(notificationId, listItem) {
-                try {
-                     // Optimistic UI update
-                    listItem.classList.remove('unread');
-                    listItem.classList.add('read');
-                    const actionDiv = listItem.querySelector('.notification-actions');
-                    if(actionDiv) actionDiv.innerHTML = '<span class="mark-read-btn read" title="Read"><i class="fas fa-check-circle"></i></span>';
-
-
-                    const response = await fetch(`/api/notifications/mark-read/${notificationId}`, {
-                        method: 'POST',
-                        credentials: 'include'
-                    });
-                    if (!response.ok) {
-                        throw new Error('Failed to mark as read on server');
-                    }
-                     // Check if any unread remain after marking this one
-                     checkForUnreadAndToggleButton();
-                    console.log(`Notification ${notificationId} marked as read.`);
-                    // Optional: Update navbar badge count immediately
-                     updateNavbarBadgeCount();
-
-                } catch (error) {
-                    console.error(`Error marking notification ${notificationId} as read:`, error);
-                     // Revert UI on error
-                     listItem.classList.add('unread');
-                     listItem.classList.remove('read');
-                     const actionDiv = listItem.querySelector('.notification-actions');
-                      if(actionDiv) actionDiv.innerHTML = `<button class="mark-read-btn" title="Mark as read"><i class="fas fa-check-circle"></i></button>`;
-                      // Re-attach listener
-                       const btn = actionDiv.querySelector('.mark-read-btn');
-                       if (btn) btn.addEventListener('click', () => markAsRead(notificationId, listItem));
-
-                    window.toast?.show('Failed to mark notification as read.', 'error');
-                }
-            }
-
-             async function markAllAsRead() {
-                 if (!hasUnread) return; // Don't do anything if no unread items
-
-                 markAllReadBtn.disabled = true; // Disable button during request
-                 try {
-                     const response = await fetch('/api/notifications/mark-all-read', {
-                         method: 'POST',
-                         credentials: 'include'
-                     });
-                     if (!response.ok) {
-                         throw new Error('Failed to mark all as read on server');
-                     }
-                     // Re-fetch or update UI optimistically
-                     fetchNotifications(); // Easiest way to update the whole list's state
-                     console.log('All notifications marked as read.');
-                     window.toast?.show('All notifications marked as read.', 'success');
-                      // Optional: Update navbar badge count immediately
-                      updateNavbarBadgeCount();
-
-                 } catch (error) {
-                     console.error('Error marking all notifications as read:', error);
-                     window.toast?.show('Failed to mark all notifications as read.', 'error');
-                     markAllReadBtn.disabled = !hasUnread; // Re-enable based on actual state if error
-                 }
-             }
-
-             // Helper to check if any unread items remain and toggle button state
-              function checkForUnreadAndToggleButton() {
-                 hasUnread = !!notificationList.querySelector('.notification-item.unread');
-                 markAllReadBtn.disabled = !hasUnread;
-             }
-
-             // Helper to manually trigger navbar badge update (if needed)
-             function updateNavbarBadgeCount() {
-                 if (window.parent && typeof window.parent.updateNotificationBadge === 'function') {
-                     window.parent.updateNotificationBadge();
-                 } else if (typeof window.updateNotificationBadge === 'function') {
-                      window.updateNotificationBadge(); // If navbar script is global
-                 }
-             }
-
-
-            // Add listener for the main button
-            markAllReadBtn.addEventListener('click', markAllAsRead);
-
-            // Initial fetch
-            fetchNotifications();
-
-             // --- Socket.IO Listener for Real-time Updates ---
-            const socket = io();
-
-             // Authenticate socket (using the same logic as navbar)
-            fetch('/api/auth/current-user', { credentials: 'include' })
-                .then(res => res.json())
-                .then(user => {
-                    if (user && user.brukerId) {
-                        socket.emit('authenticate', user.brukerId);
-                         console.log(`Socket on notifications page authenticated for user: ${user.brukerId}`);
-                    }
-                });
-
-
-            socket.on('new_notification', (notificationData) => {
-                console.log('New notification received on notifications page:', notificationData);
-                // Simplest approach: re-fetch the whole list to include the new one at the top
-                fetchNotifications();
-                 // Optional: more complex logic to prepend the new item without full refresh
-            });
-
-             // Listen for updates triggered from other tabs/windows
-             socket.on('notification_read', (data) => {
-                  console.log('Notification read elsewhere event received:', data);
-                  const item = notificationList.querySelector(`.notification-item[data-notification-id="${data.notificationId}"]`);
-                  if (item && item.classList.contains('unread')) {
-                      // Update UI for this specific item
-                      item.classList.remove('unread');
-                      item.classList.add('read');
-                      const actionDiv = item.querySelector('.notification-actions');
-                      if(actionDiv) actionDiv.innerHTML = '<span class="mark-read-btn read" title="Read"><i class="fas fa-check-circle"></i></span>';
-                       checkForUnreadAndToggleButton();
-                  }
-             });
-
-             socket.on('all_notifications_read', () => {
-                  console.log('All notifications read elsewhere event received.');
-                  // Re-render the whole list
-                  fetchNotifications();
-             });
-
-
-        }); // End DOMContentLoaded
-    </script>
+    <!-- Load Socket.IO and modular app.js -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="module" src="/js/app.js"></script>
 </body>
 </html>

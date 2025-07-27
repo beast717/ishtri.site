@@ -1,56 +1,72 @@
-function handleFavoriteClick(event) {
-    const icon = event.target.closest('.favorite-icon');
-    if (!icon) return;
-
-    event.preventDefault();
+/**
+ * Handles the API call and UI update for toggling a product's favorite status.
+ * This version waits for server confirmation before changing the UI.
+ */
+async function handleFavoriteClick(event) {
     event.stopPropagation();
+    event.preventDefault();
 
+    const icon = event.currentTarget;
     const productdID = icon.dataset.productId;
-    const isFavorited = icon.classList.contains('favorited');
 
-    fetch('/api/favorites', {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ productdID }),
-    })
-    .then(response => {
-        if (!response.ok) {
-            if(response.status === 401) {
-                window.ishtri.toast.show('Please <a href="/login">log in</a> to add favorites.', 'info');
-            }
-            throw new Error('Favorite toggle failed');
-        }
-        return response.json();
-    })
-    .then(data => {
-        icon.classList.toggle('favorited');
-        icon.style.color = isFavorited ? '#ccc' : '#ff4757';
-        window.ishtri.toast.show(data.message, 'success');
-    })
-    .catch(error => {
-        console.error("Favorite error:", error.message);
-    });
-}
+    // Disable the button to prevent multiple clicks
+    icon.style.pointerEvents = 'none';
 
-function updateUserFavorites() {
-    fetch('/api/favorites', { credentials: 'include' })
-        .then(response => response.ok ? response.json() : [])
-        .then(favorites => {
-            const favoriteIds = new Set(favorites.map(p => p.ProductdID));
-            document.querySelectorAll('.favorite-icon').forEach(icon => {
-                const productdID = Number(icon.dataset.productId);
-                const isFavorited = favoriteIds.has(productdID);
-                icon.classList.toggle('favorited', isFavorited);
-                icon.style.color = isFavorited ? '#ff4757' : '#ccc';
-            });
+    try {
+        const response = await fetch('/api/favorites', {
+            method: 'POST',
+            credentials: 'include',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productdID }),
         });
+
+        // --- THE CORE FIX IS HERE ---
+        // We now check the server response *before* making any visual changes.
+        if (response.ok) {
+            // SUCCESS: User is logged in and the database was updated.
+            // Now, and only now, do we update the UI.
+            const isFavorited = icon.classList.contains('favorited');
+            
+            icon.classList.toggle('favorited');
+            icon.setAttribute('aria-pressed', !isFavorited);
+            icon.style.color = isFavorited ? '#ccc' : '#ff4757';
+            
+            window.ishtri?.toast.show(
+                isFavorited ? 'Product removed from favorites' : 'Product added to favorites',
+                'success'
+            );
+        } else {
+            // FAILURE: Server rejected the request (e.g., user is not logged in).
+            // Do not change the UI. Only show the informational toast.
+            window.ishtri?.toast.show('Please log in to manage favorites.', 'info');
+        }
+
+    } catch (error) {
+        // NETWORK ERROR: The request didn't even reach the server.
+        console.error("Favorite toggle network error:", error);
+        window.ishtri?.toast.show('An error occurred. Please try again.', 'error');
+    } finally {
+        // Always re-enable the button so the user can try again.
+        icon.style.pointerEvents = 'auto';
+    }
 }
 
-export function initFavoriteButtons() {
-    if (!document.body.dataset.favoriteListener) {
-        document.body.addEventListener('click', handleFavoriteClick);
-        document.body.dataset.favoriteListener = 'true';
-    }
-    updateUserFavorites();
+
+/**
+ * Initializes a favorite button by adding the necessary click event listener.
+ * @param {HTMLElement} buttonElement - The favorite button element.
+ */
+export function initFavoriteButton(buttonElement) {
+    if (!buttonElement) return;
+    buttonElement.removeEventListener('click', handleFavoriteClick);
+    buttonElement.addEventListener('click', handleFavoriteClick);
+}
+
+/**
+ * Finds and initializes all favorite buttons within a given container.
+ * @param {HTMLElement} container - The container element to search within.
+ */
+export function initAllFavoriteButtons(container = document) {
+    const buttons = container.querySelectorAll('.favorite-icon');
+    buttons.forEach(initFavoriteButton);
 }

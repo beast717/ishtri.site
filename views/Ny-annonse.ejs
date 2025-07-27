@@ -7,14 +7,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="form.lag_nyannonse">New ad</title>
-    <script src="/js/toast.js"></script>
-    <script src="/js/skeleton.js" defer></script>
-    <script src="/js/lazyLoad.js" defer></script>
-    
 </head>
-<body>
-    <script src="/shared.js"></script>
+<body data-page="newAd">
+    <script src="/socket.io/socket.io.js"></script>
     <%- include('partials/navbar') %>
+    
     <!-- Page Container -->
     <div class="ny-annonse-container">
         <!-- Heading -->
@@ -25,28 +22,27 @@
 
         <!-- Category Selection -->
         <div class="kategorierContainer">
-            <!-- Category buttons remain the same -->
-             <div class="kategori" onclick="setCategory('Torget')">
+             <div class="kategori" data-category="Torget">
                 <i class="fas fa-chair"></i>
                 <span data-i18n="kategori.torget">Marked</span>
             </div>
-            <div class="kategori" onclick="setCategory('Bil')">
+            <div class="kategori" data-category="Bil">
                 <i class="fas fa-car"></i>
                 <span data-i18n="kategori.bil">Car</span>
             </div>
-            <div class="kategori" onclick="setCategory('Eiendom')">
+            <div class="kategori" data-category="Eiendom">
                 <i class="fas fa-home"></i>
                 <span data-i18n="kategori.eiendom">Property</span>
             </div>
-            <div class="kategori" onclick="setCategory('Båt')">
+            <div class="kategori" data-category="Båt">
                 <i class="fas fa-ship"></i>
                 <span data-i18n="kategori.båt">Boat</span>
             </div>
-            <div class="kategori" onclick="setCategory('MC')">
+            <div class="kategori" data-category="MC">
                 <i class="fas fa-motorcycle"></i>
                 <span data-i18n="kategori.mc">MC</span>
             </div>
-            <div class="kategori" onclick="setCategory('Jobb')">
+            <div class="kategori" data-category="Jobb">
                 <i class="fas fa-briefcase"></i>
                 <span data-i18n="categories.jobb">Job</span>
             </div>
@@ -55,20 +51,20 @@
         <!-- Form Container -->
         <div class="formContainer" id="productFormContainer">
             <form id="productForm" action="/api/products" method="POST" enctype="multipart/form-data" novalidate>
+                <input type="hidden" id="Category" name="Category" value="">
 
-                <!-- Category-Specific Fields (Job, Property, Car, Boat, MC) -->
+                <!-- Product Fields (Torget) -->
                 <div id="productFields" style="display: none;">
                     <h3 data-i18n="form.detaljer">Details for the product</h3>
-                    <!-- ... (product fields) ... -->
                     <div class="form-group">
                         <label for="ProductName" data-i18n="form.product_name">Product Name <span class="required">*</span></label>
-                        <input type="text" id="ProductName" name="ProductName" data-i18n="[placeholder]form.product_name_placeholder" placeholder="e.g., Used Sofa, iPhone X"> <!-- Added placeholder -->
+                        <input type="text" id="ProductName" name="ProductName" data-i18n="[placeholder]form.product_name_placeholder" placeholder="e.g., Used Sofa, iPhone X">
                         <div class="error-message" id="ProductNameError"></div>
                     </div>
                     <div class="form-group">
                         <label for="Price" data-i18n="form.price">Price</label>
-                        <input type="number" id="Price" name="TorgetPrice" data-i18n="[placeholder]form.price_placeholder" placeholder="e.g., 1500"> <!-- Added placeholder -->
-                        <div class="error-message" id="PriceError"></div> <!-- Added -->
+                        <input type="number" id="Price" name="TorgetPrice" data-i18n="[placeholder]form.price_placeholder" placeholder="e.g., 1500">
+                        <div class="error-message" id="PriceError"></div>
                     </div>
                     <div class="form-group">
                         <label for="SubCategori" data-i18n="form.category" id="subcategoryLabel">Category</label>
@@ -82,24 +78,25 @@
                     </div>
                     <div class="form-group">
                         <label for="Description" data-i18n="form.description">Description</label>
-                        <textarea id="Description" name="Description" data-i18n="[placeholder]form.description_placeholder_product" placeholder="Describe the item's condition, features, etc."></textarea> <!-- Added placeholder -->
+                        <textarea id="Description" name="Description" data-i18n="[placeholder]form.description_placeholder_product" placeholder="Describe the item's condition, features, etc."></textarea>
                     </div>
                 </div>
+
+                <!-- Job Fields -->
                 <div id="jobFields" style="display: none;">
-                    <!-- ... (job fields) ... -->
                     <h3 data-i18n="form.job_details">Job Details</h3>
                     <div class="form-group">
                         <label for="JobTitle" data-i18n="form.job_title">Job Title <span class="required">*</span></label>
-                        <input type="text" id="JobTitle" name="JobTitle" data-i18n="[placeholder]form.job_title_placeholder" placeholder="e.g., Software Engineer, Marketing Manager"> <!-- Added placeholder -->
+                        <input type="text" id="JobTitle" name="JobTitle" data-i18n="[placeholder]form.job_title_placeholder" placeholder="e.g., Software Engineer, Marketing Manager">
                         <div class="error-message" id="JobTitleError"></div>
                     </div>
                     <div class="form-group">
                         <label for="CompanyName" data-i18n="form.company_name">Company Name</label>
-                        <input type="text" id="CompanyName" name="CompanyName" data-i18n="[placeholder]form.company_name_placeholder" placeholder="e.g., Tech Solutions Inc."> <!-- Added placeholder -->
+                        <input type="text" id="CompanyName" name="CompanyName" data-i18n="[placeholder]form.company_name_placeholder" placeholder="e.g., Tech Solutions Inc.">
                     </div>
                     <div class="form-group">
                         <label for="EmploymentType" data-i18n="form.employment_type">Employment Type</label>
-                        <select id="EmploymentType" name="EmploymentType" >
+                        <select id="EmploymentType" name="EmploymentType">
                             <option value="Fast" data-i18n="employment.full_time">Full Time</option>
                             <option value="Deltid" data-i18n="employment.part_time">Part Time</option>
                             <option value="Kontrakt" data-i18n="employment.contract">Contract</option>
@@ -109,236 +106,116 @@
                     </div>
                     <div class="form-group">
                         <label for="Salary" data-i18n="form.salary">Salary Range</label>
-                        <input type="text" id="Salary" name="Salary" data-i18n="[placeholder]form.salary_placeholder" placeholder="e.g., 450,000 - 550,000 per year" >
+                        <input type="text" id="Salary" name="Salary" data-i18n="[placeholder]form.salary_placeholder" placeholder="e.g., 450,000 - 550,000 per year">
                     </div>
                     <div class="form-group">
                         <label for="JobDescription" data-i18n="form.job_description">Job Description</label>
-                        <textarea id="JobDescription" name="JobDescription" data-i18n="[placeholder]form.job_description_placeholder" placeholder="Describe the position and responsibilities..." ></textarea>
+                        <textarea id="JobDescription" name="JobDescription" data-i18n="[placeholder]form.job_description_placeholder" placeholder="Describe the position and responsibilities..."></textarea>
                     </div>
                     <div class="form-group">
                         <label for="ApplicationDeadline" data-i18n="form.deadline">Application Deadline</label>
-                        <input type="date" id="ApplicationDeadline" name="ApplicationDeadline" >
+                        <input type="date" id="ApplicationDeadline" name="ApplicationDeadline">
                     </div>
                     <div class="form-group">
                         <label for="ContactEmail" data-i18n="form.contact_email">Contact Email</label>
-                        <input type="email" id="ContactEmail" name="ContactEmail" data-i18n="[placeholder]form.email_placeholder" placeholder="applications@company.com" >
+                        <input type="email" id="ContactEmail" name="ContactEmail" data-i18n="[placeholder]form.email_placeholder" placeholder="applications@company.com">
                     </div>
                     <div class="form-group">
                         <label for="ApplicationLink" data-i18n="form.application_link">Application Link (optional)</label>
                         <input type="url" id="ApplicationLink" name="ApplicationLink" data-i18n="[placeholder]form.url_placeholder" placeholder="https://">
                     </div>
                 </div>
+
+                <!-- Property Fields -->
                 <div id="propertyFields" style="display: none;">
-                    <!-- ... (property fields) ... -->
                     <h3 data-i18n="property.details">Property Details</h3>
                     <div class="form-group">
                         <label for="propertyTitle" data-i18n="form.title">Title <span class="required">*</span></label>
-                        <input type="text" id="propertyTitle" name="ProductName" data-i18n="[placeholder]property.title_placeholder" placeholder="e.g., Modern Apartment Downtown, Cozy House with Garden"> <!-- Added placeholder -->
+                        <input type="text" id="propertyTitle" name="ProductName" data-i18n="[placeholder]property.title_placeholder" placeholder="e.g., Modern Apartment Downtown, Cozy House with Garden">
                         <div class="error-message" id="propertyTitleError"></div>
                     </div>
                     <div class="form-group">
                         <label for="PropertyPrice" data-i18n="form.price">Price</label>
-                        <input type="number" id="PropertyPrice" name="EiendomPrice" data-i18n="[placeholder]form.price_placeholder" placeholder="e.g., 3500000"> <!-- Added placeholder -->
-                        <div class="error-message" id="PropertyPriceError"></div> <!-- Added -->
+                        <input type="number" id="PropertyPrice" name="EiendomPrice" data-i18n="[placeholder]form.price_placeholder" placeholder="e.g., 3500000">
+                        <div class="error-message" id="PropertyPriceError"></div>
                     </div>
                     <div class="form-group">
                         <label for="PropertyType" data-i18n="form.property_type">Property Type</label>
-                        <select id="PropertyType" name="PropertyType" >
+                        <select id="PropertyType" name="PropertyType">
                             <option value="" data-i18n="form.velg">Select</option>
                             <option value="House" data-i18n="property.house">House</option>
                             <option value="Apartment" data-i18n="property.apartment">Apartment</option>
                             <option value="Commercial" data-i18n="property.commercial">Commercial Property</option>
-                            <option value="Vacation" data-i18n="property.vacation">Vacation Home</option>
-                            <option value="Land" data-i18n="property.land">Land Plot</option>
+                            <option value="Land" data-i18n="property.land">Land</option>
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="SizeSqm" data-i18n="property.size">Size (m²)</label>
-                        <input type="number" id="SizeSqm" name="SizeSqm" data-i18n="[placeholder]property.size_placeholder" placeholder="e.g., 85"> <!-- Added placeholder -->
+                        <label for="Bedrooms" data-i18n="property.bedrooms">Bedrooms</label>
+                        <input type="number" id="Bedrooms" name="Bedrooms" min="0" data-i18n="[placeholder]property.bedrooms_placeholder" placeholder="e.g., 3">
                     </div>
                     <div class="form-group">
-                        <label for="NumRooms" data-i18n="property.rooms">Number of Bedrooms</label>
-                        <input type="number" id="NumRooms" name="NumRooms" data-i18n="[placeholder]property.rooms_placeholder" placeholder="e.g., 3"> <!-- Added placeholder -->
+                        <label for="Bathrooms" data-i18n="property.bathrooms">Bathrooms</label>
+                        <input type="number" id="Bathrooms" name="Bathrooms" min="0" step="0.5" data-i18n="[placeholder]property.bathrooms_placeholder" placeholder="e.g., 2">
                     </div>
                     <div class="form-group">
-                        <label for="NumBathrooms" data-i18n="property.bathrooms">Number of Bathrooms</label>
-                        <input type="number" id="NumBathrooms" name="NumBathrooms" data-i18n="[placeholder]property.bathrooms_placeholder" placeholder="e.g., 2"> <!-- Added placeholder -->
-                    </div>
-                    <div class="form-group">
-                        <label data-i18n="amenities.title">Amenities</label>
-                        <div class="checkbox-group">
-                            <label>
-                                <input type="checkbox" name="Amenities[]" value="Balcony">
-                                <span data-i18n="amenities.balcony">Balcony</span>
-                            </label>
-                            <label>
-                                <input type="checkbox" name="Amenities[]" value="Fireplace">
-                                <span data-i18n="amenities.fireplace">Fireplace</span>
-                            </label>
-                            <label>
-                                <input type="checkbox" name="Amenities[]" value="Parking">
-                                <span data-i18n="amenities.parking">Parking</span>
-                            </label>
-                             <label>
-                                <input type="checkbox" name="Amenities[]" value="Elevator">
-                                <span data-i18n="amenities.elevator">Elevator</span>
-                            </label>
-                            <label>
-                                <input type="checkbox" name="Amenities[]" value="SmartHome">
-                                <span data-i18n="amenities.smarthome">Smart Home</span>
-                            </label>
-                        </div>
+                        <label for="SquareMeters" data-i18n="property.square_meters">Square Meters</label>
+                        <input type="number" id="SquareMeters" name="SquareMeters" min="0" data-i18n="[placeholder]property.square_meters_placeholder" placeholder="e.g., 120">
                     </div>
                     <div class="form-group">
                         <label for="YearBuilt" data-i18n="property.year_built">Year Built</label>
-                        <input type="number" id="YearBuilt" name="YearBuilt" data-i18n="[placeholder]property.year_built_placeholder" placeholder="e.g., 2010"> <!-- Added placeholder -->
+                        <input type="number" id="YearBuilt" name="YearBuilt" min="1800" max="2030" data-i18n="[placeholder]property.year_built_placeholder" placeholder="e.g., 2015">
                     </div>
                     <div class="form-group">
-                        <label for="EnergyClass" data-i18n="property.energy_class">Energy Class</label>
-                        <select id="EnergyClass" name="EnergyClass">
-                            <option value="">-</option>
-                            <option value="A">A</option>
-                            <option value="B">B</option>
-                            <option value="C">C</option>
-                            <option value="D">D</option>
-                            <option value="E">E</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="PropertyDescription" data-i18n="form.description">Description (Optional)</label>
-                        <textarea id="PropertyDescription" name="Description" rows="4" data-i18n="[placeholder]property.description_placeholder" placeholder="Add a description of your property..."></textarea> <!-- Added placeholder -->
-                    </div>
-                </div>
-                <div id="carFields" style="display: none;">
-                    <!-- ... (car fields) ... -->
-                    <h3 data-i18n="form.car_details">Car Details</h3>
-                    <div class="form-group">
-                        <label for="car-ProductName" data-i18n="form.title">Title <span class="required">*</span></label>
-                        <input type="text" id="car-ProductName" name="ProductName" data-i18n="[placeholder]form.car_title_placeholder" placeholder="e.g., Well-maintained VW Golf 2018"> <!-- Added placeholder -->
-                        <div class="error-message" id="car-ProductNameError"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="CarBrand" data-i18n="form.brand">Brand</label>
-                         <select id="CarBrand" name="brand_id" >
-                             <option value="" data-i18n="form.select_brand">Select Brand</option>
-                             <!-- Options loaded dynamically -->
-                         </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="CarModel" data-i18n="form.model">Model</label>
-                         <select id="CarModel" name="model_id" disabled>
-                             <option value="" data-i18n="form.select_model">Select Model First</option>
-                             <!-- Models loaded dynamically -->
-                         </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="Year" data-i18n="form.year">Year</label>
-                         <input type="number" id="Year" name="Year" data-i18n="[placeholder]form.year_placeholder" placeholder="e.g., 2018"> <!-- Added placeholder -->
-                    </div>
-                    <div class="form-group">
-                        <label for="Mileage" data-i18n="form.mileage">Mileage</label>
-                        <input type="number" id="Mileage" name="Mileage" data-i18n="[placeholder]form.mileage_placeholder" placeholder="e.g., 55000"> <!-- Added placeholder -->
-                    </div>
-                    <div class="form-group">
-                        <label for="car-Price" data-i18n="form.price">Price</label>
-                        <input type="number" id="car-Price" name="BilPrice" data-i18n="[placeholder]form.price_placeholder" placeholder="e.g., 180000"> <!-- Added placeholder -->
-                        <div class="error-message" id="car-PriceError"></div> <!-- Added -->
-                    </div>
-                    <div class="form-group">
-                        <label for="FuelType" data-i18n="form.fuel_type">Fuel Type</label>
-                        <select id="FuelType" name="FuelType" >
-                            <option value="" data-i18n="form.velg">Select</option>
-                            <option value="Petrol" data-i18n="fuel.petrol">Petrol</option>
-                            <option value="Diesel" data-i18n="fuel.diesel">Diesel</option>
-                            <option value="Electric" data-i18n="fuel.electric">Electric</option>
-                            <option value="Hybrid" data-i18n="fuel.hybrid">Hybrid</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="Transmission" data-i18n="form.transmission">Transmission</label>
-                        <select id="Transmission" name="Transmission">
-                            <option value="" data-i18n="form.velg">Select</option>
-                            <option value="Manual" data-i18n="transmission.manual">Manual</option>
-                            <option value="Automatic" data-i18n="transmission.automatic">Automatic</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="car-Description" data-i18n="form.description">Description</label>
-                        <textarea id="car-Description" name="Description" data-i18n="[placeholder]form.description_placeholder_car" placeholder="Describe the car's condition, features, service history, etc."></textarea> <!-- Added placeholder -->
-                    </div>
-                </div>
-                 <div id="boatFields" style="display: none;">
-                    <h3 data-i18n="form.boat_details">Boat Details</h3>
-                    <div class="form-group">
-                        <label for="BoatProductName" data-i18n="form.product_name">Product Name <span class="required">*</span></label>
-                        <input type="text" id="BoatProductName" name="ProductName" data-i18n="[placeholder]form.boat_name_placeholder" placeholder="e.g., Askeladden C65 Cruiser, Yamaha Outboard Motor"> <!-- Added placeholder -->
-                        <div class="error-message" id="BoatProductNameError"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="BoatPrice" data-i18n="form.price">Price</label>
-                        <input type="number" id="BoatPrice" name="BåtPrice" data-i18n="[placeholder]form.price_placeholder" placeholder="e.g., 450000"> <!-- Added placeholder -->
-                        <div class="error-message" id="BoatPriceError"></div> <!-- Added -->
-                    </div>
-                    <div class="form-group">
-                        <label for="BoatDescription" data-i18n="form.description">Description</label>
-                        <textarea id="BoatDescription" name="Description" data-i18n="[placeholder]form.description_placeholder_boat" placeholder="Describe the boat's condition, equipment, engine hours, etc."></textarea> <!-- Added placeholder -->
-                    </div>
-                </div>
-                <div id="mcFields" style="display: none;">
-                    <h3 data-i18n="form.mc_details">MC Details</h3>
-                    <div class="form-group">
-                        <label for="MCProductName" data-i18n="form.product_name">Product Name <span class="required">*</span></label>
-                        <input type="text" id="MCProductName" name="ProductName" data-i18n="[placeholder]form.mc_name_placeholder" placeholder="e.g., Yamaha MT-07 2020, Harley Davidson Sportster"> <!-- Added placeholder -->
-                        <div class="error-message" id="MCProductNameError"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="MCPrice" data-i18n="form.price">Price</label>
-                        <input type="number" id="MCPrice" name="MCPrice" data-i18n="[placeholder]form.price_placeholder" placeholder="e.g., 85000"> <!-- Added placeholder -->
-                        <div class="error-message" id="MCPriceError"></div> <!-- Added -->
-                    </div>
-                    <div class="form-group">
-                        <label for="MCDescription" data-i18n="form.description">Description</label>
-                        <textarea id="MCDescription" name="Description" data-i18n="[placeholder]form.description_placeholder_mc" placeholder="Describe the motorcycle's condition, mileage, modifications, etc."></textarea> <!-- Added placeholder -->
+                        <label for="PropertyDescription" data-i18n="form.description">Description</label>
+                        <textarea id="PropertyDescription" name="Description" data-i18n="[placeholder]form.description_placeholder_property" placeholder="Describe the property's features, condition, location benefits, etc."></textarea>
                     </div>
                 </div>
 
-                <!-- Common Fields (Country, City, Location) -->
+                <!-- Car Fields -->
+                <div id="carFields" style="display: none;">
+                    <!-- Car fields will be rendered dynamically by JavaScript -->
+                </div>
+
+                <!-- Boat Fields -->
+                <div id="boatFields" style="display: none;">
+                    <!-- Boat fields will be rendered dynamically by JavaScript -->
+                </div>
+
+                <!-- MC Fields -->
+                <div id="mcFields" style="display: none;">
+                    <!-- MC fields will be rendered dynamically by JavaScript -->
+                </div>
+
+                <!-- Common Fields -->
                 <div class="form-group">
                     <label for="Country" data-i18n="form.country">Country <span class="required">*</span></label>
-                    <select id="Country" name="Country" > <!-- Removed required initially -->
+                    <select id="Country" name="Country">
                         <option value="">None selected</option>
-                        <!-- Options loaded dynamically -->
                     </select>
                     <div class="error-message" id="CountryError"></div>
                 </div>
                 <div class="form-group">
                     <label for="City" id="cityLabel" style="display: none;" data-i18n="form.city">City <span class="required">*</span></label>
-                    <select id="City" name="City" style="display: none;" > <!-- Removed required initially -->
+                    <select id="City" name="City" style="display: none;">
                         <option value="" data-i18n="form.select_city">Select City</option>
-                        <!-- Options loaded dynamically -->
                     </select>
                     <div class="error-message" id="CityError"></div>
                 </div>
                 <div class="form-group">
                     <label for="Location" data-i18n="form.location">Location</label>
-                    <input type="text" id="Location" name="Location" data-i18n="[placeholder]form.location_placeholder" placeholder="e.g., Street Name 123, Specific Area"> <!-- Added placeholder -->
+                    <input type="text" id="Location" name="Location" data-i18n="[placeholder]form.location_placeholder" placeholder="e.g., Street Name 123, Specific Area">
                 </div>
 
-                <!-- NEW Drag-and-Drop Upload Area -->
+                <!-- Image Upload Area -->
                 <div class="form-group">
                     <label for="Images" data-i18n="form.upload_images">Upload Images (Max 5, 5MB each)</label>
                     <div id="dropZone">
                         <i class="fas fa-cloud-upload-alt"></i>
                         <p data-i18n="form.drag_drop">Drag & Drop images here or click to select files</p>
                     </div>
-                    <!-- Hidden original file input -->
                     <input type="file" id="Images" name="images" multiple accept="image/*" style="position: absolute; left: -9999px;">
-                    <!-- Image Preview Container -->
-                    <div id="imagePreviewContainer" style="display: none;">
-                        <!-- Previews will be generated here by JS -->
-                    </div>
+                    <div id="imagePreviewContainer" style="display: none;"></div>
                 </div>
-                <!-- End New Upload Area -->
 
                 <!-- Error/Success Messages -->
                 <div id="uploadError" class="error-message-container" style="display: none;">
@@ -350,948 +227,15 @@
                     <span id="successText"></span>
                 </div>
 
-                <!-- Hidden Category Field -->
-                <input type="hidden" id="Category" name="Category" required>
-
-                <!-- Action Buttons -->
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                    <button type="button" class="btn btn-secondary clear-button" data-i18n="form.clear">Clear Form</button>
-                    <button type="submit" class="btn btn-primary" data-i18n="form.submit">Submit</button>
+                <!-- Submit Button -->
+                <div class="submit-container">
+                    <!-- Clear button will be inserted here by JavaScript -->
+                    <button type="submit" class="btn btn-primary" data-i18n="form.submit">Submit Ad</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <script>
-        let selectedCategory = '';
-        // --- NEW: Manage selected files ---
-        let selectedFiles = []; // Array to hold File objects
-        const MAX_FILES = 5;
-        const MAX_SIZE_MB = 5;
-        const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
-        const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
-
-        // --- Get DOM Elements ---
-        const dropZone = document.getElementById('dropZone');
-        const fileInput = document.getElementById('Images');
-        const previewContainer = document.getElementById('imagePreviewContainer');
-        const errorContainer = document.getElementById('uploadError');
-        const errorText = document.getElementById('errorText');
-        const form = document.getElementById('productForm');
-
-        // --- Drag and Drop Event Handlers ---
-        if (dropZone) {
-            dropZone.addEventListener('dragenter', (e) => {
-                e.preventDefault();
-                dropZone.classList.add('dragover');
-            });
-
-            dropZone.addEventListener('dragover', (e) => {
-                e.preventDefault(); // Necessary to allow drop
-                dropZone.classList.add('dragover');
-            });
-
-            dropZone.addEventListener('dragleave', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('dragover');
-            });
-
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('dragover');
-                const files = e.dataTransfer.files;
-                if (files.length) {
-                    handleFiles(files);
-                }
-            });
-
-            // --- Click to Select Files ---
-            dropZone.addEventListener('click', () => {
-                fileInput.click(); // Trigger the hidden file input
-            });
-        }
-
-        // --- File Input Change Handler ---
-        if (fileInput) {
-            fileInput.addEventListener('change', (e) => {
-                const files = e.target.files;
-                if (files.length) {
-                    handleFiles(files);
-                }
-                // Reset input value so the same file can be selected again after removal
-                 e.target.value = null;
-            });
-        }
-
-        // --- Central File Handling Logic ---
-        function handleFiles(files) {
-            hideUploadMessages(); // Hide previous errors/success
-            let currentFileCount = selectedFiles.length;
-            let filesToAdd = [];
-            let validationError = false;
-
-            // --- Validation Loop ---
-            for (let i = 0; i < files.length; i++) {
-                const file = files[i];
-
-                // 1. Check Max File Count
-                if (currentFileCount + filesToAdd.length >= MAX_FILES) {
-                    showUploadError(`You can only upload a maximum of ${MAX_FILES} images.`);
-                    validationError = true;
-                    break; // Stop processing further files
-                }
-
-                // 2. Check File Type
-                if (!ALLOWED_TYPES.some(type => file.type.startsWith(type))) {
-                     showUploadError(`Invalid file type: ${file.name}. Allowed types: JPG, PNG, GIF, WEBP, SVG.`);
-                     validationError = true;
-                     continue; // Skip this file, check next
-                }
-
-                 // 3. Check File Size
-                if (file.size > MAX_SIZE_BYTES) {
-                     showUploadError(`File too large: ${file.name} (Max ${MAX_SIZE_MB}MB).`);
-                     validationError = true;
-                     continue; // Skip this file, check next
-                }
-
-                // If valid, add to temporary list
-                filesToAdd.push(file);
-            }
-
-             // --- Add Valid Files and Update ---
-             if (!validationError && filesToAdd.length > 0) {
-                 selectedFiles = selectedFiles.concat(filesToAdd);
-                 renderPreviews();
-                 updateFileInput();
-             } else if (!validationError && files.length > 0 && filesToAdd.length === 0) {
-                  // This case means files were provided, but none passed validation (e.g., all were too big)
-                  // Errors were already shown in the loop.
-             } else if (files.length > 0 && filesToAdd.length === 0 && !validationError) {
-                // If files were dragged but none were valid files (e.g. folder dragged)
-                 showUploadError('No valid image files found in selection.');
-            }
-        }
-
-        // --- Render Previews ---
-        function renderPreviews() {
-            if (!previewContainer) return;
-            previewContainer.innerHTML = ''; // Clear existing previews
-            previewContainer.style.display = selectedFiles.length > 0 ? 'block' : 'none'; // Show/hide container
-
-            if (selectedFiles.length > 0) {
-                 const previewGrid = document.createElement('div');
-                 previewGrid.className = 'image-preview-grid';
-                 previewContainer.appendChild(previewGrid); // Add grid inside
-
-                 selectedFiles.forEach((file, index) => {
-                    const previewItem = document.createElement('div');
-                    previewItem.className = 'preview-item';
-
-                    const reader = new FileReader();
-
-                    reader.onload = function(e) {
-                        const img = document.createElement('img');
-                        img.src = e.target.result;
-                        img.alt = `Preview of ${file.name}`;
-                        img.className = 'preview-thumbnail';
-                        previewItem.appendChild(img); // Add image first
-
-                        const infoDiv = document.createElement('div');
-                        infoDiv.className = 'preview-info';
-                        infoDiv.textContent = file.name; // Display filename
-                         previewItem.appendChild(infoDiv);
-
-                        const sizeDiv = document.createElement('div');
-                        sizeDiv.className = 'preview-size';
-                        sizeDiv.textContent = `(${(file.size / 1024).toFixed(1)} KB)`; // Display size
-                         previewItem.appendChild(sizeDiv);
-
-                    }
-                    reader.readAsDataURL(file); // Read file for preview
-
-                     const removeBtn = document.createElement('button');
-                     removeBtn.type = 'button'; // Important for forms
-                     removeBtn.className = 'remove-btn';
-                     removeBtn.innerHTML = '×'; // 'x' symbol
-                     removeBtn.title = 'Remove image';
-                     removeBtn.addEventListener('click', () => {
-                         selectedFiles.splice(index, 1); // Remove file from our array
-                         renderPreviews(); // Re-render the previews
-                         updateFileInput(); // Update the hidden input
-                     });
-
-                     previewItem.appendChild(removeBtn);
-                     previewGrid.appendChild(previewItem);
-                 });
-            }
-        }
-
-        // --- Update Hidden File Input ---
-        function updateFileInput() {
-            const dataTransfer = new DataTransfer();
-            selectedFiles.forEach(file => {
-                dataTransfer.items.add(file);
-            });
-            fileInput.files = dataTransfer.files;
-            console.log(`Hidden input updated with ${fileInput.files.length} files.`); // Debug log
-        }
-
-        // --- Show/Hide Error/Success Messages ---
-        function showUploadError(message) {
-            const errorContainer = document.getElementById('uploadError');
-            const errorText = document.getElementById('errorText');
-            const successContainer = document.getElementById('successMessageContainer'); // Get success container
-
-             if (!errorContainer || !errorText) return;
-
-            if (successContainer) successContainer.style.display = 'none'; // Hide success if showing error
-             errorText.textContent = message;
-             errorContainer.style.display = 'flex';
-             errorContainer.classList.add('active'); // Use class if preferred
-             // Scroll to error
-             errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-
-         function showUploadSuccess(message) {
-            const successContainer = document.getElementById('successMessageContainer');
-            const successText = document.getElementById('successText');
-            const errorContainer = document.getElementById('uploadError'); // Get error container
-
-             if (!successContainer || !successText) return;
-
-            if (errorContainer) errorContainer.style.display = 'none'; // Hide error if showing success
-             successText.textContent = message;
-             successContainer.style.display = 'flex';
-             successContainer.classList.add('active');
-             successContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        }
-
-
-        function hideUploadMessages() {
-             if (errorContainer) errorContainer.style.display = 'none';
-             const successContainer = document.getElementById('successMessageContainer');
-             if(successContainer) successContainer.style.display = 'none';
-        }
-
-
-        // --- Existing Functions (setCategory, loadCountries, loadCarBrands, etc.) ---
-        // Keep your existing functions like setCategory, loadCountries, loadCarBrands,
-        // validateField, validatePrice, setupFormDataSaving, saveFormData,
-        // addClearFormButton, addRealTimeValidation etc. here...
-
-        function setupFormDataSaving() {
-    try {
-        // Restore form data on page load
-        const savedCategory = localStorage.getItem('selectedCategory');
-        if (savedCategory) {
-            setCategory(savedCategory); // Assuming setCategory handles its own errors if needed
-
-            // Restore saved fields
-            const savedDataRaw = localStorage.getItem('formData');
-            const savedData = savedDataRaw ? JSON.parse(savedDataRaw) : {};
-
-            Object.keys(savedData).forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                if (field) {
-                    if (field.type === 'checkbox') {
-                        field.checked = savedData[fieldId];
-                    } else {
-                        field.value = savedData[fieldId];
-                    }
-                }
-            });
-        
-         // Trigger country change to load cities
-            if (savedData.Country) {
-                const countrySelect = document.getElementById('Country');
-                // Ensure the value is actually set before dispatching event
-                if (countrySelect.value === savedData.Country) {
-                     const countryEvent = new Event('change');
-                     countrySelect.dispatchEvent(countryEvent);
-
-                     // Set timeout to restore city after cities are potentially loaded
-                     setTimeout(() => {
-                         if (savedData.City) {
-                             const citySelect = document.getElementById('City');
-                             // Check if city exists in dropdown before setting
-                             if (citySelect.querySelector(`option[value="${savedData.City}"]`)) {
-                                 citySelect.value = savedData.City;
-                             }
-                         }
-                     }, 700); // Increased timeout slightly
-                } else {
-                     // If country value wasn't set immediately (e.g., options not loaded yet),
-                     // might need a more robust way, maybe wait for country options load
-                     console.warn("Could not immediately trigger country change for saved data.");
-                }
-            }
-        }
-    } catch (e) {
-        console.error("Error reading from localStorage:", e);
-        // Optionally inform the user that saved form data couldn't be loaded
-        // showUploadError("Could not load previously saved form data.");
-    }
-
-    // Save form data as user types/changes
-    const formElements = document.querySelectorAll('#productForm input, #productForm select, #productForm textarea');
-    formElements.forEach(element => {
-        element.addEventListener('change', saveFormData);
-        // Also save on input for text fields for more real-time saving
-        if (element.tagName === 'INPUT' && element.type !== 'file' && element.type !== 'checkbox' && element.type !== 'radio') {
-            element.addEventListener('input', saveFormData);
-        }
-         // Handle checkbox changes correctly
-        if (element.type === 'checkbox'){
-             element.addEventListener('change', saveFormData);
-        }
-    });
-}
-
-function saveFormData() {
-    try {
-        const formData = {};
-        document.querySelectorAll('#productForm input, #productForm select, #productForm textarea').forEach(field => {
-            // Skip file inputs and potentially the submit button if it's an input type
-            if (field.type === 'file' || field.type === 'submit' || !field.id) return;
-
-            if (field.type === 'checkbox') {
-                formData[field.id] = field.checked;
-            } else {
-                formData[field.id] = field.value;
-            }
-        });
-
-        localStorage.setItem('formData', JSON.stringify(formData));
-        const currentCategory = document.getElementById('Category').value;
-        if (currentCategory) {
-             localStorage.setItem('selectedCategory', currentCategory);
-        } else {
-             localStorage.removeItem('selectedCategory'); // Remove if no category selected
-        }
-
-    } catch (e) {
-        console.error("Error writing to localStorage:", e);
-        // Optionally inform the user that the form cannot be auto-saved
-        // showUploadError("Could not auto-save form data. Storage might be full or disabled.");
-    }
-}
-
-        function loadCountries() {
-    const countrySelect = document.getElementById('Country'); // Get reference
-    fetch('/api/utils/countriess') // Note: URL still has 'countriess' typo from original code
-        .then(response => {
-            if (!response.ok) {
-                // Throw an error object with status text for better context
-                throw new Error(`HTTP error ${response.status}: ${response.statusText || 'Failed to load countries'}`);
-            }
-            return response.json();
-        })
-        .then(countries => {
-            // Clear previous options except the placeholder
-            countrySelect.innerHTML = '<option value="">None selected</option>';
-            countries.forEach(country => {
-                const option = document.createElement('option');
-                option.value = country;
-                option.textContent = country;
-                countrySelect.appendChild(option);
-            });
-            countrySelect.disabled = false; // Ensure it's enabled on success
-        })
-        .catch(error => {
-            console.error('Error loading countries:', error);
-            // Use showUploadError for user feedback
-            showUploadError(`Failed to load countries: ${error.message}. Please try refreshing the page.`);
-            // Disable the dropdown as it's unusable
-            countrySelect.disabled = true;
-            // Optionally add placeholder indicating error
-            countrySelect.innerHTML = '<option value="">Error loading countries</option>';
-        });
-}
-
-
-    function loadCarBrands() {
-    const brandSelect = document.getElementById('CarBrand'); // Get reference
-    fetch('/api/utils/car-brands')
-        .then(response => {
-            if (!response.ok) {
-                 throw new Error(`HTTP error ${response.status}: ${response.statusText || 'Failed to load car brands'}`);
-            }
-            return response.json();
-        })
-        .then(brands => {
-            brandSelect.innerHTML = '<option value="" data-i18n="form.select_brand">Select Brand</option>'; // Reset
-            brands.forEach(brand => {
-                const option = document.createElement('option');
-                option.value = brand.brand_id;
-                option.textContent = brand.brand_name;
-                brandSelect.appendChild(option);
-            });
-            brandSelect.disabled = false; // Ensure enabled
-        })
-        .catch(error => {
-            console.error('Error loading car brands:', error);
-            showUploadError(`Failed to load car brands: ${error.message}. Please try refreshing.`);
-            brandSelect.disabled = true;
-            brandSelect.innerHTML = '<option value="">Error loading brands</option>';
-        });
-}
-
-    document.getElementById('Country').addEventListener('change', function() {
-    const selectedCountry = this.value;
-    const cityDropdown = document.getElementById('City');
-    const cityLabel = document.getElementById('cityLabel');
-    cityDropdown.disabled = true; // Disable initially
-
-    if (selectedCountry) {
-        cityLabel.style.display = 'block'; // Show label immediately
-        cityDropdown.style.display = 'block';
-        cityDropdown.innerHTML = `<option value="">Loading cities...</option>`; // Loading state
-
-        fetch(`/api/utils/cities/${selectedCountry}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`HTTP error ${response.status}: ${response.statusText || 'Failed to load cities'}`);
-                }
-                return response.json();
-            })
-            .then(cities => {
-                cityDropdown.innerHTML = `<option value="" data-i18n="form.select_city">Select City</option>`; // Reset before populating
-                cities.forEach(city => {
-                    const option = document.createElement('option');
-                    option.value = city;
-                    option.textContent = city;
-                    cityDropdown.appendChild(option);
-                });
-                cityDropdown.disabled = false; // Enable on success
-            })
-            .catch(error => {
-                console.error('Error loading cities:', error);
-                showUploadError(`Failed to load cities for ${selectedCountry}: ${error.message}. Please try selecting the country again or refresh.`);
-                cityDropdown.disabled = true;
-                cityDropdown.innerHTML = `<option value="">Error loading cities</option>`;
-            });
-    } else {
-        // Hide and reset if no country is selected
-        cityDropdown.style.display = 'none';
-        cityLabel.style.display = 'none';
-        cityDropdown.innerHTML = `<option value="">Select City</option>`;
-        cityDropdown.disabled = true;
-    }
-});
-
-    document.getElementById('CarBrand').addEventListener('change', function() {
-    const brandId = this.value;
-    const modelSelect = document.getElementById('CarModel');
-
-    modelSelect.disabled = true; // Disable initially or if no brand selected
-
-    if (!brandId) {
-        modelSelect.innerHTML = '<option value="" data-i18n="form.select_model">Select Model First</option>';
-        return; // Exit if no brand is selected
-    }
-
-    modelSelect.innerHTML = '<option value="">Loading models...</option>'; // Loading state
-
-    fetch(`/api/utils/car-models/${brandId}`)
-        .then(response => {
-            if (!response.ok) {
-                 throw new Error(`HTTP error ${response.status}: ${response.statusText || 'Failed to load car models'}`);
-            }
-            return response.json();
-        })
-        .then(models => {
-            modelSelect.innerHTML = `<option value="">Select model</option>`; // Reset
-            models.forEach(model => {
-                const option = document.createElement('option');
-                option.value = model.model_id;
-                option.textContent = model.model_name;
-                modelSelect.appendChild(option);
-            });
-            modelSelect.disabled = false; // Enable on success
-        })
-        .catch(error => {
-            console.error('Error loading models:', error);
-            showUploadError(`Failed to load models for selected brand: ${error.message}. Please try selecting the brand again or refresh.`);
-            modelSelect.disabled = true;
-            modelSelect.innerHTML = `<option value="">Error loading models</option>`;
-        });
-});
-
-        function setCategory(category) {
-            selectedCategory = category;
-            document.getElementById('Category').value = category;
-
-            // Define all form sections
-            const sections = {
-                product: document.getElementById('productFields'),
-                job: document.getElementById('jobFields'),
-                property: document.getElementById('propertyFields'),
-                car: document.getElementById('carFields'),
-                boat: document.getElementById('boatFields'),
-                mc: document.getElementById('mcFields'),
-                formContainer: document.getElementById('productFormContainer')
-            };
-
-            // Map categories to their respective sections
-            const categoryToSection = {
-                'Torget': 'product',
-                'Bil': 'car',
-                'Eiendom': 'property',
-                'Båt': 'boat',
-                'MC': 'mc',
-                'Jobb': 'job'
-            };
-
-            // Hide all specific field sections first and disable fields
-            Object.keys(sections).forEach(key => {
-                if (key !== 'formContainer' && sections[key]) {
-                    sections[key].style.display = 'none';
-                    sections[key].classList.remove('active');
-                    // Disable fields in inactive sections
-                    sections[key].querySelectorAll('input, textarea, select').forEach(field => {
-                        field.disabled = true;
-                    });
-                }
-            });
-
-            // Show the selected category's section and enable fields
-            const activeSectionKey = categoryToSection[category];
-            if (activeSectionKey && sections[activeSectionKey]) {
-                sections[activeSectionKey].style.display = 'block';
-                sections[activeSectionKey].classList.add('active');
-                 // --- IMPORTANT: Enable fields ONLY in the active section ---
-                sections[activeSectionKey].querySelectorAll('input, textarea, select').forEach(field => {
-                    field.disabled = false;
-                 });
-                 // --- Make sure common fields (Country, City, Location, Images) are ENABLED ---
-                 document.getElementById('Country').disabled = false;
-                 document.getElementById('City').disabled = false; // Will be enabled later by country selection if needed
-                 document.getElementById('Location').disabled = false;
-                 document.getElementById('Images').disabled = false; // Ensure file input remains enabled
-            } else {
-                console.warn(`No specific form section defined for category: ${category}`);
-                // Ensure common fields are enabled even if no specific section exists
-                 document.getElementById('Country').disabled = false;
-                 document.getElementById('City').disabled = false;
-                 document.getElementById('Location').disabled = false;
-                 document.getElementById('Images').disabled = false;
-            }
-
-            // Show the main form container
-            sections.formContainer.classList.add('active');
-            sections.formContainer.style.display = 'block'; // Explicitly show
-
-            // --- Update Required Fields ---
-             resetRequiredAttributes(); // Clear all first
-             setRequiredFieldsForCategory(category); // Set for the current category + common
-        }
-
-        function resetRequiredAttributes() {
-            form.querySelectorAll('[required]').forEach(el => el.removeAttribute('required'));
-             form.querySelectorAll('.error-message').forEach(el => el.textContent = ''); // Clear errors
-             form.querySelectorAll('.invalid').forEach(el => el.classList.remove('invalid')); // Clear invalid styles
-        }
-
-        function setRequiredFieldsForCategory(category) {
-            const commonRequired = ['Country', 'City']; // Always required
-            const categoryRequired = {
-                'Torget': ['ProductName'],
-                'Båt': ['BoatProductName'],
-                'MC': ['MCProductName'],
-                'Jobb': ['JobTitle'],
-                'Eiendom': ['propertyTitle'],
-                'Bil': ['car-ProductName']
-            };
-
-            let fieldsToMark = [...commonRequired]; // Start with common
-            if (categoryRequired[category]) {
-                fieldsToMark = fieldsToMark.concat(categoryRequired[category]);
-            }
-
-            fieldsToMark.forEach(fieldId => {
-                const field = document.getElementById(fieldId);
-                if (field) {
-                    field.setAttribute('required', 'true');
-                    // Special handling for City dropdown - don't mark required if Country not selected
-                    if(fieldId === 'City' && !document.getElementById('Country').value) {
-                        field.removeAttribute('required');
-                    }
-                } else {
-                    console.warn(`Required field ID not found: ${fieldId} for category ${category}`);
-                }
-            });
-        }
-
-
-         // --- Add real-time validation for fields ---
-        function addRealTimeValidation() {
-            // Target specific required fields dynamically based on current category
-             form.querySelectorAll('input, select, textarea').forEach(field => {
-                // Validate on blur
-                 field.addEventListener('blur', function() {
-                    if (field.hasAttribute('required')) { // Only validate if currently required
-                        validateField(this);
-                    }
-                     // Always validate price format if it's a price field
-                    if (field.id.endsWith('Price') && field.type === 'number') {
-                        validatePrice(this);
-                    }
-                 });
-
-                 // Validate on input for required fields if already marked invalid
-                 field.addEventListener('input', function() {
-                    if (field.hasAttribute('required') && this.classList.contains('invalid')) {
-                         validateField(this);
-                    }
-                    if (field.id.endsWith('Price') && field.type === 'number' && this.classList.contains('invalid')) {
-                        validatePrice(this);
-                    }
-                 });
-             });
-        }
-
-
-        function validateField(field) {
-            const errorId = field.id + 'Error';
-            let errorElement = document.getElementById(errorId);
-
-            // Create error element if it doesn't exist
-             if (!errorElement) {
-                 errorElement = document.createElement('div');
-                 errorElement.id = errorId;
-                 errorElement.className = 'error-message';
-                 // Insert after the field or its wrapper if applicable
-                 field.parentNode.insertBefore(errorElement, field.nextSibling);
-             }
-
-            let isValid = true;
-            let errorMessage = '';
-
-            if (field.hasAttribute('required') && !field.value.trim()) {
-                isValid = false;
-                errorMessage = 'This field is required';
-            }
-            // Add other field-specific validation if needed (e.g., email format for ContactEmail)
-            else if (field.type === 'email' && field.value.trim() && !/\S+@\S+\.\S+/.test(field.value)) {
-                isValid = false;
-                errorMessage = 'Please enter a valid email address.';
-            }
-             else if (field.type === 'url' && field.value.trim() && !/^https?:\/\/.+/.test(field.value)) {
-                 isValid = false;
-                 errorMessage = 'Please enter a valid URL (starting with http:// or https://).';
-             }
-
-
-            if (!isValid) {
-                field.classList.add('invalid');
-                errorElement.textContent = errorMessage;
-                return false;
-            } else {
-                field.classList.remove('invalid');
-                errorElement.textContent = '';
-                return true;
-            }
-        }
-
-        function validatePrice(field) {
-            // Use the same error element logic as validateField
-            const errorId = field.id + 'Error';
-             let errorElement = document.getElementById(errorId);
-             if (!errorElement) {
-                 errorElement = document.createElement('div');
-                 errorElement.id = errorId;
-                 errorElement.className = 'error-message';
-                 field.parentNode.insertBefore(errorElement, field.nextSibling);
-             }
-
-            let isValid = true;
-            let errorMessage = '';
-
-            if (field.value && field.value.trim() !== '') { // Check only if there's a value
-                const price = parseFloat(field.value);
-
-                if (isNaN(price)) {
-                    isValid = false;
-                    errorMessage = 'Please enter a valid number.';
-                } else if (price < 0) {
-                    isValid = false;
-                    errorMessage = 'Price cannot be negative.';
-                 } else if (price > 999999999.99) { // Example: Max 999,999,999.99
-                    isValid = false;
-                    errorMessage = 'Price value is too large.';
-                } else {
-                    // Check decimal places (allow up to 2)
-                    const decimalMatch = field.value.match(/\.(\d*)$/);
-                    if (decimalMatch && decimalMatch[1].length > 2) {
-                         isValid = false;
-                         errorMessage = 'Please use a maximum of two decimal places.';
-                    }
-                }
-            }
-
-            if (!isValid) {
-                field.classList.add('invalid');
-                errorElement.textContent = errorMessage;
-                return false;
-            } else {
-                field.classList.remove('invalid');
-                errorElement.textContent = '';
-                return true;
-            }
-        }
-
-        // --- Form Submit Handler ---
-        form.addEventListener('submit', async function(event) {
-             event.preventDefault();
-             hideUploadMessages(); // Clear previous general errors
-
-             let hasError = false;
-
-             // 1. Validate Category Selection
-             const categoryValue = document.getElementById('Category').value;
-             if (!categoryValue) {
-                 alert('Please select a category first.'); // Simple alert for category
-                 hasError = true;
-                 // Optionally scroll to category buttons
-                 document.querySelector('.kategorierContainer')?.scrollIntoView({ behavior: 'smooth' });
-                 return; // Stop submission
-             }
-
-             // 2. Validate ALL fields within the *active* section + Common Fields
-             const commonFields = ['Country', 'City', 'Location']; // Images validated separately
-             const activeSection = document.querySelector('.formContainer .active'); // Find the active fieldset
-             let fieldsToValidate = [];
-
-             if (activeSection) {
-                 fieldsToValidate = Array.from(activeSection.querySelectorAll('input, select, textarea'));
-             }
-             // Add common fields
-             commonFields.forEach(id => {
-                 const el = document.getElementById(id);
-                 if (el) fieldsToValidate.push(el);
-             });
-
-             fieldsToValidate.forEach(field => {
-                  // Only validate if the field is currently required OR if it's a price field with content
-                 if (field.hasAttribute('required')) {
-                     if (!validateField(field)) {
-                         hasError = true;
-                     }
-                 }
-                 if (field.id.endsWith('Price') && field.type === 'number') {
-                      if (!validatePrice(field)) {
-                         hasError = true;
-                      }
-                 }
-                 // Add other specific non-required validations if needed
-             });
-
-
-             // 3. Re-validate Images (especially count, as it depends on selectedFiles)
-             if (selectedFiles.length > MAX_FILES) {
-                 showUploadError(`Maximum ${MAX_FILES} images allowed. You have selected ${selectedFiles.length}.`);
-                 hasError = true;
-             }
-             // Re-run size/type checks (though handleFiles should prevent adding invalid ones)
-             let sizeOrTypeError = false;
-             selectedFiles.forEach(file => {
-                 if (file.size > MAX_SIZE_BYTES || !ALLOWED_TYPES.some(type => file.type.startsWith(type))) {
-                     sizeOrTypeError = true;
-                 }
-             });
-             if (sizeOrTypeError) {
-                 showUploadError('One or more selected images have an invalid size or type. Please remove them.');
-                 hasError = true;
-             }
-
-
-             // 4. Stop if Errors Found
-             if (hasError) {
-                 console.log("Validation failed. Stopping submission.");
-                 // Scroll to the first error message
-                 const firstError = form.querySelector('.invalid');
-                 if (firstError) {
-                     firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                 } else if (errorContainer.style.display !== 'none') {
-                     errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                 }
-                 return; // Stop form submission
-             }
-
-             // --- If NO errors, proceed with actual submission ---
-            const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.textContent;
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Submitting...'; // Add i18n if needed
-
-             try {
-                 // Clear local storage *before* sending, assuming success is likely
-                 localStorage.removeItem('formData');
-                 localStorage.removeItem('selectedCategory');
-                
-                 const formData = new FormData(this);
-
-                 // Ensure the hidden file input reflects the selected files
-                 // updateFileInput(); // updateFileInput should already keep it synced
-
-                 // Manually remove disabled fields from formData before sending
-                 const finalFormData = new FormData();
-                 for (let [key, value] of formData.entries()) {
-                     const element = this.elements[key];
-                     // Append only if the element exists and is NOT disabled
-                     if (element && !element.disabled) {
-                         // Handle files specifically for the 'images' key
-                         if (key === 'images') {
-                             // Append each selected file individually
-                             selectedFiles.forEach(file => {
-                                 finalFormData.append(key, file, file.name);
-                             });
-                         } else if (element.type === 'checkbox') {
-                             // Handle checkbox arrays (like Amenities)
-                             if (element.checked) {
-                                 finalFormData.append(key, value);
-                             }
-                         }
-                         else {
-                             finalFormData.append(key, value);
-                         }
-                     }
-                 }
-
-
-                 const response = await fetch('/api/products', {
-                     method: 'POST',
-                     body: finalFormData // Send the processed FormData
-                 });
-
-                 if (!response.ok) {
-                    // ... (existing error handling) ...
-                    let errorMsg = 'Upload failed. Please try again.';
-                    try {
-                        const errorData = await response.json();
-                        errorMsg = errorData.message || `Server error: ${response.status} ${response.statusText}`;
-                    } catch (e) {
-                         errorMsg = `Server error: ${response.status} ${response.statusText}`;
-                    }
-                    throw new Error(errorMsg);
-                 }
-
-                // --- SUCCESS ---
-                 showUploadSuccess('Ad submitted successfully! Redirecting...');
-                 document.getElementById('successMessageContainer')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                setTimeout(() => {
-                 // Reset the form completely after success
-                 selectedFiles = []; // Clear internal file list
-                 form.reset(); // Reset all fields
-                 renderPreviews(); // Clear previews
-                 updateFileInput(); // Clear hidden file input
-                 // Hide category sections and form
-                 setCategory(''); // Effectively hides all sections
-                 document.getElementById('productFormContainer').style.display = 'none';
-                 document.getElementById('productFormContainer').classList.remove('active');
-
-
-                 
-                     window.location.href = '/mine-annonser';
-                 }, 2500);
-
-             } catch (error) {
-                  console.error('Submission error:', error);
-                  showUploadError(`Submission failed: ${error.message}`);
-                  // Do NOT clear the form on error, let the user fix it
-                   submitBtn.disabled = false; // Re-enable button on error
-                   submitBtn.textContent = originalText;
-             }
-            // Removed finally block to avoid re-enabling button during redirect
-        });
-
-        // --- Clear Form Button Logic ---
-       function addClearFormButton() {
-        if (!form) {
-            console.error("Form element not found when trying to add Clear button.");
-            return; // Cannot proceed without the form reference
-        }
-        const submitBtn = form.querySelector('button[type="submit"]');
-        if (!submitBtn || !submitBtn.parentNode) {
-            console.error("Submit button or its parent not found. Cannot add Clear button.");
-            return;
-        }
-
-        let clearBtn = submitBtn.parentNode.querySelector('.clear-button');
-
-        if (clearBtn) {
-            clearBtn.removeEventListener('click', clearForm);
-            clearBtn.addEventListener('click', clearForm);
-            // --- ---
-            return; 
-        }
-
-            clearBtn = document.createElement('button'); // Assign to the same variable
-            clearBtn.type = 'button';
-            clearBtn.textContent = 'Clear Form';
-            clearBtn.className = 'clear-button';
-            // --- Attach the listener ---
-            clearBtn.addEventListener('click', clearForm);
-            console.log("Click listener attached to NEW Clear button.");
-
-
-            submitBtn.parentNode.insertBefore(clearBtn, submitBtn);
-        }
-
-    function clearForm() {
-        if (confirm('Are you sure you want to clear all form data? This cannot be undone.')) {
-            try {
-                localStorage.removeItem('formData');
-                localStorage.removeItem('selectedCategory');
-            } catch (e) {
-                console.error("Error clearing localStorage:", e);
-                alert("Could not clear saved data from browser storage, but the form will be reset.");
-            }
-
-            // Reset the form visually
-            // <<< Ensure 'form' is accessible here >>>
-            if (form) {
-                form.reset();
-            } else {
-                 console.error("Form element not found in clearForm()."); // Debug log
-            }
-
-
-            // Clear dynamic elements and errors
-             selectedFiles = []; // Clear internal file list
-             renderPreviews(); // Clear previews visually
-             updateFileInput(); // Clear hidden file input programmatically
-             hideUploadMessages(); // Hide any error/success messages
-             resetRequiredAttributes(); // Clear dynamic required attributes and errors
-             setCategory(''); // Hide all category sections & form container
-             document.getElementById('productFormContainer').style.display = 'none';
-             document.getElementById('productFormContainer').classList.remove('active');
-             document.querySelector('.kategorierContainer')?.scrollIntoView({ behavior: 'smooth' });
-
-
-        } else {
-            console.log("User cancelled clearing form."); // Debug log
-        }
-    }
-
-
-        // --- Initialize Page ---
-        document.addEventListener('DOMContentLoaded', () => {
-            loadCountries();
-            loadCarBrands();
-            addRealTimeValidation();
-            setupFormDataSaving(); // Restore form data *after* dynamic options loaded
-            addClearFormButton();
-             // Initial rendering for previews if data was restored
-             if (selectedFiles.length > 0) {
-                renderPreviews();
-            }
-        });
-
-         // Make sure these are accessible if needed globally
-         window.setCategory = setCategory; // Assuming onclick uses global scope
-
-    </script>
+    <script type="module" src="/js/app.js"></script>
 </body>
 </html>
