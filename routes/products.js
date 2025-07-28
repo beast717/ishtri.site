@@ -321,12 +321,8 @@ router.get('/', getProductsValidation, async (req, res, next) => { // <-- Add va
         // Execute query
         const [products] = await pool.promise().query(query, params);
         
-        // Get total count
-        const whereClause = query.includes('WHERE') 
-        ? query.split('WHERE')[1].split('ORDER BY')[0].split('LIMIT')[0] 
-        : '';
-
-        const countQuery = `
+        // Get total count - build a simpler count query using the same WHERE conditions
+        let countQuery = `
             SELECT COUNT(DISTINCT p.productdID) AS total 
             FROM products p
             LEFT JOIN properties pr ON p.productdID = pr.productdID
@@ -335,19 +331,105 @@ router.get('/', getProductsValidation, async (req, res, next) => { // <-- Add va
             LEFT JOIN car_brands cb ON c.brand_id = cb.brand_id
             LEFT JOIN car_models cm ON c.model_id = cm.model_id
             LEFT JOIN cities ci ON p.city_id = ci.cityid
-            ${query.includes('WHERE') ? 
-                query.split('WHERE')[1]
-                    .split('ORDER BY')[0]  
-                    .split('LIMIT')[0]     
-                : ''
-            }
-        `.replace('1=1', '');
+            WHERE 1=1
+        `;
 
-            // Execute with original params
-            const [totalResult] = await pool.promise().query(
-              `SELECT COUNT(*) AS total FROM (${countQuery}) AS subquery`, 
-              params
-            );
+        // Add the same filters as the main query (rebuild the WHERE clause)
+        if (category && category !== 'default') {
+            countQuery += ' AND p.category = ?';
+        }
+
+        // Property specific filters
+        if (category === 'Eiendom') {
+            if (propertyType) {
+                const propertyTypes = propertyType.split(',').filter(type => type.trim());
+                if (propertyTypes.length > 0) {
+                    countQuery += ` AND pr.PropertyType IN (${propertyTypes.map(() => '?').join(',')})`;
+                }
+            }
+            if (sizeSqmFrom) {
+                countQuery += ' AND COALESCE(pr.SizeSqm, 0) >= ?';
+            }
+            if (sizeSqmTo) {
+                countQuery += ' AND COALESCE(pr.SizeSqm, 0) <= ?';
+            }
+            if (numRoomsFrom) {
+                countQuery += ' AND COALESCE(pr.NumRooms, 0) >= ?';
+            }
+            if (numRoomsTo) {
+                countQuery += ' AND COALESCE(pr.NumRooms, 0) <= ?';
+            }
+            if (numBathroomsFrom) {
+                countQuery += ' AND COALESCE(pr.NumBathrooms, 0) >= ?';
+            }
+            if (numBathroomsTo) {
+                countQuery += ' AND COALESCE(pr.NumBathrooms, 0) <= ?';
+            }
+            if (energyClass) {
+                const energyClasses = energyClass.split(',').filter(cls => cls.trim());
+                if (energyClasses.length > 0) {
+                    countQuery += ` AND pr.EnergyClass IN (${energyClasses.map(() => '?').join(',')})`;
+                }
+            }
+        }
+
+        // Car specific filters
+        if (category === 'Bil') {
+            if (yearFrom) {
+                countQuery += ' AND COALESCE(c.Year, 0) >= ?';
+            }
+            if (yearTo) {
+                countQuery += ' AND COALESCE(c.Year, 0) <= ?';
+            }
+            if (mileageFrom) {
+                countQuery += ' AND c.Mileage >= ?';
+            }
+            if (mileageTo) {
+                countQuery += ' AND c.Mileage <= ?';
+            }
+            if (fuelTypes) {
+                const fuelTypeArray = fuelTypes.split(',').filter(type => type.trim());
+                if (fuelTypeArray.length > 0) {
+                    countQuery += ` AND c.FuelType IN (${fuelTypeArray.map(() => '?').join(',')})`;
+                }
+            }
+            if (transmissionTypes) {
+                const transmissionArray = transmissionTypes.split(',').filter(type => type.trim());
+                if (transmissionArray.length > 0) {
+                    countQuery += ` AND c.Transmission IN (${transmissionArray.map(() => '?').join(',')})`;
+                }
+            }
+        }
+
+        if (subCategory) {
+            countQuery += ' AND p.SubCategori = ?';
+        }
+
+        if (carBrand) {
+            const brands = carBrand.split(',').filter(b => b.trim());
+            if (brands.length) {
+                countQuery += ` AND c.brand_id IN (${brands.map(() => '?').join(',')})`;
+            }
+        }
+
+        if (countries && countries.trim() !== "") {
+            const countryList = Array.isArray(countries) ? countries : countries.split(',');
+            const validCountries = countryList.filter(c => c.trim() !== "");
+            
+            if (validCountries.length > 0) {
+                countQuery += ` AND LOWER(ci.country) IN (${validCountries.map(() => '?').join(',')})`;
+            }
+        }
+
+        if (cities) {
+            const cityIDs = cities.split(',').map(id => parseInt(id)).filter(id => !isNaN(id));
+            if (cityIDs.length) {
+                countQuery += ` AND p.city_id IN (${cityIDs.map(() => '?').join(',')})`;
+            }
+        }
+
+        // Execute count query with the same parameters
+        const [totalResult] = await pool.promise().query(countQuery, params);
         
         res.json({
             total: totalResult[0].total,

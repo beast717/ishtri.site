@@ -15,6 +15,7 @@ export default function initProductListPage() {
     let currentPage = 1;
     let isLoading = false;
     let hasMore = true;
+    let loadedProductIds = new Set(); // Track loaded product IDs to prevent duplicates
     const limit = 20;
 
     // A comprehensive state object for all possible filters across both pages.
@@ -102,7 +103,9 @@ export default function initProductListPage() {
 
     function addLoadMoreButton() {
         const container = getEl('productsContainer');
-        if (!container || getEl('loadMoreButton')) return;
+        if (!container) return;
+        
+        if (getEl('loadMoreButton')) return;
 
         // Create a dedicated container for the load more button
         const buttonWrapper = document.createElement('div');
@@ -121,8 +124,6 @@ export default function initProductListPage() {
             button.style.display = hasMore ? 'block' : 'none';
             button.disabled = isLoading;
             button.textContent = isLoading ? 'Loading...' : 'Load More';
-        } else if(hasMore) {
-            addLoadMoreButton();
         }
     }
 
@@ -180,18 +181,38 @@ export default function initProductListPage() {
         const container = getEl('productsContainer');
         if (!container) return;
 
-        if (!loadMore) container.innerHTML = '';
+        if (!loadMore) {
+            container.innerHTML = '';
+            loadedProductIds.clear(); // Reset tracked products on new search
+        } else {
+            // Remove existing load more button before adding new products for load more
+            const existingLoadMoreButton = getEl('loadMoreButton');
+            if (existingLoadMoreButton) {
+                existingLoadMoreButton.closest('.load-more-container')?.remove();
+            }
+        }
+        
         if ((!products || products.length === 0) && !loadMore) {
             container.innerHTML = '<p class="no-products">No products found for the current criteria.</p>';
             return;
         }
 
-        products.forEach(product => {
+        // Filter out duplicates and add new products
+        const newProducts = products.filter(product => {
+            const productId = product.ProductdID || product.productdID;
+            if (loadedProductIds.has(productId)) {
+                return false; // Skip duplicate
+            }
+            loadedProductIds.add(productId);
+            return true;
+        });
+
+        newProducts.forEach(product => {
             container.appendChild(createProductElement(product));
         });
 
-        // Add load more button only after first successful product load
-        if (!loadMore && products.length > 0 && !getEl('loadMoreButton')) {
+        // Add load more button only if there are more products to load
+        if (hasMore) {
             addLoadMoreButton();
         }
 
@@ -221,7 +242,8 @@ export default function initProductListPage() {
         
         updateLoadMoreButton();
 
-        const offset = (currentPage - 1) * limit;
+        // Calculate offset BEFORE incrementing currentPage for loadMore
+        const offset = loadMore ? currentPage * limit : 0;
         const urlParams = new URLSearchParams(window.location.search);
         let apiUrl;
 
@@ -270,9 +292,18 @@ export default function initProductListPage() {
             })
             .then(data => {
                 const products = data.products || data; // Handle both API response structures
-                hasMore = products.length >= limit;
+                const total = data.total || products.length; // Get total from API response
+                
+                // Simplified hasMore logic
+                const currentlyLoaded = loadedProductIds.size + (products?.length || 0);
+                hasMore = currentlyLoaded < total;
+                
                 displayProducts(products, loadMore);
-                if (loadMore) currentPage++;
+                
+                // Increment currentPage AFTER successful fetch for loadMore
+                if (loadMore) {
+                    currentPage++;
+                }
             })
             .catch(error => {
                 console.error("Error fetching products:", error);
@@ -290,27 +321,27 @@ export default function initProductListPage() {
 
     // --- Filter Management ---
     function updateCurrentFiltersFromUI() {
-        const getMultiSelectValues = (id) => Array.from(getEl(id)?.selectedOptions || []).map(opt => opt.value);
+        const getMultiSelectValues = (id) => Array.from(getEl(id)?.selectedOptions || []).map(opt => opt.value).filter(val => val);
         
         currentFilters = {
             priceOrder: getEl('priceFilter')?.value || '',
             dateOrder: getEl('dateFilter')?.value || '',
             subCategory: getEl('subCategoryFilter')?.value || '',
-            selectedCountries: Array.from(queryAll('.country-list > li > input[type="checkbox"]:checked')).map(cb => cb.value),
-            selectedCities: Array.from(queryAll('.city-list input[type="checkbox"]:checked')).map(cb => cb.value),
-            selectedCarBrands: Array.from(queryAll('.car-brand-list input[type="checkbox"]:checked')).map(cb => cb.value),
-            yearRange: { from: getEl('yearFrom')?.value, to: getEl('yearTo')?.value },
-            mileageRange: { from: getEl('mileageFrom')?.value, to: getEl('mileageTo')?.value },
+            selectedCountries: Array.from(queryAll('.country-list > li > input[type="checkbox"]:checked')).map(cb => cb.value).filter(val => val),
+            selectedCities: Array.from(queryAll('.city-list input[type="checkbox"]:checked')).map(cb => cb.value).filter(val => val),
+            selectedCarBrands: Array.from(queryAll('.car-brand-list input[type="checkbox"]:checked')).map(cb => cb.value).filter(val => val),
+            yearRange: { from: getEl('yearFrom')?.value || null, to: getEl('yearTo')?.value || null },
+            mileageRange: { from: getEl('mileageFrom')?.value || null, to: getEl('mileageTo')?.value || null },
             fuelTypes: getMultiSelectValues('fuelTypeFilter'),
             transmissionTypes: getMultiSelectValues('transmissionFilter'),
             propertyTypes: getMultiSelectValues('propertyTypeFilter'),
-            sizeRange: { from: getEl('sizeSqmFrom')?.value, to: getEl('sizeSqmTo')?.value },
-            roomsRange: { from: getEl('numRoomsFrom')?.value, to: getEl('numRoomsTo')?.value },
-            bathroomsRange: { from: getEl('numBathroomsFrom')?.value, to: getEl('numBathroomsTo')?.value },
+            sizeRange: { from: getEl('sizeSqmFrom')?.value || null, to: getEl('sizeSqmTo')?.value || null },
+            roomsRange: { from: getEl('numRoomsFrom')?.value || null, to: getEl('numRoomsTo')?.value || null },
+            bathroomsRange: { from: getEl('numBathroomsFrom')?.value || null, to: getEl('numBathroomsTo')?.value || null },
             energyClasses: getMultiSelectValues('energyClassFilter'),
             employmentTypes: getMultiSelectValues('employmentTypeFilter'),
-            salaryRange: { from: getEl('salaryFrom')?.value, to: getEl('salaryTo')?.value },
-            applicationDeadline: getEl('deadlineDate')?.value
+            salaryRange: { from: getEl('salaryFrom')?.value || null, to: getEl('salaryTo')?.value || null },
+            applicationDeadline: getEl('deadlineDate')?.value || null
         };
     }
     
@@ -319,6 +350,12 @@ export default function initProductListPage() {
         if (isTorgetKatPage) {
             updateActiveFiltersDisplay();
         }
+        
+        // Reset pagination when applying new filters
+        currentPage = 1;
+        hasMore = true;
+        loadedProductIds.clear(); // Clear tracked products when applying new filters
+        
         fetchProducts(false); // Fetch from page 1 with new filters
     }
 
@@ -333,7 +370,7 @@ export default function initProductListPage() {
                 else el.selectedIndex = 0;
             }
         });
-        ['salaryFrom', 'salaryTo', 'deadlineDate'].forEach(id => {
+        ['salaryFrom', 'salaryTo', 'deadlineDate', 'yearFrom', 'yearTo', 'mileageFrom', 'mileageTo', 'sizeSqmFrom', 'sizeSqmTo', 'numRoomsFrom', 'numRoomsTo', 'numBathroomsFrom', 'numBathroomsTo'].forEach(id => {
             const el = getEl(id); if (el) el.value = '';
         });
 
@@ -347,8 +384,35 @@ export default function initProductListPage() {
             });
         }
         
+        // Reset internal state to default values
+        currentFilters = {
+            priceOrder: '',
+            dateOrder: '',
+            subCategory: '',
+            selectedCountries: [],
+            selectedCities: [],
+            selectedCarBrands: [],
+            yearRange: { from: null, to: null },
+            mileageRange: { from: null, to: null },
+            fuelTypes: [],
+            transmissionTypes: [],
+            propertyTypes: [],
+            sizeRange: { from: null, to: null },
+            roomsRange: { from: null, to: null },
+            bathroomsRange: { from: null, to: null },
+            energyClasses: [],
+            employmentTypes: [],
+            salaryRange: { from: null, to: null },
+            applicationDeadline: null
+        };
+        
+        // Reset pagination state
+        currentPage = 1;
+        hasMore = true;
+        loadedProductIds.clear(); // Clear tracked products on reset
+        
         // Trigger a fresh fetch with reset filters
-        applyFilters();
+        fetchProducts(false);
     }
 
      function handleCategoryVisibility() {
