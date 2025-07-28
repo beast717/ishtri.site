@@ -1,8 +1,10 @@
 export default function initMyAdsPage() {
     const container = document.getElementById('productsContainer');
-    const skeletonContainer = document.getElementById('skeletonContainer');
 
-    if (!container || !skeletonContainer) return;
+    if (!container) return;
+
+    // Show skeleton loading using SkeletonLoader
+    window.ishtri.skeletonLoader.showInContainer('productsContainer', 'product', 6);
 
     function handleProductAction(e) {
         const button = e.target.closest('button');
@@ -59,8 +61,8 @@ export default function initMyAdsPage() {
     fetch('/api/utils/users')
         .then(response => response.json())
         .then(products => {
-            skeletonContainer.style.display = 'none';
-            container.innerHTML = '';
+            // Hide skeleton and clear container
+            window.ishtri.skeletonLoader.hideInContainer('productsContainer');
 
             if (products.length === 0) {
                 container.innerHTML = '<p>You have not uploaded any products.</p>';
@@ -112,7 +114,8 @@ export default function initMyAdsPage() {
             window.ishtri.lazyLoader.observe();
         })
         .catch(error => {
-            skeletonContainer.style.display = 'none';
+            // Hide skeleton on error
+            window.ishtri.skeletonLoader.hideInContainer('productsContainer');
             container.innerHTML = `<p>Error loading your products: ${error.message}</p>`;
             window.ishtri.toast.show('Failed to load your products.', 'error');
         });

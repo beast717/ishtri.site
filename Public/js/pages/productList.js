@@ -4,7 +4,7 @@
  */
 
 // Utils
-import { debounce, showLoading, hideLoading, showSkeletonLoading } from '../utils/domUtils.js';
+import { debounce, showLoading, hideLoading } from '../utils/domUtils.js';
 import { isTorgetKatPage, isSearchPage } from '../utils/urlUtils.js';
 import { handleCategoryVisibility } from '../utils/categoryUtils.js';
 
@@ -37,7 +37,7 @@ export default function initProductListPage() {
         try {
             // Show appropriate loading state
             if (!loadMore) {
-                showSkeletonLoading();
+                window.ishtri.skeletonLoader.showInContainer('productsContainer', 'product', 8);
                 productService.resetPagination();
             } else {
                 showLoading();

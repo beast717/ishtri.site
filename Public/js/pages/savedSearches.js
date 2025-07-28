@@ -199,6 +199,9 @@ async function loadSavedSearches() {
         return;
     }
 
+    // Show skeleton loading using the SkeletonLoader class
+    window.ishtri.skeletonLoader.showInContainer('savedSearchesList', 'savedSearch', 3);
+
     try {
         // Load countries data first
         await loadCountriesData();
@@ -212,7 +215,9 @@ async function loadSavedSearches() {
         }
         
         const searches = await searchesResponse.json();
-        listContainer.innerHTML = ''; // Clear loading message
+        
+        // Hide skeleton and clear container
+        window.ishtri.skeletonLoader.hideInContainer('savedSearchesList');
         
         if (!searches || searches.length === 0) {
             listContainer.innerHTML = '<p class="no-searches">You have no saved searches yet.</p>';
@@ -248,6 +253,9 @@ async function loadSavedSearches() {
         });
     } catch (error) {
         console.error('Error loading saved searches:', error);
+        
+        // Hide skeleton on error
+        window.ishtri.skeletonLoader.hideInContainer('savedSearchesList');
         listContainer.innerHTML = `<p class="error-message">Error: ${error.message}</p>`;
     }
 }

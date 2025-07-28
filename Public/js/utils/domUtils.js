@@ -37,25 +37,3 @@ export const hideLoading = () => {
     const overlay = getEl('loadingOverlay');
     if (overlay) overlay.style.display = 'none';
 };
-
-export const showSkeletonLoading = () => {
-    const container = getEl('productsContainer');
-    if (!container) return;
-    
-    container.innerHTML = '';
-    
-    // Create 8 skeleton product cards
-    for (let i = 0; i < 8; i++) {
-        const skeleton = document.createElement('div');
-        skeleton.className = 'skeleton-product';
-        skeleton.innerHTML = `
-            <div class="skeleton skeleton-image"></div>
-            <div>
-                <div class="skeleton skeleton-text skeleton-title"></div>
-                <div class="skeleton skeleton-text skeleton-price"></div>
-                <div class="skeleton skeleton-text skeleton-location"></div>
-            </div>
-        `;
-        container.appendChild(skeleton);
-    }
-};

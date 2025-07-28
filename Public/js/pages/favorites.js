@@ -1,21 +1,23 @@
 export default function initFavoritesPage() {
     const favoritesList = document.getElementById('favoritesList');
-    const skeletonContainer = document.getElementById('skeletonContainer');
     
-    if (!favoritesList || !skeletonContainer) return;
+    if (!favoritesList) return;
+
+    // Show skeleton loading using SkeletonLoader
+    window.ishtri.skeletonLoader.showInContainer('favoritesList', 'product', 6);
 
     fetch('/api/favorites')
         .then(response => response.json())
         .then(products => {
-            skeletonContainer.style.display = 'none';
-            favoritesList.innerHTML = ''; // Clear skeleton
+            // Hide skeleton and clear container
+            window.ishtri.skeletonLoader.hideInContainer('favoritesList');
 
             if (products.length === 0) {
                 favoritesList.innerHTML = '<p class="no-products">No favorited products yet.</p>';
                 return;
             }
 
-            products.forEach(product => {
+            products.forEach((product, index) => {
                 const productDiv = document.createElement('div');
                 productDiv.className = 'product';
 
@@ -41,11 +43,14 @@ export default function initFavoritesPage() {
                 favoritesList.appendChild(productDiv);
             });
             
-            window.ishtri.lazyLoader.observe();
+            if (window.ishtri?.lazyLoader) {
+                window.ishtri.lazyLoader.observe();
+            }
         })
         .catch(error => {
             console.error("Error loading favorited products:", error);
-            skeletonContainer.style.display = 'none';
+            // Hide skeleton on error
+            window.ishtri.skeletonLoader.hideInContainer('favoritesList');
             favoritesList.innerHTML = '<p class="no-products">Error loading favorited products.</p>';
             window.ishtri.toast.show('Failed to load favorited products.', 'error');
         });

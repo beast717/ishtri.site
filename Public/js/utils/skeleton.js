@@ -18,6 +18,31 @@ export default class SkeletonLoader {
         return skeleton;
     }
 
+    createSavedSearchSkeleton() {
+        const skeleton = document.createElement('div');
+        skeleton.className = 'search-item skeleton-search';
+        skeleton.innerHTML = `
+            <div>
+                <div class="skeleton skeleton-text skeleton-title"></div>
+                <div class="skeleton skeleton-text skeleton-location"></div>
+                <div class="skeleton skeleton-text skeleton-description"></div>
+            </div>
+            <div class="search-item-actions">
+                <div class="skeleton skeleton-text" style="width: 100px; height: 36px; border-radius: 4px;"></div>
+                <div class="skeleton skeleton-text" style="width: 80px; height: 36px; border-radius: 4px;"></div>
+            </div>
+        `;
+        return skeleton;
+    }
+
+    createMessageSkeleton() {
+        const skeleton = document.createElement('div');
+        skeleton.className = 'skeleton skeleton-message';
+        skeleton.style.height = '65px';
+        skeleton.style.margin = '10px';
+        return skeleton;
+    }
+
     createGridSkeleton(count = 4) {
         const container = document.createElement('div');
         container.style.display = 'grid';
@@ -30,5 +55,31 @@ export default class SkeletonLoader {
         }
 
         return container;
+    }
+
+    showInContainer(containerId, type = 'product', count = 3) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        for (let i = 0; i < count; i++) {
+            let skeleton;
+            if (type === 'savedSearch') {
+                skeleton = this.createSavedSearchSkeleton();
+            } else if (type === 'message') {
+                skeleton = this.createMessageSkeleton();
+            } else {
+                skeleton = this.createProductSkeleton();
+            }
+            container.appendChild(skeleton);
+        }
+    }
+
+    hideInContainer(containerId) {
+        const container = document.getElementById(containerId);
+        if (container) {
+            container.innerHTML = '';
+        }
     }
 }

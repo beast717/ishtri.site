@@ -300,12 +300,8 @@ function initializeChat() {
     async function loadConversations() {
         console.log('Loading conversations...');
 
-        // Show skeleton loading
-        conversationsListEl.innerHTML = `
-            <div class="skeleton skeleton-message" style="height: 65px; margin: 10px;"></div>
-            <div class="skeleton skeleton-message" style="height: 65px; margin: 10px;"></div>
-            <div class="skeleton skeleton-message" style="height: 65px; margin: 10px;"></div>
-        `;
+        // Show skeleton loading using SkeletonLoader
+        window.ishtri.skeletonLoader.showInContainer('conversationsList', 'message', 3);
 
         try {
             const response = await fetch('/api/messages', {
@@ -331,6 +327,8 @@ function initializeChat() {
 
         } catch (error) {
             console.error('Error loading conversations:', error);
+            // Hide skeleton on error
+            window.ishtri.skeletonLoader.hideInContainer('conversationsList');
             conversationsListEl.innerHTML = '<div class="error">Failed to load conversations. Please try again.</div>';
             if (window.ishtri.toast) {
                 window.ishtri.toast.show('Failed to load conversations. Please try again.', 'error');
@@ -375,7 +373,8 @@ function initializeChat() {
     }
 
     function displayConversations(conversations) {
-        conversationsListEl.innerHTML = '';
+        // Hide skeleton and clear container
+        window.ishtri.skeletonLoader.hideInContainer('conversationsList');
 
         if (conversations.length === 0) {
             conversationsListEl.innerHTML = '<div class="no-conversations">No conversations yet.</div>';

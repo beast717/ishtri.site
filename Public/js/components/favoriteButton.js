@@ -20,6 +20,8 @@ async function handleFavoriteClick(event) {
             body: JSON.stringify({ productdID }),
         });
 
+        const responseData = await response.json();
+
         // --- THE CORE FIX IS HERE ---
         // We now check the server response *before* making any visual changes.
         if (response.ok) {

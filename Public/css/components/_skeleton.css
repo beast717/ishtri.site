@@ -57,3 +57,28 @@
     flex-grow: 1;
     min-width: 0;
 }
+
+/* Saved Searches Skeleton - matches .search-item layout */
+.skeleton-search {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px;
+    margin-bottom: 15px;
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.skeleton-search > div:first-child {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.skeleton-search .search-item-actions {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+}

@@ -5,23 +5,14 @@ function loadRandomProducts() {
     const randomProductsContainer = document.getElementById('randomProducts');
     if (!randomProductsContainer) return;
 
-    // Show skeleton loading
-    randomProductsContainer.innerHTML = '';
-    for (let i = 0; i < 5; i++) {
-        const skeleton = document.createElement('div');
-        skeleton.className = 'product-card skeleton';
-        skeleton.innerHTML = `
-            <div class="skeleton-image skeleton"></div>
-            <div class="skeleton-text skeleton-title skeleton"></div>
-            <div class="skeleton-text skeleton-price skeleton"></div>
-        `;
-        randomProductsContainer.appendChild(skeleton);
-    }
+    // Show skeleton loading using SkeletonLoader
+    window.ishtri.skeletonLoader.showInContainer('randomProducts', 'product', 5);
 
     fetch('/api/utils/random-products')
         .then(response => response.json())
         .then(products => {
-            randomProductsContainer.innerHTML = '';
+            // Hide skeleton and clear container
+            window.ishtri.skeletonLoader.hideInContainer('randomProducts');
             
             products.forEach(product => {
                 const productDiv = document.createElement('div');

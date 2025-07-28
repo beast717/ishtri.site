@@ -3,6 +3,7 @@
  */
 
 import { getEl } from '../utils/domUtils.js';
+import { initFavoriteButton } from './favoriteButton.js';
 
 /**
  * Create product element
@@ -65,7 +66,7 @@ export const createProductElement = (product) => {
     });
 
     const favoriteButton = div.querySelector('.favorite-icon');
-    initFavoriteButton(favoriteButton);
+    initFavoriteButtonForCard(favoriteButton);
 
     return div;
 };
@@ -109,19 +110,21 @@ export const displayProducts = (products, loadMore = false) => {
  * Initialize favorite button
  * @param {HTMLElement} favoriteButton - Favorite button element
  */
-const initFavoriteButton = (favoriteButton) => {
+const initFavoriteButtonForCard = (favoriteButton) => {
     if (!favoriteButton) return;
     
-    // Use existing favorite button logic from window.ishtri
-    if (window.ishtri?.favoriteButton) {
-        window.ishtri.favoriteButton.init(favoriteButton);
-    }
+    // Use the proper favorite button functionality
+    initFavoriteButton(favoriteButton);
 };
 
 /**
  * Initialize all favorites on page
  */
 const initializeFavorites = () => {
+    // First, initialize click handlers for all favorite buttons
+    document.querySelectorAll('.favorite-icon').forEach(initFavoriteButton);
+    
+    // Then fetch and update visual states
     fetch('/api/favorites', { credentials: 'include' })
         .then(res => res.ok ? res.json() : Promise.reject('Not logged in or API error'))
         .then(favorites => {
@@ -138,5 +141,7 @@ const initializeFavorites = () => {
         })
         .catch(() => {
             // Fail silently if the user is not logged in
+            // But still initialize the buttons so they show login prompt
+            document.querySelectorAll('.favorite-icon').forEach(initFavoriteButton);
         });
 };
