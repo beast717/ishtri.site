@@ -406,6 +406,11 @@ export default function initProductListPage() {
             applicationDeadline: null
         };
         
+        // Update active filter display after reset (TorgetKat page)
+        if (isTorgetKatPage) {
+            updateActiveFiltersDisplay();
+        }
+        
         // Reset pagination state
         currentPage = 1;
         hasMore = true;
@@ -479,16 +484,251 @@ export default function initProductListPage() {
             displayContainer.appendChild(tag);
         };
         
-        // This is a simplified version. The fully detailed version would check every single filter
-        // in `currentFilters` and create a tag if it's not set to its default value.
+        // Price sorting
+        if (currentFilters.priceOrder) {
+            const priceLabel = currentFilters.priceOrder === 'asc' ? 'Lowest Price' : 'Highest Price';
+            addFilterTag('Sort', priceLabel, () => {
+                const el = getEl('priceFilter'); 
+                if (el) el.selectedIndex = 0;
+                applyFilters();
+            });
+        }
+        
+        // Date sorting
+        if (currentFilters.dateOrder) {
+            const dateLabel = currentFilters.dateOrder === 'desc' ? 'Newest' : 'Oldest';
+            addFilterTag('Date', dateLabel, () => {
+                const el = getEl('dateFilter');
+                if (el) el.selectedIndex = 0;
+                applyFilters();
+            });
+        }
+        
+        // Sub category
+        if (currentFilters.subCategory) {
+            addFilterTag('Category', currentFilters.subCategory, () => {
+                const el = getEl('subCategoryFilter');
+                if (el) el.selectedIndex = 0;
+                applyFilters();
+            });
+        }
+        
+        // Countries
         currentFilters.selectedCountries.forEach(country => {
             addFilterTag('Country', country, () => {
-                const cb = getEl(country); if (cb) cb.checked = false;
+                const cb = getEl(country); 
+                if (cb) cb.checked = false;
                 applyFilters();
             });
         });
         
-        // Add logic for all other filters here... (subCategory, carBrand, yearRange etc.)
+        // Cities
+        currentFilters.selectedCities.forEach(cityId => {
+            const cityCheckbox = getEl(`city_${cityId}`);
+            const cityName = cityCheckbox ? cityCheckbox.nextElementSibling?.textContent : `City ${cityId}`;
+            addFilterTag('City', cityName, () => {
+                if (cityCheckbox) cityCheckbox.checked = false;
+                applyFilters();
+            });
+        });
+        
+        // Car brands
+        currentFilters.selectedCarBrands.forEach(brandId => {
+            const brandCheckbox = getEl(`brand_${brandId}`);
+            const brandName = brandCheckbox ? brandCheckbox.nextElementSibling?.textContent : `Brand ${brandId}`;
+            addFilterTag('Car Brand', brandName, () => {
+                if (brandCheckbox) brandCheckbox.checked = false;
+                applyFilters();
+            });
+        });
+        
+        // Year range - only show if values differ from defaults
+        if (currentFilters.yearRange.from || currentFilters.yearRange.to) {
+            const defaultStart = sliderConfigs['year-slider'].start;
+            const from = parseInt(currentFilters.yearRange.from);
+            const to = parseInt(currentFilters.yearRange.to);
+            
+            // Only show if the values are different from defaults
+            if ((from && from !== defaultStart[0]) || (to && to !== defaultStart[1])) {
+                const fromDisplay = from || 'Any';
+                const toDisplay = to || 'Any';
+                addFilterTag('Year', `${fromDisplay} - ${toDisplay}`, () => {
+                    const slider = getEl('year-slider');
+                    if (slider && slider.noUiSlider) {
+                        slider.noUiSlider.set(sliderConfigs['year-slider'].start);
+                    }
+                    applyFilters();
+                });
+            }
+        }
+        
+        // Mileage range - only show if values differ from defaults
+        if (currentFilters.mileageRange.from || currentFilters.mileageRange.to) {
+            const defaultStart = sliderConfigs['mileage-slider'].start;
+            const from = parseInt(currentFilters.mileageRange.from);
+            const to = parseInt(currentFilters.mileageRange.to);
+            
+            // Only show if the values are different from defaults
+            if ((from && from !== defaultStart[0]) || (to && to !== defaultStart[1])) {
+                const fromDisplay = from ? `${from.toLocaleString()}km` : 'Any';
+                const toDisplay = to ? `${to.toLocaleString()}km` : 'Any';
+                addFilterTag('Mileage', `${fromDisplay} - ${toDisplay}`, () => {
+                    const slider = getEl('mileage-slider');
+                    if (slider && slider.noUiSlider) {
+                        slider.noUiSlider.set(sliderConfigs['mileage-slider'].start);
+                    }
+                    applyFilters();
+                });
+            }
+        }
+        
+        // Fuel types
+        currentFilters.fuelTypes.forEach(fuelType => {
+            addFilterTag('Fuel', fuelType, () => {
+                const select = getEl('fuelTypeFilter');
+                if (select) {
+                    Array.from(select.options).forEach(opt => {
+                        if (opt.value === fuelType) opt.selected = false;
+                    });
+                }
+                applyFilters();
+            });
+        });
+        
+        // Transmission types
+        currentFilters.transmissionTypes.forEach(transmission => {
+            addFilterTag('Transmission', transmission, () => {
+                const select = getEl('transmissionFilter');
+                if (select) {
+                    Array.from(select.options).forEach(opt => {
+                        if (opt.value === transmission) opt.selected = false;
+                    });
+                }
+                applyFilters();
+            });
+        });
+        
+        // Property types
+        currentFilters.propertyTypes.forEach(propertyType => {
+            addFilterTag('Property Type', propertyType, () => {
+                const select = getEl('propertyTypeFilter');
+                if (select) {
+                    Array.from(select.options).forEach(opt => {
+                        if (opt.value === propertyType) opt.selected = false;
+                    });
+                }
+                applyFilters();
+            });
+        });
+        
+        // Size range - only show if values differ from defaults
+        if (currentFilters.sizeRange.from || currentFilters.sizeRange.to) {
+            const defaultStart = sliderConfigs['size-slider'].start;
+            const from = parseInt(currentFilters.sizeRange.from);
+            const to = parseInt(currentFilters.sizeRange.to);
+            
+            // Only show if the values are different from defaults
+            if ((from && from !== defaultStart[0]) || (to && to !== defaultStart[1])) {
+                const fromDisplay = from ? `${from}m²` : 'Any';
+                const toDisplay = to ? `${to}m²` : 'Any';
+                addFilterTag('Size', `${fromDisplay} - ${toDisplay}`, () => {
+                    const slider = getEl('size-slider');
+                    if (slider && slider.noUiSlider) {
+                        slider.noUiSlider.set(sliderConfigs['size-slider'].start);
+                    }
+                    applyFilters();
+                });
+            }
+        }
+        
+        // Rooms range - only show if values differ from defaults
+        if (currentFilters.roomsRange.from || currentFilters.roomsRange.to) {
+            const defaultStart = sliderConfigs['rooms-slider'].start;
+            const from = parseInt(currentFilters.roomsRange.from);
+            const to = parseInt(currentFilters.roomsRange.to);
+            
+            // Only show if the values are different from defaults
+            if ((from && from !== defaultStart[0]) || (to && to !== defaultStart[1])) {
+                const fromDisplay = from || 'Any';
+                const toDisplay = to || 'Any';
+                addFilterTag('Rooms', `${fromDisplay} - ${toDisplay}`, () => {
+                    const slider = getEl('rooms-slider');
+                    if (slider && slider.noUiSlider) {
+                        slider.noUiSlider.set(sliderConfigs['rooms-slider'].start);
+                    }
+                    applyFilters();
+                });
+            }
+        }
+        
+        // Bathrooms range - only show if values differ from defaults
+        if (currentFilters.bathroomsRange.from || currentFilters.bathroomsRange.to) {
+            const defaultStart = sliderConfigs['bathrooms-slider'].start;
+            const from = parseInt(currentFilters.bathroomsRange.from);
+            const to = parseInt(currentFilters.bathroomsRange.to);
+            
+            // Only show if the values are different from defaults
+            if ((from && from !== defaultStart[0]) || (to && to !== defaultStart[1])) {
+                const fromDisplay = from || 'Any';
+                const toDisplay = to || 'Any';
+                addFilterTag('Bathrooms', `${fromDisplay} - ${toDisplay}`, () => {
+                    const slider = getEl('bathrooms-slider');
+                    if (slider && slider.noUiSlider) {
+                        slider.noUiSlider.set(sliderConfigs['bathrooms-slider'].start);
+                    }
+                    applyFilters();
+                });
+            }
+        }
+        
+        // Energy classes
+        currentFilters.energyClasses.forEach(energyClass => {
+            addFilterTag('Energy Class', energyClass, () => {
+                const select = getEl('energyClassFilter');
+                if (select) {
+                    Array.from(select.options).forEach(opt => {
+                        if (opt.value === energyClass) opt.selected = false;
+                    });
+                }
+                applyFilters();
+            });
+        });
+        
+        // Employment types
+        currentFilters.employmentTypes.forEach(empType => {
+            addFilterTag('Employment', empType, () => {
+                const select = getEl('employmentTypeFilter');
+                if (select) {
+                    Array.from(select.options).forEach(opt => {
+                        if (opt.value === empType) opt.selected = false;
+                    });
+                }
+                applyFilters();
+            });
+        });
+        
+        // Salary range
+        if (currentFilters.salaryRange.from || currentFilters.salaryRange.to) {
+            const from = currentFilters.salaryRange.from ? `${parseInt(currentFilters.salaryRange.from).toLocaleString()} NOK` : 'Any';
+            const to = currentFilters.salaryRange.to ? `${parseInt(currentFilters.salaryRange.to).toLocaleString()} NOK` : 'Any';
+            addFilterTag('Salary', `${from} - ${to}`, () => {
+                const fromEl = getEl('salaryFrom');
+                const toEl = getEl('salaryTo');
+                if (fromEl) fromEl.value = '';
+                if (toEl) toEl.value = '';
+                applyFilters();
+            });
+        }
+        
+        // Application deadline
+        if (currentFilters.applicationDeadline) {
+            const deadlineDate = new Date(currentFilters.applicationDeadline).toLocaleDateString();
+            addFilterTag('Deadline', deadlineDate, () => {
+                const el = getEl('deadlineDate');
+                if (el) el.value = '';
+                applyFilters();
+            });
+        }
 
         displayContainer.style.display = hasActiveFilters ? 'flex' : 'none';
     }
