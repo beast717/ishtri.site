@@ -281,10 +281,23 @@ export default function initProductListPage() {
      */
     async function loadSavedSearchFilters() {
         const savedFilters = savedSearchService.loadSavedSearchFilters();
+        
         if (savedFilters) {
             // Apply saved filters to UI
             await applySavedFiltersToUI(savedFilters);
+            
+            // Set filters in store
             filterStore.setFilters(savedFilters);
+            
+            // Give the UI a moment to update before displaying active filters
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Update active filters display after everything is applied
+            await updateActiveFiltersDisplay();
+            
+            return true; // Indicate that filters were loaded
+        } else {
+            return false; // Indicate that no filters were loaded
         }
     }
 
@@ -316,8 +329,13 @@ export default function initProductListPage() {
         // TorgetKat-specific initialization
         if (isTorgetKatPage()) {
             // Load saved search filters if present
-            await loadSavedSearchFilters();
-            updateActiveFiltersDisplay();
+            const savedFiltersLoaded = await loadSavedSearchFilters();
+            
+            // Only update active filters display if no saved filters were loaded
+            // (if saved filters were loaded, the display was already updated in loadSavedSearchFilters)
+            if (!savedFiltersLoaded) {
+                updateActiveFiltersDisplay();
+            }
         }
 
         // Initial product fetch

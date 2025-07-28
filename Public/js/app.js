@@ -4,6 +4,9 @@ import LazyLoader from './utils/lazyLoad.js';
 import BackToTop from './utils/backToTop.js';
 import SkeletonLoader from './utils/skeleton.js';
 
+// --- Import Services ---
+import { i18nService } from './services/I18nService.js';
+
 // --- Import Core Components ---
 import { initNavbar, updateNavbar } from './components/navbar.js';
 import { initCookieConsent } from './components/cookieConsent.js';
@@ -20,6 +23,7 @@ import initSavedSearchesPage from './pages/savedSearches.js';
 import initAuthPage from './pages/auth.js';
 import initReisePage from './pages/reise.js';
 import initNotificationsPage from './pages/notifications.js';
+import initSettingsPage from './pages/settings.js';
 
 // Create a single global namespace for our app's instances
 window.ishtri = {
@@ -31,6 +35,8 @@ window.ishtri = {
     user: null,
     // Add navbar update function to global scope
     updateNavbar: updateNavbar,
+    // Add i18n service to global scope for backward compatibility
+    i18n: i18nService,
 };
 
 /**
@@ -154,6 +160,7 @@ function pageRouter() {
         'auth': initAuthPage,
         'reise': initReisePage,
         'notifications': initNotificationsPage,
+        'settings': initSettingsPage,
     };
 
     if (pageInitializers[page]) {
@@ -165,6 +172,9 @@ function pageRouter() {
 document.addEventListener('DOMContentLoaded', async () => {
     // Load non-essential scripts
     loadNonEssentialScripts();
+    
+    // Initialize i18n service first
+    await i18nService.init();
     
     // Initialize authentication and user-specific features
     const user = await initAuth();

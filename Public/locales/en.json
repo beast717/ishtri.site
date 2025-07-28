@@ -6,7 +6,28 @@
             "messages": "Messages",
             "log_in": "Log In",
             "log_out": "Log Out",
-            "mine_annonser": "My ads"
+            "mine_annonser": "My ads",
+            "favorites": "Favorites",
+            "saved_searches": "Saved searches",
+            "settings": "Settings"
+        },
+        "settings": {
+            "title": "Settings",
+            "subtitle": "Manage your account preferences and notifications",
+            "email_notifications": "Email Notifications",
+            "email_notifications_desc": "Control when you receive email notifications",
+            "saved_search_matches": "Saved Search Matches",
+            "saved_search_desc": "Get notified by email when new products match your saved searches",
+            "account_information": "Account Information",
+            "account_info_desc": "View and manage your account details",
+            "username": "Username",
+            "email": "Email",
+            "member_since": "Member Since",
+            "support": "Support",
+            "contact_support": "Contact Support",
+            "contact_support_desc": "Reach out to our support team",
+            "contact_us": "Contact Us",
+            "updating_settings": "Updating settings..."
         },
         "search": {
             "placeholder": "Search conversations..."
@@ -88,7 +109,13 @@
             "slett": "Delete",
             "mark_sold": "Mark as sold",
             "mark_unsold": "Mark as unsold",
-            "sold": "Sold"
+            "sold": "Sold",
+            "favorite": "Favorite",
+            "send": "Send",
+            "cancel": "Cancel",
+            "login_required": "You need to log in to favorite this product",
+            "login_required_desc": "Please log in to access this feature.",
+            "log_in": "Log In"
         },
         "kategori": {
             "torget": "Market",
@@ -119,7 +146,11 @@
             "fuel_type": "Fuel Type",
             "from": "From",
             "to": "To",
-            "other": "Other"
+            "other": "Other",
+            "filter": "Filter",
+            "filters": "Filters",
+            "save_search": "Save This Search",
+            "reset_filters": "Reset Filters"
         },
         "meldinger": {
             "klikk": "Click to View Messages",

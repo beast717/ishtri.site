@@ -69,7 +69,7 @@
     <!-- Filter/Sort Bar (This section is OUTSIDE the main two-column layout) -->
     <div class="filter-container-wrapper" style="margin-bottom: 20px; padding-left: 25px;">
         <button class="offcanvas-filter-btn" id="offcanvasFilterBtn" type="button">
-        <i class="fas fa-filter"></i> Filter
+        <i class="fas fa-filter"></i> <span data-i18n="filter.filter">Filter</span>
     </button>
         <div class="filter-container">
             <label for="priceFilter" data-i18n="filter.sorter_etter">Sort By:</label>
@@ -245,14 +245,14 @@
                       
             <button id="saveSearchBtn-mobile" class="btn btn-primary save-search-button">
                 <span class="btn-icon"><i class="fas fa-save"></i></span>
-                <span class="btn-text">Save This Search</span>
+                <span class="btn-text" data-i18n="filter.save_search">Save This Search</span>
             </button>
 
                      
                       
             <button class="btn btn-secondary reset-filters-btn" id="resetFiltersBtn-mobile">
                 <span class="btn-icon"></span>
-                <span class="btn-text">Reset Filters</span>
+                <span class="btn-text" data-i18n="filter.reset_filters">Reset Filters</span>
             </button>
 
     
@@ -270,7 +270,7 @@
     <div class="offcanvas-filter-overlay" id="offcanvasFilterOverlay"></div>
     <aside class="offcanvas-filter-drawer" id="offcanvasFilterDrawer" aria-modal="true" role="dialog" tabindex="-1">
         <div class="offcanvas-filter-header">
-            <span class="offcanvas-filter-title"><i class="fas fa-filter"></i> Filters</span>
+            <span class="offcanvas-filter-title"><i class="fas fa-filter"></i> <span data-i18n="filter.filters">Filters</span></span>
             <button class="offcanvas-filter-close" id="offcanvasFilterClose" aria-label="Close Filters">×</button>
         </div>
         <div class="offcanvas-filter-content">

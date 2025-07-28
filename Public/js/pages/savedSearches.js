@@ -143,10 +143,43 @@ function attachViewResultsListener(item) {
         // Convert saved filter names/structure to URL query parameters
         Object.entries(filters).forEach(([key, value]) => {
             if (value !== null && value !== '') {
-                if (key === 'car_brands') {
-                    params.set('carBrand', value.join(','));
-                } else if (key === 'property_types') {
-                    params.set('propertyType', value.join(','));
+                // Handle different key mappings between saved filters and URL parameters
+                if (key === 'selectedCarBrands' || key === 'car_brands') {
+                    if (Array.isArray(value) && value.length > 0) {
+                        params.set('carBrand', value.join(','));
+                    }
+                } else if (key === 'selectedCountries' || key === 'countries') {
+                    if (Array.isArray(value) && value.length > 0) {
+                        params.set('countries', value.join(','));
+                    }
+                } else if (key === 'selectedCities' || key === 'cities') {
+                    if (Array.isArray(value) && value.length > 0) {
+                        params.set('cities', value.join(','));
+                    }
+                } else if (key === 'fuelTypes' || key === 'fuel_types') {
+                    if (Array.isArray(value) && value.length > 0) {
+                        params.set('fuelTypes', value.join(','));
+                    }
+                } else if (key === 'transmissionTypes' || key === 'transmission_types') {
+                    if (Array.isArray(value) && value.length > 0) {
+                        params.set('transmissionTypes', value.join(','));
+                    }
+                } else if (key === 'property_types' || key === 'propertyTypes') {
+                    if (Array.isArray(value) && value.length > 0) {
+                        params.set('propertyType', value.join(','));
+                    }
+                } else if (key === 'energy_classes' || key === 'energyClasses') {
+                    if (Array.isArray(value) && value.length > 0) {
+                        params.set('energyClass', value.join(','));
+                    }
+                } else if (key === 'employment_types' || key === 'employmentTypes') {
+                    if (Array.isArray(value) && value.length > 0) {
+                        params.set('employmentTypes', value.join(','));
+                    }
+                } else if (key === 'priceOrder') {
+                    params.set('sortPrice', value);
+                } else if (key === 'dateOrder') {
+                    params.set('sortDate', value);
                 } else if (key === 'sizeRange') {
                     if (value.from) params.set('sizeSqmFrom', value.from);
                     if (value.to) params.set('sizeSqmTo', value.to);
@@ -156,27 +189,21 @@ function attachViewResultsListener(item) {
                 } else if (key === 'bathroomsRange') {
                     if (value.from) params.set('numBathroomsFrom', value.from);
                     if (value.to) params.set('numBathroomsTo', value.to);
-                } else if (key === 'energy_classes') {
-                    params.set('energyClass', value.join(','));
-                } else if (key === 'employment_types') {
-                    params.set('employmentTypes', value.join(','));
-                } else if (key === 'salaryRange') {
-                    if (value.from) params.set('salaryFrom', value.from);
-                    if (value.to) params.set('salaryTo', value.to);
-                } else if (key === 'applicationDeadline') {
-                    params.set('deadline', value);
                 } else if (key === 'yearRange') {
                     if (value.from) params.set('yearFrom', value.from);
                     if (value.to) params.set('yearTo', value.to);
                 } else if (key === 'mileageRange') {
                     if (value.from) params.set('mileageFrom', value.from);
                     if (value.to) params.set('mileageTo', value.to);
-                } else if (key === 'fuel_types') {
-                    params.set('fuelTypes', value.join(','));
-                } else if (key === 'transmission_types') {
-                    params.set('transmissionTypes', value.join(','));
+                } else if (key === 'salaryRange') {
+                    if (value.from) params.set('salaryFrom', value.from);
+                    if (value.to) params.set('salaryTo', value.to);
+                } else if (key === 'applicationDeadline') {
+                    params.set('deadline', value);
                 } else if (Array.isArray(value)) {
-                    if (value.length > 0) params.set(key, value.join(','));
+                    if (value.length > 0) {
+                        params.set(key, value.join(','));
+                    }
                 } else if (typeof value === 'object') { // Handle range objects
                     if (value.from && !key.endsWith('Range')) params.set(`${key}_from`, value.from);
                     if (value.to) params.set(`${key}_to`, value.to);
@@ -186,8 +213,10 @@ function attachViewResultsListener(item) {
             }
         });
 
+        const finalUrl = `/torgetkat?${params.toString()}`;
+
         // Redirect to the category page with filters applied
-        window.location.href = `/TorgetKat?${params.toString()}`;
+        window.location.href = finalUrl;
     });
 }
 

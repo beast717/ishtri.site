@@ -585,4 +585,34 @@ router.get('/verify-email', async (req, res, next) => {
     }
 });
 
+// GET user information for authenticated users
+router.get('/user-info', isAuthenticated, async (req, res, next) => {
+    try {
+        const userId = req.session.user?.brukerId || req.session.brukerId;
+        
+        if (!userId) {
+            return res.status(401).json({ message: 'User not authenticated' });
+        }
+
+        const [results] = await pool.promise().query(
+            'SELECT brukernavn, email FROM brukere WHERE brukerId = ?',
+            [userId]
+        );
+
+        if (results.length === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const user = results[0];
+        res.json({
+            brukernavn: user.brukernavn,
+            email: user.email
+        });
+
+    } catch (error) {
+        console.error("Error fetching user info:", error);
+        next(error);
+    }
+});
+
 module.exports = { router, isAuthenticated };

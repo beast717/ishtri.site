@@ -6,7 +6,28 @@
             "messages": "الرسائل",
             "log_in": "تسجيل الدخول",
             "log_out": "تسجيل الخروج",
-            "mine_annonser": "إعلاناتي"
+            "mine_annonser": "إعلاناتي",
+            "favorites": "المفضلة",
+            "saved_searches": "البحث المحفوظ",
+            "settings": "الإعدادات"
+        },
+        "settings": {
+            "title": "الإعدادات",
+            "subtitle": "إدارة تفضيلات حسابك والإشعارات",
+            "email_notifications": "إشعارات البريد الإلكتروني",
+            "email_notifications_desc": "تحكم في وقت تلقي إشعارات البريد الإلكتروني",
+            "saved_search_matches": "مطابقات البحث المحفوظة",
+            "saved_search_desc": "احصل على إشعار بالبريد الإلكتروني عندما تطابق منتجات جديدة عمليات البحث المحفوظة",
+            "account_information": "معلومات الحساب",
+            "account_info_desc": "عرض وإدارة تفاصيل حسابك",
+            "username": "اسم المستخدم",
+            "email": "البريد الإلكتروني",
+            "member_since": "عضو منذ",
+            "support": "الدعم",
+            "contact_support": "اتصل بالدعم",
+            "contact_support_desc": "تواصل مع فريق الدعم لدينا",
+            "contact_us": "اتصل بنا",
+            "updating_settings": "جاري تحديث الإعدادات..."
         },
         "search": {
             "placeholder": "البحث في المحادثات..."
@@ -70,7 +91,14 @@
             "dato": "تاريخ",
             "slett": "احذف",
             "mark_sold": "وضع علامة على أنها بيعت",
-            "mark_unsold": "وضع علامة على أنها غير مباعة"
+            "mark_unsold": "وضع علامة على أنها غير مباعة",
+            "sold": "تم البيع",
+            "favorite": "المفضلة",
+            "send": "إرسال",
+            "cancel": "إلغاء",
+            "login_required": "تحتاج إلى تسجيل الدخول لإضافة هذا المنتج إلى المفضلة",
+            "login_required_desc": "يرجى تسجيل الدخول للوصول إلى هذه الميزة.",
+            "log_in": "تسجيل الدخول"
         },
         "kategori": {
             "torget": "السوق",
@@ -95,7 +123,17 @@
             "eldre": "قديم",
             "filter_land": "بلد التصفية",
             "sorter_etter": "فرز حسب",
-            "utgitt": "نشرت"
+            "utgitt": "نشرت",
+            "year_range": "نطاق السنة",
+            "mileage_range": "المسافة المقطوعة (كم)",
+            "fuel_type": "نوع الوقود",
+            "from": "من",
+            "to": "إلى",
+            "other": "أخرى",
+            "filter": "تصفية",
+            "filters": "المرشحات",
+            "save_search": "حفظ هذا البحث",
+            "reset_filters": "إعادة تعيين المرشحات"
         },
         "logg_inn": {
             "logg_inn": "تسجيل الدخول",

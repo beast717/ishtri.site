@@ -1,0 +1,108 @@
+/* RTL (Right-to-Left) Support */
+
+/* Apply RTL direction to body when RTL class is present */
+body.rtl {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Navbar RTL adjustments */
+body.rtl .navBar {
+    direction: rtl;
+}
+
+body.rtl .navBarButtons {
+    flex-direction: row-reverse;
+}
+
+body.rtl .language-switcher {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+/* Dropdown menu RTL adjustments */
+body.rtl #dropdownMenu {
+    right: auto;
+    left: 0;
+}
+
+/* Text input RTL adjustments */
+body.rtl input[type="text"],
+body.rtl input[type="email"],
+body.rtl input[type="password"],
+body.rtl textarea,
+body.rtl select {
+    text-align: right;
+}
+
+/* Button RTL adjustments */
+body.rtl .btn {
+    flex-direction: row-reverse;
+}
+
+/* Card content RTL adjustments */
+body.rtl .card-body {
+    text-align: right;
+}
+
+/* Form RTL adjustments */
+body.rtl .form-group {
+    text-align: right;
+}
+
+body.rtl label {
+    text-align: right;
+}
+
+/* Settings page RTL adjustments */
+body.rtl .settings-container {
+    direction: rtl;
+    text-align: right;
+}
+
+body.rtl .setting-item {
+    flex-direction: row-reverse;
+}
+
+body.rtl .setting-control {
+    margin-left: 0;
+    margin-right: 2rem;
+}
+
+/* General RTL adjustments for margins and paddings */
+body.rtl .ml-auto {
+    margin-left: 0 !important;
+    margin-right: auto !important;
+}
+
+body.rtl .mr-auto {
+    margin-right: 0 !important;
+    margin-left: auto !important;
+}
+
+/* Icon adjustments for RTL */
+body.rtl .fas {
+    transform: scaleX(-1);
+}
+
+/* Don't flip certain icons that should remain the same */
+body.rtl .fas.fa-heart,
+body.rtl .fas.fa-bell,
+body.rtl .fas.fa-envelope,
+body.rtl .fas.fa-cog,
+body.rtl .fas.fa-save {
+    transform: none;
+}
+
+/* Responsive RTL adjustments */
+@media (max-width: 768px) {
+    body.rtl .setting-item {
+        flex-direction: column;
+        align-items: flex-end;
+    }
+    
+    body.rtl .setting-control {
+        margin-right: 0;
+        align-self: flex-start;
+    }
+}
