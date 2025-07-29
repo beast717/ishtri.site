@@ -63,68 +63,21 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Content Security Policy for Google Sign-In
+// Content Security Policy - Relaxed for better compatibility
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      defaultSrc: ["'self'"],
-      scriptSrc: [
-        "'self'", 
-        "https://accounts.google.com",
-        "https://apis.google.com",
-        "https://js-de.sentry-cdn.com",
-        "https://browser.sentry-cdn.com",
-        "https://pagead2.googlesyndication.com",
-        "https://www.googletagmanager.com",
-        "'unsafe-inline'",
-        "'unsafe-eval'"
-      ],
-      scriptSrcAttr: [
-        "'unsafe-inline'",
-        "'unsafe-hashes'",
-        "'sha256-dO6sDz0mPs9jZXbQiPbt9AIvzanSZYRWbzbWM5NZao0='"
-      ],
-      styleSrc: [
-        "'self'", 
-        "https://accounts.google.com",
-        "https://fonts.googleapis.com",
-        "https://cdnjs.cloudflare.com",
-        "'unsafe-inline'"
-      ],
-      fontSrc: [
-        "'self'",
-        "https://fonts.gstatic.com",
-        "https://cdnjs.cloudflare.com",
-        "data:"
-      ],
-      connectSrc: [
-        "'self'", 
-        "https://accounts.google.com",
-        "https://www.googleapis.com",
-        "https://*.sentry.io",
-        "https://pagead2.googlesyndication.com",
-        "https://ep1.adtrafficquality.google",
-        "https://csi.gstatic.com"
-      ],
-      frameSrc: [
-        "'self'",
-        "https://accounts.google.com",
-        "https://googleads.g.doubleclick.net",
-        "https://tpc.googlesyndication.com",
-        "https://pagead2.googlesyndication.com"
-      ],
-      imgSrc: [
-        "'self'", 
-        "https://accounts.google.com",
-        "https://www.gstatic.com",
-        "https://csi.gstatic.com",
-        "https://www.svgrepo.com",
-        "https://pagead2.googlesyndication.com",
-        "https://googleads.g.doubleclick.net",
-        "data:",
-        "blob:"
-      ],
-      workerSrc: ["'self'", "blob:"]
+      defaultSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "data:", "blob:", "https:", "http:"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "https:", "http:", "data:", "blob:"],
+      scriptSrcAttr: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https:", "http:", "data:"],
+      fontSrc: ["'self'", "https:", "http:", "data:", "blob:"],
+      connectSrc: ["'self'", "https:", "http:", "ws:", "wss:"],
+      frameSrc: ["'self'", "https:", "http:"],
+      imgSrc: ["'self'", "https:", "http:", "data:", "blob:"],
+      mediaSrc: ["'self'", "https:", "http:", "data:", "blob:"],
+      objectSrc: ["'none'"], // Keep this restricted for security
+      workerSrc: ["'self'", "blob:", "data:"]
     }
   })
 );
