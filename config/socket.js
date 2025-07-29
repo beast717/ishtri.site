@@ -12,8 +12,13 @@ function initializeSocket(server) {
             if (!userId) return;
             const userIdStr = String(userId); // Use consistent type for map key
             activeUsers.set(userIdStr, socket.id);
+            
+            // Join user to their own room for direct messaging
+            socket.join(userIdStr);
+            socket.authenticated = true;
+            
             // Maybe emit user status here if needed
-             io.emit('userStatus', { userId: userIdStr, status: 'online' });
+            io.emit('userStatus', { userId: userIdStr, status: 'online' });
 
              // Send existing notifications upon connection/auth? (Optional)
         });
@@ -35,35 +40,24 @@ function initializeSocket(server) {
             }
         });
 
-        // Handle new message
-        socket.on('newMessage', (message) => {
-            const receiverSocketId = activeUsers.get(message.receiverId);
-            if (receiverSocketId) {
-                io.to(receiverSocketId).emit('messageReceived', newMessage[0]);
-                io.to(senderSocketId).emit('messageSent', newMessage[0]);
-            }
-        });
-
         // Handle typing status
         socket.on('typing', (data) => {
-            const receiverSocketId = activeUsers.get(data.receiverId);
-            if (receiverSocketId) {
-                io.to(receiverSocketId).emit('userTyping', {
-                    senderId: data.senderId,
-                    isTyping: data.isTyping
-                });
-            }
+            // Emit to receiver's room
+            io.to(String(data.receiverId)).emit('userTyping', {
+                senderId: data.senderId,
+                senderName: data.senderName,
+                productdID: data.productdID,
+                isTyping: data.isTyping
+            });
         });
 
         // Handle read receipts
         socket.on('messageRead', (data) => {
-            const senderSocketId = activeUsers.get(data.senderId);
-            if (senderSocketId) {
-                io.to(senderSocketId).emit('messageReadReceipt', {
-                    messageId: data.messageId,
-                    readBy: data.readBy
-                });
-            }
+            // Emit to sender's room
+            io.to(String(data.senderId)).emit('messageReadReceipt', {
+                messageId: data.messageId,
+                readerId: data.readBy
+            });
         });
 
     });

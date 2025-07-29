@@ -14,7 +14,7 @@ router.get('/', async (req, res, next) => {
         }
 
         const [messages] = await pool.promise().query(
-            `SELECT m.messageId, m.messageContent, m.timestamp, m.readd,
+            `SELECT m.messageId, m.messageContent, m.timestamp, m.readd, m.receiverId,
                     p.ProductName, p.productdID,
                     u.brukernavn AS senderName, u.brukerId AS senderId
              FROM messages m
@@ -80,6 +80,7 @@ router.post('/', async (req, res, next) => {
         // Get the io instance from the app
         const io = req.app.get('io');
         if (io) {
+            // Emit to receiver's room
             io.to(receiverId.toString()).emit('messageReceived', newMessage[0]);
         }
 
@@ -163,8 +164,8 @@ router.get('/conversation', async (req, res, next) => {
             [productdID, userId, userId]
         );
 
-        // Mark messages as read
-        await pool.promise().query(
+        // Mark messages as read and get the affected messages
+        const [readResult] = await pool.promise().query(
             `UPDATE messages 
              SET readd = TRUE 
              WHERE productdID = ? 
@@ -172,6 +173,30 @@ router.get('/conversation', async (req, res, next) => {
              AND readd = FALSE`,
             [productdID, userId]
         );
+
+        // If messages were marked as read, emit read receipts
+        if (readResult.affectedRows > 0) {
+            const [readMessages] = await pool.promise().query(
+                `SELECT messageId, senderId
+                 FROM messages 
+                 WHERE productdID = ? 
+                 AND receiverId = ? 
+                 AND readd = TRUE 
+                 AND senderId != ?`,
+                [productdID, userId, userId]
+            );
+
+            // Emit read receipts for all the messages
+            const io = req.app.get('io');
+            if (io && readMessages.length > 0) {
+                readMessages.forEach(message => {
+                    io.to(String(message.senderId)).emit('messageReadReceipt', {
+                        messageId: message.messageId,
+                        readerId: userId
+                    });
+                });
+            }
+        }
 
         res.json(messages);
     } catch (err) {

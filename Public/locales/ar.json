@@ -154,7 +154,8 @@
             "mark_asread": "وضع علامة للقراءة",
             "svar": "إجابة",
             "dine_meldinger": "رسائلك",
-            "unread_count": "{{count}} رسالة غير مقروءة"
+            "unread_count": "{{count}} رسالة غير مقروءة",
+            "placeholder": "اكتب رسالتك..."
         },
         "flight_search": {
             "title": "البحث عن رحلات",

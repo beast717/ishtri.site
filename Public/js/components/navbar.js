@@ -158,6 +158,9 @@ function updateNavbarUI(user) {
  * @param {object|null} user - The user object, or null if not logged in.
  */
 export function initNavbar(user = null) {
+    // Make checkUnreadMessages globally available
+    window.checkUnreadMessages = checkUnreadMessages;
+    
     // Update the UI based on whether a user object was provided
     updateNavbarUI(user);
 
@@ -167,6 +170,9 @@ export function initNavbar(user = null) {
         
         // Listen for real-time updates (socket should already be authenticated by app.js)
         setupSocketListeners();
+        
+        // Initial check for unread messages
+        checkUnreadMessages();
     }
 }
 

@@ -525,6 +525,9 @@ export default function initProductDetailsPage() {
             showToast('Message sent successfully!', 'success');
             hideMessageModal();
             
+            // Update unread message badge
+            checkUnreadMessages();
+            
         } catch (error) {
             console.error('Message error:', error);
             showToast('Failed to send message', 'error');

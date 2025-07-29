@@ -137,20 +137,33 @@ class I18nService {
     updateTranslatedElements() {
         const elements = document.querySelectorAll('[data-i18n]');
         elements.forEach(element => {
-            const key = element.getAttribute('data-i18n');
-            const translation = this.t(key);
+            const dataValue = element.getAttribute('data-i18n');
             
-            // Update text content (preserve HTML structure)
-            if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                element.placeholder = translation;
+            // Check if it's an attribute-specific translation like [placeholder]key
+            const attributeMatch = dataValue.match(/^\[(\w+)\](.+)$/);
+            
+            if (attributeMatch) {
+                const [, attribute, key] = attributeMatch;
+                const translation = this.t(key);
+                
+                // Set the specific attribute
+                element.setAttribute(attribute, translation);
             } else {
-                // Only update text nodes, preserve child elements
-                const textNode = Array.from(element.childNodes)
-                    .find(node => node.nodeType === Node.TEXT_NODE);
-                if (textNode) {
-                    textNode.textContent = translation;
+                // Standard text content translation
+                const translation = this.t(dataValue);
+                
+                // Update text content (preserve HTML structure)
+                if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                    element.placeholder = translation;
                 } else {
-                    element.textContent = translation;
+                    // Only update text nodes, preserve child elements
+                    const textNode = Array.from(element.childNodes)
+                        .find(node => node.nodeType === Node.TEXT_NODE);
+                    if (textNode) {
+                        textNode.textContent = translation;
+                    } else {
+                        element.textContent = translation;
+                    }
                 }
             }
         });

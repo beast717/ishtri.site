@@ -90,8 +90,6 @@ function initializeChat() {
     function setupSocketListeners() {
         // Handle new message received
         socket.on('messageReceived', (message) => {
-            console.log('New message received:', message);
-            
             if (currentConversation && message.productdID === currentConversation.productdID) {
                 appendMessage(message);
                 markMessageAsRead(message);
@@ -101,13 +99,6 @@ function initializeChat() {
                     window.ishtri.toast.show(`New message about ${message.ProductName}`, 'info');
                 }
             }
-            updateConversationsList();
-        });
-
-        // Handle message sent confirmation
-        socket.on('messageSent', (message) => {
-            console.log('Message sent confirmation:', message);
-            updateMessageStatusUI(message.tempId || message.messageId, 'sent', message.messageId);
             updateConversationsList();
         });
 
@@ -260,17 +251,19 @@ function initializeChat() {
             });
 
             // Send to server
+            const messageData = {
+                productdID: currentConversation.productdID,
+                messageContent: messageContent,
+                receiverId: currentConversation.otherParticipantId,
+                tempId: tempId
+            };
+            
             const response = await fetch('/api/messages', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    productdID: currentConversation.productdID,
-                    messageContent: messageContent,
-                    receiverId: currentConversation.otherParticipantId,
-                    tempId: tempId
-                })
+                body: JSON.stringify(messageData)
             });
 
             if (!response.ok) {
@@ -282,11 +275,11 @@ function initializeChat() {
 
             // Update UI with confirmed message
             updateMessageStatusUI(tempId, 'sent', confirmedMessage.messageId, confirmedMessage.timestamp);
-
-            // Emit via socket
-            socket.emit('newMessage', confirmedMessage);
-
-            updateConversationsList();
+            
+            // Update unread message badge
+            if (typeof checkUnreadMessages === 'function') {
+                checkUnreadMessages();
+            }
 
         } catch (error) {
             console.error('Error sending message:', error);
@@ -354,8 +347,14 @@ function initializeChat() {
             }
 
             conversations[conversationKey].messages.push(message);
-            conversations[conversationKey].participants.add(message.senderId);
-            conversations[conversationKey].participants.add(message.receiverId);
+            
+            // Only add valid participant IDs (not null/undefined)
+            if (message.senderId != null) {
+                conversations[conversationKey].participants.add(message.senderId);
+            }
+            if (message.receiverId != null) {
+                conversations[conversationKey].participants.add(message.receiverId);
+            }
 
             // Update last message
             if (!conversations[conversationKey].lastMessage || 
@@ -364,7 +363,7 @@ function initializeChat() {
             }
 
             // Count unread messages
-            if (message.senderId !== currentUserId && !message.readd) {
+            if (String(message.senderId) !== String(currentUserId) && !message.readd) {
                 conversations[conversationKey].unreadCount++;
             }
         });
@@ -400,11 +399,18 @@ function initializeChat() {
         conversationEl.dataset.productdID = conversation.productdID;
 
         const displayName = conversation.productName || 'Unknown Product';
-        const otherParticipant = Array.from(conversation.participants).find(id => id !== currentUserId);
+        
+        // Find other participant with type-safe comparison, excluding undefined values
+        const otherParticipant = Array.from(conversation.participants)
+            .filter(id => id != null) // Remove null/undefined values
+            .find(id => {
+                // Convert both to strings for comparison to handle type mismatches
+                return String(id) !== String(currentUserId);
+            });
 
         const lastMessage = conversation.lastMessage;
         const previewText = lastMessage ? 
-            (lastMessage.senderId === currentUserId ? 'You: ' : '') + lastMessage.messageContent : 
+            (lastMessage.senderId === currentUserId ? 'You: ' : `${lastMessage.senderName}: `) + lastMessage.messageContent : 
             'No messages yet';
 
         const timeString = lastMessage ? formatRelativeTime(lastMessage.timestamp) : '';
@@ -425,6 +431,15 @@ function initializeChat() {
 
         // Add click handler
         conversationEl.addEventListener('click', () => {
+            // Ensure we have a valid other participant
+            if (!otherParticipant) {
+                console.error('Cannot start conversation: no valid other participant found');
+                if (window.ishtri.toast) {
+                    window.ishtri.toast.show('Cannot start conversation: invalid participant data', 'error');
+                }
+                return;
+            }
+
             // Remove active class from all conversations
             document.querySelectorAll('.conversation-item').forEach(el => el.classList.remove('active'));
             conversationEl.classList.add('active');
