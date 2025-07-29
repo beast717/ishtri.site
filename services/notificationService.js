@@ -18,7 +18,7 @@ async function createMatchNotification(userId, searchName, product, io, activeUs
             return;
         }
 
-         // --- Check User Preference ---
+        // --- Check User Preference ---
         let shouldSendEmail = false;
         let userEmail = null;
         let userName = null;
@@ -39,6 +39,18 @@ async function createMatchNotification(userId, searchName, product, io, activeUs
             // Decide if you should proceed without email or stop
         }
         // --- End Check ---
+
+        // Check if a similar notification already exists to prevent duplicates
+        const [existingNotification] = await pool.promise().query(
+            `SELECT notificationId FROM notifications 
+             WHERE userId = ? AND productdID = ? AND notification_type = 'new_match' 
+             AND message LIKE ?`,
+            [userId, productId, `%${searchName}%`]
+        );
+
+        if (existingNotification.length > 0) {
+            return; // Don't create duplicate notification
+        }
 
 
         // 1. Insert notification into the database (always do this)

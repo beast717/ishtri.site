@@ -4,14 +4,45 @@ const pool = require('../config/db');
 const { checkProductAgainstSavedSearches } = require('./matchingService');
 const { createMatchNotification } = require('./notificationService');
 
-let lastCheckTimestamp = null; // Consider persisting this (DB/file) for resilience
+// Store last check timestamp in database instead of memory
+async function getLastCheckTimestamp() {
+    try {
+        const [result] = await pool.promise().query(
+            `SELECT value FROM system_settings WHERE setting_key = 'last_matcher_check' LIMIT 1`
+        );
+        return result.length > 0 ? new Date(result[0].value) : null;
+    } catch (error) {
+        // If table doesn't exist or other error, return null
+        if (process.env.NODE_ENV === 'development') {
+            console.warn('Could not retrieve last check timestamp:', error.message);
+        }
+        return null;
+    }
+}
+
+async function setLastCheckTimestamp(timestamp) {
+    try {
+        await pool.promise().query(
+            `INSERT INTO system_settings (setting_key, value) VALUES ('last_matcher_check', ?) 
+             ON DUPLICATE KEY UPDATE value = ?`,
+            [timestamp.toISOString(), timestamp.toISOString()]
+        );
+    } catch (error) {
+        if (process.env.NODE_ENV === 'development') {
+            console.warn('Could not save last check timestamp:', error.message);
+        }
+    }
+}
 
 async function checkNewProductsForMatches(io, getActiveUsersMap) {
     const currentCheckTime = new Date();
     let productsToCheck = [];
-    let latestProcessedProductTimestamp = lastCheckTimestamp; // Track the latest timestamp from processed products
+    let latestProcessedProductTimestamp = null;
 
     try {
+        // Get the last check timestamp from database
+        const lastCheckTimestamp = await getLastCheckTimestamp();
+        
         // Construct the base query with necessary JOINs
         let query = `
             SELECT p.*, -- Select all needed fields from products
@@ -62,8 +93,9 @@ async function checkNewProductsForMatches(io, getActiveUsersMap) {
              } // End for loop
 
              // *** Update the main timestamp AFTER the loop finishes successfully ***
-             lastCheckTimestamp = latestProcessedProductTimestamp;
-             // Consider persisting lastCheckTimestamp here
+             if (latestProcessedProductTimestamp) {
+                 await setLastCheckTimestamp(latestProcessedProductTimestamp);
+             }
 
          } else {
               // Keep lastCheckTimestamp as is, no need to update to currentCheckTime

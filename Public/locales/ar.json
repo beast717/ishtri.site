@@ -30,7 +30,8 @@
             "updating_settings": "جاري تحديث الإعدادات..."
         },
         "search": {
-            "placeholder": "البحث في المحادثات..."
+            "placeholder": "ابحث عن أي شيء...",
+            "conversations": "البحث في المحادثات..."
         },
         "categories": {
             "torget": "السوق",
@@ -217,6 +218,7 @@
         "notifications": {
             "no_notifications": "لا توجد إشعارات حتى الآن",
             "mark_as_read": "تحديد كمقروء",
+            "mark_all_read": "تحديد الكل كمقروء",
             "new_message": "رسالة جديدة من {{user}}",
             "new_offer": "عرض جديد على إعلانك: {{title}}",
             "price_update": "تم تحديث السعر لـ {{title}}",

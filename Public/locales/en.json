@@ -30,7 +30,8 @@
             "updating_settings": "Updating settings..."
         },
         "search": {
-            "placeholder": "Search conversations..."
+            "placeholder": "Search for anything...",
+            "conversations": "Search conversations..."
         },
         "categories": {
             "torget": "Market",
@@ -220,6 +221,7 @@
         "notifications": {
             "no_notifications": "No notifications yet",
             "mark_as_read": "Mark as Read",
+            "mark_all_read": "Mark All as Read",
             "new_message": "New message from {{user}}",
             "new_offer": "New offer on your listing: {{title}}",
             "price_update": "Price updated for {{title}}",

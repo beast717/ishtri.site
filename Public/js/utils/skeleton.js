@@ -43,6 +43,24 @@ export default class SkeletonLoader {
         return skeleton;
     }
 
+    createNotificationSkeleton() {
+        const skeleton = document.createElement('li');
+        skeleton.className = 'notification-item skeleton-notification';
+        skeleton.innerHTML = `
+            <div class="notification-icon">
+                <div class="skeleton skeleton-circle" style="width: 24px; height: 24px;"></div>
+            </div>
+            <div class="notification-content">
+                <div class="skeleton skeleton-text skeleton-title" style="width: 70%; margin-bottom: 8px;"></div>
+                <div class="skeleton skeleton-text skeleton-meta" style="width: 40%; height: 14px;"></div>
+            </div>
+            <div class="notification-actions">
+                <div class="skeleton skeleton-circle" style="width: 32px; height: 32px;"></div>
+            </div>
+        `;
+        return skeleton;
+    }
+
     createGridSkeleton(count = 4) {
         const container = document.createElement('div');
         container.style.display = 'grid';
@@ -69,6 +87,8 @@ export default class SkeletonLoader {
                 skeleton = this.createSavedSearchSkeleton();
             } else if (type === 'message') {
                 skeleton = this.createMessageSkeleton();
+            } else if (type === 'notification') {
+                skeleton = this.createNotificationSkeleton();
             } else {
                 skeleton = this.createProductSkeleton();
             }

@@ -172,7 +172,8 @@
     .navBar { height: var(--navbar-height-mobile); padding: 0 5%; }
     .logoOgTittel img { height: 35px; }
     .navBarButtons { gap: 20px; }
-    .navBarButtons a span[data-i18n] { display: none; }
+    /* Only hide text in main navbar buttons, not dropdown menu */
+    .navBarButtons > a span[data-i18n] { display: none; }
     #profileUsername { display: none; }
     /* Hide the entire language switcher on mobile */
     .language-switcher { display: none; }

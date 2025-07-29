@@ -6,7 +6,10 @@ function initializeSocket(server) {
     const io = socketIO(server);
 
     io.on('connection', (socket) => {
-        console.log(`New client connected: ${socket.id}`);
+        // Only log in development mode
+        if (process.env.NODE_ENV === 'development') {
+            console.log(`New client connected: ${socket.id}`);
+        }
 
         socket.on('authenticate', (userId) => {
             if (!userId) return;

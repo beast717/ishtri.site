@@ -82,3 +82,42 @@
     gap: 10px;
     flex-shrink: 0;
 }
+
+/* Notification Skeleton - matches .notification-item layout */
+.skeleton-notification {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px 20px;
+    margin-bottom: 1px;
+    background-color: var(--bg-white);
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.skeleton-notification .notification-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+}
+
+.skeleton-notification .notification-content {
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.skeleton-notification .notification-actions {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.skeleton-circle {
+    border-radius: 50%;
+}
+
+.skeleton-meta {
+    opacity: 0.7;
+}

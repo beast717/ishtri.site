@@ -163,12 +163,16 @@ app.use((err, req, res, next) => {
 });
 
 // --- Cron Job for Matching Saved Searches ---
-cron.schedule('*/5 * * * *', async () => { // Run every 1 minute for testing
-    console.log('Running saved search matching job...');
+cron.schedule('*/5 * * * *', async () => { // Run every 5 minutes
+    if (process.env.NODE_ENV === 'development') {
+        console.log('Running saved search matching job...');
+    }
     try {
         // Pass 'io' instance to the job if needed for real-time updates
         await checkNewProductsForMatches(io, getActiveUsersMap);
-        console.log('Saved search matching job finished.');
+        if (process.env.NODE_ENV === 'development') {
+            console.log('Saved search matching job finished.');
+        }
     } catch (error) {
         console.error('Error in saved search matching job:', error);
     }

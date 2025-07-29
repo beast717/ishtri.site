@@ -82,7 +82,8 @@ export default function initNotificationsPage() {
 
     async function fetchNotifications() {
         try {
-            notificationList.innerHTML = '<p>Loading notifications...</p>';
+            // Show skeleton loading using the SkeletonLoader class
+            window.ishtri.skeletonLoader.showInContainer('notificationList', 'notification', 5);
             
             const response = await fetch('/api/notifications', { credentials: 'include' });
             if (!response.ok) {
@@ -93,9 +94,15 @@ export default function initNotificationsPage() {
             }
             
             const notifications = await response.json();
+            
+            // Hide skeleton and render notifications
+            window.ishtri.skeletonLoader.hideInContainer('notificationList');
             renderNotifications(notifications);
         } catch (error) {
             console.error('Failed to load notifications:', error);
+            
+            // Hide skeleton on error
+            window.ishtri.skeletonLoader.hideInContainer('notificationList');
             notificationList.innerHTML = `<p class="no-notifications">Error loading notifications: ${error.message}</p>`;
             markAllReadBtn.disabled = true;
             
