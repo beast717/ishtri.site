@@ -56,7 +56,13 @@
             "reset_password": "Reset Password",
             "back_to_login": "Back to Login",
             "reset_your_password": "Reset Your Password",
-            "new_password": "New Password"
+            "new_password": "New Password",
+            "subtitle": "Log in to contact sellers, save favorites, list ads, and access exclusive features.",
+            "signup_subtitle": "Create your free account to unlock all features.",
+            "terms_text": "By continuing, you agree to our",
+            "terms": "Terms of Service",
+            "and": "and",
+            "privacy": "Privacy Policy"
         },
         "form": {
             "product_name": "Product Name",

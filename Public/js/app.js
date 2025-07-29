@@ -100,7 +100,6 @@ function initSocket(userId = null) {
  */
 async function initAuth() {
     try {
-        console.log('Fetching current user...');
         const response = await fetch('/api/auth/current-user', { credentials: 'include' });
         
         if (!response.ok) {
@@ -119,16 +118,13 @@ async function initAuth() {
         }
         
         const user = await response.json();
-        console.log('User data received:', user);
         
         const isLoggedIn = user && user.brukerId;
         
         if (isLoggedIn) {
-            console.log("User is logged in. User object:", user);
             window.ishtri.user = user;
             initSocket(user.brukerId);
         } else {
-            console.log("User is not logged in or user data is incomplete");
             initSocket();
         }
         

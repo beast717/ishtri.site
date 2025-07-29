@@ -89,31 +89,19 @@ function setupSocketListeners() {
  * @param {object|null} user - The user object, or null if not logged in.
  */
 function updateNavbarUI(user) {
-    console.log('Updating navbar UI with user:', user);
-    
     const loginButton = document.getElementById('loginButton');
     const profileContainer = document.getElementById('profileContainer');
     const profileUsername = document.getElementById('profileUsername');
     const dropdownMenu = document.getElementById('dropdownMenu');
     const logoutButton = document.getElementById('logoutButton');
 
-    console.log('Navbar elements found:', {
-        loginButton: !!loginButton,
-        profileContainer: !!profileContainer,
-        profileUsername: !!profileUsername,
-        dropdownMenu: !!dropdownMenu,
-        logoutButton: !!logoutButton
-    });
-
     if (user && user.brukernavn) {
-        console.log('User is logged in, showing profile container');
         // --- User is Logged In ---
         if (loginButton) loginButton.style.display = 'none';
         if (profileContainer) profileContainer.style.display = 'flex';
         if (profileUsername) profileUsername.textContent = user.brukernavn;
 
     } else {
-        console.log('User is not logged in, showing login button');
         // --- User is Logged Out ---
         if (loginButton) loginButton.style.display = 'block';
         if (profileContainer) profileContainer.style.display = 'none';
@@ -166,8 +154,6 @@ export function initNavbar(user = null) {
 
     // If user is logged in, perform authenticated actions
     if (user && user.brukerId) {
-        console.log(`User ${user.brukerId} is logged in. Setting up authenticated navbar features.`);
-        
         // Listen for real-time updates (socket should already be authenticated by app.js)
         setupSocketListeners();
         
@@ -188,7 +174,6 @@ export function updateNavbar(user) {
     
     // If user just logged in, set up authenticated features
     if (user && user.brukerId) {
-        console.log(`User ${user.brukerId} logged in. Updating navbar.`);
         setupSocketListeners();
         
         // Also trigger initial badge updates

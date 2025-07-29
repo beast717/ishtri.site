@@ -24,6 +24,7 @@
     "express-session": "^1.18.1",
     "express-validator": "^7.2.1",
     "google-auth-library": "^9.15.1",
+    "helmet": "^8.1.0",
     "i18next": "^24.2.0",
     "i18next-browser-languagedetector": "^8.0.2",
     "i18next-http-backend": "^3.0.1",

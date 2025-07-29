@@ -62,10 +62,7 @@ async function handleGoogleResponse(response) {
 }
 
 function initializeGoogleAuth() {
-    console.log('Initializing Google Auth...');
-    
     if (typeof google === 'undefined') {
-        console.log('Google API not loaded yet, retrying...');
         setTimeout(initializeGoogleAuth, 100);
         return;
     }
@@ -85,7 +82,8 @@ function initializeGoogleAuth() {
             client_id: '502881498259-u0g6k4se00su93ocksenfrh96jv8j9bn.apps.googleusercontent.com',
             callback: handleGoogleResponse,
             auto_select: false,
-            context: 'signin'
+            context: 'signin',
+            use_fedcm_for_prompt: false // Disable FedCM which can cause issues
         });
         
         google.accounts.id.renderButton(
@@ -99,15 +97,10 @@ function initializeGoogleAuth() {
             }
         );
         
-        console.log('Google Sign-In button rendered');
-        
         // Check if button was actually rendered
         setTimeout(() => {
             const iframe = googleSignInButton.querySelector('iframe');
-            if (iframe) {
-                console.log('✅ Google Sign-In button successfully loaded');
-            } else {
-                console.warn('⚠️ Google Sign-In button not rendered - check domain/client ID');
+            if (!iframe) {
                 // Add fallback message
                 googleSignInButton.innerHTML = `
                     <div class="google-signin-fallback">
@@ -261,8 +254,6 @@ function setupInputValidation() {
 }
 
 export default function initAuthPage() {
-    console.log('Initializing auth page...');
-    
     // Check if on the correct page
     if (!document.querySelector('.auth-page-body')) return;
 
@@ -275,6 +266,4 @@ export default function initAuthPage() {
     setTimeout(() => {
         initializeGoogleAuth();
     }, 500);
-    
-    console.log('Auth page initialized successfully');
 }

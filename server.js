@@ -12,7 +12,7 @@ const dotenv = require('dotenv');
 const nodemailer = require('nodemailer');
 const http = require('http');
 const cron = require('node-cron');
-//const helmet = require('helmet');
+const helmet = require('helmet');
 dotenv.config();
 
 const app = express();
@@ -37,34 +37,97 @@ app.use(express.urlencoded({ extended: true }));
 
 const cors = require('cors');
 const corsOptions = {
-  origin: process.env.NODE_ENV === 'production' 
-            ? 'https://ishtri.site' 
-            : '*', 
-  credentials: true, 
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // In production, be more restrictive
+    if (process.env.NODE_ENV === 'production') {
+      const allowedOrigins = [
+        'https://ishtri.site',
+        'https://www.ishtri.site',
+        'https://accounts.google.com'
+      ];
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error('Not allowed by CORS'));
+    } else {
+      // In development, allow any origin
+      return callback(null, true);
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 };
 app.use(cors(corsOptions));
 
-/*app.use(
+// Content Security Policy for Google Sign-In
+app.use(
   helmet.contentSecurityPolicy({
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: [
         "'self'", 
-        "https://accounts.google.com/gsi/client", 
+        "https://accounts.google.com",
+        "https://apis.google.com",
         "https://js-de.sentry-cdn.com",
         "https://browser.sentry-cdn.com",
-        "'unsafe-inline'" 
+        "https://pagead2.googlesyndication.com",
+        "https://www.googletagmanager.com",
+        "'unsafe-inline'",
+        "'unsafe-eval'"
       ],
-      
-      workerSrc: ["'self'", "blob:"], 
-      frameSrc: ["https://accounts.google.com/"],
-      connectSrc: ["'self'", "https://*.sentry.io", "https://accounts.google.com/"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      imgSrc: ["'self'", "data:"],
-    },
+      scriptSrcAttr: [
+        "'unsafe-inline'",
+        "'unsafe-hashes'",
+        "'sha256-dO6sDz0mPs9jZXbQiPbt9AIvzanSZYRWbzbWM5NZao0='"
+      ],
+      styleSrc: [
+        "'self'", 
+        "https://accounts.google.com",
+        "https://fonts.googleapis.com",
+        "https://cdnjs.cloudflare.com",
+        "'unsafe-inline'"
+      ],
+      fontSrc: [
+        "'self'",
+        "https://fonts.gstatic.com",
+        "https://cdnjs.cloudflare.com",
+        "data:"
+      ],
+      connectSrc: [
+        "'self'", 
+        "https://accounts.google.com",
+        "https://www.googleapis.com",
+        "https://*.sentry.io",
+        "https://pagead2.googlesyndication.com",
+        "https://ep1.adtrafficquality.google",
+        "https://csi.gstatic.com"
+      ],
+      frameSrc: [
+        "'self'",
+        "https://accounts.google.com",
+        "https://googleads.g.doubleclick.net",
+        "https://tpc.googlesyndication.com",
+        "https://pagead2.googlesyndication.com"
+      ],
+      imgSrc: [
+        "'self'", 
+        "https://accounts.google.com",
+        "https://www.gstatic.com",
+        "https://csi.gstatic.com",
+        "https://www.svgrepo.com",
+        "https://pagead2.googlesyndication.com",
+        "https://googleads.g.doubleclick.net",
+        "data:",
+        "blob:"
+      ],
+      workerSrc: ["'self'", "blob:"]
+    }
   })
 );
-*/
 // Static files
 app.use('/data', express.static(path.join(__dirname, 'data')));
 app.use(express.static(path.join(__dirname, 'Public')));
