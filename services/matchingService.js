@@ -73,12 +73,20 @@ async function checkProductAgainstSavedSearches(product) {
             // --- Apply Filters ---
 
             // Generic Filters (Check if they exist in parsedFilters first!)
-            if (parsedFilters.countries && parsedFilters.countries.length > 0) {
-                // product.country should now be available from the JOIN in backgroundMatcher
-                if (!product.country || !checkArrayContains(parsedFilters.countries, product.country)) doesMatch = false;
+            // Handle both 'countries' and 'selectedCountries' keys for backward compatibility
+            const countryFilter = parsedFilters.countries || parsedFilters.selectedCountries;
+            if (countryFilter && countryFilter.length > 0) {
+                if (!product.country || !checkArrayContains(countryFilter, product.country)) {
+                    doesMatch = false;
+                }
             }
-            if (doesMatch && parsedFilters.cities && parsedFilters.cities.length > 0) {
-                if (product.city_id == null || !checkArrayContains(parsedFilters.cities, product.city_id)) doesMatch = false;
+            
+            // Handle both 'cities' and 'selectedCities' keys for backward compatibility  
+            const cityFilter = parsedFilters.cities || parsedFilters.selectedCities;
+            if (doesMatch && cityFilter && cityFilter.length > 0) {
+                if (product.city_id == null || !checkArrayContains(cityFilter, product.city_id)) {
+                    doesMatch = false;
+                }
             }
              // Add Price check if you save price ranges
              // if (doesMatch && parsedFilters.priceRange) {
@@ -90,7 +98,9 @@ async function checkProductAgainstSavedSearches(product) {
             if (doesMatch) {
                 switch (product.category) {
                     case 'Torget':
-                        if (parsedFilters.subCategory && product.SubCategori !== parsedFilters.subCategory) doesMatch = false;
+                        if (parsedFilters.subCategory && product.SubCategori !== parsedFilters.subCategory) {
+                            doesMatch = false;
+                        }
                         break;
 
                     case 'Bil':
@@ -123,6 +133,7 @@ async function checkProductAgainstSavedSearches(product) {
                         break;
                 }
             }
+            
             if (doesMatch) {
                 matches.push({
                     userId: search.user_id,

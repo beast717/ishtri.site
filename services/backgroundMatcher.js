@@ -32,10 +32,10 @@ async function checkNewProductsForMatches(io, getActiveUsersMap) {
             query += ` WHERE p.Date > ? ORDER BY p.Date ASC`; // Process oldest first within the batch
             params.push(lastCheckTimestamp);
         } else {
-            // Initialize timestamp to current time so the *next* run picks up new items
-            lastCheckTimestamp = currentCheckTime;
-            // Potentially persist this initial timestamp immediately
-            return; // Exit, nothing to check on the very first run
+            // On first run, check products from the last 24 hours to catch any existing matches
+            const twentyFourHoursAgo = new Date(currentCheckTime.getTime() - 24 * 60 * 60 * 1000);
+            query += ` WHERE p.Date > ? ORDER BY p.Date ASC`;
+            params.push(twentyFourHoursAgo);
         }
 
     

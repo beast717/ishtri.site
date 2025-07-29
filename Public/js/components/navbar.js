@@ -173,6 +173,9 @@ export function initNavbar(user = null) {
         
         // Initial check for unread messages
         checkUnreadMessages();
+        
+        // Initial check for unread notifications
+        updateNotificationBadge();
     }
 }
 
