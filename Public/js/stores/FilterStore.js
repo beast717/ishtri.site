@@ -97,13 +97,13 @@ class FilterStore {
             priceOrder: getEl('priceFilter')?.value || '',
             dateOrder: getEl('dateFilter')?.value || '',
             subCategory: getEl('subCategoryFilter')?.value || '',
-            selectedCountries: Array.from(queryAll('.country-list > li > input[type="checkbox"]:checked'))
+            selectedCountries: Array.from(queryAll('#mainSidePanel .country-list > li > input[type="checkbox"]:checked'))
                 .map(cb => cb.value)
                 .filter(val => val),
-            selectedCities: Array.from(queryAll('.city-list input[type="checkbox"]:checked'))
+            selectedCities: Array.from(queryAll('#mainSidePanel .city-list input[type="checkbox"]:checked'))
                 .map(cb => cb.value)
                 .filter(val => val),
-            selectedCarBrands: Array.from(queryAll('.car-brand-list input[type="checkbox"]:checked'))
+            selectedCarBrands: Array.from(queryAll('#mainSidePanel .car-brand-list input[type="checkbox"]:checked'))
                 .map(cb => cb.value)
                 .filter(val => val),
             yearRange: { 

@@ -102,6 +102,27 @@ body[data-page="productDetails"] .page-container {
 .offcanvas-filter-content {
     padding: 18px 20px 20px 20px;
 }
+
+/* Mobile filters content styling */
+.mobile-filters-content {
+    display: block !important;
+    width: 100% !important;
+    position: static !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    background: transparent !important;
+}
+
+.mobile-filters-content h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color-light);
+}
+
 body.offcanvas-open {
     overflow: hidden !important;
     touch-action: none;

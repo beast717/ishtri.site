@@ -27,7 +27,14 @@ export default function initProductListPage() {
 
     // Initialize components
     const loadMoreButton = new LoadMoreButton(() => fetchProducts(true));
-    const debouncedApplyFilters = debounce(applyFilters, 350);
+    // Debounced version of apply filters to avoid excessive calls
+    const debouncedApplyFilters = debounce(() => {
+        // Check if mobile is currently syncing to prevent double execution
+        if (window.ishtriOffcanvasService && window.ishtriOffcanvasService.isSyncing) {
+            return; // Skip if mobile is syncing
+        }
+        applyFilters();
+    }, 350);
 
     /**
      * Main product fetching function
@@ -162,13 +169,24 @@ export default function initProductListPage() {
     }
 
     /**
+     * Safe apply filters that checks for mobile sync
+     */
+    function safeApplyFilters() {
+        // Check if mobile is currently syncing to prevent double execution
+        if (window.ishtriOffcanvasService && window.ishtriOffcanvasService.isSyncing) {
+            return; // Skip if mobile is syncing
+        }
+        applyFilters();
+    }
+
+    /**
      * Setup event listeners
      */
     function setupEventListeners() {
-        // Filter event listeners
-        document.getElementById('priceFilter')?.addEventListener('change', applyFilters);
-        document.getElementById('dateFilter')?.addEventListener('change', applyFilters);
-        document.getElementById('subCategoryFilter')?.addEventListener('change', applyFilters);
+        // Filter event listeners - use safe wrapper to prevent duplication during mobile sync
+        document.getElementById('priceFilter')?.addEventListener('change', safeApplyFilters);
+        document.getElementById('dateFilter')?.addEventListener('change', safeApplyFilters);
+        document.getElementById('subCategoryFilter')?.addEventListener('change', safeApplyFilters);
         document.getElementById('resetFiltersBtn')?.addEventListener('click', resetFilters);
         document.getElementById('resetFiltersBtn-mobile')?.addEventListener('click', resetFilters);
 
@@ -176,6 +194,11 @@ export default function initProductListPage() {
         const sidePanel = document.getElementById('mainSidePanel');
         if (sidePanel) {
             sidePanel.addEventListener('change', e => {
+                // Check if mobile is currently syncing to prevent double execution
+                if (window.ishtriOffcanvasService && window.ishtriOffcanvasService.isSyncing) {
+                    return; // Skip if mobile is syncing to main
+                }
+                
                 if (e.target.matches('input[type="checkbox"]')) {
                     const countryLi = e.target.closest('.country-list > li');
                     if (countryLi && e.target.id === countryLi.querySelector('input').id) {
@@ -199,26 +222,6 @@ export default function initProductListPage() {
      * Setup TorgetKat-specific event listeners
      */
     async function setupTorgetKatListeners() {
-        // Off-canvas drawer
-        const openBtn = document.getElementById('offcanvasFilterBtn');
-        const closeBtn = document.getElementById('offcanvasFilterClose');
-        const overlay = document.getElementById('offcanvasFilterOverlay');
-        const drawer = document.getElementById('offcanvasFilterDrawer');
-        
-        const openDrawer = () => {
-            drawer?.classList.add('active');
-            overlay?.classList.add('active');
-        };
-        
-        const closeDrawer = () => {
-            drawer?.classList.remove('active');
-            overlay?.classList.remove('active');
-        };
-        
-        openBtn?.addEventListener('click', openDrawer);
-        closeBtn?.addEventListener('click', closeDrawer);
-        overlay?.addEventListener('click', closeDrawer);
-
         // Save Search Button
         document.body.addEventListener('click', e => {
             if (e.target.closest('.save-search-button')) {
@@ -229,6 +232,21 @@ export default function initProductListPage() {
 
         // Initialize sliders
         await initializeSliders();
+    }
+
+    /**
+     * Initialize off-canvas filter drawer after data is loaded
+     */
+    async function initializeOffcanvasDrawer() {
+        // Small delay to ensure data loading is complete
+        await new Promise(resolve => setTimeout(resolve, 200));
+        
+        const { OffcanvasFilterService } = await import('../services/OffcanvasFilterService.js');
+        const offcanvasService = new OffcanvasFilterService(applyFilters);
+        await offcanvasService.initialize();
+        
+        // Store reference for later use
+        window.ishtriOffcanvasService = offcanvasService;
     }
 
     /**
@@ -292,6 +310,11 @@ export default function initProductListPage() {
             // Give the UI a moment to update before displaying active filters
             await new Promise(resolve => setTimeout(resolve, 100));
             
+            // Sync filter states to mobile panel after loading saved filters
+            if (window.ishtriOffcanvasService) {
+                await window.ishtriOffcanvasService.refreshSync();
+            }
+            
             // Update active filters display after everything is applied
             await updateActiveFiltersDisplay();
             
@@ -328,6 +351,9 @@ export default function initProductListPage() {
 
         // TorgetKat-specific initialization
         if (isTorgetKatPage()) {
+            // Initialize off-canvas drawer AFTER data is loaded
+            await initializeOffcanvasDrawer();
+            
             // Load saved search filters if present
             const savedFiltersLoaded = await loadSavedSearchFilters();
             
