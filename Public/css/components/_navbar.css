@@ -64,12 +64,14 @@
     width: 30px;
     height: 25px;
     vertical-align: middle;
+    cursor: pointer;
 }
 #profileUsername {
     margin-top: 3px;
     font-size: 16px;
     color: var(--text-color);
     vertical-align: middle;
+    cursor: pointer;
 }
 #profileDropdownArrow {
     font-size: 14px;
@@ -84,15 +86,17 @@
     display: none;
     position: absolute;
     top: 100%;
-    right: 0;
+    right: -50px; /* Move slightly to the right for better centering */
     left: auto;
     background-color: var(--bg-white);
     border: 1px solid #ccc;
+    border-radius: 12px; /* Add rounded corners */
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
     z-index: 1;
     padding: 10px;
     min-width: 150px;
     margin-top: 5px;
+    overflow: hidden; /* Ensure child elements respect border-radius */
 }
 #dropdownMenu button, #dropdownMenu a {
     display: flex;
@@ -106,12 +110,17 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
     box-sizing: border-box;
+    font-size: 14px;
+    font-family: inherit;
 }
 #dropdownMenu button:hover, #dropdownMenu a:hover {
     background-color: #f1f1f1;
 }
 #dropdownMenu a {
     text-decoration: none;
+}
+/* Add border to all dropdown items except the first one */
+#dropdownMenu > *:not(:first-child) {
     border-top: 1px solid #ccc;
 }
 #dropdownMenu i {
@@ -153,6 +162,17 @@
     background-repeat: no-repeat;
     background-position: right 8px center;
     background-size: 15px;
+}
+
+/* Messages button positioning */
+#messagesButton {
+    position: relative;
+}
+
+/* Language switcher translate icon */
+.language-switcher img {
+    width: 30px;
+    height: 25px;
 }
 #languageSelect:hover {
     border-color: var(--primary-color);

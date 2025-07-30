@@ -88,10 +88,10 @@ export default function initMyAdsPage() {
                         <p><strong data-i18n="product_details.location">Location:</strong> ${product.Location}</p>
                         <p><strong data-i18n="product_details.dato">Date:</strong> ${product.Date}</p>
                         <div class="button-container">
-                            <button class="btn btn-danger" data-action="delete" data-id="${product.ProductdID}" data-i18n="product_details.slett">Delete</button>
+                            <button class="btn btn-danger btn-compact" data-action="delete" data-id="${product.ProductdID}" data-i18n="product_details.slett">Delete</button>
                             ${product.Sold 
-                                ? `<button class="btn btn-warning" data-action="mark-unsold" data-id="${product.ProductdID}" data-i18n="product_details.mark_unsold">Mark as Unsold</button>`
-                                : `<button class="btn btn-success" data-action="mark-sold" data-id="${product.ProductdID}" data-i18n="product_details.mark_sold">Mark as Sold</button>`
+                                ? `<button class="btn btn-warning btn-compact" data-action="mark-unsold" data-id="${product.ProductdID}" data-i18n="product_details.mark_unsold">Mark as Unsold</button>`
+                                : `<button class="btn btn-success btn-compact" data-action="mark-sold" data-id="${product.ProductdID}" data-i18n="product_details.mark_sold">Mark as Sold</button>`
                             }
                         </div>
                     </div>

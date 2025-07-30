@@ -1,31 +1,30 @@
+/* Mine Annonser Page - Layout specific styles */
+
 .productsContainer .product .button-container {
-    display: flex; /* Establishes the flex layout */
-    gap: 10px;
-    margin-top: 10px;
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+    justify-content: flex-start;
+    align-items: center; /* Ensure buttons align properly in height */
 }
 
-/* --- THIS IS THE DEFINITIVE FIX --- */
-
-/* Target any button that is a direct child of the container */
+/* Layout adjustments for compact buttons in this page context */
 .button-container > .btn {
-    /* 
-      1. Use flex: 1 as a base instruction to grow and shrink.
-    */
-    flex: 1;
+    flex: none;
+    width: auto;
+    height: auto; /* Let content determine height */
+}
 
-    /* 
-      2. Explicitly set the width to a percentage. 
-         For two buttons, 50% would be perfect, but `calc` gives us flexibility
-         and accounts for the `gap`. `(100% - gap) / number_of_buttons`
-         A simple percentage often works just as well.
-    */
-    width: 50%;
-
-    /* 
-      3. Ensure padding doesn't break the layout.
-    */
-    box-sizing: border-box;
-
-    /* Optional: Slightly reduce padding on mobile if text still overflows */
-    padding: 8px 5px;
+/* Mobile responsiveness for this page */
+@media (max-width: 768px) {
+    .button-container {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .button-container > .btn {
+        width: 100%;
+        max-width: none;
+        text-align: center;
+    }
 }

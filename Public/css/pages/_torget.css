@@ -173,8 +173,20 @@ h1 {
     /* Adjust product cards for mobile */
     .product {
         flex-direction: column;
-        text-align: center;
+        text-align: left; /* Change from center to left for descriptions */
         padding: 15px;
+    }
+
+    /* Center only the product title on mobile */
+    .product h3 {
+        text-align: center;
+        justify-content: center; /* Override any flex justify-content */
+        display: block; /* Override any flex display that might prevent centering */
+    }
+
+    /* Keep product descriptions left-aligned on mobile */
+    .product p {
+        text-align: left;
     }
 
     .product img.product-image {

@@ -48,6 +48,8 @@
     background-color: var(--danger-hover);
     border-color: var(--danger-hover);
     color: var(--bg-white);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(231, 76, 60, 0.3);
 }
 .btn-secondary {
     color: var(--bg-white);
@@ -68,16 +70,20 @@
     background-color: var(--success-hover);
     border-color: var(--success-hover);
     color: var(--bg-white);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(39, 174, 96, 0.3);
 }
 .btn-warning {
-    color: var(--heading-color);
+    color: var(--bg-white);
     background-color: var(--warning-color);
     border-color: var(--warning-color);
 }
 .btn-warning:hover {
     background-color: var(--warning-hover);
     border-color: var(--warning-hover);
-    color: var(--heading-color);
+    color: var(--bg-white);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(243, 156, 18, 0.3);
 }
 
 /* --- Back to Top Button --- */
@@ -107,4 +113,16 @@
 .back-to-top:hover {
     background: var(--primary-hover);
     transform: translateY(-3px);
+}
+
+/* --- Compact Button Variant --- */
+.btn-compact {
+    padding: 8px 16px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    min-width: 100px;
+    max-width: 160px; /* Increased to accommodate "Mark as Unsold" */
+    white-space: nowrap; /* Prevent text wrapping */
+    overflow: hidden; /* Hide overflow if text is still too long */
+    text-overflow: ellipsis; /* Add ... if text is cut off */
 }

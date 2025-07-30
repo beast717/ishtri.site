@@ -16,20 +16,16 @@
               <span data-i18n="navbar.notifications">Notifications</span>
             </a>
             <a id="newAdButton" href="/ny-annonse"><i class="fas fa-plus-circle"></i> <span data-i18n="navbar.new_ad">New ad</span></a>
-            <a id="messagesButton" href="/messages" style="position: relative;">
+            <a id="messagesButton" href="/messages">
                 <i class="fas fa-envelope"></i> <span data-i18n="navbar.messages">Messages</span>
                 <span class="nav-badge" id="unreadBadge"></span>
             </a>
             <a id="loginButton" href="/login"><i class="fas fa-sign-in-alt"></i> <span data-i18n="navbar.log_in">Log in</span></a>
             <div id="profileContainer" style="display: none;">
-                <img id="profileIcon" src="prrofilepic.svg" alt="Profile Icon" style="width: 30px; height: 25px; cursor: pointer;">
-                <span id="profileUsername" style="cursor: pointer;">Username</span>
-                <i id="profileDropdownArrow" class="fas fa-caret-down" style="margin-left: 5px; color: #333; transition: transform 0.2s ease-in-out;"></i>
+                <img id="profileIcon" src="prrofilepic.svg" alt="Profile Icon">
+                <span id="profileUsername">Username</span>
+                <i id="profileDropdownArrow" class="fas fa-caret-down"></i>
                 <div id="dropdownMenu">
-                    <button id="logoutButton"> 
-                        <i class="fas fa-sign-out-alt"></i>
-                        <span data-i18n="navbar.log_out">Log out</span>
-                    </button>                
                     <a href="/mine-annonser">
                         <i class="fas fa-list"></i> 
                         <span data-i18n="navbar.mine_annonser">My ads</span>
@@ -46,11 +42,15 @@
                      <i class="fas fa-cog"></i>
                      <span data-i18n="navbar.settings">Settings</span>
                 </a>
+                    <a href="#" id="logoutButton"> 
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span data-i18n="navbar.log_out">Log out</span>
+                    </a>
                 </div>
             </div>
             <div class="language-switcher">
-                <img src="translate.svg" style="width: 30px; height: 25px;">
-                <select id="languageSelect" style="cursor: pointer;">
+                <img src="translate.svg">
+                <select id="languageSelect">
                     <option value="en">English</option>
                     <option value="ar">العربية</option>
                 </select>
