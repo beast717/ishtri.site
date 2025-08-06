@@ -37,12 +37,110 @@ window.ishtri = {
     updateNavbar: updateNavbar,
     // Add i18n service to global scope for backward compatibility
     i18n: i18nService,
+    // Add tracking utilities
+    trackEvent: function(eventName, parameters = {}) {
+        if (typeof window.gtag === 'function') {
+            console.log('Tracking event:', eventName, parameters);
+            window.gtag('event', eventName, parameters);
+        }
+    },
+    trackConversion: function(conversionId = 'AW-17043604198/a7mbCPT9tr8aEOaFg78_') {
+        if (typeof window.gtag === 'function') {
+            console.log('Tracking conversion:', conversionId);
+            window.gtag('event', 'conversion', {'send_to': conversionId});
+        }
+    },
+    // Additional tracking utilities
+    trackProductView: function(productId, category, price) {
+        this.trackEvent('view_item', {
+            item_id: productId,
+            item_category: category,
+            value: price,
+            currency: 'USD'
+        });
+    },
+    trackSearch: function(searchTerm, category = null) {
+        this.trackEvent('search', {
+            search_term: searchTerm,
+            ...(category && { search_category: category })
+        });
+    },
+    trackAdClick: function(productId, category) {
+        this.trackEvent('select_content', {
+            content_type: 'product',
+            item_id: productId,
+            item_category: category
+        });
+    },
+    // Ad management tracking
+    trackAdUpload: function(category, productId = null) {
+        this.trackEvent('ad_upload', {
+            ad_category: category,
+            content_type: 'classified_ad',
+            ...(productId && { item_id: productId })
+        });
+    },
+    trackAdEdit: function(productId, category) {
+        this.trackEvent('ad_edit', {
+            item_id: productId,
+            ad_category: category,
+            content_type: 'classified_ad'
+        });
+    },
+    trackAdDelete: function(productId, category) {
+        this.trackEvent('ad_delete', {
+            item_id: productId,
+            ad_category: category,
+            content_type: 'classified_ad'
+        });
+    },
+    // Contact and engagement tracking
+    trackContactSeller: function(productId, category = null) {
+        this.trackEvent('contact_seller', {
+            content_type: 'message',
+            item_id: productId,
+            ...(category && { item_category: category })
+        });
+    },
+    trackFavoriteToggle: function(productId, action, category = null) {
+        this.trackEvent(action === 'add' ? 'add_to_favorites' : 'remove_from_favorites', {
+            content_type: 'product',
+            item_id: productId,
+            ...(category && { item_category: category })
+        });
+    }
 };
 
 /**
  * Load non-essential scripts for cookie consent
  */
 function loadNonEssentialScripts() {
+    // Load Google Analytics (gtag.js) dynamically
+    if (!document.getElementById('gtag-script')) {
+        const gtagScript = document.createElement('script');
+        gtagScript.id = 'gtag-script';
+        gtagScript.async = true;
+        gtagScript.src = "https://www.googletagmanager.com/gtag/js?id=AW-17043604198";
+        document.head.appendChild(gtagScript);
+
+        // Initialize gtag after script loads
+        gtagScript.onload = function() {
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-17043604198');
+            
+            // Make gtag globally available
+            window.gtag = gtag;
+            
+            // Track page view
+            gtag('event', 'page_view', {
+                page_title: document.title,
+                page_location: window.location.href
+            });
+        };
+    }
+
     // Load Google AdSense dynamically
     if (!document.getElementById('adsbygoogle-script')) {
         const adsenseScript = document.createElement('script');

@@ -49,6 +49,21 @@ async function handleGoogleResponse(response) {
         const data = await res.json();
         
         if (res.ok) {
+            // Track Google authentication event
+            if (window.ishtri && window.ishtri.trackEvent) {
+                if (data.isNewUser) {
+                    // Track as signup for new users
+                    window.ishtri.trackEvent('sign_up', {
+                        method: 'google'
+                    });
+                } else {
+                    // Track as login for existing users
+                    window.ishtri.trackEvent('login', {
+                        method: 'google'
+                    });
+                }
+            }
+            
             // Force reload all auth-related elements
             window.location.href = '/';
             setTimeout(() => window.location.reload(true), 500); // Hard reload
@@ -152,6 +167,13 @@ function handleFormSubmissions() {
                 const responseData = await response.json();
                 
                 if (response.ok) {
+                    // Track login event
+                    if (window.ishtri && window.ishtri.trackEvent) {
+                        window.ishtri.trackEvent('login', {
+                            method: 'email'
+                        });
+                    }
+                    
                     window.location.href = '/';
                 } else {
                     showErrorMessage(errorMessage, responseData.message || 'Invalid credentials', loginForm.querySelector('#loginPassword'));
@@ -206,6 +228,13 @@ function handleFormSubmissions() {
                 const responseData = await response.json();
                 
                 if (response.ok) {
+                    // Track signup conversion
+                    if (window.ishtri && window.ishtri.trackEvent) {
+                        window.ishtri.trackEvent('sign_up', {
+                            method: 'email'
+                        });
+                    }
+                    
                     // Show success message and redirect
                     showSuccessMessage(messageArea, 'Account created successfully! Redirecting...');
                     setTimeout(() => {

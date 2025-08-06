@@ -35,6 +35,11 @@ function loadRandomProducts() {
                 
                 productDiv.addEventListener('click', (e) => {
                     if (!e.target.classList.contains('favorite-icon')) {
+                        // Track product click
+                        if (window.ishtri && window.ishtri.trackAdClick) {
+                            window.ishtri.trackAdClick(product.ProductdID, product.category || 'unknown');
+                        }
+                        
                         window.location.href = `/productDetails?productdID=${product.ProductdID}`;
                     }
                 });
@@ -185,10 +190,31 @@ function handleFavoriteClick(e) {
 }
 
 /**
+ * Initialize search tracking
+ */
+function initSearchTracking() {
+    const searchForm = document.querySelector('.søkeBarContainer form');
+    if (searchForm) {
+        searchForm.addEventListener('submit', (e) => {
+            const searchInput = searchForm.querySelector('input[name="query"]');
+            if (searchInput && searchInput.value.trim()) {
+                // Track search event
+                if (window.ishtri && window.ishtri.trackSearch) {
+                    window.ishtri.trackSearch(searchInput.value.trim());
+                }
+            }
+        });
+    }
+}
+
+/**
  * Initialize homepage functionality
  */
 export default function initHomePage() {
     console.log('Initializing home page...');
+    
+    // Initialize search tracking
+    initSearchTracking();
     
     // Load random products
     loadRandomProducts();

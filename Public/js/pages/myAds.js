@@ -45,6 +45,14 @@ export default function initMyAdsPage() {
             fetch(url, { method })
                 .then(res => res.json())
                 .then(result => {
+                    // Track ad deletion
+                    if (action === 'delete' && window.ishtri && window.ishtri.trackAdDelete) {
+                        // Try to get category from the product element (if available)
+                        const productElement = button.closest('.product');
+                        const category = productElement?.dataset?.category || 'unknown';
+                        window.ishtri.trackAdDelete(productId, category);
+                    }
+                    
                     window.ishtri.toast.show(result.message || successMsg, 'success');
                     if (action === 'delete') {
                         button.closest('.product').remove();

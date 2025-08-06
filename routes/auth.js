@@ -303,6 +303,7 @@ router.post('/google', googleLoginValidation, async (req, res, next) => { // <--
         );
 
         let user;
+        let isNewUser = false;
         if (existingUser.length > 0) {
             user = existingUser[0];
             // Ensure Google ID and verified status are set if matching by email
@@ -316,6 +317,9 @@ router.post('/google', googleLoginValidation, async (req, res, next) => { // <--
                  user.profilepic = user.profilepic || payload.picture;
             }
         } else {
+            // This is a new user
+            isNewUser = true;
+            
             // Generate unique username
             let baseUsername = (payload.name?.trim() || payload.email.split('@')[0] || 'user').replace(/\s+/g, '_');
             let username = baseUsername;
@@ -362,7 +366,10 @@ router.post('/google', googleLoginValidation, async (req, res, next) => { // <--
 
         req.session.save(err => {
             if (err) return next(err);
-            res.json({ message: 'Google login successful' });
+            res.json({ 
+                message: 'Google login successful',
+                isNewUser: isNewUser
+            });
         });
     } catch (err) {
         next(err);

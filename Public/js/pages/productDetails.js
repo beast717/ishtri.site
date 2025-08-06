@@ -11,6 +11,11 @@ export default function initProductDetailsPage() {
     // Check if on the correct page
     if (!document.querySelector('.productDetailsContainer')) return;
 
+    // Track page view conversion for product details
+    if (window.ishtri && window.ishtri.trackConversion) {
+        window.ishtri.trackConversion();
+    }
+
     // Initialize page
     initializeProductDetails();
 
@@ -179,6 +184,18 @@ export default function initProductDetailsPage() {
 
     function renderProductDetails(product) {
         console.log('Rendering product details:', product);
+        
+        // Store category globally for tracking purposes
+        window.currentProductCategory = product.category;
+        
+        // Track product view
+        if (window.ishtri && window.ishtri.trackProductView) {
+            window.ishtri.trackProductView(
+                product.ProductdID,
+                product.category || 'unknown',
+                product.Price || 0
+            );
+        }
         
         // Store product owner ID for messaging
         productOwnerId = product.brukerId;
@@ -520,6 +537,13 @@ export default function initProductDetailsPage() {
 
             if (!response.ok) {
                 throw new Error('Failed to send message');
+            }
+
+            // Track successful contact/message sent
+            if (window.ishtri && window.ishtri.trackContactSeller) {
+                // Try to get category from the global product data if available
+                const category = window.currentProductCategory || null;
+                window.ishtri.trackContactSeller(productdID, category);
             }
 
             showToast('Message sent successfully!', 'success');

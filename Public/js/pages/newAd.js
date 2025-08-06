@@ -571,6 +571,16 @@ export default function initNewAdPage() {
                 }
 
                 // Success
+                const responseData = await response.json();
+                
+                // Track successful ad upload
+                if (window.ishtri && window.ishtri.trackAdUpload) {
+                    const category = document.getElementById('Category').value || 'unknown';
+                    // Try to get the product ID from response if available
+                    const productId = responseData?.productId || responseData?.ProductdID || null;
+                    window.ishtri.trackAdUpload(category, productId);
+                }
+                
                 showSuccessMessage('Ad submitted successfully!');
                 
                 if (window.ishtri.toast) {
