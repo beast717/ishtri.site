@@ -6,7 +6,6 @@ import SkeletonLoader from './utils/skeleton.js';
 
 // --- Import Services ---
 import { i18nService } from './services/I18nService.js';
-// Add centralized tracking service
 import { initTracking,
          trackEvent, trackConversion,
          trackProductView, trackSearch, trackAdClick,
@@ -16,20 +15,6 @@ import { initTracking,
 // --- Import Core Components ---
 import { initNavbar, updateNavbar } from './components/navbar.js';
 import { initCookieConsent } from './components/cookieConsent.js';
-
-// --- Import Page-Specific Initializers ---
-import initHomePage from './pages/home.js';
-import initProductListPage from './pages/productList.js';
-import initProductDetailsPage from './pages/productDetails.js';
-import initNewAdPage from './pages/newAd.js';
-import initMessagesPage from './pages/messages.js';
-import initMyAdsPage from './pages/myAds.js';
-import initFavoritesPage from './pages/favorites.js';
-import initSavedSearchesPage from './pages/savedSearches.js';
-import initAuthPage from './pages/auth.js';
-import initReisePage from './pages/reise.js';
-import initNotificationsPage from './pages/notifications.js';
-import initSettingsPage from './pages/settings.js';
 
 // Create a single global namespace for our app's instances
 window.ishtri = {
@@ -80,26 +65,52 @@ function loadNonEssentialScripts() {
 }
 
 /**
- * Initializes the Socket.IO connection and sets up event listeners
+ * Dynamically load the Socket.IO client script (only when needed)
  */
-function initSocket(userId = null) {
-    if (typeof io === 'undefined') {
-        console.error("Socket.IO client library not found. Real-time features will be disabled.");
+async function loadSocketClient() {
+    if (typeof window.io !== 'undefined') return;
+    if (document.getElementById('socketio-script')) {
+        // Wait until it becomes available
+        await new Promise((resolve) => {
+            const check = () => (typeof window.io !== 'undefined') ? resolve() : setTimeout(check, 50);
+            check();
+        });
         return;
     }
-    
+    await new Promise((resolve, reject) => {
+        const s = document.createElement('script');
+        s.id = 'socketio-script';
+        s.async = true;
+        s.src = '/socket.io/socket.io.js';
+        s.onload = resolve;
+        s.onerror = reject;
+        document.head.appendChild(s);
+    });
+}
+
+/**
+ * Initializes the Socket.IO connection and sets up event listeners
+ */
+async function initSocket(userId = null) {
     try {
+        // Ensure client library is loaded on-demand
+        await loadSocketClient();
+        if (typeof io === 'undefined') {
+            console.error('Socket.IO client library failed to load. Real-time features will be disabled.');
+            return;
+        }
+
         if (!window.ishtri.socket || !window.ishtri.socket.connected) {
             window.ishtri.socket = io();
-            console.log("Socket.IO attempting connection.");
+            console.log('Socket.IO attempting connection.');
 
             window.ishtri.socket.on('connect', () => {
-                console.log("Socket.IO connected.");
+                console.log('Socket.IO connected.');
                 if (userId) {
                     window.ishtri.socket.emit('authenticate', userId);
                     console.log(`Socket authenticated for user: ${userId}`);
                 } else {
-                    console.log("User not logged in, socket connected but not authenticated.");
+                    console.log('User not logged in, socket connected but not authenticated.');
                 }
             });
 
@@ -108,15 +119,14 @@ function initSocket(userId = null) {
             });
 
             window.ishtri.socket.on('connect_error', (error) => {
-                console.error("Socket.IO connection error:", error);
+                console.error('Socket.IO connection error:', error);
             });
-
         } else if (userId && !window.ishtri.socket.authenticated) {
-            console.log("Socket exists, attempting re-authentication.");
+            console.log('Socket exists, attempting re-authentication.');
             window.ishtri.socket.emit('authenticate', userId);
         }
     } catch (e) {
-        console.error("Socket.IO setup failed. Real-time updates disabled.", e);
+        console.error('Socket.IO setup failed. Real-time updates disabled.', e);
     }
 }
 
@@ -155,7 +165,7 @@ async function initAuth() {
         
         return user;
     } catch (error) {
-        console.error("Error during initial user check:", error);
+        console.error('Error during initial user check:', error);
         initSocket();
         return null;
     }
@@ -163,29 +173,55 @@ async function initAuth() {
 
 /**
  * A simple "router" to run page-specific code based on a data-attribute
- * on the <body> tag.
+ * on the <body> tag. Uses dynamic imports to only load needed code.
  */
-function pageRouter() {
+async function pageRouter() {
     const page = document.body.dataset.page;
     if (!page) return;
 
-    const pageInitializers = {
-        'home': initHomePage,
-        'productList': initProductListPage,
-        'productDetails': initProductDetailsPage,
-        'newAd': initNewAdPage,
-        'messages': initMessagesPage,
-        'myAds': initMyAdsPage,
-        'favorites': initFavoritesPage,
-        'savedSearches': initSavedSearchesPage,
-        'auth': initAuthPage,
-        'reise': initReisePage,
-        'notifications': initNotificationsPage,
-        'settings': initSettingsPage,
-    };
-
-    if (pageInitializers[page]) {
-        pageInitializers[page]();
+    try {
+        switch (page) {
+            case 'home':
+                (await import('./pages/home.js')).default();
+                break;
+            case 'productList':
+                (await import('./pages/productList.js')).default();
+                break;
+            case 'productDetails':
+                (await import('./pages/productDetails.js')).default();
+                break;
+            case 'newAd':
+                (await import('./pages/newAd.js')).default();
+                break;
+            case 'messages':
+                (await import('./pages/messages.js')).default();
+                break;
+            case 'myAds':
+                (await import('./pages/myAds.js')).default();
+                break;
+            case 'favorites':
+                (await import('./pages/favorites.js')).default();
+                break;
+            case 'savedSearches':
+                (await import('./pages/savedSearches.js')).default();
+                break;
+            case 'auth':
+                (await import('./pages/auth.js')).default();
+                break;
+            case 'reise':
+                (await import('./pages/reise.js')).default();
+                break;
+            case 'notifications':
+                (await import('./pages/notifications.js')).default();
+                break;
+            case 'settings':
+                (await import('./pages/settings.js')).default();
+                break;
+            default:
+                break;
+        }
+    } catch (e) {
+        console.error('Failed to load page module for', page, e);
     }
 }
 
@@ -205,7 +241,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     initCookieConsent();
     
     // Initialize page-specific functionality
-    pageRouter();
+    await pageRouter();
 
     // Initialize lazy loading
     window.ishtri.lazyLoader.observe();

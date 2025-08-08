@@ -13,6 +13,13 @@ const nodemailer = require('nodemailer');
 const http = require('http');
 const cron = require('node-cron');
 const helmet = require('helmet');
+// Enable gzip compression for responses (optional if package installed)
+let compression;
+try {
+  compression = require('compression');
+} catch (e) {
+  console.warn('[perf] compression package not installed; skipping gzip compression.');
+}
 dotenv.config();
 
 const app = express();
@@ -31,6 +38,11 @@ const io = initializeSocket(server);
 
 // Make io accessible to routes
 app.set('io', io);
+
+// Compression should be early (only if available)
+if (compression) {
+  app.use(compression());
+}
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -59,7 +71,8 @@ const corsOptions = {
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'
+  ]
 };
 app.use(cors(corsOptions));
 
@@ -76,16 +89,31 @@ app.use(
       frameSrc: ["'self'", "https:", "http:"],
       imgSrc: ["'self'", "https:", "http:", "data:", "blob:"],
       mediaSrc: ["'self'", "https:", "http:", "data:", "blob:"],
-      objectSrc: ["'none'"], // Keep this restricted for security
+      objectSrc: ["'none'"],
       workerSrc: ["'self'", "blob:", "data:"]
     }
   })
 );
-// Static files
-app.use('/data', express.static(path.join(__dirname, 'data')));
-app.use(express.static(path.join(__dirname, 'Public')));
-app.use('/uploads', express.static('uploads'));
-app.use('/.well-known', express.static(path.join(__dirname, '.well-known')));
+
+// Static files with smarter caching
+const setCustomCacheControl = (res, filePath) => {
+  const ext = path.extname(filePath).toLowerCase();
+  // Don’t cache HTML
+  if (ext === '.html' || ext === '.ejs') {
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    return;
+  }
+  // Cache static assets aggressively
+  const oneMonth = 30 * 24 * 60 * 60; // seconds
+  res.setHeader('Cache-Control', `public, max-age=${oneMonth}, immutable`);
+};
+
+app.use('/data', express.static(path.join(__dirname, 'data'), { setHeaders: setCustomCacheControl }));
+app.use(express.static(path.join(__dirname, 'Public'), { setHeaders: setCustomCacheControl }));
+app.use('/uploads', express.static('uploads', { setHeaders: setCustomCacheControl }));
+app.use('/.well-known', express.static(path.join(__dirname, '.well-known'), { setHeaders: setCustomCacheControl }));
 
 const sessionStore = new MySQLStore({}, pool);
 app.use(session({
