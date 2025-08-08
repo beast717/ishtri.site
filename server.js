@@ -15,6 +15,7 @@ const http = require('http');
 const cron = require('node-cron');
 const helmet = require('helmet');
 const cors = require('cors');
+// Optional: CSS bundling on startup (dev convenience)
 
 // New: centralized performance helpers
 const { applyCompression, setStaticCacheHeaders } = require('./config/performance');
@@ -87,6 +88,42 @@ app.use(
     }
   })
 );
+
+// --- Build CSS bundle on startup if needed (dev-friendly) ---
+async function ensureBundledCSS() {
+  try {
+    const src = path.join(__dirname, 'Public', 'css', 'main.css');
+    const out = path.join(__dirname, 'Public', 'css', 'main.min.css');
+    const srcExists = fs.existsSync(src);
+    if (!srcExists) return; // nothing to do
+
+    const outExists = fs.existsSync(out);
+    const needsBuild = !outExists || fs.statSync(out).mtimeMs < fs.statSync(src).mtimeMs;
+    if (!needsBuild) return;
+
+    // Try local Node API build; if dev deps missing, silently skip
+    const postcss = require('postcss');
+    const postcssImport = require('postcss-import');
+    const autoprefixer = require('autoprefixer');
+    const cssnano = require('cssnano');
+
+    const css = fs.readFileSync(src, 'utf8');
+    const result = await postcss([
+      postcssImport(),
+      autoprefixer(),
+      cssnano({ preset: 'default' })
+    ]).process(css, { from: src, to: out });
+    fs.writeFileSync(out, result.css, 'utf8');
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('Built CSS bundle -> Public/css/main.min.css');
+    }
+  } catch (e) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('CSS bundling skipped:', e.message);
+    }
+  }
+}
+ensureBundledCSS();
 
 // Mount responsive images route
 const imagesRouter = require('./routes/images');
