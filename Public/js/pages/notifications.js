@@ -140,8 +140,13 @@ export default function initNotificationsPage() {
             if (notification.notification_type === 'new_match' && notification.productdID && notification.ProductName) {
                 const searchNameMatch = notification.message.match(/'([^']+)'/);
                 const searchName = searchNameMatch ? searchNameMatch[1] : 'your search';
+                const imgName = notification.firstImage ? notification.firstImage.replace('/uploads/', '') : null;
+                const fallback = '/images/default-product.png';
+                const srcSmall = imgName ? `/img/160/${imgName}` : fallback;
+                const srcMed = imgName ? `/img/320/${imgName}` : fallback;
+                const srcLg = imgName ? `/img/480/${imgName}` : fallback;
                 messageHtml = `New match for '${searchName}': <a href="/productDetails?productdID=${notification.productdID}" class="notification-product-link">`
-                   + `<img src="${notification.firstImage || '/images/default-product.png'}" alt="Product thumbnail" onerror="this.src='/images/default-product.png'">`
+                   + `<img src="/images/placeholder.png" data-src="${srcMed}" srcset="${srcSmall} 160w, ${srcMed} 320w, ${srcLg} 480w" sizes="160px" alt="Product thumbnail" onerror="this.src='${fallback}'">`
                    + `<span>${notification.ProductName || 'Product'}</span></a>`;
             }
 

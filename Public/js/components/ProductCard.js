@@ -23,13 +23,27 @@ export const createProductElement = (product) => {
     div.setAttribute('tabindex', '0');
 
     const images = product.Images ? product.Images.split(',') : [];
-    const imageUrl = images.length > 0 ? `/uploads/${images[0].trim()}` : '/images/default-product.png';
+    const firstName = images.length > 0 ? images[0].trim() : null;
+    const basePath = firstName ? `/uploads/${firstName}` : '/images/default-product.png';
+
+    // Build responsive URLs via the /img endpoint
+    const srcSmall = firstName ? `/img/320/${firstName}` : basePath;
+    const srcMed = firstName ? `/img/640/${firstName}` : basePath;
+    const srcLg = firstName ? `/img/960/${firstName}` : basePath;
+
     const productName = isJob ? product.JobTitle : 
         isCar ? `${product.brand_name || ''} ${product.model_name || ''}`.trim() : 
         product.ProductName;
 
     let innerHTML = `
-        <img src="/images/placeholder.png" data-src="${imageUrl}" alt="${productName}" class="product-image" onerror="this.onerror=null;this.src='/images/default-product.png';">
+        <img src="/images/placeholder.png"
+             data-src="${srcMed}"
+             srcset="${srcSmall} 320w, ${srcMed} 640w, ${srcLg} 960w"
+             sizes="(max-width: 480px) 320px, (max-width: 768px) 640px, 960px"
+             alt="${productName}"
+             class="product-image"
+             loading="lazy"
+             onerror="this.onerror=null;this.src='${basePath}';">
         <div>
             <h3>
                 ${productName || 'Unnamed Product'}

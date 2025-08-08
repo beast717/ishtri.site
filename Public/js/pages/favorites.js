@@ -25,10 +25,20 @@ export default function initFavoritesPage() {
                     ? `/uploads/${product.Images.split(',')[0].trim()}` 
                     : '/uploads/default.jpg';
 
+                const firstName = product.Images && product.Images !== 'default.jpg' ? product.Images.split(',')[0].trim() : null;
+                const fallback = '/uploads/default.jpg';
+                const srcSmall = firstName ? `/img/320/${firstName}` : fallback;
+                const srcMed = firstName ? `/img/640/${firstName}` : fallback;
+                const srcLg = firstName ? `/img/960/${firstName}` : fallback;
+
                 productDiv.innerHTML = `
-                    <img data-src="${imageUrl}" 
+                    <img data-src="${srcMed}" 
+                         src="/images/placeholder.png"
+                         srcset="${srcSmall} 320w, ${srcMed} 640w, ${srcLg} 960w"
+                         sizes="(max-width: 480px) 320px, (max-width: 768px) 640px, 960px"
                          alt="${product.ProductName}" 
-                         class="product-image">
+                         class="product-image"
+                         loading="lazy">
                     <div>
                         <h3>${product.ProductName}</h3>
                         <p><strong>Price:</strong> ${product.Price ? `${product.Price.toLocaleString('no-NO')} kr` : 'Contact for price'}</p>

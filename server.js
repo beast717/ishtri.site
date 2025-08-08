@@ -8,18 +8,17 @@ const MySQLStore = require('express-mysql-session')(session);
 const multer = require('multer');
 const mysql = require('mysql2');
 const path = require('path');
+const fs = require('fs');
 const dotenv = require('dotenv');
 const nodemailer = require('nodemailer');
 const http = require('http');
 const cron = require('node-cron');
 const helmet = require('helmet');
-// Enable gzip compression for responses (optional if package installed)
-let compression;
-try {
-  compression = require('compression');
-} catch (e) {
-  console.warn('[perf] compression package not installed; skipping gzip compression.');
-}
+const cors = require('cors');
+
+// New: centralized performance helpers
+const { applyCompression, setStaticCacheHeaders } = require('./config/performance');
+
 dotenv.config();
 
 const app = express();
@@ -39,21 +38,16 @@ const io = initializeSocket(server);
 // Make io accessible to routes
 app.set('io', io);
 
-// Compression should be early (only if available)
-if (compression) {
-  app.use(compression());
-}
+// Apply compression
+applyCompression(app);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const cors = require('cors');
+// CORS
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
-    
-    // In production, be more restrictive
     if (process.env.NODE_ENV === 'production') {
       const allowedOrigins = [
         'https://ishtri.site',
@@ -65,7 +59,6 @@ const corsOptions = {
       }
       return callback(new Error('Not allowed by CORS'));
     } else {
-      // In development, allow any origin
       return callback(null, true);
     }
   },
@@ -76,7 +69,7 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
-// Content Security Policy - Relaxed for better compatibility
+// Security headers
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
@@ -95,25 +88,15 @@ app.use(
   })
 );
 
-// Static files with smarter caching
-const setCustomCacheControl = (res, filePath) => {
-  const ext = path.extname(filePath).toLowerCase();
-  // Don’t cache HTML
-  if (ext === '.html' || ext === '.ejs') {
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-    res.setHeader('Pragma', 'no-cache');
-    res.setHeader('Expires', '0');
-    return;
-  }
-  // Cache static assets aggressively
-  const oneMonth = 30 * 24 * 60 * 60; // seconds
-  res.setHeader('Cache-Control', `public, max-age=${oneMonth}, immutable`);
-};
+// Mount responsive images route
+const imagesRouter = require('./routes/images');
+app.use('/', imagesRouter);
 
-app.use('/data', express.static(path.join(__dirname, 'data'), { setHeaders: setCustomCacheControl }));
-app.use(express.static(path.join(__dirname, 'Public'), { setHeaders: setCustomCacheControl }));
-app.use('/uploads', express.static('uploads', { setHeaders: setCustomCacheControl }));
-app.use('/.well-known', express.static(path.join(__dirname, '.well-known'), { setHeaders: setCustomCacheControl }));
+// Static files with smarter caching
+app.use('/data', express.static(path.join(__dirname, 'data'), { setHeaders: setStaticCacheHeaders }));
+app.use(express.static(path.join(__dirname, 'Public'), { setHeaders: setStaticCacheHeaders }));
+app.use('/uploads', express.static('uploads', { setHeaders: setStaticCacheHeaders }));
+app.use('/.well-known', express.static(path.join(__dirname, '.well-known'), { setHeaders: setStaticCacheHeaders }));
 
 const sessionStore = new MySQLStore({}, pool);
 app.use(session({
@@ -195,24 +178,22 @@ app.use('/api/settings', settingsRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack); // Log the error regardless of environment
+    console.error(err.stack);
     if (process.env.NODE_ENV === 'production') {
-        Sentry.captureException(err); // Send error to Sentry in production
+        Sentry.captureException(err);
     }
     res.status(500).json({
         error: 'Internal Server Error',
-        // Only include message in development
         message: process.env.NODE_ENV === 'development' ? err.message : undefined 
     });
 });
 
 // --- Cron Job for Matching Saved Searches ---
-cron.schedule('*/5 * * * *', async () => { // Run every 5 minutes
+cron.schedule('*/5 * * * *', async () => {
     if (process.env.NODE_ENV === 'development') {
         console.log('Running saved search matching job...');
     }
     try {
-        // Pass 'io' instance to the job if needed for real-time updates
         await checkNewProductsForMatches(io, getActiveUsersMap);
         if (process.env.NODE_ENV === 'development') {
             console.log('Saved search matching job finished.');

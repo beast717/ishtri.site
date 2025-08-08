@@ -21,10 +21,20 @@ function loadRandomProducts() {
                 // Handle images
                 const images = product.Images ? product.Images.split(',') : [];
                 const firstImage = images.length > 0 ? images[0].trim() : null;
-                const imageUrl = firstImage ? `/uploads/${firstImage}` : '/images/default-product.png';
+                const fallback = '/images/default-product.png';
+                const srcSmall = firstImage ? `/img/320/${firstImage}` : fallback;
+                const srcMed = firstImage ? `/img/640/${firstImage}` : fallback;
+                const srcLg = firstImage ? `/img/960/${firstImage}` : fallback;
                 
                 productDiv.innerHTML = `
-                    <img data-src="${imageUrl}" alt="${product.ProductName}" class="product-image" onerror="this.src='/images/default-product.png'">
+                    <img data-src="${srcMed}"
+                         src="/images/placeholder.png"
+                         srcset="${srcSmall} 320w, ${srcMed} 640w, ${srcLg} 960w"
+                         sizes="(max-width: 480px) 320px, (max-width: 768px) 640px, 960px"
+                         alt="${product.ProductName}"
+                         class="product-image"
+                         loading="lazy"
+                         onerror="this.src='${fallback}'">
                     <i class="fas fa-heart favorite-icon" data-product-id="${product.ProductdID}"></i>
                     <h4>
                         ${product.ProductName} 
