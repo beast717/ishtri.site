@@ -143,12 +143,15 @@ async function initAuth() {
             } else {
                 console.error(`Initial user check failed with status: ${response.status}`);
             }
+            // Ensure socket is initialized even for guests
+            await initSocket();
             return null;
         }
         
         const contentType = response.headers.get('content-type');
         if (!contentType || !contentType.includes('application/json')) {
             console.error('Received non-JSON response from current-user endpoint');
+            await initSocket();
             return null;
         }
         
@@ -158,15 +161,15 @@ async function initAuth() {
         
         if (isLoggedIn) {
             window.ishtri.user = user;
-            initSocket(user.brukerId);
+            await initSocket(user.brukerId);
         } else {
-            initSocket();
+            await initSocket();
         }
         
         return user;
     } catch (error) {
         console.error('Error during initial user check:', error);
-        initSocket();
+        await initSocket();
         return null;
     }
 }
