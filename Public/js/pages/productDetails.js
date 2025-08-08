@@ -372,13 +372,20 @@ export default function initProductDetailsPage() {
         images.forEach((imgSrc, index) => {
             const img = document.createElement('img');
             const trimmedSrc = imgSrc.trim();
-            img.setAttribute('data-src', `/uploads/${trimmedSrc}`);
+            const small = `/img/640/${trimmedSrc}`;
+            const medium = `/img/960/${trimmedSrc}`;
+            const large = `/img/1600/${trimmedSrc}`;
             img.alt = `Product image ${index + 1}`;
-            
+            img.loading = index === 0 ? 'eager' : 'lazy';
+            img.decoding = 'async';
+            img.setAttribute('srcset', `${small} 640w, ${medium} 960w, ${large} 1600w`);
+            img.setAttribute('sizes', '(max-width: 768px) 100vw, 850px');
+            // Lazy load non-first images
             if (index === 0) {
                 img.classList.add('active');
-                // Load first image immediately
-                img.src = img.getAttribute('data-src');
+                img.src = medium; // good default for first view
+            } else {
+                img.setAttribute('data-src', medium);
             }
             
             // Add error handling for images

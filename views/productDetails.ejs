@@ -22,16 +22,16 @@
     <meta property="og:url" content="<%= typeof product !== 'undefined' ? 'https://ishtri.site/productDetails?productdID=' + product.ProductdID : 'https:/ishtri.site' %>"> <!-- Replace with actual domain and URL -->
     <meta property="og:title" content="<%= typeof product !== 'undefined' ? product.ProductName + ' | Ishtri' : 'Product Details | Ishtri' %>">
     <meta property="og:description" content="<%= typeof product !== 'undefined' ? 'View details for ' + product.ProductName + '.' : 'Explore product details on Ishtri.' %>">
-    <!-- Use the first product image for OG image if available -->
-    <meta property="og:image" content="<%= typeof product !== 'undefined' && product.Images && product.Images.split(',').length > 0 ? baseUrl + '/uploads/' + product.Images.split(',')[0].trim() : baseUrl + '/images/default-product.png' %>"> <!-- Replace with actual domain/path -->
+    <!-- Use the first product image for OG image if available (optimized width) -->
+    <meta property="og:image" content="<%= typeof product !== 'undefined' && product.Images && product.Images.split(',').length > 0 ? baseUrl + '/img/1200/' + product.Images.split(',')[0].trim() : baseUrl + '/images/default-product.png' %>"> <!-- Replace with actual domain/path -->
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="<%= typeof product !== 'undefined' ? 'https://ishtri.site/productDetails?productdID=' + product.ProductdID : 'https://ishtri.site' %>"> <!-- Replace with actual domain and URL -->
     <meta property="twitter:title" content="<%= typeof product !== 'undefined' ? product.ProductName + ' | Ishtri' : 'Product Details | Ishtri' %>">
     <meta property="twitter:description" content="<%= typeof product !== 'undefined' ? 'View details for ' + product.ProductName + '.' : 'Explore product details on Ishtri.' %>">
-    <!-- Use the first product image for Twitter image if available -->
-    <meta property="twitter:image" content="<%= typeof product !== 'undefined' && product.Images && product.Images.split(',').length > 0 ? '/uploads/' + product.Images.split(',')[0].trim() : '/images/default-product.png' %>"> <!-- Replace with actual domain/path -->
+    <!-- Use the first product image for Twitter image if available (optimized width) -->
+    <meta property="twitter:image" content="<%= typeof product !== 'undefined' && product.Images && product.Images.split(',').length > 0 ? '/img/1200/' + product.Images.split(',')[0].trim() : '/images/default-product.png' %>"> <!-- Replace with actual domain/path -->
 
     <!-- Other Meta Tags -->
     <meta name="robots" content="index, follow"> <!-- Allow search engines to index -->
@@ -50,7 +50,7 @@
       "image": [
         <% const images = product.Images.split(',').filter(img => img.trim()); %>
         <% images.forEach((img, index) => { %>
-          "<%= baseUrl %>/uploads/<%= img.trim() %>"<%= index < images.length - 1 ? ',' : '' %>
+          "<%= baseUrl %>/img/1200/<%= img.trim() %>"<%= index < images.length - 1 ? ',' : '' %>
         <% }); %>
        ],
       "description": "<%= product.Description.replace(/"/g, '\\"') %>",

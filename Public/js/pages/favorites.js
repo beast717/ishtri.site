@@ -22,7 +22,7 @@ export default function initFavoritesPage() {
                 productDiv.className = 'product';
 
                 const imageUrl = product.Images && product.Images !== 'default.jpg' 
-                    ? `/uploads/${product.Images.split(',')[0].trim()}` 
+                    ? `/img/360/${product.Images.split(',')[0].trim()}` 
                     : '/uploads/default.jpg';
 
                 const firstName = product.Images && product.Images !== 'default.jpg' ? product.Images.split(',')[0].trim() : null;

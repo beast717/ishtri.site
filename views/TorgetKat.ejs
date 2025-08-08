@@ -24,7 +24,7 @@
     <meta property="og:url" content="https://ishtri.site/torgetkat?category=<%= typeof category !== 'undefined' ? category : '' %>"> <!-- Replace with actual domain -->
     <meta property="og:title" content="<%= typeof category !== 'undefined' ? category : 'Products' %> | Ishtri Marketplace">
     <meta property="og:description" content="Browse and filter products in the <%= typeof category !== 'undefined' ? category : 'selected' %> category on Ishtri.">
-    <meta property="og:image" content="<%= typeof product !== 'undefined' && product.Images && product.Images.split(',').length > 0 ? baseUrl + '/uploads/' + product.Images.split(',')[0].trim() : baseUrl + '/images/default-product.png' %>"> <!-- Replace with actual domain and path to a relevant image or logo -->
+    <meta property="og:image" content="<%= typeof product !== 'undefined' && product.Images && product.Images.split(',').length > 0 ? baseUrl + '/img/1200/' + product.Images.split(',')[0].trim() : baseUrl + '/images/default-product.png' %>"> <!-- Replace with actual domain and path to a relevant image or logo -->
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary">

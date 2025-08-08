@@ -24,25 +24,28 @@ export const createProductElement = (product) => {
 
     const images = product.Images ? product.Images.split(',') : [];
     const firstName = images.length > 0 ? images[0].trim() : null;
-    const basePath = firstName ? `/uploads/${firstName}` : '/images/default-product.png';
+    const basePath = firstName ? `/img/720/${firstName}` : '/images/default-product.png';
 
     // Build responsive URLs via the /img endpoint
-    const srcSmall = firstName ? `/img/320/${firstName}` : basePath;
-    const srcMed = firstName ? `/img/640/${firstName}` : basePath;
-    const srcLg = firstName ? `/img/960/${firstName}` : basePath;
+    // Card image renders ~180x140 on desktop, larger on mobile.
+    // Provide densities around that size to avoid overserving.
+    const srcSmall = firstName ? `/img/360/${firstName}` : basePath; // ~2x desktop size
+    const srcMed = firstName ? `/img/720/${firstName}` : basePath;  // mobile wide
+    const srcLg = firstName ? `/img/960/${firstName}` : basePath;  // high-density/mobile landscape
 
     const productName = isJob ? product.JobTitle : 
         isCar ? `${product.brand_name || ''} ${product.model_name || ''}`.trim() : 
         product.ProductName;
 
     let innerHTML = `
-        <img src="/images/placeholder.png"
-             data-src="${srcMed}"
-             srcset="${srcSmall} 320w, ${srcMed} 640w, ${srcLg} 960w"
-             sizes="(max-width: 480px) 320px, (max-width: 768px) 640px, 960px"
+    <img src="/images/placeholder.png"
+         data-src="${srcMed}"
+         srcset="${srcSmall} 360w, ${srcMed} 720w, ${srcLg} 960w"
+         sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 180px"
              alt="${productName}"
              class="product-image"
              loading="lazy"
+         width="180" height="140"
              onerror="this.onerror=null;this.src='${basePath}';">
         <div>
             <h3>

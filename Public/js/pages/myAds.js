@@ -80,7 +80,7 @@ export default function initMyAdsPage() {
             products.forEach(product => {
                 const productDiv = document.createElement('div');
                 productDiv.className = 'product';
-                const firstImage = product.Images && product.Images !== 'default.jpg' ? `/uploads/${product.Images.split(',')[0].trim()}` : '/uploads/default.jpg';
+                const firstImage = product.Images && product.Images !== 'default.jpg' ? `/img/360/${product.Images.split(',')[0].trim()}` : '/uploads/default.jpg';
 
                 productDiv.innerHTML = `
                   <img data-src="${firstImage}" 

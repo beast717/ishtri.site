@@ -140,7 +140,17 @@ export default function initNotificationsPage() {
             if (notification.notification_type === 'new_match' && notification.productdID && notification.ProductName) {
                 const searchNameMatch = notification.message.match(/'([^']+)'/);
                 const searchName = searchNameMatch ? searchNameMatch[1] : 'your search';
-                const imgName = notification.firstImage ? notification.firstImage.replace('/uploads/', '') : null;
+                let imgName = null;
+                if (notification.firstImage) {
+                    imgName = notification.firstImage
+                        .replace('/uploads/', '')
+                        .replace('/img/320/', '')
+                        .replace('/img/360/', '')
+                        .replace('/img/480/', '')
+                        .replace('/img/600/', '')
+                        .replace('/img/800/', '')
+                        .replace('/img/1200/', '');
+                }
                 const fallback = '/images/default-product.png';
                 const srcSmall = imgName ? `/img/160/${imgName}` : fallback;
                 const srcMed = imgName ? `/img/320/${imgName}` : fallback;

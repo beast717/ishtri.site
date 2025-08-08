@@ -25,7 +25,7 @@ export default class LazyLoader {
             const style = document.createElement('style');
             style.id = 'lazy-load-styles';
             style.textContent = `
-                img[data-src] {
+                    img[data-src] {
                     opacity: 0;
                     transition: opacity 0.3s ease;
                 }

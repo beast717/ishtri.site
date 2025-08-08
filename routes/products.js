@@ -435,7 +435,7 @@ router.get('/', getProductsValidation, async (req, res, next) => { // <-- Add va
             total: totalResult[0].total,
             products: products.map(p => ({
                 ...p,
-                firstImage: p.Images ? `/uploads/${p.Images.split(',')[0].trim()}` : '/uploads/default-placeholder.png'
+                firstImage: p.Images ? `/img/480/${p.Images.split(',')[0].trim()}` : '/uploads/default-placeholder.png'
             }))
         });
 
