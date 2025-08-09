@@ -22,7 +22,7 @@ export default function initProductDetailsPage() {
     function getProductIdFromUrl() {
         const params = new URLSearchParams(window.location.search);
         // Accept several possible legacy param casings / names
-        for (const key of ['productdID','productID','productId','id']) {
+        for (const key of ['productdID','productID','productId','id', 'ProductdID']) {
             if (params.has(key)) return params.get(key);
         }
         const parts = window.location.pathname.split('/').filter(Boolean);
