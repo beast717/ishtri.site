@@ -19,37 +19,34 @@ export default function initProductDetailsPage() {
     // Initialize page
     initializeProductDetails();
 
+    function getProductIdFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        // Accept several possible legacy param casings / names
+        for (const key of ['productdID','productID','productId','id']) {
+            if (params.has(key)) return params.get(key);
+        }
+        const parts = window.location.pathname.split('/').filter(Boolean);
+        // Look for first purely numeric segment (covers /product/:id/:slug OR any future pattern)
+        const numeric = parts.find(p => /^\d+$/.test(p));
+        if (numeric) return numeric;
+        return null;
+    }
+
     function initializeProductDetails() {
         console.log('Initializing product details functionality...');
-
-        // Get URL parameters
-        const urlParams = new URLSearchParams(window.location.search);
-        const productdID = urlParams.get('productdID');
-
+        const productdID = getProductIdFromUrl();
         if (!productdID) {
-            console.error('No product ID found in URL');
-            showToast('Invalid product ID', 'error');
+            console.error('No product ID found in URL. Path:', window.location.pathname, 'Search:', window.location.search);
+            if (typeof showToast === 'function') showToast('Invalid product ID', 'error');
             return;
         }
-
-        // Setup event listeners
         setupEventListeners(productdID);
-
-        // Load product data
         loadProductDetails(productdID);
-
-        // Initialize functionality
         initializeFavorites(productdID);
         initializeBackToTop();
-        
-        // Initialize page features after load
         window.addEventListener('load', () => {
             checkUnreadMessages();
-            
-            // Initialize lazy loading if available
-            if (window.lazyLoader) {
-                window.lazyLoader.observe();
-            }
+            if (window.lazyLoader) window.lazyLoader.observe();
         });
     }
 
@@ -182,8 +179,39 @@ export default function initProductDetailsPage() {
         }
     }
 
+    function slugify(str) {
+        return (str || '')
+            .toString()
+            .normalize('NFKD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+            .substring(0, 80);
+    }
+
+    function ensureCanonical(product) {
+        const id = product.ProductdID || product.productdID;
+        if (!id) return;
+        const slug = slugify(product.ProductName || product.JobTitle || 'product');
+        const desiredPath = `/product/${id}/${slug}`;
+        if (!window.location.pathname.startsWith('/product/')) {
+            // Upgrade legacy path
+            window.history.replaceState({}, '', desiredPath);
+        }
+        // Update canonical link
+        let link = document.querySelector('link[rel="canonical"]');
+        if (!link) {
+            link = document.createElement('link');
+            link.rel = 'canonical';
+            document.head.appendChild(link);
+        }
+        link.href = window.location.origin + desiredPath;
+    }
+
     function renderProductDetails(product) {
         console.log('Rendering product details:', product);
+        ensureCanonical(product);
         
         // Store category globally for tracking purposes
         window.currentProductCategory = product.category;

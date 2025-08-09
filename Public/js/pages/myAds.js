@@ -109,7 +109,8 @@ export default function initMyAdsPage() {
                 productDiv.addEventListener('click', (e) => {
                     // Only navigate if the click was not on a button
                     if (!e.target.closest('button')) {
-                        window.location.href = `/productDetails?productdID=${product.ProductdID}`;
+                        const slug = (product.ProductName || '').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').substring(0,80);
+                        window.location.href = `/product/${product.ProductdID}/${slug}`;
                     }
                 });
 

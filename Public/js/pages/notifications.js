@@ -155,7 +155,8 @@ export default function initNotificationsPage() {
                 const srcSmall = imgName ? `/img/160/${imgName}` : fallback;
                 const srcMed = imgName ? `/img/320/${imgName}` : fallback;
                 const srcLg = imgName ? `/img/480/${imgName}` : fallback;
-                messageHtml = `New match for '${searchName}': <a href="/productDetails?productdID=${notification.productdID}" class="notification-product-link">`
+                const slug = (notification.ProductName || '').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').substring(0,80);
+                messageHtml = `New match for '${searchName}': <a href="/product/${notification.productdID}/${slug}" class="notification-product-link">`
                    + `<img src="/images/placeholder.png" data-src="${srcMed}" srcset="${srcSmall} 160w, ${srcMed} 320w, ${srcLg} 480w" sizes="160px" alt="Product thumbnail" onerror="this.src='${fallback}'">`
                    + `<span>${notification.ProductName || 'Product'}</span></a>`;
             }

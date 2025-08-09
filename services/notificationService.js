@@ -106,7 +106,8 @@ async function sendMatchEmail(userEmail, userName, searchName, product) {
     }
 
     // Construct product link - USE CORRECT CASING FOR ID
-    const productLink = `${process.env.APP_BASE_URL}/productDetails?productdID=${product.ProductdID}`; // <<< FIX: Use ProductdID
+    const slug = (product.ProductName || '').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').substring(0,80);
+    const productLink = `${process.env.APP_BASE_URL}/product/${product.ProductdID}/${slug}`;
     // Use correct casing for Images (already correct)
     const firstImage = product.Images ? `${process.env.APP_BASE_URL}/img/800/${product.Images.split(',')[0].trim()}` : `${process.env.APP_BASE_URL}/images/default-product.png`;
 

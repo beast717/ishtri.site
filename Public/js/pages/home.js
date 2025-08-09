@@ -50,7 +50,8 @@ function loadRandomProducts() {
                             window.ishtri.trackAdClick(product.ProductdID, product.category || 'unknown');
                         }
                         
-                        window.location.href = `/productDetails?productdID=${product.ProductdID}`;
+                        const slug = (product.ProductName || '').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').substring(0,80);
+                        window.location.href = `/product/${product.ProductdID}/${slug}`;
                     }
                 });
                 

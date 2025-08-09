@@ -213,6 +213,10 @@ app.use('/api/notifications', notificationRoutes);
 const settingsRoutes = require('./routes/settings');
 app.use('/api/settings', settingsRoutes);
 
+// Sitemap (cached) route
+const sitemapRouter = require('./routes/sitemap');
+app.use('/', sitemapRouter);
+
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error(err.stack);
@@ -224,6 +228,7 @@ app.use((err, req, res, next) => {
         message: process.env.NODE_ENV === 'development' ? err.message : undefined 
     });
 });
+
 
 // --- Cron Job for Matching Saved Searches ---
 cron.schedule('*/5 * * * *', async () => {

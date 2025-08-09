@@ -1,0 +1,9 @@
+# robots.txt for https://ishtri.site
+# Allow all crawlers full access to public pages.
+User-agent: *
+Disallow:
+
+# (Optional) If you later want to block API endpoints from being crawled, uncomment:
+# Disallow: /api/
+
+Sitemap: https://ishtri.site/sitemap.xml

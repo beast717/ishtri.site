@@ -35,7 +35,7 @@
 
     <!-- Other Meta Tags -->
     <meta name="robots" content="index, follow"> <!-- Allow indexing of category pages -->
-    <link rel="canonical" href="<%= typeof product !== 'undefined' ? baseUrl + '/productDetails?productdID=' + product.ProductdID : baseUrl %>" /> <!-- Replace with actual domain -->
+    <link rel="canonical" href="<%= baseUrl %>/torgetkat<%= typeof category !== 'undefined' ? ('?category=' + encodeURIComponent(category)) : '' %>" /> <!-- Category canonical -->
 
     <!-- Stylesheets and Scripts -->
     <link rel="stylesheet" href="/css/main.min.css"> 

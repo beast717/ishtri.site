@@ -66,7 +66,8 @@ function setupSocketListeners() {
     socket.on('new_notification', (notificationData) => {
         updateNotificationBadge();
         if (window.ishtri.toast) {
-            const productLink = notificationData.productdID ? `<a href="/productDetails?productdID=${notificationData.productdID}" style="text-decoration: underline;">View Product</a>` : '';
+            const slug = (notificationData.ProductName || '').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').substring(0,80);
+            const productLink = notificationData.productdID ? `<a href="/product/${notificationData.productdID}/${slug}" style="text-decoration: underline;">View Product</a>` : '';
             window.ishtri.toast.show(`New Match: ${notificationData.message} ${productLink}`, 'info', 10000);
         }
     });
