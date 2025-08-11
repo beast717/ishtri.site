@@ -190,7 +190,7 @@
 /* --- Mobile Styles --- */
 @media (max-width: 768px) {
     .navBar { height: var(--navbar-height-mobile); padding: 0 5%; }
-    .logoOgTittel img { height: 65px; }
+    .logoOgTittel img { height: 130px; }
     .navBarButtons { gap: 20px; }
     /* Only hide text in main navbar buttons, not dropdown menu */
     .navBarButtons > a span[data-i18n] { display: none; }
