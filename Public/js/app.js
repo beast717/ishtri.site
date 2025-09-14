@@ -1,6 +1,6 @@
 // --- Import Utilities ---
 import Toast from './utils/toast.js';
-import LazyLoader from './utils/lazyLoad.js';
+import { LazyImageLoader } from './utils/imageLoader.js';
 import BackToTop from './utils/backToTop.js';
 import SkeletonLoader from './utils/skeleton.js';
 
@@ -19,7 +19,7 @@ import { initCookieConsent } from './components/cookieConsent.js';
 // Create a single global namespace for our app's instances
 window.ishtri = {
     toast: new Toast(),
-    lazyLoader: new LazyLoader(),
+    lazyLoader: new LazyImageLoader(),
     backToTop: new BackToTop('#backToTop'),
     skeletonLoader: new SkeletonLoader(),
     socket: null,
@@ -247,5 +247,5 @@ document.addEventListener('DOMContentLoaded', async () => {
     await pageRouter();
 
     // Initialize lazy loading
-    window.ishtri.lazyLoader.observe();
+    window.ishtri.lazyLoader.refresh();
 });

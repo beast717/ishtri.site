@@ -1,5 +1,21 @@
 /**
- * Update the recommended section title with proper translation
+ * Update the recommended section                productDiv.innerHTML = `
+                    <div class="product-image-container">
+                        <img data-src="${srcMed}"
+                             data-srcset="${srcSmall} 320w, ${srcMed} 640w, ${srcLg} 960w"
+                             data-sizes="(max-width: 480px) 320px, (max-width: 768px) 640px, 960px"
+                             src="/images/placeholder.png"
+                             alt="${product.ProductName}"
+                             class="product-image lazy-image"
+                             data-fallback="${fallback}">
+                    </div>
+                    <i class="fas fa-heart favorite-icon" data-product-id="${product.ProductdID}"></i>
+                    <h4>
+                        ${product.ProductName} 
+                        ${product.Sold ? `<span class="sold-label">(Sold)</span>` : ''}
+                    </h4>
+                    <p>${product.Price ? `$${product.Price.toLocaleString('en-US')}` : 'Contact for price'}</p>
+                `;er translation
  */
 function updateRecommendedTitle() {
     const titleElement = document.getElementById('recommendedTitle');
@@ -71,7 +87,7 @@ function loadRandomProducts() {
             initializeFavorites();
             // Initialize lazy loading for the new images
             if (window.ishtri && window.ishtri.lazyLoader) {
-                window.ishtri.lazyLoader.observe();
+                window.ishtri.lazyLoader.refresh();
             }
         })
         .catch(err => {
