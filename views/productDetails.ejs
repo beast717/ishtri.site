@@ -37,6 +37,9 @@
     <meta name="robots" content="index, follow"> <!-- Allow search engines to index -->
     <link rel="canonical" href="<%= typeof product !== 'undefined' ? baseUrl + '/product/' + product.ProductdID + '/' + (product.ProductName || '').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').substring(0,80) : baseUrl %>" /> <!-- SEO friendly canonical -->
 
+    <!-- Layout Shift Prevention Optimizations -->
+    <%- include('partials/optimized-head') %>
+
     <!-- Stylesheets and Scripts -->
     <link rel="stylesheet" href="/css/main.min.css"> <!-- Use root-relative path -->
 
@@ -134,6 +137,9 @@
     <div class="back-to-top" id="backToTop">
         <i class="fas fa-arrow-up"></i>
     </div>
+
+    <!-- Layout Shift Prevention Scripts -->
+    <%- include('partials/optimized-scripts') %>
 
     <script>
         // No inline JavaScript - all functionality is in modular JS files

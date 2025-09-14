@@ -4,10 +4,33 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ishtri - Your Marketplace</title>
+    
+    <!-- Preload critical fonts to prevent layout shifts -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"></noscript>
+    
+    <!-- Critical CSS inline (will be populated separately) -->
+    <style>
+        /* Critical CSS to prevent FOUC and layout shifts */
+        html { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        body { margin: 0; padding: 0; min-height: 100vh; }
+        main { min-height: 70vh; }
+        .navbar { height: var(--navbar-height, 80px); }
+        @media (max-width: 768px) { .navbar { height: var(--navbar-height-mobile, 60px); } }
+        .product-grid { display: grid; gap: 20px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
+        .product { min-height: 176px; contain: layout; }
+        .content-loading { min-height: 200px; position: relative; }
+        .skeleton { border-radius: 6px; }
+        img { max-width: 100%; height: auto; }
+    </style>
+    
     <link rel="stylesheet" href="/css/main.min.css">
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"></noscript>
     <!-- Add new component scripts -->
+    <script src="/js/utils/fontManager.js" defer></script>
+    <script src="/js/utils/imageLoader.js" defer></script>
+    <script src="/js/utils/skeletonManager.js" defer></script>
     <script src="/js/toast.js" defer></script>
     <script src="/js/skeleton.js" defer></script>
     <script src="/js/backToTop.js" defer></script>
@@ -27,7 +50,12 @@
     <script>
         // Initialize components
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialize lazy loading
+            // Initialize optimized image loading
+            if (window.lazyImageLoader) {
+                window.lazyImageLoader.refresh();
+            }
+
+            // Initialize lazy loading (legacy)
             if (window.lazyLoader) {
                 window.lazyLoader.observe();
             }

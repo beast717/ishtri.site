@@ -1,0 +1,159 @@
+<!-- Optimized Scripts for Layout Shift Prevention -->
+
+<!-- Layout shift prevention utilities -->
+<script src="/js/utils/fontManager.js" defer></script>
+<script src="/js/utils/imageLoader.js" defer></script>
+<script src="/js/utils/skeletonManager.js" defer></script>
+
+<!-- Main application scripts -->
+<script src="/js/app.js" defer></script>
+
+<!-- Initialize layout shift prevention -->
+<script>
+    // Initialize components when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize font loading manager
+        if (window.fontLoadingManager) {
+            window.fontLoadingManager.optimizeExistingText();
+        }
+        
+        // Initialize optimized image loading
+        if (window.lazyImageLoader) {
+            window.lazyImageLoader.refresh();
+        }
+        
+        // Initialize skeleton manager for dynamic content
+        if (window.skeletonManager) {
+            // Auto-optimize existing skeletons
+            const existingSkeletons = document.querySelectorAll('.skeleton, .skeleton-product, .skeleton-card');
+            existingSkeletons.forEach(function(skeleton, index) {
+                skeleton.style.setProperty('--skeleton-index', index);
+                skeleton.classList.add('skeleton-progressive');
+            });
+        }
+        
+        // Optimize images that might not be lazy-loaded
+        if (window.ImageUtils) {
+            window.ImageUtils.optimizeExistingImages();
+        }
+        
+        // Layout shift prevention for dynamic content
+        initializeLayoutShiftPrevention();
+    });
+    
+    function initializeLayoutShiftPrevention() {
+        // Observer for content changes
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'childList') {
+                    mutation.addedNodes.forEach(function(node) {
+                        if (node.nodeType === Node.ELEMENT_NODE) {
+                            // Optimize newly added images
+                            const images = node.querySelectorAll ? node.querySelectorAll('img[data-src]') : [];
+                            if (images.length && window.lazyImageLoader) {
+                                window.lazyImageLoader.refresh();
+                            }
+                            
+                            // Apply font optimizations to new text
+                            const textElements = node.querySelectorAll ? node.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span') : [];
+                            textElements.forEach(function(el) {
+                                if (window.FontUtils) {
+                                    window.FontUtils.optimizeElement(el);
+                                }
+                            });
+                        }
+                    });
+                }
+            });
+        });
+        
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+        
+        // Save observer reference for cleanup
+        window.layoutShiftObserver = observer;
+    }
+    
+    // Utility functions for manual optimization
+    window.optimizeLayoutShifts = {
+        // Optimize a specific container
+        optimizeContainer: function(container) {
+            if (!container) return;
+            
+            container.style.contain = 'layout style';
+            
+            const images = container.querySelectorAll('img');
+            images.forEach(function(img) {
+                if (!img.style.aspectRatio && img.dataset.aspectRatio) {
+                    img.style.aspectRatio = img.dataset.aspectRatio;
+                }
+            });
+            
+            const textElements = container.querySelectorAll('h1, h2, h3, h4, h5, h6, p, span');
+            textElements.forEach(function(el) {
+                if (window.FontUtils) {
+                    window.FontUtils.optimizeElement(el);
+                }
+            });
+        },
+        
+        // Show loading state for container
+        showLoading: function(container, type = 'skeleton') {
+            if (!container || !window.skeletonManager) return;
+            return window.skeletonManager.showLoadingState(container, type);
+        },
+        
+        // Hide loading state
+        hideLoading: function(container) {
+            if (!container || !window.skeletonManager) return;
+            window.skeletonManager.hideLoadingState(container);
+        },
+        
+        // Preload critical images
+        preloadImages: function(urls) {
+            urls.forEach(function(url) {
+                const img = new Image();
+                img.src = url;
+            });
+        },
+        
+        // Measure text to prevent layout shifts
+        measureText: function(text, font) {
+            if (window.fontLoadingManager) {
+                return window.fontLoadingManager.measureText(text, font);
+            }
+            return null;
+        }
+    };
+    
+    // Cleanup on page unload
+    window.addEventListener('beforeunload', function() {
+        if (window.layoutShiftObserver) {
+            window.layoutShiftObserver.disconnect();
+        }
+    });
+    
+    // Performance monitoring (optional)
+    if ('PerformanceObserver' in window) {
+        try {
+            const observer = new PerformanceObserver(function(list) {
+                list.getEntries().forEach(function(entry) {
+                    if (entry.entryType === 'layout-shift' && entry.hadRecentInput === false) {
+                        console.log('Layout shift detected:', entry.value);
+                        
+                        // You can send this to analytics
+                        if (entry.value > 0.1) {
+                            console.warn('Significant layout shift detected:', entry.value);
+                        }
+                    }
+                });
+            });
+            
+            observer.observe({ entryTypes: ['layout-shift'] });
+        } catch (e) {
+            // Layout shift observation not supported
+        }
+    }
+</script>

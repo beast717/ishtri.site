@@ -1,61 +1,283 @@
+/* Enhanced Skeleton Loading - Matches Real Content Dimensions */
+
 .skeleton {
     background: linear-gradient(90deg, var(--skeleton-bg-start) 25%, var(--skeleton-bg-mid) 50%, var(--skeleton-bg-start) 75%);
     background-size: 200% 100%;
     animation: loading 1.5s infinite;
+    border-radius: var(--border-radius);
 }
+
 @keyframes loading {
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
 }
 
-/* Generic Skeleton Elements */
-.skeleton-text { 
-    height: 16px; 
-    margin: 8px 0; 
-    border-radius: 4px; 
-}
-.skeleton-title { 
-    width: 70%; 
-    height: 20px; 
-    margin-bottom: 12px;
-}
-.skeleton-price { 
-    width: 40%; 
-    height: 18px;
-    margin-top: 8px;
-}
-.skeleton-location { 
-    width: 60%; 
-    height: 16px;
-}
-.skeleton-description { 
-    width: 100%; 
-    height: 60px; 
-}
-
-/* Product/List Skeleton - matches .product card layout */
-.skeleton-product {
-    display: flex;
-    align-items: flex-start;
-    gap: 20px;
-    padding: 18px;
-    margin-bottom: 18px;
+/* Skeleton with preserved layout to prevent shifts */
+.skeleton-container {
+    contain: layout style;
     background-color: var(--bg-white);
     border: 1px solid var(--border-color-light);
     border-radius: var(--border-radius);
     box-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
-.skeleton-product .skeleton-image { 
+/* Generic Skeleton Elements with exact dimensions */
+.skeleton-text { 
+    height: 16px; 
+    margin: 8px 0; 
+    border-radius: 4px; 
+}
+
+.skeleton-text.large { height: 20px; }
+.skeleton-text.small { height: 14px; }
+
+.skeleton-title { 
+    width: 70%; 
+    height: 24px; 
+    margin-bottom: 12px;
+    font-weight: bold;
+}
+
+.skeleton-price { 
+    width: 40%; 
+    height: 18px;
+    margin-top: 8px;
+    font-weight: 600;
+}
+
+.skeleton-location { 
+    width: 60%; 
+    height: 16px;
+}
+
+.skeleton-description { 
+    width: 100%; 
+    height: 60px; 
+    margin: 12px 0;
+}
+
+/* Enhanced Product Skeleton - exact match to .product card */
+.skeleton-product {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 18px;
+    margin-bottom: 18px;
+    min-height: 176px; /* Matches typical product card height */
+    contain: layout style;
+}
+
+.skeleton-product .skeleton-image-container { 
     width: 180px; 
     height: 140px; 
-    border-radius: 4px;
+    border-radius: var(--border-radius);
+    flex-shrink: 0;
+    overflow: hidden;
+    position: relative;
+}
+
+.skeleton-product .skeleton-image {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--skeleton-bg-start) 25%, var(--skeleton-bg-mid) 50%, var(--skeleton-bg-start) 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+.skeleton-product .skeleton-content {
+    flex-grow: 1;
+    min-width: 0;
+    min-height: 140px; /* Match image height */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.skeleton-product .skeleton-header {
+    margin-bottom: 16px;
+}
+
+.skeleton-product .skeleton-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Grid skeleton for consistent layout */
+.skeleton-grid {
+    display: grid;
+    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
+.skeleton-card {
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    contain: layout style;
+    min-height: 300px; /* Prevent content jump */
+}
+
+.skeleton-card .skeleton-image {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: linear-gradient(90deg, var(--skeleton-bg-start) 25%, var(--skeleton-bg-mid) 50%, var(--skeleton-bg-start) 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+}
+
+.skeleton-card .skeleton-body {
+    padding: 16px;
+}
+
+/* Saved Searches Skeleton - matches .search-item layout */
+.skeleton-search {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 20px;
+    margin-bottom: 15px;
+    min-height: 80px;
+    contain: layout style;
+}
+
+.skeleton-search .skeleton-main {
+    flex-grow: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.skeleton-search .skeleton-actions {
+    display: flex;
+    gap: 10px;
     flex-shrink: 0;
 }
 
-.skeleton-product > div {
+.skeleton-search .skeleton-button {
+    width: 80px;
+    height: 36px;
+    border-radius: var(--border-radius);
+}
+
+/* Notification Skeleton - matches .notification-item layout */
+.skeleton-notification {
+    display: flex;
+    align-items: flex-start;
+    gap: 15px;
+    padding: 15px 20px;
+    margin-bottom: 1px;
+    min-height: 60px;
+    contain: layout style;
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.skeleton-notification .skeleton-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+}
+
+.skeleton-notification .skeleton-content {
     flex-grow: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.skeleton-notification .skeleton-timestamp {
+    width: 80px;
+    height: 14px;
+    margin-top: 4px;
+}
+
+/* Progressive loading enhancement */
+.skeleton-progressive {
+    animation-delay: calc(var(--skeleton-index, 0) * 0.1s);
+}
+
+/* Skeleton states for smooth transitions */
+.skeleton-hidden {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.skeleton-visible {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+/* List skeletons with proper spacing */
+.skeleton-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.skeleton-list-item {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background-color: var(--bg-white);
+    border: 1px solid var(--border-color-light);
+    border-radius: var(--border-radius);
+    min-height: 80px;
+    contain: layout style;
+}
+
+.skeleton-list-item .skeleton-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.skeleton-list-item .skeleton-content {
+    flex-grow: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* Mobile specific skeleton adjustments */
+@media (max-width: 768px) {
+    .skeleton-product {
+        flex-direction: column;
+        gap: 16px;
+        min-height: 280px;
+    }
+    
+    .skeleton-product .skeleton-image-container {
+        width: 100%;
+        height: 180px;
+        aspect-ratio: 16/9;
+    }
+    
+    .skeleton-product .skeleton-content {
+        min-height: auto;
+    }
+    
+    .skeleton-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .skeleton-search {
+        flex-direction: column;
+        gap: 16px;
+        min-height: 120px;
+    }
+    
+    .skeleton-search .skeleton-actions {
+        align-self: flex-start;
+    }
 }
 
 /* Saved Searches Skeleton - matches .search-item layout */

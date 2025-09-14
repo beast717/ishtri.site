@@ -7,6 +7,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search results</title>
+    
+    <!-- Layout Shift Prevention Optimizations -->
+    <%- include('partials/optimized-head') %>
+    
     <link rel="stylesheet" href="/css/main.min.css">
 </head>
 
@@ -50,8 +54,38 @@
             </ul>
         </div>
 
-        <div class="productsContainer" id="productsContainer">
-            <!-- Skeleton loading will be shown here -->
+        <div class="productsContainer product-grid" id="productsContainer">
+            <!-- Skeleton loading while search results load -->
+            <div class="skeleton-product skeleton-container">
+                <div class="skeleton-image-container">
+                    <div class="skeleton-image skeleton"></div>
+                </div>
+                <div class="skeleton-content">
+                    <div class="skeleton-header">
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-price"></div>
+                    </div>
+                    <div class="skeleton-details">
+                        <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                        <div class="skeleton skeleton-location"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="skeleton-product skeleton-container">
+                <div class="skeleton-image-container">
+                    <div class="skeleton-image skeleton"></div>
+                </div>
+                <div class="skeleton-content">
+                    <div class="skeleton-header">
+                        <div class="skeleton skeleton-title"></div>
+                        <div class="skeleton skeleton-price"></div>
+                    </div>
+                    <div class="skeleton-details">
+                        <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                        <div class="skeleton skeleton-location"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
@@ -64,8 +98,11 @@
         <i class="fas fa-arrow-up"></i>
     </div>
 
-<!-- Load the modular JavaScript application -->
-<script type="module" src="/js/app.js"></script>
+    <!-- Layout Shift Prevention Scripts -->
+    <%- include('partials/optimized-scripts') %>
+
+    <!-- Load the modular JavaScript application -->
+    <script type="module" src="/js/app.js"></script>
 
 </body>
 </html>

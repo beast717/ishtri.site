@@ -38,15 +38,22 @@ export const createProductElement = (product) => {
         product.ProductName;
 
     let innerHTML = `
-    <img src="/images/placeholder.png"
-         data-src="${srcMed}"
-         srcset="${srcSmall} 360w, ${srcMed} 720w, ${srcLg} 960w"
-         sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 180px"
+    <div class="product-image-container">
+        <img data-src="${srcMed}"
+             data-srcset="${srcSmall} 360w, ${srcMed} 720w, ${srcLg} 960w"
+             data-sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 180px"
+             data-width="180" 
+             data-height="140"
+             data-aspect-ratio="9/7"
+             data-fallback="${basePath}"
              alt="${productName}"
-             class="product-image"
+             class="product-image lazy-image"
              loading="lazy"
-         width="180" height="140"
-             onerror="this.onerror=null;this.src='${basePath}';">
+             width="180" height="140">
+        <div class="image-placeholder">
+            <i class="fas fa-image"></i>
+        </div>
+    </div>
         <div>
             <h3>
                 ${productName || 'Unnamed Product'}

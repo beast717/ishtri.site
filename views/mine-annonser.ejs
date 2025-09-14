@@ -7,6 +7,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="navbar.mine_annonser">My Ads</title>
+    
+    <!-- Layout Shift Prevention Optimizations -->
+    <%- include('partials/optimized-head') %>
+    
     <link rel="stylesheet" href="/css/main.min.css">
 </head>
 <body data-page="myAds">
@@ -14,9 +18,26 @@
 
     <h1 data-i18n="navbar.mine_annonser">My Ads</h1>
     
-    <div id="productsContainer">
-        <!-- Products will be loaded here dynamically -->
+    <div id="productsContainer" class="product-grid">
+        <!-- Skeleton loading while ads load -->
+        <div class="skeleton-product skeleton-container">
+            <div class="skeleton-image-container">
+                <div class="skeleton-image skeleton"></div>
+            </div>
+            <div class="skeleton-content">
+                <div class="skeleton-header">
+                    <div class="skeleton skeleton-title"></div>
+                    <div class="skeleton skeleton-price"></div>
+                </div>
+                <div class="skeleton-details">
+                    <div class="skeleton skeleton-location"></div>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Layout Shift Prevention Scripts -->
+    <%- include('partials/optimized-scripts') %>
 
     <!-- Load Socket.IO and modular app.js -->
     <script type="module" src="/js/app.js"></script>
