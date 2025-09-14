@@ -1,4 +1,14 @@
 /**
+ * Update the recommended section title with proper translation
+ */
+function updateRecommendedTitle() {
+    const titleElement = document.getElementById('recommendedTitle');
+    if (titleElement && window.ishtri && window.ishtri.i18n) {
+        titleElement.textContent = window.ishtri.i18n.t('home.recommended');
+    }
+}
+
+/**
  * Load random products and display them on the homepage
  */
 function loadRandomProducts() {
@@ -227,6 +237,9 @@ export default function initHomePage() {
     // Initialize search tracking
     initSearchTracking();
     
+    // Update recommended section title with translation
+    updateRecommendedTitle();
+    
     // Load random products
     loadRandomProducts();
     
@@ -238,4 +251,7 @@ export default function initHomePage() {
         console.log('User is logged in on home page, initializing authenticated features');
         // The navbar component will handle message and notification badge updates
     }
+    
+    // Listen for language change events to update title
+    window.addEventListener('languageChanged', updateRecommendedTitle);
 }
