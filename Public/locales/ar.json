@@ -33,6 +33,9 @@
             "placeholder": "ابحث عن أي شيء...",
             "conversations": "البحث في المحادثات..."
         },
+        "home": {
+            "recommended": "موصى لك"
+        },
         "categories": {
             "torget": "السوق",
             "bil": "سيارة",

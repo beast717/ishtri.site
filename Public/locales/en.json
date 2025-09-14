@@ -33,6 +33,9 @@
             "placeholder": "Search for anything...",
             "conversations": "Search conversations..."
         },
+        "home": {
+            "recommended": "Recommended for you"
+        },
         "categories": {
             "torget": "Market",
             "bil": "Car",
