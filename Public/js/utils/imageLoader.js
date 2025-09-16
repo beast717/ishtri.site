@@ -6,8 +6,8 @@
 class LazyImageLoader {
     constructor(options = {}) {
         this.options = {
-            rootMargin: '50px',
-            threshold: 0.1,
+            rootMargin: '100px',
+            threshold: [0, 0.1, 0.5],
             enableBlurPlaceholder: true,
             enableProgressiveLoading: true,
             retryAttempts: 3,
@@ -22,7 +22,11 @@ class LazyImageLoader {
     }
 
     init() {
-        if (!('IntersectionObserver' in window)) {
+        // Mobile detection - load images immediately on small screens
+        const isMobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        if (!('IntersectionObserver' in window) || isMobile) {
+            console.log('Using fallback loading for mobile or unsupported browser');
             this.loadAllImages();
             return;
         }
@@ -70,6 +74,7 @@ class LazyImageLoader {
     handleIntersection(entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
+                console.log('Loading image:', entry.target.dataset.src);
                 this.loadImage(entry.target);
                 this.observer.unobserve(entry.target);
             }
@@ -79,6 +84,8 @@ class LazyImageLoader {
     loadImage(img, attempt = 1) {
         const src = img.dataset.src || img.dataset.bgSrc;
         if (!src || this.loadedImages.has(img)) return;
+
+        console.log('Attempting to load image:', src);
 
         // For background images
         if (img.dataset.bgSrc) {
@@ -137,9 +144,12 @@ class LazyImageLoader {
         img.src = src;
         img.classList.add('loaded');
         
-        // Copy srcset if available
+        // Copy srcset and sizes if available
         if (img.dataset.srcset) {
             img.srcset = img.dataset.srcset;
+        }
+        if (img.dataset.sizes) {
+            img.sizes = img.dataset.sizes;
         }
 
         this.hidePlaceholder(img);

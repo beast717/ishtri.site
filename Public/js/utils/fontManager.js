@@ -44,7 +44,7 @@ class FontLoadingManager {
             document.documentElement.classList.add('fonts-loaded');
             
         } catch (error) {
-            console.warn('Font loading failed:', error);
+            // Silently handle font loading failures and fallback gracefully
             this.handleFontLoadingFailure();
         }
         
@@ -71,17 +71,17 @@ class FontLoadingManager {
                 timeoutPromise
             ]);
         } catch (error) {
-            // Continue with available fonts
-            console.warn('Some fonts failed to load within timeout:', error);
+            // Continue with available fonts - timeout occurred
+            this.handleFontLoadingFailure();
         }
 
         // Wait for any remaining fonts (non-blocking)
         Promise.allSettled(promises).then(results => {
             results.forEach((result, index) => {
                 if (result.status === 'fulfilled') {
-                    console.log('Font loaded successfully:', this.getFontName(index));
+                    // Font loaded successfully
                 } else {
-                    console.warn('Font failed to load:', this.getFontName(index), result.reason);
+                    // Font failed to load - handled gracefully
                 }
             });
         });
