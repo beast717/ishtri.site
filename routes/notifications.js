@@ -24,7 +24,7 @@ router.get('/', isAuthenticated, async (req, res, next) => {
         // Process image URLs
         const processedNotifications = notifications.map(n => ({
             ...n,
-            firstImage: n.Images ? `/img/320/${n.Images.split(',')[0].trim()}` : '/images/default-product.png'
+            firstImage: n.Images ? `/img/320/${n.Images.split(',')[0].trim()}` : '/images/default.jpg'
         }));
 
         res.json(processedNotifications);

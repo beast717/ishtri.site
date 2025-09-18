@@ -23,7 +23,7 @@
     <meta property="og:title" content="<%= typeof product !== 'undefined' ? product.ProductName + ' | Ishtri' : 'Product Details | Ishtri' %>">
     <meta property="og:description" content="<%= typeof product !== 'undefined' ? 'View details for ' + product.ProductName + '.' : 'Explore product details on Ishtri.' %>">
     <!-- Use the first product image for OG image if available (optimized width) -->
-    <meta property="og:image" content="<%= typeof product !== 'undefined' && product.Images && product.Images.split(',').length > 0 ? baseUrl + '/img/1200/' + product.Images.split(',')[0].trim() : baseUrl + '/images/default-product.png' %>"> <!-- Replace with actual domain/path -->
+    <meta property="og:image" content="<%= typeof product !== 'undefined' && product.Images && product.Images.split(',').length > 0 ? baseUrl + '/img/1200/' + product.Images.split(',')[0].trim() : baseUrl + '/images/default.jpg' %>"> <!-- Replace with actual domain/path -->
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
@@ -31,7 +31,7 @@
     <meta property="twitter:title" content="<%= typeof product !== 'undefined' ? product.ProductName + ' | Ishtri' : 'Product Details | Ishtri' %>">
     <meta property="twitter:description" content="<%= typeof product !== 'undefined' ? 'View details for ' + product.ProductName + '.' : 'Explore product details on Ishtri.' %>">
     <!-- Use the first product image for Twitter image if available (optimized width) -->
-    <meta property="twitter:image" content="<%= typeof product !== 'undefined' && product.Images && product.Images.split(',').length > 0 ? '/img/1200/' + product.Images.split(',')[0].trim() : '/images/default-product.png' %>"> <!-- Replace with actual domain/path -->
+    <meta property="twitter:image" content="<%= typeof product !== 'undefined' && product.Images && product.Images.split(',').length > 0 ? '/img/1200/' + product.Images.split(',')[0].trim() : '/images/default.jpg' %>"> <!-- Replace with actual domain/path -->
 
     <!-- Other Meta Tags -->
     <meta name="robots" content="index, follow"> <!-- Allow search engines to index -->

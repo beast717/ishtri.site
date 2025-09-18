@@ -24,7 +24,7 @@ export const createProductElement = (product) => {
 
     const images = product.Images ? product.Images.split(',') : [];
     const firstName = images.length > 0 ? images[0].trim() : null;
-    const basePath = firstName ? `/img/720/${firstName}` : '/images/default-product.png';
+    const basePath = firstName ? `/img/720/${firstName}` : '/images/default.jpg';
 
     // Build responsive URLs via the /img endpoint
     // Card image renders ~180x140 on desktop, larger on mobile.

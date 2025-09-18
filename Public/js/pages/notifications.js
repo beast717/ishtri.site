@@ -151,7 +151,7 @@ export default function initNotificationsPage() {
                         .replace('/img/800/', '')
                         .replace('/img/1200/', '');
                 }
-                const fallback = '/images/default-product.png';
+                const fallback = '/images/default.jpg';
                 const srcSmall = imgName ? `/img/160/${imgName}` : fallback;
                 const srcMed = imgName ? `/img/320/${imgName}` : fallback;
                 const srcLg = imgName ? `/img/480/${imgName}` : fallback;

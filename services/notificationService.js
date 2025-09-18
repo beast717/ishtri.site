@@ -78,7 +78,7 @@ async function createMatchNotification(userId, searchName, product, io, activeUs
                     // Include details needed by the frontend notification display
                     ProductName: product.ProductName,
                     Price: product.Price, // Ensure product object has Price
-                    firstImage: product.Images ? `/img/480/${product.Images.split(',')[0].trim()}` : '/images/default-product.png'
+                    firstImage: product.Images ? `/img/480/${product.Images.split(',')[0].trim()}` : '/images/default.jpg'
                 };
                 io.to(userSocketId).emit('new_notification', newNotificationData);
            }
@@ -109,7 +109,7 @@ async function sendMatchEmail(userEmail, userName, searchName, product) {
     const slug = (product.ProductName || '').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').substring(0,80);
     const productLink = `${process.env.APP_BASE_URL}/product/${product.ProductdID}/${slug}`;
     // Use correct casing for Images (already correct)
-    const firstImage = product.Images ? `${process.env.APP_BASE_URL}/img/800/${product.Images.split(',')[0].trim()}` : `${process.env.APP_BASE_URL}/images/default-product.png`;
+    const firstImage = product.Images ? `${process.env.APP_BASE_URL}/img/800/${product.Images.split(',')[0].trim()}` : `${process.env.APP_BASE_URL}/images/default.jpg`;
 
     // Email HTML content (Use correct casing for product properties)
     const emailHtml = `

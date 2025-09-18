@@ -419,7 +419,8 @@ export default function initProductDetailsPage() {
             // Add error handling for images
             img.onerror = function() {
                 console.warn('Failed to load image:', this.src);
-                this.style.display = 'none';
+                this.src = '/images/default.jpg';
+                this.onerror = null; // Prevent infinite loop
             };
             
             carousel.appendChild(img);

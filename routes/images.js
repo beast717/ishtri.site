@@ -25,7 +25,15 @@ if (sharp) {
 
     // Prevent path traversal
     if (!originalPath.startsWith(uploadsDir)) return res.status(400).send('Invalid path');
-    if (!fs.existsSync(originalPath)) return res.status(404).send('Not found');
+    
+    // If original file doesn't exist, serve default image
+    if (!fs.existsSync(originalPath)) {
+      const defaultImagePath = path.join(__dirname, '..', 'Public', 'images', 'default.jpg');
+      if (fs.existsSync(defaultImagePath)) {
+        return res.sendFile(defaultImagePath);
+      }
+      return res.status(404).send('Not found');
+    }
 
     const accept = req.headers.accept || '';
     const format = accept.includes('image/avif') ? 'avif' : (accept.includes('image/webp') ? 'webp' : 'webp');
