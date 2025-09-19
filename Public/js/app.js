@@ -110,7 +110,7 @@ async function initSocket(userId = null) {
             });
 
             window.ishtri.socket.on('disconnect', (reason) => {
-                console.log(`Socket.IO disconnected: ${reason}`);
+                // Socket disconnected
             });
 
             window.ishtri.socket.on('connect_error', (error) => {

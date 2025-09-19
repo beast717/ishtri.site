@@ -137,12 +137,8 @@
             const observer = new PerformanceObserver(function(list) {
                 list.getEntries().forEach(function(entry) {
                     if (entry.entryType === 'layout-shift' && entry.hadRecentInput === false) {
-                        console.log('Layout shift detected:', entry.value);
-                        
-                        // You can send this to analytics
-                        if (entry.value > 0.1) {
-                            console.warn('Significant layout shift detected:', entry.value);
-                        }
+                        // Layout shift detected - you can send this to analytics if needed
+                        // Removed console logging for cleaner output
                     }
                 });
             });

@@ -8,8 +8,6 @@ const MAX_SIZE_MB = 5;
 const MAX_SIZE_BYTES = MAX_SIZE_MB * 1024 * 1024;
 
 export default function initNewAdPage() {
-    console.log('Initializing new ad page...');
-    
     // Check if on the correct page
     if (!document.getElementById('productForm')) return;
 
@@ -17,8 +15,6 @@ export default function initNewAdPage() {
     initializeNewAd();
 
     function initializeNewAd() {
-        console.log('Initializing new ad functionality...');
-
         // Get DOM elements
         const form = document.getElementById('productForm');
         const categoryContainer = document.querySelector('.kategorierContainer');
