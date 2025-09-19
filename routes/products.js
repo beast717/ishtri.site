@@ -602,7 +602,7 @@ router.post('/', upload.array('images', 5), createProductValidation, async (req,
             }
 
             await connection.commit();
-            res.redirect('/mine-annonser');
+            res.status(201).json({ success: true, productId: productId });
 
         } catch (error) {
             await connection.rollback();
