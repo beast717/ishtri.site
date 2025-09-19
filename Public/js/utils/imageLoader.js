@@ -73,6 +73,7 @@ class LazyImageLoader {
     handleIntersection(entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
+                console.log('Image is intersecting, loading:', entry.target.dataset.src || entry.target.dataset.bgSrc);
                 this.loadImage(entry.target);
                 this.observer.unobserve(entry.target);
             }
@@ -129,6 +130,7 @@ class LazyImageLoader {
     }
 
     onImageLoad(img, src) {
+        console.log('Image loaded successfully:', src);
         // Prevent layout shift by setting dimensions before src
         if (!img.style.width && img.dataset.width) {
             img.style.width = img.dataset.width + 'px';
@@ -174,10 +176,12 @@ class LazyImageLoader {
     }
 
     hidePlaceholder(img) {
+        console.log('Hiding placeholder for image:', img.src);
         const container = img.closest('.product-image-container, .image-container');
         if (container) {
             const placeholder = container.querySelector('.image-placeholder, .image-blur-placeholder');
             if (placeholder) {
+                console.log('Found placeholder, hiding it');
                 placeholder.classList.add('hidden');
                 // Remove after transition
                 setTimeout(() => {
@@ -185,7 +189,11 @@ class LazyImageLoader {
                         placeholder.parentNode.removeChild(placeholder);
                     }
                 }, 300);
+            } else {
+                console.log('No placeholder found in container');
             }
+        } else {
+            console.log('No container found for image');
         }
     }
 
