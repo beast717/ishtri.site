@@ -26,7 +26,6 @@ class LazyImageLoader {
         const isMobile = window.innerWidth <= 768 || /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         
         if (!('IntersectionObserver' in window) || isMobile) {
-            console.log('Using fallback loading for mobile or unsupported browser');
             this.loadAllImages();
             return;
         }
@@ -74,7 +73,6 @@ class LazyImageLoader {
     handleIntersection(entries) {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                console.log('Loading image:', entry.target.dataset.src);
                 this.loadImage(entry.target);
                 this.observer.unobserve(entry.target);
             }
@@ -84,8 +82,6 @@ class LazyImageLoader {
     loadImage(img, attempt = 1) {
         const src = img.dataset.src || img.dataset.bgSrc;
         if (!src || this.loadedImages.has(img)) return;
-
-        console.log('Attempting to load image:', src);
 
         // For background images
         if (img.dataset.bgSrc) {
@@ -121,7 +117,7 @@ class LazyImageLoader {
         tempImg.onload = () => {
             element.style.backgroundImage = `url(${src})`;
             element.classList.add('loaded');
-            this.hideePlaceholder(element);
+            this.hidePlaceholder(element);
             this.loadedImages.add(element);
         };
         
@@ -175,8 +171,6 @@ class LazyImageLoader {
         img.classList.add('error');
         this.hidePlaceholder(img);
         this.failedImages.add(img);
-
-        console.warn(`Failed to load image after ${this.options.retryAttempts} attempts:`, src);
     }
 
     hidePlaceholder(img) {
