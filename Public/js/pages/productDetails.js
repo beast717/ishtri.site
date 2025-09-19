@@ -431,13 +431,12 @@ export default function initProductDetailsPage() {
 
         // Initialize lazy loading for carousel images
         if (window.ishtri?.lazyLoader) {
-            window.ishtri.lazyLoader.observe();
+            window.ishtri.lazyLoader.refresh();
         } else if (window.lazyLoader) {
-            window.lazyLoader.observe();
+            window.lazyLoader.refresh();
         }
 
         updateCarouselButtons(images.length);
-        console.log(`Rendered ${images.length} images in carousel`);
     }
 
     function updateCarouselButtons(imageCount) {
