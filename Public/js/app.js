@@ -213,7 +213,8 @@ async function pageRouter() {
                 break;
         }
     } catch (e) {
-        console.error('Failed to load page module for', page, e);
+        console.error('Failed to load page module for', page, ':', e.message);
+        console.error('Full error:', e);
     }
 }
 
