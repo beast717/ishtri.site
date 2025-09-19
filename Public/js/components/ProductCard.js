@@ -24,14 +24,12 @@ export const createProductElement = (product) => {
 
     const images = product.Images ? product.Images.split(',') : [];
     const firstName = images.length > 0 ? images[0].trim() : null;
-    const basePath = firstName ? `/img/720/${firstName}` : '/images/default.jpg';
+    const hasImage = firstName && firstName !== 'default.jpg';
 
-    // Build responsive URLs via the /img endpoint
-    // Card image renders ~180x140 on desktop, larger on mobile.
-    // Provide densities around that size to avoid overserving.
-    const srcSmall = firstName ? `/img/360/${firstName}` : basePath; // ~2x desktop size
-    const srcMed = firstName ? `/img/720/${firstName}` : basePath;  // mobile wide
-    const srcLg = firstName ? `/img/960/${firstName}` : basePath;  // high-density/mobile landscape
+    const imageSrc = hasImage ? `/img/360/${firstName}` : '/images/default.svg';
+    const imageSrcset = hasImage ? 
+        `/img/360/${firstName} 360w, /img/720/${firstName} 720w, /img/960/${firstName} 960w` : 
+        '';
 
     const productName = isJob ? product.JobTitle : 
         isCar ? `${product.brand_name || ''} ${product.model_name || ''}`.trim() : 
@@ -39,15 +37,11 @@ export const createProductElement = (product) => {
 
     let innerHTML = `
     <div class="product-image-container">
-        <img data-src="${srcMed}"
-             data-srcset="${srcSmall} 360w, ${srcMed} 720w, ${srcLg} 960w"
+        <img ${hasImage ? `data-src="${imageSrc}" data-srcset="${imageSrcset}"` : `src="${imageSrc}"`}
              data-sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 180px"
-             data-width="180" 
-             data-height="140"
-             data-aspect-ratio="9/7"
-             data-fallback="${basePath}"
+             data-fallback="/images/default.svg"
              alt="${productName}"
-             class="product-image lazy-image"
+             class="product-image ${hasImage ? 'lazy-image' : ''}"
              loading="lazy"
              width="180" height="140">
         <div class="image-placeholder">
