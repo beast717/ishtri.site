@@ -59,7 +59,7 @@ router.get('/random-products', async (req, res, next) => {
              FROM products 
              WHERE Images IS NOT NULL      -- Ensure Images column is not NULL
                AND Images != ''            -- Ensure Images column is not empty
-               AND Images != 'default.jpg' -- Ensure Images column is not the default placeholder name
+               AND Images != 'default.svg' -- Ensure Images column is not the default placeholder name
              ORDER BY RAND() 
              LIMIT 5` // Get up to 5 random products that meet the criteria
         );

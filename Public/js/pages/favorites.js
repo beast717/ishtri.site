@@ -21,8 +21,8 @@ export default function initFavoritesPage() {
                 const productDiv = document.createElement('div');
                 productDiv.className = 'product';
 
-                const firstName = product.Images && product.Images !== 'default.jpg' ? product.Images.split(',')[0].trim() : null;
-                const fallback = '/images/default.jpg';
+                const firstName = product.Images && product.Images !== 'default.svg' ? product.Images.split(',')[0].trim() : null;
+                const fallback = '/images/default.svg';
                 const srcSmall = firstName ? `/img/320/${firstName}` : fallback;
                 const srcMed = firstName ? `/img/640/${firstName}` : fallback;
                 const srcLg = firstName ? `/img/960/${firstName}` : fallback;
@@ -35,7 +35,7 @@ export default function initFavoritesPage() {
                          alt="${product.ProductName}" 
                          class="product-image"
                          loading="lazy"
-                         onerror="this.src='/images/default.jpg'">
+                         onerror="this.src='/images/default.svg'">
                     <div>
                         <h3>${product.ProductName}</h3>
                         <p><strong>Price:</strong> ${product.Price ? `${product.Price.toLocaleString('no-NO')} kr` : 'Contact for price'}</p>

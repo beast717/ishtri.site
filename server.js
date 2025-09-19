@@ -133,9 +133,9 @@ app.use('/', imagesRouter);
 app.use('/data', express.static(path.join(__dirname, 'data'), { setHeaders: setStaticCacheHeaders }));
 app.use(express.static(path.join(__dirname, 'Public'), { setHeaders: setStaticCacheHeaders }));
 
-// Handle default.jpg requests in uploads directory by serving our default image
-app.get('/uploads/default.jpg', (req, res) => {
-    res.sendFile(path.join(__dirname, 'Public', 'images', 'default.jpg'));
+// Handle default.svg requests in uploads directory by serving our default image
+app.get('/uploads/default.svg', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Public', 'images', 'default.svg'));
 });
 
 app.use('/uploads', express.static('uploads', { setHeaders: setStaticCacheHeaders }));

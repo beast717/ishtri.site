@@ -24,7 +24,7 @@ export const createProductElement = (product) => {
 
     const images = product.Images ? product.Images.split(',') : [];
     const firstName = images.length > 0 ? images[0].trim() : null;
-    const hasImage = firstName && firstName !== 'default.jpg';
+    const hasImage = firstName && firstName !== 'default.svg';
 
     const imageSrc = hasImage ? `/img/360/${firstName}` : '/images/default.svg';
     const imageSrcset = hasImage ? 

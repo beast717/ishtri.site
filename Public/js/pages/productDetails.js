@@ -419,7 +419,7 @@ export default function initProductDetailsPage() {
             // Add error handling for images
             img.onerror = function() {
                 console.warn('Failed to load image:', this.src);
-                this.src = '/images/default.jpg';
+                this.src = '/images/default.svg';
                 this.onerror = null; // Prevent infinite loop
             };
             

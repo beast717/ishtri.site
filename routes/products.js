@@ -435,7 +435,7 @@ router.get('/', getProductsValidation, async (req, res, next) => { // <-- Add va
             total: totalResult[0].total,
             products: products.map(p => ({
                 ...p,
-                firstImage: p.Images ? `/img/480/${p.Images.split(',')[0].trim()}` : '/images/default.jpg'
+                firstImage: p.Images ? `/img/480/${p.Images.split(',')[0].trim()}` : '/images/default.svg'
             }))
         });
 
@@ -535,7 +535,7 @@ router.post('/', upload.array('images', 5), createProductValidation, async (req,
               Description: body.Description, // Validated & trimmed
               Images: files.length > 0
                 ? files.map(f => f.filename).join(',')
-                : 'default.jpg',
+                : 'default.svg',
               brukerId: session.brukerId, // Assumed valid from session
               Date: new Date(),
               SubCategori: body.SubCategori // Validated & trimmed

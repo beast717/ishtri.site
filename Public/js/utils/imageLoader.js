@@ -170,7 +170,7 @@ class LazyImageLoader {
         }
 
         // Final fallback
-        const fallbackSrc = img.dataset.fallback || '/images/default.jpg';
+        const fallbackSrc = img.dataset.fallback || '/images/default.svg';
         img.src = fallbackSrc;
         img.classList.add('error');
         this.hidePlaceholder(img);

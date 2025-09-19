@@ -28,7 +28,7 @@ if (sharp) {
     
     // If original file doesn't exist, serve default image
     if (!fs.existsSync(originalPath)) {
-      const defaultImagePath = path.join(__dirname, '..', 'Public', 'images', 'default.jpg');
+      const defaultImagePath = path.join(__dirname, '..', 'Public', 'images', 'default.svg');
       if (fs.existsSync(defaultImagePath)) {
         return res.sendFile(defaultImagePath);
       }
