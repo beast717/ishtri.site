@@ -121,7 +121,7 @@ export const displayProducts = (products, loadMore = false) => {
     // Initialize favorites and lazy loading
     initializeFavorites();
     if (window.ishtri?.lazyLoader) {
-        window.ishtri.lazyLoader.observe();
+        window.ishtri.lazyLoader.refresh();
     }
 };
 
