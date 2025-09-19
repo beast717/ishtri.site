@@ -176,6 +176,10 @@ class LazyImageLoader {
     hidePlaceholder(img) {
         const container = img.closest('.product-image-container, .image-container');
         if (container) {
+            // Stop the container animation
+            container.style.animation = 'none';
+            container.style.background = 'none';
+            
             const placeholder = container.querySelector('.image-placeholder, .image-blur-placeholder');
             if (placeholder) {
                 // Stop the animation and hide immediately
