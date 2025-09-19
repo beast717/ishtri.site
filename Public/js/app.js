@@ -102,15 +102,10 @@ async function initSocket(userId = null) {
 
         if (!window.ishtri.socket || !window.ishtri.socket.connected) {
             window.ishtri.socket = io();
-            console.log('Socket.IO attempting connection.');
 
             window.ishtri.socket.on('connect', () => {
-                console.log('Socket.IO connected.');
                 if (userId) {
                     window.ishtri.socket.emit('authenticate', userId);
-                    console.log(`Socket authenticated for user: ${userId}`);
-                } else {
-                    console.log('User not logged in, socket connected but not authenticated.');
                 }
             });
 
@@ -122,7 +117,6 @@ async function initSocket(userId = null) {
                 console.error('Socket.IO connection error:', error);
             });
         } else if (userId && !window.ishtri.socket.authenticated) {
-            console.log('Socket exists, attempting re-authentication.');
             window.ishtri.socket.emit('authenticate', userId);
         }
     } catch (e) {
@@ -138,11 +132,6 @@ async function initAuth() {
         const response = await fetch('/api/auth/current-user', { credentials: 'include' });
         
         if (!response.ok) {
-            if (response.status === 401) {
-                console.log("User not logged in (initial check).");
-            } else {
-                console.error(`Initial user check failed with status: ${response.status}`);
-            }
             // Ensure socket is initialized even for guests
             await initSocket();
             return null;

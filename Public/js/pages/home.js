@@ -261,8 +261,6 @@ function initSearchTracking() {
  * Initialize homepage functionality
  */
 export default function initHomePage() {
-    console.log('Initializing home page...');
-    
     // Initialize search tracking
     initSearchTracking();
     
@@ -277,7 +275,6 @@ export default function initHomePage() {
     
     // Check for unread messages if user is logged in (this was in the old onload function)
     if (window.ishtri && window.ishtri.user && window.ishtri.user.brukernavn) {
-        console.log('User is logged in on home page, initializing authenticated features');
         // The navbar component will handle message and notification badge updates
     }
     
