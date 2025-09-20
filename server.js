@@ -130,6 +130,18 @@ ensureBundledCSS();
 const imagesRouter = require('./routes/images');
 app.use('/', imagesRouter);
 
+// Special route for ads.txt - allow unrestricted access for advertising platforms
+app.get('/ads.txt', (req, res) => {
+    res.set({
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Cache-Control': 'public, max-age=86400' // Cache for 24 hours
+    });
+    res.sendFile(path.join(__dirname, 'Public', 'ads.txt'));
+});
+
 // Static files with smarter caching
 app.use('/data', express.static(path.join(__dirname, 'data'), { setHeaders: setStaticCacheHeaders }));
 app.use(express.static(path.join(__dirname, 'Public'), { setHeaders: setStaticCacheHeaders }));
