@@ -60,7 +60,7 @@ function loadRandomProducts() {
                 // Handle images
                 const images = product.Images ? product.Images.split(',') : [];
                 const firstImage = images.length > 0 ? images[0].trim() : null;
-                const fallback = '/images/default.jpg';
+                const fallback = '/images/default.svg';
                 const srcSmall = firstImage ? `/img/320/${firstImage}` : fallback;
                 const srcMed = firstImage ? `/img/640/${firstImage}` : fallback;
                 const srcLg = firstImage ? `/img/960/${firstImage}` : fallback;
