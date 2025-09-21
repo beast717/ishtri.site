@@ -208,6 +208,11 @@ class LazyImageLoader {
         this.observeImages();
     }
 
+    // Alias for refresh() to maintain backward compatibility
+    observe() {
+        this.refresh();
+    }
+
     destroy() {
         if (this.observer) {
             this.observer.disconnect();

@@ -52,7 +52,7 @@ export default function initFavoritesPage() {
             });
             
             if (window.ishtri?.lazyLoader) {
-                window.ishtri.lazyLoader.observe();
+                window.ishtri.lazyLoader.refresh();
             }
         })
         .catch(error => {

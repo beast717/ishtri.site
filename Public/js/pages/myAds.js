@@ -120,7 +120,7 @@ export default function initMyAdsPage() {
             // Add a single delegated event listener for all buttons
             container.addEventListener('click', handleProductAction);
 
-            window.ishtri.lazyLoader.observe();
+            window.ishtri.lazyLoader.refresh();
         })
         .catch(error => {
             // Hide skeleton on error

@@ -46,7 +46,7 @@ export default function initProductDetailsPage() {
         initializeBackToTop();
         window.addEventListener('load', () => {
             checkUnreadMessages();
-            if (window.lazyLoader) window.lazyLoader.observe();
+            if (window.ishtri?.lazyLoader) window.ishtri.lazyLoader.refresh();
         });
     }
 
