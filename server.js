@@ -45,6 +45,29 @@ applyCompression(app);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Special routes that need to bypass CORS (must come before CORS middleware)
+// ads.txt - allow unrestricted access for advertising platforms
+app.get('/ads.txt', (req, res) => {
+    res.set({
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET',
+        'Access-Control-Allow-Headers': 'Content-Type',
+        'Cache-Control': 'public, max-age=86400' // Cache for 24 hours
+    });
+    res.sendFile(path.join(__dirname, 'Public', 'ads.txt'));
+});
+
+// robots.txt - also commonly needs unrestricted access
+app.get('/robots.txt', (req, res) => {
+    res.set({
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Access-Control-Allow-Origin': '*',
+        'Cache-Control': 'public, max-age=86400'
+    });
+    res.sendFile(path.join(__dirname, 'Public', 'robots.txt'));
+});
+
 // CORS
 const corsOptions = {
   origin: function (origin, callback) {
@@ -130,18 +153,6 @@ ensureBundledCSS();
 const imagesRouter = require('./routes/images');
 app.use('/', imagesRouter);
 
-// Special route for ads.txt - allow unrestricted access for advertising platforms
-app.get('/ads.txt', (req, res) => {
-    res.set({
-        'Content-Type': 'text/plain; charset=utf-8',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'GET',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Cache-Control': 'public, max-age=86400' // Cache for 24 hours
-    });
-    res.sendFile(path.join(__dirname, 'Public', 'ads.txt'));
-});
-
 // Static files with smarter caching
 app.use('/data', express.static(path.join(__dirname, 'data'), { setHeaders: setStaticCacheHeaders }));
 app.use(express.static(path.join(__dirname, 'Public'), { setHeaders: setStaticCacheHeaders }));
@@ -182,7 +193,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.get('/', (req, res) => res.render('Forside'));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'Logg inn.html')));
 app.get('/forgot-password', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'ForgotPassword.html')));
-app.get('/torget', (req, res) => res.render('Torget'));
+app.get('/torget', (req, res) => res.render('TorgetKat'));
 app.get('/reise', (req, res) => res.render('reise'));
 
 const viewRoutes = require('./routes/views');
