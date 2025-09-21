@@ -42,6 +42,11 @@ class LazyImageLoader {
     }
 
     observeImages() {
+        // Only observe if we have an observer (IntersectionObserver is supported)
+        if (!this.observer) {
+            return;
+        }
+        
         const images = document.querySelectorAll('img[data-src], [data-bg-src]');
         images.forEach(img => {
             if (!this.loadedImages.has(img) && !this.failedImages.has(img)) {
@@ -71,6 +76,8 @@ class LazyImageLoader {
     }
 
     handleIntersection(entries) {
+        if (!this.observer) return; // Safety check
+        
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 this.loadImage(entry.target);
@@ -205,7 +212,12 @@ class LazyImageLoader {
 
     // Public methods
     refresh() {
-        this.observeImages();
+        if (this.observer) {
+            this.observeImages();
+        } else {
+            // Fallback: load all images immediately if no observer
+            this.loadAllImages();
+        }
     }
 
     // Alias for refresh() to maintain backward compatibility
