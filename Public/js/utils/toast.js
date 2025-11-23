@@ -22,23 +22,49 @@ export default class Toast {
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
 
-        // Use a proper <span> for the message content to avoid layout issues
-        const messageSpan = document.createElement('span');
-        messageSpan.innerHTML = message; // Use innerHTML to allow for links (e.g., in login prompts)
+        // Icon Wrapper
+        const iconWrapper = document.createElement('div');
+        iconWrapper.className = 'toast-icon-wrapper';
+        iconWrapper.innerHTML = `<i class="fas ${this.getIcon(type)}"></i>`;
 
+        // Message Container
+        const messageContainer = document.createElement('div');
+        messageContainer.className = 'toast-message';
+        
+        const title = document.createElement('div');
+        title.className = 'toast-title';
+        title.textContent = type; // Or pass a title argument
+
+        const body = document.createElement('div');
+        body.className = 'toast-body';
+        body.innerHTML = message;
+
+        messageContainer.appendChild(title);
+        messageContainer.appendChild(body);
+
+        // Content Wrapper (Icon + Message)
         const contentDiv = document.createElement('div');
         contentDiv.className = 'toast-content';
-        contentDiv.innerHTML = `<i class="fas ${this.getIcon(type)}"></i>`;
-        contentDiv.appendChild(messageSpan);
+        contentDiv.appendChild(iconWrapper);
+        contentDiv.appendChild(messageContainer);
         
         toast.appendChild(contentDiv);
 
-        // Create and append the close button
+        // Close Button
         const closeBtn = document.createElement('button');
-        closeBtn.className = 'toast-close-btn'; // Use the new, better class name
-        closeBtn.innerHTML = '×';
+        closeBtn.className = 'toast-close-btn';
+        closeBtn.innerHTML = '<i class="fas fa-times"></i>';
         closeBtn.setAttribute('aria-label', 'Close');
         toast.appendChild(closeBtn);
+
+        // Progress Bar
+        const progressContainer = document.createElement('div');
+        progressContainer.className = 'toast-progress';
+        const progressBar = document.createElement('div');
+        progressBar.className = 'toast-progress-bar';
+        progressBar.style.animationDuration = `${duration}ms`;
+        progressContainer.appendChild(progressBar);
+        toast.appendChild(progressContainer);
 
         this.container.appendChild(toast);
 
