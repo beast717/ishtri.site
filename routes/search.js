@@ -17,13 +17,13 @@ router.get('/', async (req, res, next) => {
             subCategory 
         } = req.query;
 
-        // Start with a simple query first to test database connection
-        let sqlQuery = `SELECT p.*, ci.cityName, ci.country FROM products p LEFT JOIN cities ci ON p.city_id = ci.cityid WHERE 1=1`;
+        // Build the base query (FROM + WHERE) and parameters
+        let baseQuery = `FROM products p LEFT JOIN cities ci ON p.city_id = ci.cityid WHERE 1=1`;
         const params = [];
 
         // Add search query filter - search in ProductName only for now
         if (query && query.trim()) {
-            sqlQuery += ` AND p.ProductName LIKE ?`;
+            baseQuery += ` AND p.ProductName LIKE ?`;
             const searchTerm = `%${query.trim()}%`;
             params.push(searchTerm);
         }
@@ -33,7 +33,7 @@ router.get('/', async (req, res, next) => {
             const countryList = countries.split(',').map(c => c.trim()).filter(c => c);
             if (countryList.length > 0) {
                 const placeholders = countryList.map(() => '?').join(',');
-                sqlQuery += ` AND ci.country IN (${placeholders})`;
+                baseQuery += ` AND ci.country IN (${placeholders})`;
                 params.push(...countryList);
             }
         }
@@ -43,16 +43,24 @@ router.get('/', async (req, res, next) => {
             const cityList = cities.split(',').map(c => c.trim()).filter(c => c);
             if (cityList.length > 0) {
                 const placeholders = cityList.map(() => '?').join(',');
-                sqlQuery += ` AND ci.cityid IN (${placeholders})`;
+                baseQuery += ` AND ci.cityid IN (${placeholders})`;
                 params.push(...cityList);
             }
         }
 
         // Add subcategory filter
         if (subCategory) {
-            sqlQuery += ` AND p.SubCategory = ?`;
+            baseQuery += ` AND p.SubCategory = ?`;
             params.push(subCategory);
         }
+
+        // 1. Get total count using the base query
+        const countQuery = `SELECT COUNT(*) as total ${baseQuery}`;
+        const [countResult] = await pool.promise().query(countQuery, params);
+        const totalCount = countResult[0].total;
+
+        // 2. Build the main data query
+        let sqlQuery = `SELECT p.*, ci.cityName, ci.country ${baseQuery}`;
 
         // Add sorting
         const orderClauses = [];
@@ -72,14 +80,16 @@ router.get('/', async (req, res, next) => {
         
         // Add pagination
         sqlQuery += ` LIMIT ? OFFSET ?`;
-        params.push(parseInt(limit), parseInt(offset));
+        
+        // Create a new parameters array for the main query including limit and offset
+        const queryParams = [...params, parseInt(limit), parseInt(offset)];
 
-        const [results] = await pool.promise().query(sqlQuery, params);
+        const [results] = await pool.promise().query(sqlQuery, queryParams);
         
         res.json({
             products: results,
             query: query,
-            total: results.length
+            total: totalCount
         });
         
     } catch (err) {
