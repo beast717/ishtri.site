@@ -15,6 +15,12 @@ const { body, validationResult, check } = require('express-validator'); // <-- I
 // Authentication middleware
 const isAuthenticated = (req, res, next) => {
     if (req.session.brukernavn) return next();
+
+    // Check if it's an API request or expects JSON
+    if (req.originalUrl.startsWith('/api') || req.xhr || (req.headers.accept && req.headers.accept.includes('json'))) {
+        return res.status(401).json({ message: 'Please log in to continue' });
+    }
+
     res.status(401).redirect('/login');
 };
 

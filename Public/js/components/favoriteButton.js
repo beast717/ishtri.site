@@ -37,10 +37,13 @@ async function handleFavoriteClick(event) {
                 isFavorited ? 'Product removed from favorites' : 'Product added to favorites',
                 'success'
             );
-        } else {
-            // FAILURE: Server rejected the request (e.g., user is not logged in).
-            // Do not change the UI. Only show the informational toast.
+        } else if (response.status === 401) {
+            // UNAUTHORIZED: User needs to log in
             window.ishtri?.toast.show('Please log in to manage favorites.', 'info');
+        } else {
+            // OTHER ERROR: Server rejected the request for another reason
+            const msg = responseData.message || responseData.errors?.[0]?.msg || 'An error occurred.';
+            window.ishtri?.toast.show(msg, 'error');
         }
 
     } catch (error) {
