@@ -34,7 +34,34 @@
             "conversations": "Search conversations..."
         },
         "home": {
-            "recommended": "Recommended for you"
+            "recommended": "Recommended for you",
+            "hero_eyebrow": "Marketplace & travel in one place",
+            "hero_title": "Discover bold finds near you",
+            "hero_subtitle": "Search thousands of listings across cars, property, travel, and more in seconds.",
+            "hero_cta_primary": "Explore listings",
+            "hero_cta_secondary": "List an item",
+            "hero_stats_listings": "new listings every week",
+            "hero_stats_travel": "travel & city partners",
+            "hero_stats_trust": "active buyers this month",
+            "trending_label": "Trending:",
+            "categories_eyebrow": "Browse by journey",
+            "categories_title": "Pick a starting point",
+            "categories_subtitle": "Jump into the most-loved sections or explore every listing on the marketplace.",
+            "view_all_categories": "Browse full marketplace",
+            "categories_meta": {
+                "torget": "Furniture, tech & collectibles",
+                "bil": "Certified cars, EVs & classics",
+                "reise": "Flights, packages & getaways",
+                "båt": "Sailboats, jet skis & gear",
+                "mc": "Motorcycles & urban mobility",
+                "jobb": "Remote, hybrid & on-site roles",
+                "eiendom": "Rentals, villas & investments"
+            },
+            "recommended_eyebrow": "Curated for you",
+            "recommended_refresh": "Refresh list",
+            "recommended_view_all": "View all listings",
+            "recommended_empty": "No recommendations right now. Check back soon!",
+            "recommended_error": "Error loading products. Please try again."
         },
         "categories": {
             "torget": "Market",

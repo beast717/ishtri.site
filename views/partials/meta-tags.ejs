@@ -1,0 +1,74 @@
+<%
+    const fallbackBase = (typeof baseUrl !== 'undefined' && baseUrl) ? baseUrl : 'https://ishtri.site';
+    const defaults = {
+        title: 'Ishtri | Buy, Sell, Travel & More - Your Universe Of Products',
+        description: 'Discover Ishtri — the marketplace to buy and sell cars, property, jobs, travel deals, and unique finds across the Middle East and beyond.',
+        keywords: 'Ishtri, marketplace, buy, sell, classifieds, travel deals, cars, boats, property listings',
+        canonical: fallbackBase,
+        ogType: 'website',
+        ogImage: `${fallbackBase}/ishtri1.png`,
+        twitterCard: 'summary_large_image',
+        robots: 'index,follow',
+        alternates: [],
+        structuredData: [],
+        includeSiteSchema: true
+    };
+
+    const meta = Object.assign({}, defaults, typeof seo !== 'undefined' ? seo : {});
+    const alternates = Array.isArray(meta.alternates) ? meta.alternates : [];
+    const extraMeta = Array.isArray(meta.extraMeta) ? meta.extraMeta : [];
+    const structuredData = Array.isArray(meta.structuredData) ? meta.structuredData : [];
+%>
+<title><%= meta.title %></title>
+<meta name="description" content="<%= meta.description %>">
+<% if (meta.keywords) { %>
+<meta name="keywords" content="<%= meta.keywords %>">
+<% } %>
+<meta name="robots" content="<%= meta.robots %>">
+<meta property="og:type" content="<%= meta.ogType %>">
+<meta property="og:title" content="<%= meta.title %>">
+<meta property="og:description" content="<%= meta.description %>">
+<meta property="og:image" content="<%= meta.ogImage %>">
+<meta property="og:url" content="<%= meta.canonical %>">
+<meta property="og:site_name" content="Ishtri">
+<meta name="twitter:card" content="<%= meta.twitterCard %>">
+<meta name="twitter:title" content="<%= meta.title %>">
+<meta name="twitter:description" content="<%= meta.description %>">
+<meta name="twitter:image" content="<%= meta.ogImage %>">
+<link rel="canonical" href="<%= meta.canonical %>">
+<% alternates.forEach(({ hreflang, url }) => { if (hreflang && url) { %>
+<link rel="alternate" hreflang="<%= hreflang %>" href="<%= url %>">
+<% } }); %>
+<% extraMeta.forEach(tag => { if (tag && tag.name && tag.content) { %>
+<meta name="<%= tag.name %>" content="<%= tag.content %>">
+<% } }); %>
+<% if (meta.themeColor) { %>
+<meta name="theme-color" content="<%= meta.themeColor %>">
+<% } %>
+<% structuredData.forEach(schema => { %>
+<script type="application/ld+json"><%- JSON.stringify(schema) %></script>
+<% }); %>
+<% if (meta.includeSiteSchema !== false) { %>
+<script type="application/ld+json">
+<%- JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "Ishtri",
+    "url": fallbackBase,
+    "logo": `${fallbackBase}/ishtri1.png`
+}) %>
+</script>
+<script type="application/ld+json">
+<%- JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Ishtri",
+    "url": fallbackBase,
+    "potentialAction": {
+        "@type": "SearchAction",
+        "target": `${fallbackBase}/search?query={search_term_string}`,
+        "query-input": "required name=search_term_string"
+    }
+}) %>
+</script>
+<% } %>

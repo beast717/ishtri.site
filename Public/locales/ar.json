@@ -34,7 +34,34 @@
             "conversations": "البحث في المحادثات..."
         },
         "home": {
-            "recommended": "موصى لك"
+            "recommended": "موصى لك",
+            "hero_eyebrow": "السوق والسفر في مكان واحد",
+            "hero_title": "اكتشف أفضل الصفقات بالقرب منك",
+            "hero_subtitle": "ابحث بين آلاف الإعلانات للسيارات والعقارات والسفر والمزيد خلال ثوانٍ.",
+            "hero_cta_primary": "استكشف الإعلانات",
+            "hero_cta_secondary": "أضف إعلانًا",
+            "hero_stats_listings": "إعلانات جديدة كل أسبوع",
+            "hero_stats_travel": "شركاء سفر ومدن",
+            "hero_stats_trust": "مستخدمون نشطون هذا الشهر",
+            "trending_label": "الأكثر رواجًا:",
+            "categories_eyebrow": "تصفح حسب الرحلة",
+            "categories_title": "اختر نقطة البداية",
+            "categories_subtitle": "انتقل مباشرة إلى الأقسام الأكثر شعبية أو استكشف كل شيء.",
+            "view_all_categories": "تصفح السوق بالكامل",
+            "categories_meta": {
+                "torget": "أثاث وتقنية ومقتنيات",
+                "bil": "سيارات معتمدة وكهربائية وكلاسيكية",
+                "reise": "رحلات وعروض وإجازات",
+                "båt": "قوارب ودراجات مائية ومستلزمات",
+                "mc": "دراجات نارية وحلول تنقل حضرية",
+                "jobb": "وظائف عن بعد وهجينة ومكتبية",
+                "eiendom": "إيجارات وفيلات واستثمارات"
+            },
+            "recommended_eyebrow": "مختار لك",
+            "recommended_refresh": "تحديث القائمة",
+            "recommended_view_all": "عرض جميع الإعلانات",
+            "recommended_empty": "لا توجد توصيات الآن. جرّب مرة أخرى قريبًا.",
+            "recommended_error": "حدث خطأ أثناء تحميل التوصيات. حاول مجددًا."
         },
         "categories": {
             "torget": "السوق",

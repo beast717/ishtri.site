@@ -36,17 +36,24 @@ export const createProductElement = (product) => {
         product.ProductName;
 
     let innerHTML = `
-    <div class="product-image-container">
-        <img ${hasImage ? `data-src="${imageSrc}" data-srcset="${imageSrcset}"` : `src="${imageSrc}"`}
+    <div class="product-image-container" ${!hasImage ? 'style="animation: none; background: none;"' : ''}>
+        ${hasImage ? `
+        <img data-src="${imageSrc}" data-srcset="${imageSrcset}"
              data-sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 180px"
              data-fallback="/images/default.svg"
              alt="${productName}"
-             class="product-image ${hasImage ? 'lazy-image' : ''}"
+             class="product-image lazy-image"
              loading="lazy"
              width="180" height="140">
         <div class="image-placeholder">
             <i class="fas fa-image"></i>
         </div>
+        ` : `
+        <img src="/images/default.svg"
+             alt="${productName}"
+             class="product-image loaded"
+             width="180" height="140">
+        `}
     </div>
         <div>
             <h3>

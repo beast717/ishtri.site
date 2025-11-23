@@ -41,27 +41,49 @@ window.ishtri = {
     trackFavoriteToggle
 };
 
+let nonEssentialScriptsLoaded = false;
+
+function loadSentryScript() {
+    if (document.getElementById('sentry-script')) {
+        return;
+    }
+    const sentryScript = document.createElement('script');
+    sentryScript.id = 'sentry-script';
+    sentryScript.src = 'https://js-de.sentry-cdn.com/4cb627e4e2cb38629abf1676342ede0f.min.js';
+    sentryScript.defer = true;
+    sentryScript.crossOrigin = 'anonymous';
+    document.head.appendChild(sentryScript);
+}
+
+function loadAdSenseScript() {
+    if (document.getElementById('adsbygoogle-script')) {
+        return;
+    }
+    const adsenseScript = document.createElement('script');
+    adsenseScript.id = 'adsbygoogle-script';
+    adsenseScript.async = true;
+    adsenseScript.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4798087235374147';
+    adsenseScript.crossOrigin = 'anonymous';
+    document.head.appendChild(adsenseScript);
+}
+
 /**
- * Load non-essential scripts for cookie consent
+ * Load non-essential scripts once consent is granted
  */
 function loadNonEssentialScripts() {
-    // Initialize Google Ads/Analytics tracking via TrackingService
+    if (nonEssentialScriptsLoaded) {
+        return;
+    }
+    nonEssentialScriptsLoaded = true;
+
     initTracking({
         adsId: 'AW-17043604198',
         conversionLabel: 'a7mbCPT9tr8aEOaFg78_',
-        // ga4Id: 'G-XXXXXXXXXX', // optional GA4 measurement ID
         debug: false
     });
 
-    // Load Google AdSense dynamically
-    if (!document.getElementById('adsbygoogle-script')) {
-        const adsenseScript = document.createElement('script');
-        adsenseScript.id = 'adsbygoogle-script';
-        adsenseScript.async = true;
-        adsenseScript.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4798087235374147";
-        adsenseScript.crossOrigin = "anonymous";
-        document.head.appendChild(adsenseScript);
-    }
+    loadAdSenseScript();
+    loadSentryScript();
 }
 
 /**
@@ -220,9 +242,17 @@ async function pageRouter() {
 
 // Main execution block that runs on every page
 document.addEventListener('DOMContentLoaded', async () => {
-    // Load non-essential scripts
-    loadNonEssentialScripts();
-    
+    const consentStatus = initCookieConsent({
+        onAccept: loadNonEssentialScripts,
+        onReject: () => {
+            console.info('Non-essential scripts remain disabled until consent is granted.');
+        }
+    });
+
+    if (consentStatus === 'accepted') {
+        loadNonEssentialScripts();
+    }
+
     // Initialize i18n service first
     await i18nService.init();
     
@@ -231,7 +261,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // Initialize core components
     initNavbar(user);
-    initCookieConsent();
     
     // Initialize page-specific functionality
     await pageRouter();

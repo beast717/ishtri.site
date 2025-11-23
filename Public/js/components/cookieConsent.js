@@ -1,73 +1,72 @@
-// Public/js/components/cookieConsent.js
+const CONSENT_STORAGE_KEY = 'cookieConsentStatus_ishtri_v1';
 
-/**
- * Dynamically loads non-essential scripts like Google AdSense.
- * This should be called after consent has been established.
- */
-function loadNonEssentialScripts() {
-    // --- Load Google AdSense ---
-    // This script also triggers Google's own Consent Management Platform (CMP).
-    if (!document.getElementById('adsbygoogle-script')) {
-        const adsenseScript = document.createElement('script');
-        adsenseScript.id = 'adsbygoogle-script';
-        adsenseScript.async = true;
-        adsenseScript.src = "https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4798087235374147"; // Use your actual client ID
-        adsenseScript.crossOrigin = "anonymous";
-        document.head.appendChild(adsenseScript);
-        console.log("Google AdSense script loading initiated.");
+function getStoredConsent() {
+    try {
+        return localStorage.getItem(CONSENT_STORAGE_KEY);
+    } catch (error) {
+        console.warn('Unable to read consent preference:', error);
+        return null;
     }
-
-    // --- Other non-essential scripts can be added here ---
-    // Example for Google Analytics:
-    /*
-    const gaId = 'YOUR_GA_ID';
-    if (gaId !== 'YOUR_GA_ID' && typeof gtag === 'undefined') {
-        // ... GA loading logic ...
-    }
-    */
 }
 
-/**
- * Main initialization function for cookie consent.
- * Currently, it just loads the scripts that manage their own consent (like AdSense).
- * The logic for a custom banner is preserved here but commented out.
- */
-export function initCookieConsent() {
-    // Since you are relying on Google's CMP, we can directly call this.
-    // The AdSense script itself will handle showing the consent banner.
-    loadNonEssentialScripts();
+function persistConsent(status) {
+    try {
+        localStorage.setItem(CONSENT_STORAGE_KEY, status);
+    } catch (error) {
+        console.warn('Unable to persist consent preference:', error);
+    }
+}
 
-    /*
-    // --- THIS IS WHERE YOUR CUSTOM BANNER LOGIC WOULD GO ---
-    // If you ever decide to build your own banner, you would uncomment and use this.
-    
-    const consentBanner = document.getElementById('cookieConsentBanner');
+function hideBanner(banner) {
+    if (!banner) return;
+    banner.classList.remove('show');
+}
+
+function showBanner(banner) {
+    if (!banner) return;
+    banner.classList.add('show');
+}
+
+export function initCookieConsent({ onAccept, onReject } = {}) {
+    const banner = document.getElementById('cookieConsentBanner');
     const acceptBtn = document.getElementById('cookieAcceptBtn');
     const rejectBtn = document.getElementById('cookieRejectBtn');
-    const consentStatusKey = 'cookieConsentStatus_ishtri_v1';
+    const existingStatus = getStoredConsent();
 
-    if (consentBanner && acceptBtn && rejectBtn) {
-        const currentStatus = localStorage.getItem(consentStatusKey);
-
-        if (currentStatus === 'accepted') {
-            loadNonEssentialScripts();
-        } else if (currentStatus === 'rejected') {
-            // Do nothing, respect user's choice
-        } else {
-            // No choice made yet, show the banner
-            consentBanner.style.display = 'block';
+    // If no banner exists we default to essential-only behavior
+    if (!banner || !acceptBtn || !rejectBtn) {
+        if (existingStatus !== 'rejected') {
+            onAccept?.();
+            return 'accepted';
         }
-
-        acceptBtn.addEventListener('click', () => {
-            localStorage.setItem(consentStatusKey, 'accepted');
-            consentBanner.style.display = 'none';
-            loadNonEssentialScripts();
-        });
-
-        rejectBtn.addEventListener('click', () => {
-            localStorage.setItem(consentStatusKey, 'rejected');
-            consentBanner.style.display = 'none';
-        });
+        onReject?.();
+        return existingStatus || 'rejected';
     }
-    */
+
+    if (existingStatus === 'accepted') {
+        onAccept?.();
+        return 'accepted';
+    }
+
+    if (existingStatus === 'rejected') {
+        onReject?.();
+        return 'rejected';
+    }
+
+    // No decision yet, reveal banner
+    requestAnimationFrame(() => showBanner(banner));
+
+    acceptBtn.addEventListener('click', () => {
+        persistConsent('accepted');
+        hideBanner(banner);
+        onAccept?.();
+    });
+
+    rejectBtn.addEventListener('click', () => {
+        persistConsent('rejected');
+        hideBanner(banner);
+        onReject?.();
+    });
+
+    return 'pending';
 }

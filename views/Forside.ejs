@@ -39,87 +39,203 @@
 <body data-page="home">
     <%- include('partials/navbar') %>
 
-    <div class="søkeBarContainer">
-        <form action="/search" method="GET">
-            <div class="search-bar">
-                <input type="text" data-i18n="search.placeholder" placeholder="Search..." name="query" required>
-                <button>
-                    <img src="https://www.svgrepo.com/show/7109/search.svg" alt="Search Icon" style="width: 20px; height: 20px;">
-                </button>
-            </div>
-        </form>
-    </div>
+    <main class="home-page" aria-label="Homepage content">
+        <section class="hero" aria-labelledby="homeHeroTitle">
+            <div class="hero__content">
+                <p class="hero__eyebrow" data-i18n="home.hero_eyebrow">Marketplace & travel in one place</p>
+                <h1 id="homeHeroTitle" data-i18n="home.hero_title">Discover bold finds near you</h1>
+                <p class="hero__subtitle" data-i18n="home.hero_subtitle">Search thousands of listings across cars, property, travel, and more, in seconds.</p>
 
-    <div class="kategorierContainer">
-        <div class="kategori">
-            <a href="/torgetkat?category=Torget">
-                <i class="fas fa-chair"></i>
-                <span data-i18n="categories.torget">Marked</span>
-            </a>
-        </div>
-        <div class="kategori">
-            <a href="/torgetkat?category=Bil">
-                <i class="fas fa-car"></i>
-                <span data-i18n="categories.bil">Car</span>
-            </a>
-        </div>
-        <div class="kategori">
-            <a href="/reise">
-                <i class="fas fa-plane"></i>
-                <span data-i18n="categories.reise">Travel</span>
-            </a>
-        </div>
-        <div class="kategori">
-            <a href="/torgetkat?category=Båt">
-                <i class="fas fa-ship"></i>
-                <span data-i18n="categories.båt">Boat</span>
-            </a>
-        </div>
-        <div class="kategori">
-            <a href="/torgetkat?category=Mc">
-                <i class="fas fa-motorcycle"></i>
-                <span data-i18n="categories.mc">Mc</span>
-            </a>
-        </div>
-        <div class="kategori">  
-            <a href="/torgetkat?category=Jobb">
-                <i class="fas fa-briefcase"></i>
-                <span data-i18n="categories.jobb">Job</span>
-            </a>
-        </div>
-        <div class="kategori">  
-            <a href="/torgetkat?category=Eiendom">
-                <i class="fas fa-home"></i>
-                <span data-i18n="categories.eiendom">Property</span>
-            </a>
-        </div>
-    </div>
-    
-    <!-- Recommended Products Section -->
-    <div class="recommended-section">
-        <div class="recommended-title-wrapper" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
-            <h2 class="recommended-title" id="recommendedTitle">Recommended for you</h2>
-        </div>
-        <div id="randomProducts" class="product-grid" style="display: grid; gap: 20px; padding: 20px; min-height: 200px; justify-content: center; contain: layout; max-width: 1200px; margin: 0 auto;">
-            <!-- Products will be loaded here with skeleton loading -->
-            <div class="skeleton-product skeleton-container">
-                <div class="skeleton-image-container">
-                    <div class="skeleton-image skeleton"></div>
+                <div class="søkeBarContainer">
+                    <form action="/search" method="GET" class="hero-search" role="search" aria-label="Global search">
+                        <div class="search-bar">
+                            <input id="homeSearchInput" type="text" name="query" required data-i18n="search.placeholder" placeholder="Search for anything..." aria-label="Search Ishtri">
+                            <button type="submit" aria-label="Search Ishtri">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                    <path d="M11 4a7 7 0 0 1 5.65 11.1l3.62 3.62-1.41 1.41-3.62-3.62A7 7 0 1 1 11 4m0 2a5 5 0 1 0 0 10 5 5 0 0 0 0-10" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <div class="skeleton-content">
-                    <div class="skeleton-header">
-                        <div class="skeleton skeleton-title"></div>
-                        <div class="skeleton skeleton-price"></div>
-                    </div>
-                    <div class="skeleton-details">
-                        <div class="skeleton skeleton-text" style="width: 60%;"></div>
-                        <div class="skeleton skeleton-text" style="width: 45%;"></div>
-                        <div class="skeleton skeleton-location"></div>
-                    </div>
+
+                <div class="hero__cta">
+                    <a class="button button--primary" href="/search" data-i18n="home.hero_cta_primary">Explore listings</a>
+                    <a class="button button--ghost" href="/ny-annonse" data-i18n="home.hero_cta_secondary">List an item</a>
+                </div>
+
+                <div class="hero__trending" aria-label="Trending searches">
+                    <span data-i18n="home.trending_label">Trending:</span>
+                    <button type="button" class="trend-pill" data-quick-search="Tesla Model 3">Tesla Model 3</button>
+                    <button type="button" class="trend-pill" data-quick-search="Dubai apartments">Dubai apartments</button>
+                    <button type="button" class="trend-pill" data-quick-search="Summer flights">Summer flights</button>
+                    <button type="button" class="trend-pill" data-quick-search="Designer sofas">Designer sofas</button>
+                </div>
+
+                <ul class="hero__stats" aria-label="Marketplace stats">
+                    <li>
+                        <p class="hero__stat-value">28K+</p>
+                        <p class="hero__stat-label" data-i18n="home.hero_stats_listings">new listings every week</p>
+                    </li>
+                    <li>
+                        <p class="hero__stat-value">42</p>
+                        <p class="hero__stat-label" data-i18n="home.hero_stats_travel">travel & city partners</p>
+                    </li>
+                    <li>
+                        <p class="hero__stat-value">180K</p>
+                        <p class="hero__stat-label" data-i18n="home.hero_stats_trust">active buyers this month</p>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="hero__media" aria-hidden="true">
+                <div class="hero-card hero-card--primary">
+                    <p>Oslo • Electric SUV</p>
+                    <h3>Range Rover Sport</h3>
+                    <span>$64,500</span>
+                </div>
+                <div class="hero-card hero-card--secondary">
+                    <p>Dubai • Stay + Flight</p>
+                    <h3>3-night desert escape</h3>
+                    <span>$899 per traveler</span>
+                </div>
+                <div class="hero-card hero-card--tertiary">
+                    <p>Casablanca • Loft</p>
+                    <h3>Scandi interior set</h3>
+                    <span>$2,450</span>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
+
+        <section class="home-categories" aria-labelledby="homeCategoriesTitle">
+            <div class="section-header">
+                <div>
+                    <p class="section-eyebrow" data-i18n="home.categories_eyebrow">Browse by journey</p>
+                    <h2 id="homeCategoriesTitle" data-i18n="home.categories_title">Pick a starting point</h2>
+                    <p class="section-subtitle" data-i18n="home.categories_subtitle">Jump into the most-loved sections or explore every listing on the marketplace.</p>
+                </div>
+                <a class="ghost-link" href="/torgetkat?category=Torget" data-i18n="home.view_all_categories">Browse full marketplace</a>
+            </div>
+
+            <div class="kategorierContainer home-category-grid" role="list">
+                <article class="kategori home-category-card home-category-card--market" role="listitem">
+                    <a class="home-category-card__link" href="/torgetkat?category=Torget">
+                        <span class="home-category-card__icon" aria-hidden="true">
+                            <i class="fas fa-chair" aria-hidden="true"></i>
+                        </span>
+                        <div class="home-category-card__content">
+                            <span class="kategori-label" data-i18n="categories.torget">Marked</span>
+                            <p class="kategori-meta" data-i18n="home.categories_meta.torget">Furniture, tech & collectibles</p>
+                        </div>
+                        <span class="home-category-card__cta" aria-hidden="true">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </a>
+                </article>
+                <article class="kategori home-category-card home-category-card--car" role="listitem">
+                    <a class="home-category-card__link" href="/torgetkat?category=Bil">
+                        <span class="home-category-card__icon" aria-hidden="true">
+                            <i class="fas fa-car" aria-hidden="true"></i>
+                        </span>
+                        <div class="home-category-card__content">
+                            <span class="kategori-label" data-i18n="categories.bil">Car</span>
+                            <p class="kategori-meta" data-i18n="home.categories_meta.bil">Certified cars, EVs & classics</p>
+                        </div>
+                        <span class="home-category-card__cta" aria-hidden="true">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </a>
+                </article>
+                <article class="kategori home-category-card home-category-card--travel" role="listitem">
+                    <a class="home-category-card__link" href="/reise">
+                        <span class="home-category-card__icon" aria-hidden="true">
+                            <i class="fas fa-plane" aria-hidden="true"></i>
+                        </span>
+                        <div class="home-category-card__content">
+                            <span class="kategori-label" data-i18n="categories.reise">Travel</span>
+                            <p class="kategori-meta" data-i18n="home.categories_meta.reise">Flights, packages & getaways</p>
+                        </div>
+                        <span class="home-category-card__cta" aria-hidden="true">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </a>
+                </article>
+                <article class="kategori home-category-card home-category-card--boat" role="listitem">
+                    <a class="home-category-card__link" href="/torgetkat?category=Båt">
+                        <span class="home-category-card__icon" aria-hidden="true">
+                            <i class="fas fa-ship" aria-hidden="true"></i>
+                        </span>
+                        <div class="home-category-card__content">
+                            <span class="kategori-label" data-i18n="categories.båt">Boat</span>
+                            <p class="kategori-meta" data-i18n="home.categories_meta.båt">Sailboats, jet skis & gear</p>
+                        </div>
+                        <span class="home-category-card__cta" aria-hidden="true">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </a>
+                </article>
+                <article class="kategori home-category-card home-category-card--mc" role="listitem">
+                    <a class="home-category-card__link" href="/torgetkat?category=Mc">
+                        <span class="home-category-card__icon" aria-hidden="true">
+                            <i class="fas fa-motorcycle" aria-hidden="true"></i>
+                        </span>
+                        <div class="home-category-card__content">
+                            <span class="kategori-label" data-i18n="categories.mc">Mc</span>
+                            <p class="kategori-meta" data-i18n="home.categories_meta.mc">Motorcycles & urban mobility</p>
+                        </div>
+                        <span class="home-category-card__cta" aria-hidden="true">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </a>
+                </article>
+                <article class="kategori home-category-card home-category-card--work" role="listitem">
+                    <a class="home-category-card__link" href="/torgetkat?category=Jobb">
+                        <span class="home-category-card__icon" aria-hidden="true">
+                            <i class="fas fa-briefcase" aria-hidden="true"></i>
+                        </span>
+                        <div class="home-category-card__content">
+                            <span class="kategori-label" data-i18n="categories.jobb">Job</span>
+                            <p class="kategori-meta" data-i18n="home.categories_meta.jobb">Remote, hybrid & on-site roles</p>
+                        </div>
+                        <span class="home-category-card__cta" aria-hidden="true">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </a>
+                </article>
+                <article class="kategori home-category-card home-category-card--property" role="listitem">
+                    <a class="home-category-card__link" href="/torgetkat?category=Eiendom">
+                        <span class="home-category-card__icon" aria-hidden="true">
+                            <i class="fas fa-home" aria-hidden="true"></i>
+                        </span>
+                        <div class="home-category-card__content">
+                            <span class="kategori-label" data-i18n="categories.eiendom">Property</span>
+                            <p class="kategori-meta" data-i18n="home.categories_meta.eiendom">Rentals, villas & investments</p>
+                        </div>
+                        <span class="home-category-card__cta" aria-hidden="true">
+                            <i class="fas fa-arrow-right"></i>
+                        </span>
+                    </a>
+                </article>
+            </div>
+        </section>
+
+        <section class="recommended-section" aria-labelledby="recommendedTitle">
+            <div class="section-header">
+                <div>
+                    <p class="section-eyebrow" data-i18n="home.recommended_eyebrow">Curated for you</p>
+                    <h2 class="recommended-title" id="recommendedTitle">Recommended for you</h2>
+                </div>
+                <div class="recommended-actions">
+                    <button type="button" id="refreshHomeRecommendations" class="refresh-products" aria-live="polite">
+                        <i class="fas fa-rotate-right" aria-hidden="true"></i>
+                        <span data-i18n="home.recommended_refresh">Refresh list</span>
+                    </button>
+                    <a class="ghost-link" href="/torgetkat?category=Torget" data-i18n="home.recommended_view_all">View all listings</a>
+                </div>
+            </div>
+            <div id="randomProducts" class="product-grid" aria-live="polite" aria-busy="false"></div>
+        </section>
+    </main>
 
     <!-- Layout Shift Prevention Scripts -->
     <%- include('partials/optimized-scripts') %>
