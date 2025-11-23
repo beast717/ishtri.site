@@ -15,6 +15,7 @@ const http = require('http');
 const cron = require('node-cron');
 const helmet = require('helmet');
 const cors = require('cors');
+const { getHomeSeo, buildSeo } = require('./config/seo');
 // Optional: CSS bundling on startup (dev convenience)
 
 // New: centralized performance helpers
@@ -190,11 +191,23 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // Routes
-app.get('/', (req, res) => res.render('Forside'));
+app.get('/', (req, res) => res.render('Forside', { seo: getHomeSeo() }));
 app.get('/login', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'Logg inn.html')));
 app.get('/forgot-password', (req, res) => res.sendFile(path.join(__dirname, 'Public', 'ForgotPassword.html')));
-app.get('/torget', (req, res) => res.render('TorgetKat'));
-app.get('/reise', (req, res) => res.render('reise'));
+app.get('/torget', (req, res) => res.render('TorgetKat', {
+  seo: buildSeo({
+    path: '/torget',
+    title: 'Torget marketplace categories | Ishtri',
+    description: 'Browse all Ishtri marketplace categories including Torget, Bil, Båt, Mc, Eiendom, and Jobb listings.'
+  })
+}));
+app.get('/reise', (req, res) => res.render('reise', {
+  seo: buildSeo({
+    path: '/reise',
+    title: 'Reise deals & packages | Ishtri',
+    description: 'Plan getaways with curated travel partners, regional flights, and bundled experiences directly inside Ishtri.'
+  })
+}));
 
 const viewRoutes = require('./routes/views');
 app.use('/', viewRoutes);

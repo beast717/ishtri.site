@@ -11,13 +11,16 @@
         robots: 'index,follow',
         alternates: [],
         structuredData: [],
-        includeSiteSchema: true
+        includeSiteSchema: true,
+        ogLocale: 'en_US',
+        ogLocaleAlternates: []
     };
 
     const meta = Object.assign({}, defaults, typeof seo !== 'undefined' ? seo : {});
     const alternates = Array.isArray(meta.alternates) ? meta.alternates : [];
     const extraMeta = Array.isArray(meta.extraMeta) ? meta.extraMeta : [];
     const structuredData = Array.isArray(meta.structuredData) ? meta.structuredData : [];
+    const localeAlternates = Array.isArray(meta.ogLocaleAlternates) ? meta.ogLocaleAlternates : [];
 %>
 <title><%= meta.title %></title>
 <meta name="description" content="<%= meta.description %>">
@@ -31,10 +34,15 @@
 <meta property="og:image" content="<%= meta.ogImage %>">
 <meta property="og:url" content="<%= meta.canonical %>">
 <meta property="og:site_name" content="Ishtri">
+<meta property="og:locale" content="<%= meta.ogLocale %>">
+<% localeAlternates.forEach(locale => { if (locale && locale !== meta.ogLocale) { %>
+<meta property="og:locale:alternate" content="<%= locale %>">
+<% } }); %>
 <meta name="twitter:card" content="<%= meta.twitterCard %>">
 <meta name="twitter:title" content="<%= meta.title %>">
 <meta name="twitter:description" content="<%= meta.description %>">
 <meta name="twitter:image" content="<%= meta.ogImage %>">
+<meta name="twitter:url" content="<%= meta.canonical %>">
 <link rel="canonical" href="<%= meta.canonical %>">
 <% alternates.forEach(({ hreflang, url }) => { if (hreflang && url) { %>
 <link rel="alternate" hreflang="<%= hreflang %>" href="<%= url %>">
