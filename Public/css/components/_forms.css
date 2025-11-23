@@ -91,9 +91,27 @@ input.invalid, select.invalid, textarea.invalid {
 .filter-container {
     display: flex;
     align-items: center;
-    gap: 10px;
+    flex-wrap: wrap;
+    gap: 15px;
     margin-top: 10px;
 }
+
+.filter-container--padded {
+    margin-bottom: 20px;
+    padding-left: 25px;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-group label,
+.filter-group select {
+    margin: 0 !important;
+}
+
 .filter-container label {
     display: inline-block;
     margin-bottom: 0;

@@ -18,6 +18,7 @@ import { filterStore } from '../stores/FilterStore.js';
 // Components
 import { displayProducts } from '../components/ProductCard.js';
 import { LoadMoreButton } from '../components/LoadMoreButton.js';
+import { updateActiveFiltersDisplay } from '../components/ActiveFilters.js';
 
 export default function initProductListPage() {
     // Page Context Detection
@@ -27,6 +28,12 @@ export default function initProductListPage() {
 
     // Initialize components
     const loadMoreButton = new LoadMoreButton(() => fetchProducts(true));
+    
+    // Initial render of active filters (e.g. search query)
+    if (isSearchPage()) {
+        updateActiveFiltersDisplay(filterStore.getFilters(), applyFilters);
+    }
+
     // Debounced version of apply filters to avoid excessive calls
     const debouncedApplyFilters = debounce(() => {
         // Check if mobile is currently syncing to prevent double execution
@@ -93,8 +100,8 @@ export default function initProductListPage() {
     function applyFilters() {
         filterStore.updateFromUI();
         
-        if (isTorgetKatPage()) {
-            updateActiveFiltersDisplay();
+        if (isTorgetKatPage() || isSearchPage()) {
+            updateActiveFiltersDisplay(filterStore.getFilters(), applyFilters);
         }
         
         productService.resetPagination();
@@ -137,8 +144,8 @@ export default function initProductListPage() {
         // Reset store
         filterStore.reset();
         
-        if (isTorgetKatPage()) {
-            updateActiveFiltersDisplay();
+        if (isTorgetKatPage() || isSearchPage()) {
+            updateActiveFiltersDisplay(filterStore.getFilters(), applyFilters);
         }
 
         productService.resetPagination();

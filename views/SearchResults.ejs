@@ -17,20 +17,29 @@
 <body data-page="productList">
     <%- include('partials/navbar') %>
 
-   <div class="filter-container" style="margin-bottom: 20px; padding-left: 25px;">
-        <label for="priceFilter" data-i18n="filter.sorter_etter">Sort By:</label>
-        <select id="priceFilter">
-            <option value="asc" data-i18n="filter.lavest_pris">Lowest Price</option>
-            <option value="desc" data-i18n="filter.høyest_pris">Highest Price</option>
-            <option value="" data-i18n="filter.alle">All</option>
-        </select>
-        <label for="dateFilter" data-i18n="filter.utgitt">Date:</label>
-        <select id="dateFilter">
-            <option value="" data-i18n="filter.alle">All</option>
-            <option value="desc" data-i18n="filter.nylige">New</option>
-            <option value="asc" data-i18n="filter.eldre">Old</option>
-        </select>
-        <div id="subcategoryFilterContainer" style="display: none;">
+   <div class="filter-container filter-container--padded">
+        <div class="filter-group">
+            <label for="priceFilter" data-i18n="filter.sorter_etter">Sort By:</label>
+            <select id="priceFilter">
+                <option value="asc" data-i18n="filter.lavest_pris">Lowest Price</option>
+                <option value="desc" data-i18n="filter.høyest_pris">Highest Price</option>
+                <option value="" data-i18n="filter.alle">All</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="dateFilter" data-i18n="filter.utgitt">Date:</label>
+            <select id="dateFilter">
+                <option value="" data-i18n="filter.alle">All</option>
+                <option value="desc" data-i18n="filter.nylige">New</option>
+                <option value="asc" data-i18n="filter.eldre">Old</option>
+            </select>
+        </div>
+        
+        <!-- Active Filters Display -->
+        <div id="activeFiltersDisplay" class="active-filters-container"></div>
+
+        <div id="subcategoryFilterContainer" class="filter-group" style="display: none;">
             <label for="subCategoryFilter" data-i18n="form.category">Category:</label>
             <select id="subCategoryFilter">
                 <option value="" data-i18n="filter.alle">All</option>

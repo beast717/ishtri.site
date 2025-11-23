@@ -3,6 +3,7 @@
  */
 
 import { getEl } from '../utils/domUtils.js';
+import { getUrlParams } from '../utils/urlUtils.js';
 
 /**
  * Update active filters display
@@ -27,6 +28,18 @@ export const updateActiveFiltersDisplay = async (filters, applyFilters) => {
         tag.querySelector('button').addEventListener('click', removeCallback);
         displayContainer.appendChild(tag);
     };
+
+    // Search Query Filter
+    const urlParams = getUrlParams();
+    const searchQuery = urlParams.get('query');
+    if (searchQuery) {
+        addFilterTag('Search', searchQuery, () => {
+            // Remove query param and reload/redirect
+            const newUrl = new URL(window.location.href);
+            newUrl.searchParams.delete('query');
+            window.location.href = newUrl.toString();
+        });
+    }
     
     // Price sorting
     if (filters.priceOrder) {
