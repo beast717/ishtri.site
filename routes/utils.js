@@ -55,13 +55,37 @@ router.get('/cities/:country', async (req, res, next) => {
 router.get('/random-products', async (req, res, next) => {
     try {
         const [results] = await pool.promise().query(
-            `SELECT ProductdID, ProductName, Price, Images 
-             FROM products 
-             WHERE Images IS NOT NULL      -- Ensure Images column is not NULL
-               AND Images != ''            -- Ensure Images column is not empty
-               AND Images != 'default.svg' -- Ensure Images column is not the default placeholder name
+            `SELECT 
+                p.ProductdID, 
+                p.ProductName, 
+                p.Price, 
+                p.Images, 
+                p.category, 
+                p.Location, 
+                p.Sold,
+                COALESCE(ci.cityName, p.Location) as cityName,
+                ci.country,
+                c.Year, 
+                c.Mileage, 
+                cb.brand_name, 
+                cm.model_name,
+                j.JobTitle, 
+                j.CompanyName, 
+                j.EmploymentType,
+                pr.PropertyType, 
+                pr.SizeSqm
+             FROM products p
+             LEFT JOIN cities ci ON p.city_id = ci.cityid
+             LEFT JOIN cars c ON p.ProductdID = c.ProductdID
+             LEFT JOIN car_brands cb ON c.brand_id = cb.brand_id
+             LEFT JOIN car_models cm ON c.model_id = cm.model_id
+             LEFT JOIN jobs j ON p.ProductdID = j.ProductdID
+             LEFT JOIN properties pr ON p.ProductdID = pr.ProductdID
+             WHERE p.Images IS NOT NULL 
+               AND p.Images != '' 
+               AND p.Images != 'default.svg'
              ORDER BY RAND() 
-             LIMIT 5` // Get up to 5 random products that meet the criteria
+             LIMIT 5`
         );
         res.json(results);
     } catch (err) {
