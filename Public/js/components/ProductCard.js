@@ -17,10 +17,12 @@ export const createProductElement = (product) => {
     const isCar = product.category === 'Bil';
     const isProperty = product.category === 'Eiendom';
 
-    const div = document.createElement('div');
+    const div = document.createElement('a');
     div.className = 'product';
     div.setAttribute('role', 'article');
-    div.setAttribute('tabindex', '0');
+    // div.setAttribute('tabindex', '0'); // 'a' tag is naturally focusable
+    div.style.textDecoration = 'none';
+    div.style.color = 'inherit';
 
     const images = product.Images ? product.Images.split(',') : [];
     const firstName = images.length > 0 ? images[0].trim() : null;
@@ -84,10 +86,23 @@ export const createProductElement = (product) => {
     innerHTML += `<p><strong>Location:</strong> ${(product.cityName || product.Location || 'N/A')}${product.country ? `, ${product.country}` : ''}</p></div>`;
     div.innerHTML = innerHTML;
 
+    const slug = (productName || '')
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w\u0600-\u06FF\-]+/g, '')
+        .replace(/\-\-+/g, '-')
+        .replace(/^-+/, '')
+        .replace(/-+$/, '')
+        .substring(0, 80);
+
+    div.href = `/product/${product.ProductdID}/${slug}`;
+
     div.addEventListener('click', (e) => {
-        if (!e.target.classList.contains('favorite-icon')) {
-            const slug = (productName || '').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').substring(0,80);
-            window.location.href = `/product/${product.ProductdID}/${slug}`;
+        if (e.target.classList.contains('favorite-icon')) {
+            e.preventDefault();
+            e.stopPropagation();
         }
     });
 

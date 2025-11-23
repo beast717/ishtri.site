@@ -66,7 +66,16 @@ function setupSocketListeners() {
     socket.on('new_notification', (notificationData) => {
         updateNotificationBadge();
         if (window.ishtri.toast) {
-            const slug = (notificationData.ProductName || '').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').substring(0,80);
+            const slug = (notificationData.ProductName || '')
+                .toString()
+                .toLowerCase()
+                .trim()
+                .replace(/\s+/g, '-')
+                .replace(/[^\w\u0600-\u06FF\-]+/g, '')
+                .replace(/\-\-+/g, '-')
+                .replace(/^-+/, '')
+                .replace(/-+$/, '')
+                .substring(0, 80);
             const productLink = notificationData.productdID ? `<a href="/product/${notificationData.productdID}/${slug}" style="text-decoration: underline;">View Product</a>` : '';
             window.ishtri.toast.show(`New Match: ${notificationData.message} ${productLink}`, 'info', 10000);
         }

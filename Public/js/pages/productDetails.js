@@ -182,11 +182,13 @@ export default function initProductDetailsPage() {
     function slugify(str) {
         return (str || '')
             .toString()
-            .normalize('NFKD')
-            .replace(/[\u0300-\u036f]/g, '')
             .toLowerCase()
-            .replace(/[^a-z0-9]+/g, '-')
-            .replace(/^-+|-+$/g, '')
+            .trim()
+            .replace(/\s+/g, '-')
+            .replace(/[^\w\u0600-\u06FF\-]+/g, '')
+            .replace(/\-\-+/g, '-')
+            .replace(/^-+/, '')
+            .replace(/-+$/, '')
             .substring(0, 80);
     }
 

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { isAuthenticated } = require('./auth');
 const pool = require('../config/db');
-const { buildSeo, getSearchSeo, getProductSeo } = require('../config/seo');
+const { buildSeo, getSearchSeo, getProductSeo, slugify } = require('../config/seo');
 
 // New listing page
 router.get('/ny-annonse', isAuthenticated, (req, res) => {
@@ -99,6 +99,16 @@ router.get('/product/:id/:slug?', async (req, res, next) => {
                 [id]
             );
             product = rows[0] || null;
+        }
+
+        if (product) {
+            const correctSlug = slugify(product.ProductName || 'product');
+            // Decode the slug from URL to handle encoded characters correctly
+            const currentSlug = decodeURIComponent(req.params.slug || '');
+            
+            if (currentSlug !== correctSlug) {
+                return res.redirect(301, `/product/${id}/${correctSlug}`);
+            }
         }
 
         const seo = getProductSeo(product);

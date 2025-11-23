@@ -44,7 +44,16 @@ export default function initFavoritesPage() {
                 `;
 
                 productDiv.addEventListener('click', () => {
-                    const slug = (product.ProductName || '').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').substring(0,80);
+                    const slug = (product.ProductName || '')
+                        .toString()
+                        .toLowerCase()
+                        .trim()
+                        .replace(/\s+/g, '-')
+                        .replace(/[^\w\u0600-\u06FF\-]+/g, '')
+                        .replace(/\-\-+/g, '-')
+                        .replace(/^-+/, '')
+                        .replace(/-+$/, '')
+                        .substring(0, 80);
                     window.location.href = `/product/${product.ProductdID}/${slug}`;
                 });
 

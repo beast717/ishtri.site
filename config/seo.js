@@ -21,11 +21,13 @@ const absoluteUrl = (pathOrUrl = '/') => {
 
 const slugify = (value = '') => value
   .toString()
-  .normalize('NFKD')
-  .replace(/[\u0300-\u036f]/g, '')
   .toLowerCase()
-  .replace(/[^a-z0-9]+/g, '-')
-  .replace(/^-+|-+$/g, '')
+  .trim()
+  .replace(/\s+/g, '-')           // Replace spaces with -
+  .replace(/[^\w\u0600-\u06FF\-]+/g, '') // Remove all non-word chars (except Arabic and -)
+  .replace(/\-\-+/g, '-')         // Replace multiple - with single -
+  .replace(/^-+/, '')             // Trim - from start of text
+  .replace(/-+$/, '')             // Trim - from end of text
   .substring(0, 80);
 
 const sanitize = (text = '') => text
