@@ -10,15 +10,18 @@ import { initFavoriteButton } from './favoriteButton.js';
  * @param {object} product - Product data
  * @returns {HTMLElement} Product card element
  */
-export const createProductElement = (product) => {
+export const createProductElement = (product, options = {}) => {
     if (!product) return document.createElement('div');
+
+    const layout = options.layout || 'list';
+    const isGrid = layout === 'grid';
 
     const isJob = product.category === 'Jobb';
     const isCar = product.category === 'Bil';
     const isProperty = product.category === 'Eiendom';
 
     const div = document.createElement('a');
-    div.className = 'product';
+    div.className = isGrid ? 'product-card' : 'product';
     div.setAttribute('role', 'article');
     // div.setAttribute('tabindex', '0'); // 'a' tag is naturally focusable
     div.style.textDecoration = 'none';
@@ -37,16 +40,24 @@ export const createProductElement = (product) => {
         isCar ? `${product.brand_name || ''} ${product.model_name || ''}`.trim() : 
         product.ProductName;
 
+    // Grid view needs larger images
+    const sizes = isGrid 
+        ? "(max-width: 768px) 100vw, (max-width: 1200px) 33vw, 280px" 
+        : "(max-width: 480px) 100vw, (max-width: 768px) 50vw, 180px";
+        
+    const imgWidth = isGrid ? "280" : "180";
+    const imgHeight = isGrid ? "210" : "140";
+
     let innerHTML = `
     <div class="product-image-container" ${!hasImage ? 'style="animation: none; background: none;"' : ''}>
         ${hasImage ? `
         <img data-src="${imageSrc}" data-srcset="${imageSrcset}"
-             data-sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, 180px"
+             data-sizes="${sizes}"
              data-fallback="/images/default.svg"
              alt="${productName}"
              class="product-image lazy-image"
              loading="lazy"
-             width="180" height="140">
+             width="${imgWidth}" height="${imgHeight}">
         <div class="image-placeholder">
             <i class="fas fa-image"></i>
         </div>
@@ -54,9 +65,37 @@ export const createProductElement = (product) => {
         <img src="/images/default.svg"
              alt="${productName}"
              class="product-image loaded"
-             width="180" height="140">
+             width="${imgWidth}" height="${imgHeight}">
         `}
-    </div>
+    </div>`;
+
+    if (isGrid) {
+        innerHTML += `
+            <button class="fas fa-heart favorite-icon" 
+                    data-product-id="${product.ProductdID}"
+                    aria-label="Add to favorites"
+                    aria-pressed="false">
+            </button>
+            <h4>
+                ${productName || 'Unnamed Product'}
+                ${product.Sold ? `<span class="sold-label" data-i18n="product_details.sold">(Sold)</span>` : ''}
+            </h4>`;
+            
+        if (isCar) {
+             innerHTML += `<p>${product.Price ? `${product.Price.toLocaleString()} $` : 'Contact'}</p>`;
+        } else if (isProperty) {
+             innerHTML += `<p>${product.Price ? `$${product.Price.toLocaleString()}` : 'Contact'}</p>`;
+        } else if (isJob) {
+             innerHTML += `<p>${product.CompanyName || 'N/A'}</p>`;
+        } else {
+             innerHTML += `<p>${product.Price ? `${product.Price.toLocaleString()} $` : 'Contact'}</p>`;
+        }
+        
+        innerHTML += `<div style="font-size: 0.9rem; color: #666; margin-top: auto; padding-top: 10px;">
+                        <i class="fas fa-map-marker-alt"></i> ${(product.cityName || product.Location || 'N/A')}
+                      </div>`;
+    } else {
+        innerHTML += `
         <div>
             <h3>
                 ${productName || 'Unnamed Product'}
@@ -68,22 +107,24 @@ export const createProductElement = (product) => {
                 </button>
             </h3>`;
 
-    if (isCar) {
-        innerHTML += `<p class="custom-title">${product.ProductName}</p>
-                     <p><strong>Year:</strong> ${product.Year || 'N/A'}</p>
-                     <p><strong>Mileage:</strong> ${product.Mileage ? `${product.Mileage.toLocaleString()} km` : 'N/A'}</p>`;
-    } else if (isProperty) {
-        innerHTML += `<p><strong>Price:</strong> ${product.Price ? `$${product.Price.toLocaleString()}` : 'Contact for price'}</p>
-                     <p><strong>Type:</strong> ${product.PropertyType}</p>
-                     <p><strong>Size:</strong> ${product.SizeSqm} m²</p>`;
-    } else if (isJob) {
-        innerHTML += `<p><strong>Company:</strong> ${product.CompanyName || 'N/A'}</p>
-                     <p><strong>Type:</strong> ${product.EmploymentType || 'N/A'}</p>`;
-    } else {
-        innerHTML += `<p><strong>Price:</strong> ${product.Price ? `${product.Price.toLocaleString()} $` : 'Contact for price'}</p>`;
+        if (isCar) {
+            innerHTML += `<p class="custom-title">${product.ProductName}</p>
+                        <p><strong>Year:</strong> ${product.Year || 'N/A'}</p>
+                        <p><strong>Mileage:</strong> ${product.Mileage ? `${product.Mileage.toLocaleString()} km` : 'N/A'}</p>`;
+        } else if (isProperty) {
+            innerHTML += `<p><strong>Price:</strong> ${product.Price ? `$${product.Price.toLocaleString()}` : 'Contact for price'}</p>
+                        <p><strong>Type:</strong> ${product.PropertyType}</p>
+                        <p><strong>Size:</strong> ${product.SizeSqm} m²</p>`;
+        } else if (isJob) {
+            innerHTML += `<p><strong>Company:</strong> ${product.CompanyName || 'N/A'}</p>
+                        <p><strong>Type:</strong> ${product.EmploymentType || 'N/A'}</p>`;
+        } else {
+            innerHTML += `<p><strong>Price:</strong> ${product.Price ? `${product.Price.toLocaleString()} $` : 'Contact for price'}</p>`;
+        }
+
+        innerHTML += `<p><strong>Location:</strong> ${(product.cityName || product.Location || 'N/A')}${product.country ? `, ${product.country}` : ''}</p></div>`;
     }
 
-    innerHTML += `<p><strong>Location:</strong> ${(product.cityName || product.Location || 'N/A')}${product.country ? `, ${product.country}` : ''}</p></div>`;
     div.innerHTML = innerHTML;
 
     const slug = (productName || '')

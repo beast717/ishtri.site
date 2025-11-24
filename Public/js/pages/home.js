@@ -34,7 +34,7 @@ function renderRecommendedProducts(products = []) {
     }
 
     products.forEach(product => {
-        container.appendChild(createProductElement(product));
+        container.appendChild(createProductElement(product, { layout: 'grid' }));
     });
 
     initAllFavoriteButtons(container);
