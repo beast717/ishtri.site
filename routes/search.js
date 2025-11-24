@@ -18,7 +18,14 @@ router.get('/', async (req, res, next) => {
         } = req.query;
 
         // Build the base query (FROM + WHERE) and parameters
-        let baseQuery = `FROM products p LEFT JOIN cities ci ON p.city_id = ci.cityid WHERE 1=1`;
+        let baseQuery = `FROM products p 
+        LEFT JOIN cities ci ON p.city_id = ci.cityid 
+        LEFT JOIN properties pr ON p.productdID = pr.productdID
+        LEFT JOIN cars c ON p.productdID = c.productdID
+        LEFT JOIN jobs j ON p.productdID = j.productdID
+        LEFT JOIN car_brands cb ON c.brand_id = cb.brand_id
+        LEFT JOIN car_models cm ON c.model_id = cm.model_id
+        WHERE 1=1`;
         const params = [];
 
         // Add search query filter - search in ProductName only for now
@@ -60,7 +67,12 @@ router.get('/', async (req, res, next) => {
         const totalCount = countResult[0].total;
 
         // 2. Build the main data query
-        let sqlQuery = `SELECT p.*, ci.cityName, ci.country ${baseQuery}`;
+        let sqlQuery = `SELECT p.*, ci.cityName, ci.country,
+        pr.PropertyType, pr.SizeSqm,
+        c.Year, c.Mileage,
+        j.CompanyName, j.EmploymentType, j.JobTitle,
+        cb.brand_name, cm.model_name
+        ${baseQuery}`;
 
         // Add sorting
         const orderClauses = [];
